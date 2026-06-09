@@ -1,15 +1,9 @@
 <?php
 
-use App\Model\Agent;
-use App\Model\Skill;
-use App\Model\ConfigParam;
-use App\Model\Manager;
-
+use App\Entity\Agent;
 use Symfony\Component\DomCrawler\Crawler;
-
-use Tests\PLBWebTestCase;
 use Tests\FixtureBuilder;
-
+use Tests\PLBWebTestCase;
 
 class LegalNoticesControllerTest extends PLBWebTestCase
 {
@@ -20,19 +14,7 @@ class LegalNoticesControllerTest extends PLBWebTestCase
         $this->builder->delete(Agent::class);
     }
 
-    protected function setParam($name, $value)
-    {
-        $GLOBALS['config'][$name] = $value;
-        $param = $this->entityManager
-            ->getRepository(ConfigParam::class)
-            ->findOneBy(['nom' => $name]);
-
-        $param->valeur($value);
-        $this->entityManager->persist($param);
-        $this->entityManager->flush();
-    }
-
-    public function testLegalNotices()
+    public function testLegalNotices(): void
     {
         global $entityManager;
         $builder = new FixtureBuilder();
@@ -64,7 +46,7 @@ class LegalNoticesControllerTest extends PLBWebTestCase
         ## Vel frustra ictu cruore
         ';
 
-        $this->setParam('legalNotices', $lg);
+        $this->config->setParam('legalNotices', $lg);
 
         $crawler = $client->request('GET', '/legal-notices');
 
@@ -81,7 +63,7 @@ class LegalNoticesControllerTest extends PLBWebTestCase
         Pyramus laedar valido Ulixes, meditataque.</p>
         ';
 
-        $this->setParam('legalNotices', $lg);
+        $this->config->setParam('legalNotices', $lg);
 
         $crawler = $client->request('GET', '/legal-notices');
 

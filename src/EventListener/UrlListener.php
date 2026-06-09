@@ -2,7 +2,7 @@
 
 namespace App\EventListener;
 
-use App\Model\ConfigParam;
+use App\Entity\Config;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,22 +18,23 @@ class UrlListener
         $this->entityManager = $em;
     }
 
-    public function onKernelRequest(RequestEvent $event)
+    public function onKernelRequest(RequestEvent $event): void
     {
         $config = $this->entityManager
-            ->getRepository(ConfigParam::class)
+            ->getRepository(Config::class)
             ->findOneBy(array('nom' => 'URL'));
 
         $request = $event->getRequest();
 
+        // See https://github.com/symfony/symfony/pull/38954
         $request::setTrustedProxies(
             array($request->server->get('REMOTE_ADDR')),
-            Request::HEADER_X_FORWARDED_ALL ^ Request::HEADER_X_FORWARDED_HOST);
+            Request::HEADER_X_FORWARDED_TRAEFIK);
 
         $url = $request->getSchemeAndHttpHost() . $request->getBaseUrl();
 
-        if ($config->valeur() != $url) {
-            $config->valeur($url);
+        if ($config->getValue() != $url) {
+            $config->setValue($url);
             $this->entityManager->flush();
         }
     }

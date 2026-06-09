@@ -4,12 +4,12 @@ namespace App\Repository;
 
 use Doctrine\ORM\EntityRepository;
 
-use App\Model\Manager;
-use App\Model\Agent;
+use App\Entity\Manager;
+use App\Entity\Agent;
 
 class ManagerRepository extends EntityRepository
 {
-    public function deleteForAgents($agent_ids = array())
+    public function deleteForAgents($agent_ids = array()): void
     {
         $entityManager = $this->getEntityManager();
 
@@ -42,11 +42,10 @@ class ManagerRepository extends EntityRepository
         return $this;
     }
 
-    public function addManagers($agent_id, $manager_ids, $notifications, $level = 1)
+    public function addManagers($agent_id, $manager_ids, $notifications, $level = 1): void
     {
         $entityManager = $this->getEntityManager();
         $agent = $entityManager->getRepository(Agent::class)->find($agent_id);
-
 
         foreach ($manager_ids as $id) {
             $notification = in_array($id, $notifications) ? 1 : 0 ;
@@ -59,21 +58,40 @@ class ManagerRepository extends EntityRepository
             // if a manager already exists,
             // its a level one.
             if ($manager) {
-                $manager->level2(1);
-                $manager->notification_level2($notification);
+                $manager->setLevel2(1);
+                $manager->setLevel2Notification($notification);
                 $entityManager->persist($manager);
                 continue;
             }
 
             $manager = new Manager();
-            $manager->perso_id($agent);
-            $manager->responsable($agent_manager);
-            $manager->level1($level == 1 ? 1 : 0);
-            $manager->level2($level == 2 ? 1 : 0);
-            $manager->notification_level1($level == 1 ? $notification : 0);
-            $manager->notification_level2($level == 2 ? $notification : 0);
+            $manager->setUser($agent);
+            $manager->setManager($agent_manager);
+            $manager->setLevel1($level == 1 ? 1 : 0);
+            $manager->setLevel2($level == 2 ? 1 : 0);
+            $manager->setLevel1Notification($level == 1 ? $notification : 0);
+            $manager->setLevel2Notification($level == 2 ? $notification : 0);
             $entityManager->persist($manager);
         }
         $entityManager->flush();
+    }
+
+    /**
+     * Deletes manager links by agent or responsible IDs.
+     *
+     * This method removes manager records where the agent
+     * or the responsible matches the given IDs.
+     *
+     * @param array $userIds, array of agent or responsible IDs
+     */
+    public function deleteByPersoOrResponsable($userIds): void
+    {
+        $builder = $this->getEntityManager()->createQueryBuilder();
+        $builder->delete(Manager::class, 'm')
+            ->where('m.perso_id IN (:id)')
+            ->orWhere('m.responsable IN (:id)')
+            ->setParameter('id', $userIds)
+            ->getQuery()
+            ->execute();
     }
 }

@@ -1,0 +1,31 @@
+<?php
+/**
+Planning Biblio
+Licence AGPL (version 3 et au dela)
+Voir les fichiers README.md et LICENSE
+
+@file legacy/Common/footer.php
+@author Jérôme Combes <jerome@planningbiblio.fr>
+
+Description :
+Affcihe le pied de page
+Page notamment appelée par les fichiers index.php et admin/index.php
+*/
+
+// Contrôle si ce script est appelé directement, dans ce cas, affiche Accès Refusé et quitte
+if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) {
+    include_once "accessDenied.php";
+    exit;
+}
+?>
+</div> <!-- content or planningPoste -->
+<div class='footer'>
+Planno (<?php echo $GLOBALS['version']; ?>) - 
+<a href='https://www.planno.fr' target='_blank' style='font-size:9pt;'>www.planno.fr</a>
+</div>
+</body>
+</html>
+
+<?php
+exit;
+?>

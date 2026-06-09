@@ -1,13 +1,11 @@
 <?php
 
-use App\Model\Agent;
-use App\Model\Manager;
-use App\Model\ConfigParam;
-
+use App\Entity\Agent;
+use App\Entity\Manager;
 use Tests\PLBWebTestCase;
 use Tests\FixtureBuilder;
 
-require_once(__DIR__ . '/../../public/absences/class.absences.php');
+require_once(__DIR__ . '/../../legacy/Class/class.absences.php');
 
 class AbsenceControllerListTest extends PLBWebTestCase
 {
@@ -18,23 +16,11 @@ class AbsenceControllerListTest extends PLBWebTestCase
         $this->builder->delete(Agent::class);
     }
 
-    protected function setParam($name, $value)
-    {
-        $GLOBALS['config'][$name] = $value;
-        $param = $this->entityManager
-            ->getRepository(ConfigParam::class)
-            ->findOneBy(['nom' => $name]);
-
-        $param->valeur($value);
-        $this->entityManager->persist($param);
-        $this->entityManager->flush();
-    }
-
-    public function testList()
+    public function testList(): void
     {
 
-        $this->setParam('Absences-notifications-agent-par-agent', 0);
-        $this->setParam('Multisites-nombre', 1);
+        $this->config->setParam('Absences-notifications-agent-par-agent', 0);
+        $this->config->setParam('Multisites-nombre', 1);
 
         $client = static::createClient();
 
@@ -55,7 +41,7 @@ class AbsenceControllerListTest extends PLBWebTestCase
         $this->createAbsenceFor($abreton, 2);
         $this->createAbsenceFor($kboivin, 2);
 
-        $this->logInAgent($jdevoe, $jdevoe->droits());
+        $this->logInAgent($jdevoe, $jdevoe->getACL());
         $crawler = $client->request('GET', '/absence?perso_id=0');
 
         $this->assertResponseIsSuccessful('Jdevoe can access to list page');
@@ -67,7 +53,7 @@ class AbsenceControllerListTest extends PLBWebTestCase
         $this->assertEquals('Devoe John', $jdevoe_abs->html());
 
         // Login with agent having rights for absences
-        $this->logInAgent($kboivin, $kboivin->droits());
+        $this->logInAgent($kboivin, $kboivin->getACL());
         $crawler = $client->request('GET', '/absence?perso_id=0');
 
         $this->assertResponseIsSuccessful('KBoivin can access to list page');
@@ -94,28 +80,28 @@ class AbsenceControllerListTest extends PLBWebTestCase
         $this->assertEquals('Devoe John', $tbody->eq(2)->filter('td')->eq(3)->html());
     }
 
-    public function testListMultiSites()
+    public function testListMultiSites(): void
     {
-        $this->setParam('Absences-notifications-agent-par-agent', 0);
-        $this->setParam('Multisites-nombre', 2);
+        $this->config->setParam('Absences-notifications-agent-par-agent', 0);
+        $this->config->setParam('Multisites-nombre', 2);
 
         $client = static::createClient();
 
         $dailleboust = $this->builder->build(Agent::class, array(
             'login' => 'dailleboust', 'nom' => 'Ailleboust', 'prenom' => 'Denis',
-            'sites' => '', 'droits' => array(99,100)
+            'sites' => [], 'droits' => array(99,100)
         ));
         $jdevoe = $this->builder->build(Agent::class, array(
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
-            'sites' => '["1","2"]', 'droits' => array(99,100)
+            'sites' => ["1","2"], 'droits' => array(99,100)
         ));
         $abreton = $this->builder->build(Agent::class, array(
             'login' => 'abreton', 'nom' => 'Breton', 'prenom' => 'Aubert',
-            'sites' => '["1"]', 'droits' => array(99,100)
+            'sites' => ["1"], 'droits' => array(99,100)
         ));
         $kboivin = $this->builder->build(Agent::class, array(
             'login' => 'kboivin', 'nom' => 'Boivin', 'prenom' => 'Karel',
-            'sites' => '["2"]', 'droits' => array(202,502,99,100)
+            'sites' => ["2"], 'droits' => array(202,502,99,100)
         ));
 
         $this->createAbsenceFor($dailleboust, 2);
@@ -124,7 +110,7 @@ class AbsenceControllerListTest extends PLBWebTestCase
         $this->createAbsenceFor($kboivin, 2);
 
         // Login with agent having rights for absences
-        $this->logInAgent($kboivin, $kboivin->droits());
+        $this->logInAgent($kboivin, $kboivin->getACL());
         $crawler = $client->request('GET', '/absence?perso_id=0');
 
         $agents_select = $crawler->filter('select#perso_id option');
@@ -142,28 +128,28 @@ class AbsenceControllerListTest extends PLBWebTestCase
         $this->assertEquals('Devoe John', $tbody->eq(1)->filter('td')->eq(3)->html());
     }
 
-    public function testListWithAbsencesNotificationsAgentParAgent()
+    public function testListWithAbsencesNotificationsAgentParAgent(): void
     {
-        $this->setParam('Absences-notifications-agent-par-agent', 1);
-        $this->setParam('Multisites-nombre', 2);
+        $this->config->setParam('Absences-notifications-agent-par-agent', 1);
+        $this->config->setParam('Multisites-nombre', 2);
 
         $client = static::createClient();
 
         $dailleboust = $this->builder->build(Agent::class, array(
             'login' => 'dailleboust', 'nom' => 'Ailleboust', 'prenom' => 'Denis',
-            'sites' => '', 'droits' => array(99,100)
+            'sites' => [], 'droits' => array(99,100)
         ));
         $jdevoe = $this->builder->build(Agent::class, array(
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
-            'sites' => '["1","2"]', 'droits' => array(99,100)
+            'sites' => ["1","2"], 'droits' => array(99,100)
         ));
         $abreton = $this->builder->build(Agent::class, array(
             'login' => 'abreton', 'nom' => 'Breton', 'prenom' => 'Aubert',
-            'sites' => '["1"]', 'droits' => array(99,100)
+            'sites' => ["1"], 'droits' => array(99,100)
         ));
         $kboivin = $this->builder->build(Agent::class, array(
             'login' => 'kboivin', 'nom' => 'Boivin', 'prenom' => 'Karel',
-            'sites' => '["2"]', 'droits' => array(202,502,99,100)
+            'sites' => ["2"], 'droits' => array(202,502,99,100)
         ));
 
         $this->createAbsenceFor($dailleboust, 2);
@@ -173,18 +159,18 @@ class AbsenceControllerListTest extends PLBWebTestCase
 
         // Make kboivin manager of dailleboust
         $manager = new Manager();
-        $manager->perso_id($dailleboust);
-        $manager->notification_level1(0);
+        $manager->setUser($dailleboust);
+        $manager->setLevel1Notification(0);
         $kboivin->addManaged($manager);
 
         // Make kboivin manager of abreton
         $manager = new Manager();
-        $manager->perso_id($abreton);
-        $manager->notification_level1(0);
+        $manager->setUser($abreton);
+        $manager->setLevel1Notification(0);
         $kboivin->addManaged($manager);
 
         // Login with agent having rights for absences
-        $this->logInAgent($kboivin, $kboivin->droits());
+        $this->logInAgent($kboivin, $kboivin->getACL());
         $crawler = $client->request('GET', '/absence?perso_id=0');
 
         $agents_select = $crawler->filter('select#perso_id option');
@@ -204,16 +190,16 @@ class AbsenceControllerListTest extends PLBWebTestCase
         $this->assertEquals('Breton Aubert', $tbody->eq(2)->filter('td')->eq(3)->html());
     }
 
-    private function createAbsenceFor($agent, $status = 0)
+    private function createAbsenceFor($agent, $status = 0): void
     {
         $date = new DateTime('now + 3 day');
 
         $absence = new \absences();
-        $absence->debut = $date->format('Y-m-d');
-        $absence->fin = $date->format('Y-m-d');
+        $absence->debut = $date->format('d/m/Y');
+        $absence->fin = $date->format('d/m/Y');
         $absence->hre_debut = '00:00:00';
         $absence->hre_fin = '23:59:59';
-        $absence->perso_ids = array($agent->id());
+        $absence->perso_ids = array($agent->getId());
         $absence->commentaires = '';
         $absence->motif = 'Foo';
         $absence->CSRFToken = $this->CSRFToken;

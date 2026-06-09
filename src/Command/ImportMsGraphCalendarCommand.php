@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
@@ -11,11 +12,12 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-use App\PlanningBiblio\MSGraphClient;
+use App\Entity\Config;
+use App\Planno\MSGraphClient;
 
 #[AsCommand(
     name: 'app:import:ms-graph-calendar',
-    description: 'Import a calendar from Microsoft Graph API',
+    description: 'Import calendars from Microsoft Graph API',
 )]
 class ImportMsGraphCalendarCommand extends Command
 {
@@ -27,6 +29,7 @@ class ImportMsGraphCalendarCommand extends Command
             ->setHelp("Import a calendar from Microsoft Graph API")
             ->addOption('full', null, InputOption::VALUE_OPTIONAL, 'Performs a full import', false)
             ->addOption('stdout', null, InputOption::VALUE_OPTIONAL, 'Also output logs in stdout', false)
+            ->addOption('user_id', null, InputOption::VALUE_OPTIONAL, 'Only import for this user', false)
         ;
     }
 
@@ -39,25 +42,29 @@ class ImportMsGraphCalendarCommand extends Command
             return Command::FAILURE;
         }
 
-        $tenantid = $_ENV['MS_GRAPH_TENANT_ID'] ?? null;
-        $clientid = $_ENV['MS_GRAPH_CLIENT_ID'] ?? null;
-        $clientsecret = $_ENV['MS_GRAPH_CLIENT_SECRET'] ?? null;
-
-        if (!$tenantid || !$clientid || !$clientsecret) {
-            $io->error('At least one of the following is not defined: MS_GRAPH_TENANT_ID, MS_GRAPH_CLIENT_ID, MS_GRAPH_CLIENT_SECRET. Please check you .env.{prod|dev}.local file.');
-            return Command::FAILURE;
-        }
-
         $kernel = $this->getApplication()->getKernel();
         $container = $kernel->getContainer();
         $em = $container->get('doctrine')->getManager();
 
-        $graph_client = new MSGraphClient($em, $tenantid, $clientid, $clientsecret, $input->getOption('full'), $input->getOption('stdout'));
+        $config = $em->getRepository(Config::class)->getAll();
+
+        $tenantid = $config['MSGraph-TenantID'];
+        $clientid = $config['MSGraph-ClientID'];
+        $clientsecret = $config['MSGraph-ClientSecret'];
+
+        if (!$tenantid || !$clientid || !$clientsecret) {
+            $io->error('At least one of the following is not defined: MSGraph-TenantID, MSGraph-ClientID, MSGraph-ClientSecret. Please check your configuration.');
+            return Command::FAILURE;
+        }
+
+        $graph_client = new MSGraphClient($em, $tenantid, $clientid, $clientsecret, $input->getOption('full'), $input->getOption('stdout'), $input->getOption('user_id'));
         $graph_client->retrieveEvents();
 
         $this->release();
 
-        $io->success('Import completed.');
+        if ($output->isVerbose()) {
+            $io->success('Import completed.');
+        }
 
         return Command::SUCCESS;
     }

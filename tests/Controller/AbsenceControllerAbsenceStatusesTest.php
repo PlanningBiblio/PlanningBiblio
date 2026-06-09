@@ -1,7 +1,6 @@
 <?php
 
-use App\Model\Agent;
-use App\Model\ConfigParam;
+use App\Entity\Agent;
 use Tests\FixtureBuilder;
 use Tests\PLBWebTestCase;
 
@@ -16,21 +15,9 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $GLOBALS['config']['Absences-validation'] = 1;
     }
 
-    protected function setParam($name, $value)
+    public function testNewAbsenceWithoutRight(): void
     {
-        $GLOBALS['config'][$name] = $value;
-        $param = $this->entityManager
-            ->getRepository(ConfigParam::class)
-            ->findOneBy(['nom' => $name]);
-
-        $param->valeur($value);
-        $this->entityManager->persist($param);
-        $this->entityManager->flush();
-    }
-
-    public function testNewAbsenceWithoutRight()
-    {
-        $this->setParam('Absences-Validation-N2', 0);
+        $this->config->setParam('Absences-Validation-N2', 0);
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -41,10 +28,10 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         // request /absence-statuses
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence");
 
         $statuses_element = $crawler->filter('span');
@@ -52,9 +39,9 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $this->assertEquals('Demandée', $statuses_element->html(), 'NewAbsenceWithoutRight show asked');
     }
 
-    public function testNewAbsenceRightN1()
+    public function testNewAbsenceRightN1(): void
     {
-        $this->setParam('Absences-Validation-N2', 0);
+        $this->config->setParam('Absences-Validation-N2', 0);
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -64,10 +51,10 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         // request /absence-statuses
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence");
 
         $statuses_elements = $crawler->filter('select option');
@@ -79,9 +66,9 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     }
 
-    public function testNewAbsenceRightN1AndN2()
+    public function testNewAbsenceRightN1AndN2(): void
     {
-        $this->setParam('Absences-Validation-N2', 0);
+        $this->config->setParam('Absences-Validation-N2', 0);
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -91,10 +78,10 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         // request /absence-statuses
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence");
 
         $statuses_elements = $crawler->filter('select option');
@@ -108,9 +95,9 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     }
 
-    public function testNewAbsenceRightN2()
+    public function testNewAbsenceRightN2(): void
     {
-        $this->setParam('Absences-Validation-N2', 0);
+        $this->config->setParam('Absences-Validation-N2', 0);
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -120,10 +107,10 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         // request /absence-statuses
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence");
 
         $statuses_elements = $crawler->filter('select option');
@@ -137,9 +124,9 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     }
 
-    public function testNewAbsenceRightN2WithAbsencesValidationN2()
+    public function testNewAbsenceRightN2WithAbsencesValidationN2(): void
     {
-        $this->setParam('Absences-Validation-N2', 1);
+        $this->config->setParam('Absences-Validation-N2', 1);
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -149,10 +136,10 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         // request /absence-statuses
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence");
 
         $statuses_element = $crawler->filter('span');
@@ -160,9 +147,9 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $this->assertEquals('Demandée', $statuses_element->html(), 'NewAbsenceWithoutRight show asked');
     }
 
-    public function testEditAskedAbsenceWithoutRight()
+    public function testEditAskedAbsenceWithoutRight(): void
     {
-        $this->setParam('Absences-Validation-N2', 0);
+        $this->config->setParam('Absences-Validation-N2', 0);
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -171,10 +158,10 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
         $absence_id = $this->createAbsenceFor($loggedin, 0);
 
-        $agent_id = $loggedin->id();
+        $agent_id = $loggedin->getId();
 
         // request /absence-statuses
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence&id=$absence_id");
 
         $statuses_element = $crawler->filter('span');
@@ -182,9 +169,9 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $this->assertEquals('Demandée', $statuses_element->html(), 'NewAbsenceWithoutRight show asked');
     }
 
-    public function testEditAskedAbsenceRightN1()
+    public function testEditAskedAbsenceRightN1(): void
     {
-        $this->setParam('Absences-Validation-N2', 0);
+        $this->config->setParam('Absences-Validation-N2', 0);
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -194,12 +181,12 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         $absence_id = $this->createAbsenceFor($jdevoe, 0);
 
         // request /absence-statuses
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence&id=$absence_id");
 
         $statuses_elements = $crawler->filter('select option');
@@ -211,9 +198,9 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     }
 
-    public function testEditAskedAbsenceRightN1AndN2()
+    public function testEditAskedAbsenceRightN1AndN2(): void
     {
-        $this->setParam('Absences-Validation-N2', 0);
+        $this->config->setParam('Absences-Validation-N2', 0);
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -223,12 +210,12 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         $absence_id = $this->createAbsenceFor($jdevoe, 0);
 
         // request /absence-statuses
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence&id=$absence_id");
 
         $statuses_elements = $crawler->filter('select option');
@@ -242,9 +229,9 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     }
 
-    public function testEditAskedAbsenceRightN2()
+    public function testEditAskedAbsenceRightN2(): void
     {
-        $this->setParam('Absences-Validation-N2', 0);
+        $this->config->setParam('Absences-Validation-N2', 0);
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -254,12 +241,12 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         $absence_id = $this->createAbsenceFor($jdevoe, 0);
 
         // request /absence-statuses
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence&id=$absence_id");
 
         $statuses_elements = $crawler->filter('select option');
@@ -273,9 +260,9 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     }
 
-    public function testEditAskedAbsenceRightN2WithAbsencesValidationN2()
+    public function testEditAskedAbsenceRightN2WithAbsencesValidationN2(): void
     {
-        $this->setParam('Absences-Validation-N2', 1);
+        $this->config->setParam('Absences-Validation-N2', 1);
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -285,12 +272,12 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         $absence_id = $this->createAbsenceFor($jdevoe, 0);
 
         // request /absence-statuses
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence&id=$absence_id");
 
         $statuses_element = $crawler->filter('span');
@@ -299,9 +286,9 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     }
 
-    public function testEditN1AbsenceWithoutRight()
+    public function testEditN1AbsenceWithoutRight(): void
     {
-        $this->setParam('Absences-Validation-N2', 0);
+        $this->config->setParam('Absences-Validation-N2', 0);
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -310,10 +297,10 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
         $absence_id = $this->createAbsenceFor($loggedin, 2);
 
-        $agent_id = $loggedin->id();
+        $agent_id = $loggedin->getId();
 
         // request /absence-statuses
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence&id=$absence_id");
 
         $statuses_element = $crawler->filter('span');
@@ -321,9 +308,9 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $this->assertEquals('Acceptée (En attente de validation hiérarchique)', $statuses_element->html(), 'NewAbsenceWithoutRight show asked');
     }
 
-    public function testEditN1AbsenceRightN1()
+    public function testEditN1AbsenceRightN1(): void
     {
-        $this->setParam('Absences-Validation-N2', 0);
+        $this->config->setParam('Absences-Validation-N2', 0);
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -333,12 +320,12 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         $absence_id = $this->createAbsenceFor($jdevoe, 2);
 
         // request /absence-statuses
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence&id=$absence_id");
 
         $statuses_elements = $crawler->filter('select option');
@@ -350,9 +337,9 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     }
 
-    public function testEditN1AbsenceRightN1AndN2()
+    public function testEditN1AbsenceRightN1AndN2(): void
     {
-        $this->setParam('Absences-Validation-N2', 0);
+        $this->config->setParam('Absences-Validation-N2', 0);
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -362,12 +349,12 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         $absence_id = $this->createAbsenceFor($jdevoe, 2);
 
         // request /absence-statuses
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence&id=$absence_id");
 
         $statuses_elements = $crawler->filter('select option');
@@ -381,9 +368,9 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     }
 
-    public function testEditN1AbsenceRightN2()
+    public function testEditN1AbsenceRightN2(): void
     {
-        $this->setParam('Absences-Validation-N2', 0);
+        $this->config->setParam('Absences-Validation-N2', 0);
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -393,12 +380,12 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         $absence_id = $this->createAbsenceFor($jdevoe, 2);
 
         // request /absence-statuses
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence&id=$absence_id");
 
         $statuses_elements = $crawler->filter('select option');
@@ -412,9 +399,9 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     }
 
-    public function testEditN1AbsenceRightN2WithAbsencesValidationN2()
+    public function testEditN1AbsenceRightN2WithAbsencesValidationN2(): void
     {
-        $this->setParam('Absences-Validation-N2', 1);
+        $this->config->setParam('Absences-Validation-N2', 1);
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -424,12 +411,12 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         $absence_id = $this->createAbsenceFor($jdevoe, 2);
 
         // request /absence-statuses
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence&id=$absence_id");
 
         $statuses_elements = $crawler->filter('select option');
@@ -443,9 +430,9 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     }
 
-    public function testEditN2AbsenceWithoutRight()
+    public function testEditN2AbsenceWithoutRight(): void
     {
-        $this->setParam('Absences-Validation-N2', 0);
+        $this->config->setParam('Absences-Validation-N2', 0);
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -454,10 +441,10 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
         $absence_id = $this->createAbsenceFor($loggedin, 1);
 
-        $agent_id = $loggedin->id();
+        $agent_id = $loggedin->getId();
 
         // request /absence-statuses
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence&id=$absence_id");
 
         $statuses_element = $crawler->filter('span');
@@ -465,9 +452,9 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $this->assertEquals('Acceptée', $statuses_element->html(), 'NewAbsenceWithoutRight show asked');
     }
 
-    public function testEditN2AbsenceRightN1()
+    public function testEditN2AbsenceRightN1(): void
     {
-        $this->setParam('Absences-Validation-N2', 0);
+        $this->config->setParam('Absences-Validation-N2', 0);
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -477,12 +464,12 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         $absence_id = $this->createAbsenceFor($jdevoe, -1);
 
         // request /absence-statuses
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence&id=$absence_id");
 
         $statuses_element = $crawler->filter('span');
@@ -491,9 +478,9 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     }
 
-    public function testEditN2AbsenceRightN1AndN2()
+    public function testEditN2AbsenceRightN1AndN2(): void
     {
-        $this->setParam('Absences-Validation-N2', 0);
+        $this->config->setParam('Absences-Validation-N2', 0);
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -503,12 +490,12 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         $absence_id = $this->createAbsenceFor($jdevoe, 1);
 
         // request /absence-statuses
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence&id=$absence_id");
 
         $statuses_elements = $crawler->filter('select option');
@@ -522,9 +509,9 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     }
 
-    public function testEditN2AbsenceRightN2()
+    public function testEditN2AbsenceRightN2(): void
     {
-        $this->setParam('Absences-Validation-N2', 0);
+        $this->config->setParam('Absences-Validation-N2', 0);
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -534,12 +521,12 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         $absence_id = $this->createAbsenceFor($jdevoe, 1);
 
         // request /absence-statuses
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence&id=$absence_id");
 
         $statuses_elements = $crawler->filter('select option');
@@ -553,9 +540,9 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
     }
 
-    public function testEditN2AbsenceRightN2WithAbsencesValidationN2()
+    public function testEditN2AbsenceRightN2WithAbsencesValidationN2(): void
     {
-        $this->setParam('Absences-Validation-N2', 1);
+        $this->config->setParam('Absences-Validation-N2', 1);
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -565,12 +552,12 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         $absence_id = $this->createAbsenceFor($jdevoe, -1);
 
         // request /absence-statuses
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence&id=$absence_id");
 
         $statuses_elements = $crawler->filter('select option');
@@ -593,7 +580,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $absence->fin = $date->format('Y-m-d');
         $absence->hre_debut = '00:00:00';
         $absence->hre_fin = '23:59:59';
-        $absence->perso_ids = array($agent->id());
+        $absence->perso_ids = array($agent->getId());
         $absence->commentaires = '';
         $absence->motif = 'AbsenceControllerAbsenceStatusesTest';
         $absence->valide = $status;

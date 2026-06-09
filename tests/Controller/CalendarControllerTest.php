@@ -1,17 +1,15 @@
 <?php
 
-use App\Model\Agent;
-use App\Model\Absence;
-use App\Model\WorkingHour;
-
+use App\Entity\Agent;
+use App\Entity\Absence;
+use App\Entity\WorkingHour;
 use Symfony\Component\DomCrawler\Crawler;
-
 use Tests\PLBWebTestCase;
 use Tests\FixtureBuilder;
 
 class CalendarControllerTest extends PLBWebTestCase
 {
-    public function testCalendarWithMultiSites()
+    public function testCalendarWithMultiSites(): void
     {
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
@@ -22,16 +20,14 @@ class CalendarControllerTest extends PLBWebTestCase
             Agent::class,
             array(
                 'login' => 'jdoenv', 'nom' => 'Doenv', 'prenom' => 'Jean', 'actif' => 'Actif',
-                'temps' => json_encode(
-                    array(
-                        "0" => ["09:00:00","12:30:00","13:15:00","17:15:00","2"],
-                        "1" => ["09:00:00","12:30:00","13:15:00","17:15:00","3"],
-                        "2" => ["10:00:00","13:30:00","15:15:00","18:15:00","-1"],
-                        "3" => ["11:00:00","14:30:00","15:15:00","18:15:00","-1"],
-                        "4" => ["11:00:00","14:30:00","15:15:00","18:15:00","1"],
-                    )
-                ),
-                'sites' => json_encode(["1", "2", "3","4"])
+                'temps' => [
+                    '0' => ['09:00:00', '12:30:00', '13:15:00', '17:15:00', '2'],
+                    '1' => ['09:00:00', '12:30:00', '13:15:00', '17:15:00', '3'],
+                    '2' => ['10:00:00', '13:30:00', '15:15:00', '18:15:00', '-1'],
+                    '3' => ['11:00:00', '14:30:00', '15:15:00', '18:15:00', '-1'],
+                    '4' => ['11:00:00', '14:30:00', '15:15:00', '18:15:00', '1'],
+                ],
+                'sites' => ['1', '2', '3','4']
             )
         );
 
@@ -45,7 +41,7 @@ class CalendarControllerTest extends PLBWebTestCase
         $crawler = $this->client->request('GET', "/calendar", array(
             'debut' => '26/09/2022',
             'fin' => '29/09/2022',
-            'perso_id' => $agent2->id(),
+            'perso_id' => $agent2->getId(),
         ));
 
         $result = $crawler->filterXPath('//div[@class="attendance"]');
@@ -62,7 +58,7 @@ class CalendarControllerTest extends PLBWebTestCase
         $this->assertStringContainsString('de 15h15 à 18h15', $result->eq(2)->text('Node does not exist', false), 'de 15h15 à 18h15');
     }
 
-    public function testCalendarWithPlanningHebdo(){
+    public function testCalendarWithPlanningHebdo(): void{
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John', 'actif' => 'Actif'));
@@ -76,28 +72,26 @@ class CalendarControllerTest extends PLBWebTestCase
         (
             WorkingHour::class,
             array(
-                'perso_id' => $agent->id(),
+                'perso_id' => $agent->getId(),
                 'debut' => $start,
                 'fin' => $end,
                 'valide_n1' => 1,
                 'valide' => 1,
-                'temps' => json_encode(
-                    array(
-                        "0" => ["09:00:00","12:30:00","13:30:00","17:00:00","4"],
-                        "1" => ["09:00:00","12:30:00","13:30:00","17:00:00","4"],
-                        "2" => ["09:00:00","12:30:00","13:30:00","17:00:00","4"],
-                        "3" => ["08:00:00","12:30:00","13:30:00","17:00:00","4"],
-                        "4" => ["08:00:00","12:30:00","13:30:00","17:00:00","4"]
-                        )
-                    ),
-                    'nb_semaine' => 2,
+                'temps' => [
+                    '0' => ['09:00:00', '12:30:00', '13:30:00', '17:00:00', '4'],
+                    '1' => ['09:00:00', '12:30:00', '13:30:00', '17:00:00', '4'],
+                    '2' => ['09:00:00', '12:30:00', '13:30:00', '17:00:00', '4'],
+                    '3' => ['08:00:00', '12:30:00', '13:30:00', '17:00:00', '4'],
+                    '4' => ['08:00:00', '12:30:00', '13:30:00', '17:00:00', '4']
+                ],
+                'nb_semaine' => 2,
             )
         );
 
         $crawler = $this->client->request('GET', "/calendar", array(
             'debut' => '26/09/2022',
             'fin' => '29/09/2022',
-            'perso_id' => $agent->id(),
+            'perso_id' => $agent->getId(),
         ));
 
         $result = $crawler->filterXPath('//h3');
@@ -116,7 +110,7 @@ class CalendarControllerTest extends PLBWebTestCase
         $this->assertStringContainsString('de 13h30 à 17h00', $result->text('Node does not exist', false), 'de 13h30 à 17h00');
     }
 
-    public function testCalendarWithAbsence()
+    public function testCalendarWithAbsence(): void
     {
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
@@ -128,16 +122,14 @@ class CalendarControllerTest extends PLBWebTestCase
             Agent::class,
             array(
                 'login' => 'jdoenv', 'nom' => 'Doenv', 'prenom' => 'Jean', 'actif' => 'Actif',
-                'temps' => json_encode(
-                    array(
-                        "0" => ["09:00:00","12:30:00","13:15:00","17:15:00","2"],
-                        "1" => ["09:00:00","12:30:00","13:15:00","17:15:00","3"],
-                        "2" => ["10:00:00","13:30:00","15:15:00","18:15:00","-1"],
-                        "3" => ["11:00:00","14:30:00","15:15:00","18:15:00","-1"],
-                        "4" => ["11:00:00","14:30:00","15:15:00","18:15:00","1"],
-                    )
-                ),
-                'sites' => json_encode(["1", "2", "3","4"])
+                'temps' => [
+                    '0' => ['09:00:00', '12:30:00', '13:15:00', '17:15:00', '2'],
+                    '1' => ['09:00:00', '12:30:00', '13:15:00', '17:15:00', '3'],
+                    '2' => ['10:00:00', '13:30:00', '15:15:00', '18:15:00', '-1'],
+                    '3' => ['11:00:00', '14:30:00', '15:15:00', '18:15:00', '-1'],
+                    '4' => ['11:00:00', '14:30:00', '15:15:00', '18:15:00', '1'],
+                ],
+                'sites' => ["1", "2", "3","4"]
             )
         );
 
@@ -146,12 +138,12 @@ class CalendarControllerTest extends PLBWebTestCase
         $start = \DateTime::createFromFormat("d/m/Y H:i:s", '26/09/2022 08:00:00');
         $end = \DateTime::createFromFormat("d/m/Y H:i:s", '28/09/2022 19:00:00');
         $validation = \DateTime::createFromFormat("d/m/Y H:i:s", '28/09/2022 08:00:00');
-        $off = $builder->build(Absence::class, array('debut' => $start, 'motif' => 'malade', 'fin' => $end, 'perso_id' => $agent2->id(), 'validation' => $validation, 'valide' => 1, 'supprime' => 0, 'groupe' => '1'));
+        $off = $builder->build(Absence::class, array('debut' => $start, 'motif' => 'malade', 'fin' => $end, 'perso_id' => $agent2->getId(), 'validation' => $validation, 'valide' => 1, 'supprime' => 0, 'groupe' => '1'));
 
         $crawler = $this->client->request('GET', "/calendar", array(
             'debut' => '26/09/2022',
             'fin' => '29/09/2022',
-            'perso_id' => $agent2->id(),
+            'perso_id' => $agent2->getId(),
         ));
 
         $result = $crawler->filterXPath('//h3');
@@ -170,7 +162,7 @@ class CalendarControllerTest extends PLBWebTestCase
         $this->assertStringContainsString('À partir de 08h00 : malade', $result->eq(0)->text('Node does not exist', false), 'À partir de 08h00 : malade');
     }
 
-    public function testFullCalendar()
+    public function testFullCalendar(): void
     {
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
@@ -181,16 +173,14 @@ class CalendarControllerTest extends PLBWebTestCase
             Agent::class,
             array(
                 'login' => 'jdoenv', 'nom' => 'Doenv', 'prenom' => 'Jean', 'actif' => 'Actif',
-                'temps' => json_encode(
-                    array(
-                        "0" => ["09:00:00","12:30:00","13:15:00","17:15:00","2"],
-                        "1" => ["09:00:00","12:30:00","13:15:00","17:15:00","3"],
-                        "2" => ["10:00:00","13:30:00","15:15:00","18:15:00","-1"],
-                        "3" => ["11:00:00","14:30:00","15:15:00","18:15:00","-1"],
-                        "4" => ["11:00:00","14:30:00","15:15:00","18:15:00","1"],
-                    )
-                ),
-                'sites' => json_encode(["1", "2", "3","4"])
+                'temps' => [
+                    '0' => ['09:00:00', '12:30:00', '13:15:00', '17:15:00', '2'],
+                    '1' => ['09:00:00', '12:30:00', '13:15:00', '17:15:00', '3'],
+                    '2' => ['10:00:00', '13:30:00', '15:15:00', '18:15:00', '-1'],
+                    '3' => ['11:00:00', '14:30:00', '15:15:00', '18:15:00', '-1'],
+                    '4' => ['11:00:00', '14:30:00', '15:15:00', '18:15:00', '1'],
+                ],
+                'sites' => ["1", "2", "3","4"]
             )
         );
 
@@ -198,7 +188,7 @@ class CalendarControllerTest extends PLBWebTestCase
         $crawler = $this->client->request('GET', "/calendar", array(
             'debut' => '26/09/2022',
             'fin' => '29/09/2022',
-            'perso_id' => $agent2->id(),
+            'perso_id' => $agent2->getId(),
         ));
 
         $result = $crawler->filterXPath('//h3');
@@ -217,7 +207,7 @@ class CalendarControllerTest extends PLBWebTestCase
         $this->assertStringContainsString('de 13h15 à 17h15', $result->text('Node does not exist', false), 'de 13h15 à 17h15');
     }
 
-    public function testEmptyCalendar()
+    public function testEmptyCalendar(): void
     {
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
@@ -227,7 +217,7 @@ class CalendarControllerTest extends PLBWebTestCase
         $crawler = $this->client->request('GET', "/calendar", array(
             'debut' => '26/09/2022',
             'fin' => '27/09/2022',
-            'perso_id' => $agent->id(),
+            'perso_id' => $agent->getId(),
         ));
 
         $result = $crawler->filterXPath('//h3');
@@ -244,7 +234,7 @@ class CalendarControllerTest extends PLBWebTestCase
         $crawler = $this->client->request('GET', "/calendar", array(
             'debut' => '26/09/2022',
             'fin' => '29/09/2022',
-            'perso_id' => $agent->id(),
+            'perso_id' => $agent->getId(),
         ));
 
         $result = $crawler->filterXPath('//h3');
@@ -259,7 +249,7 @@ class CalendarControllerTest extends PLBWebTestCase
         $this->assertStringContainsString('Vendredi', $result->text('Node does not exist', false), 'Vendredi');
     }
 
-    public function testDeletedAgentCalendar()
+    public function testDeletedAgentCalendar(): void
     {
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
@@ -269,7 +259,7 @@ class CalendarControllerTest extends PLBWebTestCase
         $crawler = $this->client->request('GET', "/calendar", array(
             'debut' => '26/09/2022',
             'fin' => '29/09/2022',
-            'perso_id' => $agent->id(),
+            'perso_id' => $agent->getId(),
         ));
 
         $result = $crawler->filterXPath('//h3');

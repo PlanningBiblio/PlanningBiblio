@@ -1,7 +1,7 @@
 <?php
 
-use App\Model\Agent;
-use App\Model\Holiday;
+use App\Entity\Agent;
+use App\Entity\Holiday;
 
 use Tests\PLBWebTestCase;
 use Tests\FixtureBuilder;
@@ -26,7 +26,7 @@ class HolidayControllerHoursTest extends PLBWebTestCase
         $this->logInAgent($admin, array(100));
     }
 
-    public function testHolidayOneAgentAllDayNonValidated()
+    public function testHolidayOneAgentAllDayNonValidated(): void
     {
         $entityManager = $this->entityManager;
 
@@ -42,7 +42,7 @@ class HolidayControllerHoursTest extends PLBWebTestCase
         $this->addWorkingHours($jdevoe, array('09:00:00', '12:30:00', '13:30:00', '17:00:00'));
 
         $data = $this->getHolidayData(array(
-            'perso_id' => $jdevoe->id(),
+            'perso_id' => $jdevoe->getId(),
             'valide' => 0,
             'valide_n1' => 0
         ));
@@ -50,32 +50,32 @@ class HolidayControllerHoursTest extends PLBWebTestCase
         $this->client->request('POST', '/holiday', $data);
 
         $holiday = $entityManager->getRepository(Holiday::class)->findOneBy(
-            array('perso_id' => $jdevoe->id())
+            array('perso_id' => $jdevoe->getId())
         );
 
-        $start = $holiday->debut()->format('Y-m-d H:i:s');
-        $end = $holiday->fin()->format('Y-m-d H:i:s');
+        $start = $holiday->getStart()->format('Y-m-d H:i:s');
+        $end = $holiday->getEnd()->format('Y-m-d H:i:s');
 
         $this->assertEquals($start, '2022-01-24 00:00:00', 'Holiday starts at 00:00:00');
         $this->assertEquals($end, '2022-01-24 23:59:59', 'Holiday ends at 23:59:59');
-        $this->assertEquals($holiday->halfday(), 0, 'Holiday is not on halfday');
-        $this->assertEquals($holiday->start_halfday(), '', 'start_halfday is empty');
-        $this->assertEquals($holiday->end_halfday(), '', 'end_halfday is empty');
-        $this->assertEquals($holiday->debit(), 'credit', 'end_halfday is empty');
-        $this->assertEquals($holiday->heures(), 7.00, 'end_halfday is empty');
-        $this->assertEquals($holiday->solde_prec(), null, 'Previous holiday credit is 175');
-        $this->assertEquals($holiday->solde_actuel(), null, 'New holiday credit is 168');
-        $this->assertEquals($holiday->recup_prec(), null, 'previous com time credit is 35');
-        $this->assertEquals($holiday->recup_actuel(), null, 'New com time credit is unchanged');
+        $this->assertEquals($holiday->getHalfDay(), 0, 'Holiday is not on halfday');
+        $this->assertEquals($holiday->getHalfDayStart(), '', 'start_halfday is empty');
+        $this->assertEquals($holiday->getHalfDayEnd(), '', 'end_halfday is empty');
+        $this->assertEquals($holiday->getDebit(), 'credit', 'end_halfday is empty');
+        $this->assertEquals($holiday->getHours(), 7.00, 'end_halfday is empty');
+        $this->assertEquals($holiday->getPreviousCredit(), null, 'Previous holiday credit is 175');
+        $this->assertEquals($holiday->getActualCredit(), null, 'New holiday credit is 168');
+        $this->assertEquals($holiday->getPreviousCompTime(), null, 'previous com time credit is 35');
+        $this->assertEquals($holiday->getActualCompTime(), null, 'New com time credit is unchanged');
 
         $entityManager->refresh($jdevoe);
-        $this->assertEquals($jdevoe->conges_credit(), 175, 'credit has not been updated yet');
-        $this->assertEquals($jdevoe->conges_reliquat(), 0, "reliquat didn't change");
-        $this->assertEquals($jdevoe->conges_anticipation(), 0, "anticipation didn't change");
-        $this->assertEquals($jdevoe->comp_time(), 35, "comp time didn't change");
+        $this->assertEquals($jdevoe->getHolidayCredit(), 175, 'credit has not been updated yet');
+        $this->assertEquals($jdevoe->getHolidayRemainder(), 0, "reliquat didn't change");
+        $this->assertEquals($jdevoe->getHolidayAnticipation(), 0, "anticipation didn't change");
+        $this->assertEquals($jdevoe->getHolidayCompTime(), 35, "comp time didn't change");
     }
 
-    public function testHolidayOneAgentAllDay()
+    public function testHolidayOneAgentAllDay(): void
     {
         $entityManager = $this->entityManager;
 
@@ -90,37 +90,37 @@ class HolidayControllerHoursTest extends PLBWebTestCase
         );
         $this->addWorkingHours($jdevoe, array('09:00:00', '12:30:00', '13:30:00', '17:00:00'));
 
-        $data = $this->getHolidayData(array('perso_id' => $jdevoe->id()));
+        $data = $this->getHolidayData(array('perso_id' => $jdevoe->getId()));
 
         $this->client->request('POST', '/holiday', $data);
 
         $holiday = $entityManager->getRepository(Holiday::class)->findOneBy(
-            array('perso_id' => $jdevoe->id())
+            array('perso_id' => $jdevoe->getId())
         );
 
-        $start = $holiday->debut()->format('Y-m-d H:i:s');
-        $end = $holiday->fin()->format('Y-m-d H:i:s');
+        $start = $holiday->getStart()->format('Y-m-d H:i:s');
+        $end = $holiday->getEnd()->format('Y-m-d H:i:s');
 
         $this->assertEquals($start, '2022-01-24 00:00:00', 'Holiday starts at 00:00:00');
         $this->assertEquals($end, '2022-01-24 23:59:59', 'Holiday ends at 23:59:59');
-        $this->assertEquals($holiday->halfday(), 0, 'Holiday is not on halfday');
-        $this->assertEquals($holiday->start_halfday(), '', 'start_halfday is empty');
-        $this->assertEquals($holiday->end_halfday(), '', 'end_halfday is empty');
-        $this->assertEquals($holiday->debit(), 'credit', 'end_halfday is empty');
-        $this->assertEquals($holiday->heures(), 7.00, 'end_halfday is empty');
-        $this->assertEquals($holiday->solde_prec(), 175, 'Previous holiday credit is 175');
-        $this->assertEquals($holiday->solde_actuel(), 168, 'New holiday credit is 168');
-        $this->assertEquals($holiday->recup_prec(), 35, 'previous com time credit is 35');
-        $this->assertEquals($holiday->recup_actuel(), 35, 'New com time credit is unchanged');
+        $this->assertEquals($holiday->getHalfDay(), 0, 'Holiday is not on halfday');
+        $this->assertEquals($holiday->getHalfDayStart(), '', 'start_halfday is empty');
+        $this->assertEquals($holiday->getHalfDayEnd(), '', 'end_halfday is empty');
+        $this->assertEquals($holiday->getDebit(), 'credit', 'end_halfday is empty');
+        $this->assertEquals($holiday->getHours(), 7.00, 'end_halfday is empty');
+        $this->assertEquals($holiday->getPreviousCredit(), 175, 'Previous holiday credit is 175');
+        $this->assertEquals($holiday->getActualCredit(), 168, 'New holiday credit is 168');
+        $this->assertEquals($holiday->getPreviousCompTime(), 35, 'previous com time credit is 35');
+        $this->assertEquals($holiday->getActualCompTime(), 35, 'New com time credit is unchanged');
 
         $entityManager->refresh($jdevoe);
-        $this->assertEquals($jdevoe->conges_credit(), 168, 'credit has been updated');
-        $this->assertEquals($jdevoe->conges_reliquat(), 0, "reliquat didn't change");
-        $this->assertEquals($jdevoe->conges_anticipation(), 0, "anticipation didn't change");
-        $this->assertEquals($jdevoe->comp_time(), 35, "comp time didn't change");
+        $this->assertEquals($jdevoe->getHolidayCredit(), 168, 'credit has been updated');
+        $this->assertEquals($jdevoe->getHolidayRemainder(), 0, "reliquat didn't change");
+        $this->assertEquals($jdevoe->getHolidayAnticipation(), 0, "anticipation didn't change");
+        $this->assertEquals($jdevoe->getHolidayCompTime(), 35, "comp time didn't change");
     }
 
-    public function testHolidayOneAgentOneHour()
+    public function testHolidayOneAgentOneHour(): void
     {
         $entityManager = $this->entityManager;
 
@@ -136,7 +136,7 @@ class HolidayControllerHoursTest extends PLBWebTestCase
         $this->addWorkingHours($jdevoe, array('09:00:00', '12:30:00', '13:30:00', '17:00:00'));
 
         $data = $this->getHolidayData(array(
-            'perso_id' => $jdevoe->id(),
+            'perso_id' => $jdevoe->getId(),
             'hre_debut' => '09:00:00',
             'hre_fin' => '10:00:00',
             'allday' => '',
@@ -145,33 +145,33 @@ class HolidayControllerHoursTest extends PLBWebTestCase
         $this->client->request('POST', '/holiday', $data);
 
         $holiday = $entityManager->getRepository(Holiday::class)->findOneBy(
-            array('perso_id' => $jdevoe->id())
+            array('perso_id' => $jdevoe->getId())
         );
 
-        $start = $holiday->debut()->format('Y-m-d H:i:s');
-        $end = $holiday->fin()->format('Y-m-d H:i:s');
+        $start = $holiday->getStart()->format('Y-m-d H:i:s');
+        $end = $holiday->getEnd()->format('Y-m-d H:i:s');
 
         $this->assertEquals($start, '2022-01-24 09:00:00', 'Holiday starts at 09:00:00');
         $this->assertEquals($end, '2022-01-24 10:00:00', 'Holiday ends at 10:00:00');
-        $this->assertEquals($holiday->halfday(), 0, 'Holiday is not on halfday');
-        $this->assertEquals($holiday->start_halfday(), '', 'start_halfday is empty');
-        $this->assertEquals($holiday->end_halfday(), '', 'end_halfday is empty');
-        $this->assertEquals($holiday->debit(), 'credit', 'end_halfday is empty');
-        $this->assertEquals($holiday->heures(), 1.00, 'end_halfday is empty');
-        $this->assertEquals($holiday->solde_prec(), 175, 'Previous holiday credit is 175');
-        $this->assertEquals($holiday->solde_actuel(), 174, 'New holiday credit is 174');
-        $this->assertEquals($holiday->recup_prec(), 35, 'previous com time credit is 35');
-        $this->assertEquals($holiday->recup_actuel(), 35, 'New com time credit is unchanged');
+        $this->assertEquals($holiday->getHalfDay(), 0, 'Holiday is not on halfday');
+        $this->assertEquals($holiday->getHalfDayStart(), '', 'start_halfday is empty');
+        $this->assertEquals($holiday->getHalfDayEnd(), '', 'end_halfday is empty');
+        $this->assertEquals($holiday->getDebit(), 'credit', 'end_halfday is empty');
+        $this->assertEquals($holiday->getHours(), 1.00, 'end_halfday is empty');
+        $this->assertEquals($holiday->getPreviousCredit(), 175, 'Previous holiday credit is 175');
+        $this->assertEquals($holiday->getActualCredit(), 174, 'New holiday credit is 174');
+        $this->assertEquals($holiday->getPreviousCompTime(), 35, 'previous com time credit is 35');
+        $this->assertEquals($holiday->getActualCompTime(), 35, 'New com time credit is unchanged');
 
         $entityManager->refresh($jdevoe);
-        $this->assertEquals($jdevoe->conges_credit(), 174, 'credit has been updated');
-        $this->assertEquals($jdevoe->conges_reliquat(), 0, "reliquat didn't change");
-        $this->assertEquals($jdevoe->conges_anticipation(), 0, "anticipation didn't change");
-        $this->assertEquals($jdevoe->comp_time(), 35, "comp time didn't change");
+        $this->assertEquals($jdevoe->getHolidayCredit(), 174, 'credit has been updated');
+        $this->assertEquals($jdevoe->getHolidayRemainder(), 0, "reliquat didn't change");
+        $this->assertEquals($jdevoe->getHolidayAnticipation(), 0, "anticipation didn't change");
+        $this->assertEquals($jdevoe->getHolidayCompTime(), 35, "comp time didn't change");
 
     }
 
-    public function testHolidayOneAgentOneDayOnCompTime()
+    public function testHolidayOneAgentOneDayOnCompTime(): void
     {
         $entityManager = $this->entityManager;
 
@@ -187,47 +187,50 @@ class HolidayControllerHoursTest extends PLBWebTestCase
         $this->addWorkingHours($jdevoe, array('09:00:00', '12:30:00', '13:30:00', '17:00:00'));
 
         $data = $this->getHolidayData(array(
-            'perso_id' => $jdevoe->id(),
+            'perso_id' => $jdevoe->getId(),
             'debit' => 'recuperation',
         ));
 
         $this->client->request('POST', '/holiday', $data);
 
         $holiday = $entityManager->getRepository(Holiday::class)->findOneBy(
-            array('perso_id' => $jdevoe->id())
+            array('perso_id' => $jdevoe->getId())
         );
 
-        $start = $holiday->debut()->format('Y-m-d H:i:s');
-        $end = $holiday->fin()->format('Y-m-d H:i:s');
+        $start = $holiday->getStart()->format('Y-m-d H:i:s');
+        $end = $holiday->getEnd()->format('Y-m-d H:i:s');
 
         $this->assertEquals($start, '2022-01-24 00:00:00', 'Holiday starts at 00:00:00');
         $this->assertEquals($end, '2022-01-24 23:59:59', 'Holiday ends at 23:59:59');
-        $this->assertEquals($holiday->halfday(), 0, 'Holiday is not on halfday');
-        $this->assertEquals($holiday->start_halfday(), '', 'start_halfday is empty');
-        $this->assertEquals($holiday->end_halfday(), '', 'end_halfday is empty');
-        $this->assertEquals($holiday->debit(), 'recuperation', 'Debit on comp-time account');
-        $this->assertEquals($holiday->heures(), 7.00, 'end_halfday is empty');
-        $this->assertEquals($holiday->solde_prec(), 175, 'Previous holiday credit is 175');
-        $this->assertEquals($holiday->solde_actuel(), 175, 'New holiday credit is 174');
-        $this->assertEquals($holiday->recup_prec(), 35, 'previous com time credit is 35');
-        $this->assertEquals($holiday->recup_actuel(), 28, 'New com time credit updated');
+        $this->assertEquals($holiday->getHalfDay(), 0, 'Holiday is not on halfday');
+        $this->assertEquals($holiday->getHalfDayStart(), '', 'start_halfday is empty');
+        $this->assertEquals($holiday->getHalfDayEnd(), '', 'end_halfday is empty');
+        $this->assertEquals($holiday->getDebit(), 'recuperation', 'Debit on comp-time account');
+        $this->assertEquals($holiday->getHours(), 7.00, 'end_halfday is empty');
+        $this->assertEquals($holiday->getPreviousCredit(), 175, 'Previous holiday credit is 175');
+        $this->assertEquals($holiday->getActualCredit(), 175, 'New holiday credit is 174');
+        $this->assertEquals($holiday->getPreviousCompTime(), 35, 'previous com time credit is 35');
+        $this->assertEquals($holiday->getActualCompTime(), 28, 'New com time credit updated');
 
         $entityManager->refresh($jdevoe);
-        $this->assertEquals($jdevoe->conges_credit(), 175, "credit didn't change");
-        $this->assertEquals($jdevoe->conges_reliquat(), 0, "reliquat didn't change");
-        $this->assertEquals($jdevoe->conges_anticipation(), 0, "anticipation didn't change");
-        $this->assertEquals($jdevoe->comp_time(), 28, "comp time was updated");
+        $this->assertEquals($jdevoe->getHolidayCredit(), 175, "credit didn't change");
+        $this->assertEquals($jdevoe->getHolidayRemainder(), 0, "reliquat didn't change");
+        $this->assertEquals($jdevoe->getHolidayAnticipation(), 0, "anticipation didn't change");
+        $this->assertEquals($jdevoe->getHolidayCompTime(), 28, "comp time was updated");
 
     }
 
-    private function deleteWorkingHours()
+    private function deleteWorkingHours(): void
     {
         $db = new \db();
         $db->CSRFToken = '00000';
         $db->delete('planning_hebdo');
     }
 
-    private function getHolidayData($replace = array())
+    /**
+     * @return mixed[]
+     */
+    private function getHolidayData($replace = array()): array
     {
         $data = array(
             'CSRFToken' => '00000',
@@ -256,7 +259,7 @@ class HolidayControllerHoursTest extends PLBWebTestCase
         return $data;
     }
 
-    private function addWorkingHours($agent, $times)
+    private function addWorkingHours($agent, $times): void
     {
         $workinghours = array(
             0 => array('0' => $times[0], '1' => $times[1], '2' => $times[2], '3' => $times[3]),
@@ -272,7 +275,7 @@ class HolidayControllerHoursTest extends PLBWebTestCase
         $id = $db->insert(
             'planning_hebdo',
             array(
-                'perso_id' => $agent->id(),
+                'perso_id' => $agent->getId(),
                 'debut' => '2021-01-01',
                 'fin' => '2090-12-31',
                 'temps' => json_encode($workinghours),

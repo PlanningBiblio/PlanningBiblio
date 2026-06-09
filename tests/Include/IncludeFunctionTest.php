@@ -2,11 +2,11 @@
 
 use PHPUnit\Framework\TestCase;
 
-require_once(__DIR__ . '/../../public/include/function.php');
+require_once(__DIR__ . '/../../legacy/Common/function.php');
 
 class IncludeFunctionTest extends TestCase
 {
-    public function testHeure4()
+    public function testHeure4(): void
     {
         // Numeric to string
         $heure = heure4('0');

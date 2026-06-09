@@ -1,7 +1,7 @@
 <?php
 
-use App\Model\Agent;
-use App\Model\Position;
+use App\Entity\Agent;
+use App\Entity\Position;
 
 use Symfony\Component\DomCrawler\Crawler;
 
@@ -12,7 +12,7 @@ use Tests\FixtureBuilder;
 
 class PositionControllerTest extends PLBWebTestCase
 {
-    public function testAdd()
+    public function testAdd(): void
     {
         $entityManager = $this->entityManager;
 
@@ -21,25 +21,25 @@ class PositionControllerTest extends PLBWebTestCase
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
         $builder->delete(Position::class);
 
-
         $this->logInAgent($agent, array(5));
 
-        $token = $this->client->getContainer()->get('security.csrf.token_manager')->getToken('csrf');
+        $crawler = $this->client->request('GET', '/position/add');
+        $extract_result = $crawler->filter('input[name="_token"]')->extract(array('value'));
+        $token = $extract_result[0];
 
-        $this->client->request('POST', '/position', array('nom' => 'bureau', 'activites' => [], 'categories' => [], 'site' => 1, 'bloquant' => 1, 'statistiques' => 0, 'teleworking' => 1, 'etage' => '', 'groupe' => 'admin', 'groupe_id' => '', 'obligatoire' => 'Obligatoire', 'site' => '', '_token' => $token));
-
+        $this->client->request('POST', '/position', array('nom' => 'bureau', 'activites' => [], 'categories' => [], 'bloquant' => 1, 'statistiques' => 0, 'teleworking' => 1, 'etage' => '', 'groupe' => 'admin', 'groupe_id' => '', 'obligatoire' => 'Obligatoire', 'site' => '', '_token' => $token));
 
         $position = $entityManager->getRepository(Position::class)->findOneBy(array('nom' => 'bureau'));
 
-        $this->assertEquals($position->nom(), 'bureau', 'post name is bureau');
-        $this->assertEquals($position->bloquant(), 1, 'post bloquant is 1');
-        $this->assertEquals($position->statistiques(), 0, 'post statistique is 0');
-        $this->assertEquals($position->teleworking(), 1, 'post teleworking is 1');
-        $this->assertEquals($position->obligatoire(), 'Obligatoire', 'post obligatoire is Obligatoire');
-        $this->assertEquals($position->groupe(), 'admin', 'post group is admin');
+        $this->assertEquals($position->getName(), 'bureau', 'post name is bureau');
+        $this->assertEquals($position->isBlocking(), 1, 'post bloquant is 1');
+        $this->assertEquals($position->isStatistics(), false, 'post statistique is false');
+        $this->assertEquals($position->isTeleworking(), true, 'post teleworking is true');
+        $this->assertEquals($position->getMandatory(), 'Obligatoire', 'post obligatoire is Obligatoire');
+        $this->assertEquals($position->getGroup(), 'admin', 'post group is admin');
     }
 
-    public function testNewForm()
+    public function testNewForm(): void
     {
         $entityManager = $this->entityManager;
 
@@ -52,7 +52,7 @@ class PositionControllerTest extends PLBWebTestCase
 
         $crawler = $this->client->request('GET', '/position/add');
 
-        $this->assertSelectorTextContains('h3', 'Modification du poste');
+        $this->assertSelectorTextContains('h3', 'Ajout d\'un poste');
 
         $result = $crawler->filterXPath('//input[@class="ui-widget-content ui-corner-all"]');
         $this->assertEquals($result->attr('name'),'nom','input for post name value is nom');
@@ -67,10 +67,11 @@ class PositionControllerTest extends PLBWebTestCase
         $this->assertStringContainsString('Groupe:', $result->text('Node does not exist', false), 'label is Groupe');
         $this->assertStringContainsString('Obligatoire / renfort :',$result->text('Node does not exist', false), 'label is Obligatoire / renfort : ');
         $this->assertStringContainsString('Bloquant :',$result->text('Node does not exist', false), 'label is Bloquant : ');
+        $this->assertStringContainsString('Quota de SP :',$result->text('Node does not exist', false), 'label is Quota de SP : ');
         $this->assertStringContainsString('Statistiques :',$result->text('Node does not exist', false), 'label is Statistiques: ');
         $this->assertStringContainsString('Compatible télétravail :',$result->text('Node does not exist', false), 'label is Compatible télétravail');
 
-        $this->assertStringContainsString('Activités :',$result->eq(1)->text('Node does not exist', false), 'Activités :','label is Nom du post');
+        $this->assertStringContainsString('Activités :',$result->eq(1)->text('Node does not exist', false), 'Activités :');
         $this->assertStringContainsString(' Assistance audiovisuel', $result->eq(1)->text('Node does not exist', false), 'checkBox is Assistance audiovisuel');
         $this->assertStringContainsString(' Assistance autoformation', $result->eq(1)->text('Node does not exist', false), 'checkBox is Assistance autoformation');
         $this->assertStringContainsString(' Communication', $result->eq(1)->text('Node does not exist', false), 'checkBox is Communication');
@@ -88,8 +89,11 @@ class PositionControllerTest extends PLBWebTestCase
         $this->assertStringContainsString(' Catégorie B', $result->eq(1)->text('Node does not exist', false), 'checkBox is Catégorie B');
         $this->assertStringContainsString(' Catégorie C', $result->eq(1)->text('Node does not exist', false), 'checkBox is Catégorie C');
 
-        $result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-add"]');
-        $this->assertEquals($result->attr('title'),'Ajouter','span is Ajouter');
+        $result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-add ps-3"]');
+        $this->assertEquals($result->eq(0)->attr('title'), 'Ajouter un étage', 'title is Ajouter un étage');
+
+        $result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-add ps-3"]');
+        $this->assertEquals($result->eq(1)->attr('title'), 'Ajouter un groupe', 'title is Ajouter un groupe');
 
         $result = $crawler->filterXPath('//input[@name="obligatoire"]');
         $this->assertEquals($result->attr('value'),'Obligatoire','input submit value is Obligatoire');
@@ -107,17 +111,17 @@ class PositionControllerTest extends PLBWebTestCase
         $this->assertEquals($result->attr('value'),'1','input teleworking value is 1');
         $this->assertEquals($result->eq(1)->attr('value'),'0','input teleworking value is 0');
 
-        $result = $crawler->filterXPath('//input[@class="ui-button"]');
+        $result = $crawler->filterXPath('//input[@class="btn btn-primary"]');
         $this->assertEquals($result->attr('value'),'Valider','input submit value is Valider');
 
-        $result = $crawler->filterXPath('//a[@class="ui-button ui-button-type2"]');
+        $result = $crawler->filterXPath('//a[@class="btn btn-secondary"]');
         $this->assertEquals($result->text('Node does not exist', false), 'Annuler','input submit value is Annuler');
 
         $result = $crawler->filterXPath('//td[@class="noteBasDePage"]');
         $this->assertStringContainsString('* Si aucune catégorie n\'est sélectionnée, les agents de toutes les catégories pourront être placés sur ce poste', $result->text('Node does not exist', false), 'noteBasDePage is ok');
     }
 
-    public function testFormEdit()
+    public function testFormEdit(): void
     {
         $entityManager = $this->entityManager;
 
@@ -130,21 +134,21 @@ class PositionControllerTest extends PLBWebTestCase
         $this->logInAgent($agent, array(5));
 
         $position = new Position();
-        $position->nom('bureau');
-        $position->groupe('administratif');
-        $position->groupe_id('26');
-        $position->obligatoire('bureau');
-        $position->etage('Mezzanine');
-        $position->activites(['communication','inscription']);
-        $position->statistiques(0);
-        $position->teleworking(1);
-        $position->bloquant(0);
-        $position->categories([]);
+        $position->setName('bureau');
+        $position->setGroup('administratif');
+        $position->setGroupId('26');
+        $position->setMandatory('Renfort');
+        $position->setFloor('Mezzanine');
+        $position->setActivities(['communication','inscription']);
+        $position->setStatistics(0);
+        $position->setTeleworking(true);
+        $position->setBlocking(0);
+        $position->setCategories([]);
 
         $entityManager->persist($position);
         $entityManager->flush();
 
-        $id = $position->id();
+        $id = $position->getId();
 
         $crawler = $this->client->request('GET', "/position/$id");
 
@@ -166,10 +170,11 @@ class PositionControllerTest extends PLBWebTestCase
         $this->assertStringContainsString('Groupe:', $result->text('Node does not exist', false), 'label is Groupe');
         $this->assertStringContainsString('Obligatoire / renfort :',$result->text('Node does not exist', false), 'label is Obligatoire / renfort : ');
         $this->assertStringContainsString('Bloquant :',$result->text('Node does not exist', false), 'label is Bloquant : ');
+        $this->assertStringContainsString('Quota de SP :',$result->text('Node does not exist', false), 'label is Quota de SP : ');
         $this->assertStringContainsString('Statistiques :',$result->text('Node does not exist', false), 'label is Statistiques: ');
         $this->assertStringContainsString('Compatible télétravail :',$result->text('Node does not exist', false), 'label is Compatible télétravail');
 
-        $this->assertStringContainsString('Activités :',$result->eq(1)->text('Node does not exist', false), 'Activités :','label is Nom du post');
+        $this->assertStringContainsString('Activités :',$result->eq(1)->text('Node does not exist', false), 'Activités :');
         $this->assertStringContainsString(' Assistance audiovisuel', $result->eq(1)->text('Node does not exist', false), 'checkBox is Assistance audiovisuel');
         $this->assertStringContainsString(' Assistance autoformation', $result->eq(1)->text('Node does not exist', false), 'checkBox is Assistance autoformation');
         $this->assertStringContainsString(' Communication', $result->eq(1)->text('Node does not exist', false), 'checkBox is Communication');
@@ -187,40 +192,43 @@ class PositionControllerTest extends PLBWebTestCase
         $this->assertStringContainsString(' Catégorie B', $result->eq(1)->text('Node does not exist', false), 'checkBox is Catégorie B');
         $this->assertStringContainsString(' Catégorie C', $result->eq(1)->text('Node does not exist', false), 'checkBox is Catégorie C');
 
-        $result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-add"]');
-        $this->assertEquals($result->attr('title'),'Ajouter','span edit icon is Ajouter');
+        $result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-add ps-3"]');
+        $this->assertEquals($result->eq(0)->attr('title'), 'Ajouter un étage', 'title is Ajouter un étage');
 
+        $result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-add ps-3"]');
+        $this->assertEquals($result->eq(1)->attr('title'), 'Ajouter un groupe', 'title is Ajouter un groupe');
 
         $result = $crawler->filterXPath('//input[@name="obligatoire"]');
         $this->assertEquals($result->attr('value'),'Obligatoire','input obligatoire value is Obligatoire');
         $this->assertEquals($result->eq(1)->attr('value'),'Renfort','input obligatoire value is Obligatoire Renfort');
 
-
         $result = $crawler->filterXPath('//input[@name="bloquant"]');
         $this->assertEquals($result->attr('value'),'1','input bloquant value is 1');
         $this->assertEquals($result->eq(1)->attr('value'),'0','input bloquant value is 0');
-
 
         $result = $crawler->filterXPath('//input[@name="statistiques"]');
         $this->assertEquals($result->attr('value'),'1','input statistiques value is 1');
         $this->assertEquals($result->eq(1)->attr('value'),'0','input statistiques value is 0');
 
+        $result = $crawler->filterXPath('//input[@name="quota_sp"]');
+        $this->assertEquals($result->attr('value'),'1','input quota_sp value is 1');
+        $this->assertEquals($result->eq(1)->attr('value'),'0','input quota_sp value is 0');
 
         $result = $crawler->filterXPath('//input[@name="teleworking"]');
         $this->assertEquals($result->attr('value'),'1','input teleworking value is 1');
         $this->assertEquals($result->eq(1)->attr('value'),'0','input teleworking value is 0');
 
-        $result = $crawler->filterXPath('//input[@class="ui-button"]');
+        $result = $crawler->filterXPath('//input[@class="btn btn-primary"]');
         $this->assertEquals($result->attr('value'),'Valider','input submit value is Valider');
 
-        $result = $crawler->filterXPath('//a[@class="ui-button ui-button-type2"]');
+        $result = $crawler->filterXPath('//a[@class="btn btn-secondary"]');
         $this->assertEquals($result->text('Node does not exist', false), 'Annuler','input submit value is Annuler');
 
         $result = $crawler->filterXPath('//td[@class="noteBasDePage"]');
         $this->assertStringContainsString('* Si aucune catégorie n\'est sélectionnée, les agents de toutes les catégories pourront être placés sur ce poste', $result->text('Node does not exist', false), 'noteBasDePage is ok');
     }
 
-    public function testPositionList()
+    public function testPositionList(): void
     {
         $entityManager = $this->entityManager;
 
@@ -229,20 +237,19 @@ class PositionControllerTest extends PLBWebTestCase
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
         $builder->delete(Position::class);
 
-
         $this->logInAgent($agent, array(5));
 
         $position = new Position();
-        $position->nom('bureau');
-        $position->groupe('administratif');
-        $position->groupe_id('26');
-        $position->obligatoire('obligatoire');
-        $position->etage('Mezzanine');
-        $position->activites(['communication','inscription']);
-        $position->statistiques(1);
-        $position->teleworking(1);
-        $position->bloquant(0);
-        $position->categories([]);
+        $position->setName('bureau');
+        $position->setGroup('administratif');
+        $position->setGroupId('26');
+        $position->setMandatory('Renfort');
+        $position->setFloor('Mezzanine');
+        $position->setActivities(['communication','inscription']);
+        $position->setStatistics(1);
+        $position->setTeleworking(true);
+        $position->setBlocking(0);
+        $position->setCategories([]);
 
         $entityManager->persist($position);
         $entityManager->flush();

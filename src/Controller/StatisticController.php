@@ -7,44 +7,40 @@ use App\Controller\BaseController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
-
-use App\Model\AbsenceReason;
-use App\Model\Holiday;
-use App\Model\PlanningPosition;
-use App\Model\Position;
-use App\Model\SelectFloor;
-use App\Model\SelectGroup;
-use App\PlanningBiblio\PresentSet;
+use Symfony\Component\HttpFoundation\Response;
+use App\Entity\AbsenceReason;
+use App\Entity\Holiday;
+use App\Entity\PlanningPosition;
+use App\Entity\Position;
+use App\Entity\SelectFloor;
+use App\Entity\SelectGroup;
+use App\Planno\PresentSet;
 
 $version = 'symfony';
 
-include_once __DIR__ . "/../../public/conges/class.conges.php";
-include_once __DIR__ . "/../../public/include/function.php";
-require_once __DIR__ . "/../../public/include/db.php";
-require_once __DIR__ . "/../../public/include/horaires.php";
-include_once __DIR__ . '/../../public/statistiques/class.statistiques.php';
-include_once __DIR__ . '/../../public/absences/class.absences.php';
-include_once __DIR__ . '/../../public/planningHebdo/class.planningHebdo.php';
-include_once __DIR__ . '/../../public/postes/class.postes.php';
-include_once __DIR__ . '/../../public/personnel/class.personnel.php';
+include_once __DIR__ . '/../../legacy/Class/class.conges.php';
+include_once __DIR__ . '/../../legacy/Common/function.php';
+require_once __DIR__ . '/../../legacy/Common/db.php';
+require_once __DIR__ . '/../../legacy/Common/horaires.php';
+include_once __DIR__ . '/../../legacy/Class/class.statistiques.php';
+include_once __DIR__ . '/../../legacy/Class/class.absences.php';
+include_once __DIR__ . '/../../legacy/Class/class.planningHebdo.php';
+include_once __DIR__ . '/../../legacy/Class/class.postes.php';
+include_once __DIR__ . '/../../legacy/Class/class.personnel.php';
 
 class StatisticController extends BaseController
 {
 
-    /**
-     * @Route("/statistics", name="statistics.index", methods={"GET"})
-     */
+    #[Route(path: '/statistics', name: 'statistics.index', methods: ['GET'])]
     public function index(Request $request, Session $session)
     {
         return $this->output('statistics/index.html.twig');
     }
 
 
-    /**
-     * @Route("/statistics/agent", name="statistics.agent", methods={"GET", "POST"})
-     * @Route("/statistics/service", name="statistics.service", methods={"GET", "POST"})
-     * @Route("/statistics/status", name="statistics.status", methods={"GET", "POST"})
-     */
+    #[Route(path: '/statistics/agent', name: 'statistics.agent', methods: ['GET', 'POST'])]
+    #[Route(path: '/statistics/service', name: 'statistics.service', methods: ['GET', 'POST'])]
+    #[Route(path: '/statistics/status', name: 'statistics.status', methods: ['GET', 'POST'])]
     public function common(Request $request, Session $session)
     {
         // Initialization of variables
@@ -63,7 +59,6 @@ class StatisticController extends BaseController
         $tab = array();
 
         $dbprefix = $GLOBALS['dbprefix'];
-        $joursParSemaine = $this->config('Dimanche') ? 7 : 6;
         $nbSites = $this->config('Multisites-nombre');
 
         if ($nbSites > 1) {
@@ -78,12 +73,12 @@ class StatisticController extends BaseController
         $debut = filter_var($debut, FILTER_CALLBACK, array('options' => 'sanitize_dateFr'));
         $fin = filter_var($fin, FILTER_CALLBACK, array('options' => 'sanitize_dateFr'));
 
-        if (!$debut and array_key_exists('stat_debut', $_SESSION)) {
-            $debut = $_SESSION['stat_debut'];
+        if (!$debut) {
+            $debut = $session->get('statisticsStart');
         }
 
-        if (!$fin and array_key_exists('stat_fin', $_SESSION)) {
-            $fin = $_SESSION['stat_fin'];
+        if (!$fin) {
+            $fin = $session->get('statisticsEnd');
         }
 
         if (!$debut) {
@@ -94,8 +89,8 @@ class StatisticController extends BaseController
             $fin = date('d/m/Y');
         }
 
-        $_SESSION['stat_debut'] = $debut;
-        $_SESSION['stat_fin'] = $fin;
+        $session->set('statisticsStart', $debut);
+        $session->set('statisticsEnd', $fin);
 
         $debutSQL = dateFr($debut);
         $finSQL = dateFr($fin);
@@ -144,17 +139,13 @@ class StatisticController extends BaseController
         $_SESSION["stat_{$type}_sites"] = $selectedSites;
 
         // Filter sites for SQL queries
-        if ($nbSites > 1 and is_array($selectedSites)) {
-            $sitesSQL = '0,' . implode(',', $selectedSites);
-        } else {
-            $sitesSQL = '0,1';
-        }
+        $sitesSQL = ($nbSites > 1 and is_array($selectedSites)) ? '0,' . implode(',', $selectedSites) : '0,1';
 
         // Teleworking
         $teleworking_absence_reasons = array();
         $absences_reasons = $this->entityManager->getRepository(AbsenceReason::class)->findBy(array('teleworking' => 1));
         foreach ($absences_reasons as $elem) {
-            $teleworking_absence_reasons[] = $elem->valeur();
+            $teleworking_absence_reasons[] = $elem->getValue();
         }
 
         // Agents available
@@ -210,11 +201,6 @@ class StatisticController extends BaseController
                 $holidays = $this->entityManager->getRepository(Holiday::class)->get("$debutSQL 00:00:00", "$finSQL 23:59:59");
             }
 
-            //	Number of days concerned
-            $db = new \db();
-            $db->select2("pl_poste", "date", array("date"=>"BETWEEN{$debutSQL}AND{$finSQL}", "site"=>"IN{$sitesSQL}"), "GROUP BY `date`;");
-            $nbJours = $db->nb;
-
             //  Get information from planning (tables pl_poste and postes)
             //  The result is store in $resultat
             $db = new \db();
@@ -266,7 +252,7 @@ class StatisticController extends BaseController
             $floors = array();
             $floorsRepository = $this->entityManager->getRepository(SelectFloor::class)->findAll();
             foreach ($floorsRepository as $f) {
-                $floors[$f->id()] = $f->valeur();
+                $floors[$f->getId()] = $f->getValue();
             }
 
             // Get information from $resultat for each agent
@@ -286,7 +272,7 @@ class StatisticController extends BaseController
                 // If $tab does not contains information for the current agent, we create an entry with default values.
                 // These entry is now created even if the agent is not found on schedules.
                 } else {
-
+                    $agent_tab = null;
                     if ($type == 'agent') {
                         // Create an array with agent information
                         foreach ($agents_list as $elem) {
@@ -344,6 +330,12 @@ class StatisticController extends BaseController
                             // Look for absences (from the absence table). Set $elem['absent'] to 1 if an absence is found.
                             if ( !empty($absencesDB[$elem['perso_id']]) ) {
                                 foreach ($absencesDB[$elem['perso_id']] as $a) {
+
+                                    if (($this->config('Absences-Exclusion') == 1 and $a['valide'] == 99999)
+                                        or $this->config('Absences-Exclusion') == 2)
+                                    {
+                                        continue;
+                                    }
 
                                     // Ignore teleworking absences for compatible positions
                                     if (in_array($a['motif'], $teleworking_absence_reasons) and $elem['teleworking']) {
@@ -482,28 +474,25 @@ class StatisticController extends BaseController
                 }
     
                 // passage en session du tableau pour le fichier export.php
-                $_SESSION['stat_tab'] = array_merge($tab, array('neverSelected' => $neverSelected));
+                $session->set('statisticsTab', array_merge($tab, array('neverSelected' => $neverSelected)));
     
             } else {
                 // passage en session du tableau pour le fichier export.php
-                $_SESSION['stat_tab'] = $tab;
+                $session->set('statisticsTab', $tab);
             }
     
             foreach ($tab as $key => $value) {
                 // Calcul des moyennes
-                $jour = ($nbJours > 0) ? $value[2] / $nbJours : 0;
-                $hebdo = $jour * $joursParSemaine;
+                $hebdo = \statistiques::average($value[2], $debut, $fin);
     
                 $tab[$key][2] = heure4($value[2]);
-                $tab[$key]['jour'] = $jour;
                 $tab[$key]['hebdo'] = heure4($hebdo);
     
                 if ($nbSites > 1) {
                     for ($i = 1; $i <= $nbSites; $i++) {
                         if ($value["sites"][$i]) {
                             // Calcul des moyennes
-                            $jour = ($nbJours > 0) ? floatval($value['sites'][$i]) / $nbJours : 0;
-                            $hebdo = $jour * $joursParSemaine;
+                            $hebdo = \statistiques::average($value['sites'][$i], $debut, $fin);
                         }
                         $tab[$key]["sites"][$i] = heure4($value["sites"][$i]);
                         $tab[$key]["site_hebdo"][$i] = heure4($hebdo);
@@ -584,12 +573,6 @@ class StatisticController extends BaseController
                         }
                     }
                 }
-    
-                for ($i = 1; $i <= $nbSites; $i++) {
-                    if ($tab[$key]['sites'][$i]) {
-                        $tab[$key]['sites'][$i] = heure4($tab[$key]['sites'][$i]);
-                    }
-                }
             }
         }
 
@@ -597,7 +580,6 @@ class StatisticController extends BaseController
         $s = new \statistiques();
         $s->debut = $debutSQL;
         $s->fin = $finSQL;
-        $s->joursParSemaine = $joursParSemaine;
         $s->selectedSites = $selectedSites;
         $s->ouverture();
         $ouverture = $s->ouvertureTexte;
@@ -636,9 +618,7 @@ class StatisticController extends BaseController
     }
 
 
-    /**
-     * @Route("/statistics/saturday", name="statistics.saturday", methods={"GET", "POST"})
-     */
+    #[Route(path: '/statistics/saturday', name: 'statistics.saturday', methods: ['GET', 'POST'])]
     public function saturday (Request $request, Session $session)
     {
         // Initialisation des variables :
@@ -664,11 +644,12 @@ class StatisticController extends BaseController
         $statisticsHours = self::getHours($request);
 
         //		--------------		Initialisation  des variables 'debut','fin' et 'agents'		-------------------
-        if (!$debut and array_key_exists('stat_debut', $_SESSION)) {
-            $debut = $_SESSION['stat_debut'];
+        if (!$debut) {
+            $debut = $session->get('statisticsStart');
         }
-        if (!$fin and array_key_exists('stat_fin', $_SESSION)) {
-            $fin = $_SESSION['stat_fin'];
+
+        if (!$fin) {
+            $fin = $session->get('statisticsEnd');
         }
 
         if (!$debut) {
@@ -678,8 +659,8 @@ class StatisticController extends BaseController
             $fin = date("d/m/Y");
         }
 
-        $_SESSION['stat_debut'] = $debut;
-        $_SESSION['stat_fin'] = $fin;
+        $session->set('statisticsStart', $debut);
+        $session->set('statisticsEnd', $fin);
 
         $debutSQL = dateFr($debut);
         $finSQL = dateFr($fin);
@@ -732,11 +713,7 @@ class StatisticController extends BaseController
         $_SESSION['stat_samedis_sites'] = $selectedSites;
 
         // Filtre les sites dans les requêtes SQL
-        if ($nbSites>1) {
-            $sitesSQL = "0,".implode(",", $selectedSites);
-        } else {
-            $sitesSQL = "0,1";
-        }
+        $sitesSQL = $nbSites > 1 ? "0,".implode(",", $selectedSites) : "0,1";
 
         //		--------------		Récupération de la liste des agents pour le menu déroulant		------------------------
         $db=new \db();
@@ -747,7 +724,7 @@ class StatisticController extends BaseController
         $teleworking_absence_reasons = array();
         $absences_reasons = $this->entityManager->getRepository(AbsenceReason::class)->findBy(array('teleworking' => 1));
         foreach ($absences_reasons as $elem) {
-            $teleworking_absence_reasons[] = $elem->valeur();
+            $teleworking_absence_reasons[] = $elem->getValue();
         }
 
         $tab = array();
@@ -819,6 +796,12 @@ class StatisticController extends BaseController
                             if ( !empty($absencesDB[$elem['perso_id']]) ) {
 
                                 foreach ($absencesDB[$elem['perso_id']] as $a) {
+
+                                    if (($this->config('Absences-Exclusion') == 1 and $a['valide'] == 99999)
+                                        or $this->config('Absences-Exclusion') == 2)
+                                    {
+                                        continue;
+                                    }
 
                                     // Ignore teleworking absences for compatible positions
                                     if (in_array($a['motif'], $teleworking_absence_reasons) and $elem['teleworking']) {
@@ -893,7 +876,7 @@ class StatisticController extends BaseController
         sort($heures_tab_global);
 
         // passage en session du tableau pour le fichier export.php
-        $_SESSION['stat_tab'] = $tab;
+        $session->set('statisticsTab', $tab);
         
         $multisites = array();
         if ($nbSites>1) {
@@ -902,54 +885,49 @@ class StatisticController extends BaseController
             }
         }
         // 		--------------------------		Affichage du tableau de résultat		--------------------
-        if ($tab) {
-           
-            foreach ($tab as &$elem) {
-                // Calcul des moyennes
-                $jour = ($nbJours > 0) ? $elem[2] / $nbJours : 0;
+        foreach ($tab as &$elem) {
+            // Calcul des moyennes
+            $heures = 0;
+            foreach ($elem[3] as &$samedi) {
+                $heures += $samedi[1];
+            }
+            sort($elem[3]);				//	tri les samedis par dates croissantes
 
-                $heures = 0;
-                foreach ($elem[3] as &$samedi) {
-                    $heures += $samedi[1];
+            $elem["heures"] = heure4($heures);
+            
+            foreach ($elem[3] as &$samedi) {			//	Affiche les dates et heures des samedis
+                $samedi[0] = dateFr($samedi[0]);			//	date
+                $samedi[1] = heure4($samedi[1]);	// heures
+            }
+            
+            // Jours feriés
+            if ($exists_JF) {
+                sort($elem[8]);				//	tri les dimanches par dates croissantes
+                foreach ($elem[8] as &$ferie) {		// 	Affiche les dates et heures des dimanches
+                    $ferie[0] = dateFr($ferie[0]);			//	date
+                    $ferie[1] = heure4($ferie[1]);	//	heures
                 }
-                sort($elem[3]);				//	tri les samedis par dates croissantes
+            }
 
-                $elem["heures"] = heure4($heures);
-                
-                foreach ($elem[3] as &$samedi) {			//	Affiche les dates et heures des samedis
-                    $samedi[0] = dateFr($samedi[0]);			//	date
-                    $samedi[1] = heure4($samedi[1]);	// heures
+            // Absences
+            if ($exists_absences) {
+                if ($elem[5]) {				//	Affichage du total d'heures d'absences
+                    $elem[5] = heure4($elem[5]);
                 }
-                
-                // Jours feriés
-                if ($exists_JF) {
-                    sort($elem[8]);				//	tri les dimanches par dates croissantes
-                    foreach ($elem[8] as &$ferie) {		// 	Affiche les dates et heures des dimanches
-                        $ferie[0] = dateFr($ferie[0]);			//	date
-                        $ferie[1] = heure4($ferie[1]);	//	heures
-                    }
+                sort($elem[4]);				//	tri les absences par dates croissantes
+                foreach ($elem[4] as &$absences) {		//	Affiche les dates et heures des absences
+                    $absences[0] = dateFr($absences[0]);			//	date
+                    $absences[1] = heure4($absences[1]);
                 }
+            }
 
-                // Absences
-                if ($exists_absences) {
-                    if ($elem[5]) {				//	Affichage du total d'heures d'absences
-                        $elem[5] = heure4($elem[5]);
-                    }
-                    sort($elem[4]);				//	tri les absences par dates croissantes
-                    foreach ($elem[4] as &$absences) {		//	Affiche les dates et heures des absences
-                        $absences[0] = dateFr($absences[0]);			//	date
-                        $absences[1] = heure4($absences[1]);
-                    }
-                }
-
-                // Statistiques-Heures
-                foreach ($heures_tab_global as $v) {
-                    $tmp = $v[0].'-'.$v[1];
-                    if (!empty($elem[7][$tmp])) {
-                        sort($elem[7][$tmp]);
-                        foreach ($elem[7][$tmp] as &$h) {
-                            $h = dateFr($h);
-                        }
+            // Statistiques-Heures
+            foreach ($heures_tab_global as $v) {
+                $tmp = $v[0].'-'.$v[1];
+                if (!empty($elem[7][$tmp])) {
+                    sort($elem[7][$tmp]);
+                    foreach ($elem[7][$tmp] as &$h) {
+                        $h = dateFr($h);
                     }
                 }
             }
@@ -976,9 +954,7 @@ class StatisticController extends BaseController
     }
 
 
-    /**
-     * @Route("/statistics/attendeesmissing", name="statistics.attendeesmissing", methods={"GET", "POST"})
-     */
+    #[Route(path: '/statistics/attendeesmissing', name: 'statistics.attendeesmissing', methods: ['GET', 'POST'])]
     public function attendeesmissing( Request $request, Session $session )
     {
         $params = $request->request->all();
@@ -1003,7 +979,7 @@ class StatisticController extends BaseController
         $endTime = strtotime(dateSQL($params['to']));
 
         $by_date = array();
-        for ( $i = $startTime; $i <= $endTime; $i = $i + 86400 ) {
+        for ( $i = $startTime; $i <= $endTime; $i += 86400 ) {
             $date = date('Y-m-d', $i);
 
             $conges = array();
@@ -1080,9 +1056,7 @@ class StatisticController extends BaseController
         return $this->output('statistics/attendeesmissing.html.twig');
     }
 
-    /**
-     * @Route("/statistics/absence", name="statistics.absence", methods={"GET", "POST"})
-     */
+    #[Route(path: '/statistics/absence', name: 'statistics.absence', methods: ['GET', 'POST'])]
     public function absence( Request $request, Session $session )
     {
         $debut = $request->get('debut');
@@ -1092,7 +1066,7 @@ class StatisticController extends BaseController
         $debut = filter_var($debut, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
         $fin = filter_var($fin, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
 
-        $afficheHeures = $this->config('PlanningHebdo') ? true : false;
+        $afficheHeures = (bool) $this->config('PlanningHebdo');
 
         if ($debut) {
             $fin = $fin ? $fin : $debut;
@@ -1105,7 +1079,7 @@ class StatisticController extends BaseController
             $date = $_SESSION['PLdate'];
             $d = new \datePl($date);
             $debut = dateFr($d->dates[0]);
-            $fin = $this->config('Dimanche') ? dateFr($d->dates[6]) : dateFr($d->dates[5]);
+            $fin = dateFr($d->dates[6]);
             $site = 0;
         }
         $_SESSION['oups']['stat_absences_debut'] = $debut;
@@ -1137,6 +1111,30 @@ class StatisticController extends BaseController
         $motifs = array();
         if (is_array($absences) and !empty($absences)) {
             foreach ($absences as $elem) {
+
+                if (($this->config('Absences-Exclusion') == 1 and $elem['valide'] == 99999)
+                    or $this->config('Absences-Exclusion') == 2)
+                {
+                    $formatted_start_date = date('Y-m-d', strtotime($elem['debut']));
+                    $formatted_start_hour = date('H:i:s', strtotime($elem['debut']));
+                    $formatted_end_date = date('Y-m-d', strtotime($elem['fin']));
+                    $formatted_end_hour = date('H:i:s', strtotime($elem['fin']));
+
+                    $db = new \db();
+                    $db->select2('pl_poste', '*', array(
+                            'perso_id' => $elem['perso_id'],
+                            'date' => ">=$formatted_start_date AND date<=$formatted_end_date",
+                            'debut' => "<$formatted_end_hour",
+                            'fin' => ">$formatted_start_hour",
+                        ),
+                        'ORDER BY debut,fin'
+                    );
+
+                    if ($db->result) {
+                        continue;
+                    }
+                }
+
                 if (!in_array($elem['motif'], $motifs)) {
                     $motifs[] = $elem['motif'];
                 }
@@ -1160,6 +1158,29 @@ class StatisticController extends BaseController
         $tab = array();
         $totaux = array("_general"=>0,"_generalHeures"=>0);
         foreach ($absences as $elem) {
+
+            if (($this->config('Absences-Exclusion') == 1 and $elem['valide'] == 99999)
+                or $this->config('Absences-Exclusion') == 2)
+            {
+                $formatted_start_date = date('Y-m-d', strtotime($elem['debut']));
+                $formatted_start_hour = date('H:i:s', strtotime($elem['debut']));
+                $formatted_end_date = date('Y-m-d', strtotime($elem['fin']));
+                $formatted_end_hour = date('H:i:s', strtotime($elem['fin']));
+
+                $db = new \db();
+                $db->select2('pl_poste', '*', array(
+                        'perso_id' => $elem['perso_id'],
+                        'date' => ">=$formatted_start_date AND date<=$formatted_end_date",
+                        'debut' => "<$formatted_end_hour",
+                        'fin' => ">$formatted_start_hour",
+                    ),
+                    'ORDER BY debut,fin');
+
+                if ($db->result) {
+                    continue;
+                }
+            }
+
             if (!array_key_exists($elem['perso_id'], $tab)) {
                 $tab[$elem['perso_id']] = array(
                     "nom"         => $elem['nom'],
@@ -1236,7 +1257,7 @@ class StatisticController extends BaseController
         // Pour les exports
         $_SESSION['oups']['stat_absences_motifs'] = $motifs;
         $_SESSION['oups']['stat_absences_totaux'] = $totaux;
-        $_SESSION['stat_tab']=$tab;
+        $session->set('statisticsTab', $tab);
 
         // Affichage du tableau
         $multisites = array();
@@ -1277,9 +1298,7 @@ class StatisticController extends BaseController
         return $this->output('statistics/absence.html.twig');
     }
 
-    /**
-     * @Route("/statistics/positionsummary", name="statistics.positionsummary", methods={"GET", "POST"})
-     */
+    #[Route(path: '/statistics/positionsummary', name: 'statistics.positionsummary', methods: ['GET', 'POST'])]
     public function positionsummary(Request $request, Session $session)
     {
         //	Variables :
@@ -1296,13 +1315,12 @@ class StatisticController extends BaseController
         $post_postes = isset($post['postes'])?$post['postes']:null;
         $post_sites = isset($post['selectedSites'])?$post['selectedSites']:null;
 
-        $joursParSemaine = $this->config('Dimanche') ? 7 : 6;
-
-        if (!$debut and array_key_exists('stat_debut', $_SESSION)) {
-            $debut = $_SESSION['stat_debut'];
+        if (!$debut) {
+            $debut = $session->get('statisticsStart');
         }
-        if (!$fin and array_key_exists('stat_fin', $_SESSION)) {
-            $fin = $_SESSION['stat_fin'];
+
+        if (!$fin) {
+            $fin = $session->get('statisticsEnd');
         }
         if (!$tri and array_key_exists('stat_poste_tri', $_SESSION)) {
             $tri = $_SESSION['stat_poste_tri'];
@@ -1318,8 +1336,8 @@ class StatisticController extends BaseController
             $tri = "cmp_01";
         }
 
-        $_SESSION['stat_debut'] = $debut;
-        $_SESSION['stat_fin'] = $fin;
+        $session->set('statisticsStart', $debut);
+        $session->set('statisticsEnd', $fin);
         $_SESSION['stat_poste_tri'] = $tri;
 
         $debutSQL = dateFr($debut);
@@ -1369,17 +1387,13 @@ class StatisticController extends BaseController
         $_SESSION['stat_poste_sites'] = $selectedSites;
 
         // Filtre les sites dans les requêtes SQL
-        if ($nbSites>1 and is_array($selectedSites)) {
-            $sitesSQL =" 0,".implode(",", $selectedSites);
-        } else {
-            $sitesSQL = "0,1";
-        }
+        $sitesSQL = ($nbSites > 1 and is_array($selectedSites)) ? " 0,".implode(",", $selectedSites) : "0,1";
 
         // Teleworking
         $teleworking_absence_reasons = array();
         $absences_reasons = $this->entityManager->getRepository(AbsenceReason::class)->findBy(array('teleworking' => 1));
         foreach ($absences_reasons as $elem) {
-            $teleworking_absence_reasons[] = $elem->valeur();
+            $teleworking_absence_reasons[] = $elem->getValue();
         }
 
         $tab = array();
@@ -1441,8 +1455,8 @@ class StatisticController extends BaseController
 
                 // $poste_tab : table of positions with id, name, area, mandatory/reinforcement, teleworking
                 foreach ($postes_list as $elem) {
-                    if ($elem->id() == $poste) {
-                        $poste_tab = array($poste, $elem->nom(), $elem->etage(), $elem->obligatoire(), $elem->teleworking());
+                    if ($elem->getId() == $poste) {
+                        $poste_tab = array($poste, $elem->getName(), $elem->getFloor(), $elem->getMandatory(), $elem->isTeleworking());
                         break;
                     }
                 }
@@ -1455,6 +1469,12 @@ class StatisticController extends BaseController
                             // S'il est absent : continue
                             if ( !empty($absencesDB[$elem['perso_id']]) ) {
                                 foreach ($absencesDB[$elem['perso_id']] as $a) {
+
+                                    if (($this->config('Absences-Exclusion') == 1 and $a['valide'] == 99999)
+                                        or $this->config('Absences-Exclusion') == 2)
+                                    {
+                                        continue;
+                                    }
 
                                     // Ignore teleworking absences for compatible positions
                                     if (in_array($a['motif'], $teleworking_absence_reasons) and $poste_tab[4]) {
@@ -1496,7 +1516,6 @@ class StatisticController extends BaseController
         $s = new \statistiques();
         $s->debut = $debutSQL;
         $s->fin = $finSQL;
-        $s->joursParSemaine = $joursParSemaine;
         $s->selectedSites = $selectedSites;
         $s->ouverture();
         $ouverture = $s->ouvertureTexte;
@@ -1505,7 +1524,7 @@ class StatisticController extends BaseController
         usort($tab, $tri);
 
         // passage en session du tableau pour le fichier export.php
-        $_SESSION['stat_tab'] = $tab;
+        $session->set('statisticsTab', $tab);
         $multisites = array();
         if ($nbSites > 1) {
             for ($i=1;$i<=$nbSites;$i++) {
@@ -1513,7 +1532,7 @@ class StatisticController extends BaseController
             }
         }
 
-        if ($tab) {
+        if ($tab !== []) {
             //	Recherche du nombre de jours concernés
             $db = new \db();
             $debutREQ = $db->escapeString($debutSQL);
@@ -1525,7 +1544,7 @@ class StatisticController extends BaseController
 
             foreach ($tab as &$elem) {
                 $jour = ($nbJours > 0) ? $elem[2] / $nbJours : 0;
-                $hebdo=$jour*$joursParSemaine;
+                $hebdo = \statistiques::average($elem[2], $debut, $fin);
                 $total_heures+=$elem[2];
                 $total_jour+=$jour;
                 $total_hebdo+=$hebdo;
@@ -1544,11 +1563,7 @@ class StatisticController extends BaseController
                 if ($elem[0][2]) {
                     $siteEtage[]=$elem[0][2];
                 }
-                if (!empty($siteEtage)) {
-                    $siteEtage="(".implode(" ", $siteEtage).")";
-                } else {
-                    $siteEtage=null;
-                }
+                $siteEtage = !empty($siteEtage) ? "(".implode(" ", $siteEtage).")" : null;
 
                 $elem["siteEtage"] = $siteEtage;
                 $elem[2] = heure4($elem[2]);
@@ -1583,14 +1598,12 @@ class StatisticController extends BaseController
     }
 
 
-    /**
-     * @Route("/statistics/time", name="statistics.time", methods={"GET", "POST"})
-     */
+    #[Route(path: '/statistics/time', name: 'statistics.time', methods: ['GET', 'POST'])]
     public function bytime(Request $request, Session $session)
     {
         //    Initialisation des variables
         $CSRFToken = trim($request->get("CSRFToken") ?? '');
-        if (!$CSRFToken) {
+        if ($CSRFToken === '' || $CSRFToken === '0') {
             $CSRFToken = $GLOBALS['CSRFSession'];
         }
 
@@ -1612,7 +1625,7 @@ class StatisticController extends BaseController
            $date=$_SESSION['PLdate'];
            $d = new \datePl($date);
            $debut = $d->dates[0];
-           $fin = $this->config('Dimanche') ? $d->dates[6] : $d->dates[5];
+           $fin = $d->dates[6];
            $selection_groupe = false;
         }
 
@@ -1622,12 +1635,7 @@ class StatisticController extends BaseController
         $current = $debut;
 
         while ($current<=$fin) {
-            if (date("w", strtotime($current)) == 0 and !$this->config('Dimanche')) {
-
-            } else {
-                $dates[] = array($current,dateAlpha2($current));
-            }
-
+            $dates[] = array($current,dateAlpha2($current));
             $current = date("Y-m-d", strtotime("+1 day", strtotime($current)));
         }
 
@@ -1638,8 +1646,13 @@ class StatisticController extends BaseController
         $agents_id = array();   // Utilisé pour compter les agents présents chaque jour
         $nbAgents = array();  // Nombre d'agents pour chaque jour
         $tab = array();
-        $nb = count($dates);  // Nombre de dates
-        $nbSemaines = $nb/($this->config('Dimanche')? 7 : 6);   // Nombre de semaines
+
+        // Number of weeks
+        $origin = new \DateTimeImmutable($debut);
+        $target = new \DateTimeImmutable($fin);
+        $interval = (int) $origin->diff($target)->format('%a') + 1;
+        $nbSemaines = $interval / 7;
+
         $totalAgents = 0;        // Les totaux
         $totalHeures = 0;
         $siteHeures = array(0,0);   // Heures par site
@@ -1673,25 +1686,26 @@ class StatisticController extends BaseController
         $used_groups = array();
 
         // Groups assigned to at least one position
-        $groups = $this->entityManager->getRepository(SelectGroup::class)->findBy(['id' => $keys], ['rang' => 'ASC']);
-        if (!empty($groups)) {
-            $other = new SelectGroup;
-            $other->id(-1);
-            $other->valeur('Autres');
-            $groups[] = $other;
+        $groups = [];
+        $groupsEntity = $this->entityManager->getRepository(SelectGroup::class)->findBy(['id' => $keys], ['rang' => 'ASC']);
+        if (!empty($groupsEntity)) {
+            foreach ($groupsEntity as $group) {
+                $groups[] = ['id' => $group->getId(), 'value' => $group->getValue()];
+            }
+            $groups[] = ['id' => '-1', 'value' => 'Autres'];
         }
 
         // Initialisation des totaux (footer)
         foreach ($groups as $g) {
-            $totauxGroupesHeures[$g->id()] = 0;
-            $totauxGroupesPerso[$g->id()] = array();
+            $totauxGroupesHeures[$g['id']] = 0;
+            $totauxGroupesPerso[$g['id']] = array();
         }
 
         // Teleworking
         $teleworking_absence_reasons = array();
         $absences_reasons = $this->entityManager->getRepository(AbsenceReason::class)->findBy(array('teleworking' => 1));
         foreach ($absences_reasons as $elem) {
-            $teleworking_absence_reasons[] = $elem->valeur();
+            $teleworking_absence_reasons[] = $elem->getValue();
         }
 
         // Recherche des heures de SP à effectuer pour tous les agents pour toutes les semaines demandées
@@ -1707,7 +1721,7 @@ class StatisticController extends BaseController
                 $heuresAbsences[$d] = $a->calculHeuresAbsences($d);
                 foreach ($heuresAbsences[$d] as $key => $value) {
                     if (array_key_exists($key, $heuresSP[$d])) {
-                        $heuresSP[$d][$key] = $heuresSP[$d][$key]-$value;
+                        $heuresSP[$d][$key] = (float) $heuresSP[$d][$key] - (float) $value;
                         if ($heuresSP[$d][$key] < 0) {
                             $heuresSP[$d][$key] = 0;
                         }
@@ -1759,7 +1773,8 @@ class StatisticController extends BaseController
         $req.="`{$dbprefix}postes`.`teleworking` AS `teleworking` ";
         $req.="FROM `{$dbprefix}pl_poste` INNER JOIN `{$dbprefix}personnel` ON `{$dbprefix}pl_poste`.`perso_id`=`{$dbprefix}personnel`.`id` ";
         $req.="INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}postes`.`id`=`{$dbprefix}pl_poste`.`poste` ";
-        $req.="WHERE `date`>='$debutREQ' AND `date`<='$finREQ' AND `{$dbprefix}pl_poste`.`absent`<>'1' AND `{$dbprefix}pl_poste`.`supprime`<>'1' AND `{$dbprefix}postes`.`statistiques`='1' ";
+        $req.="WHERE `date`>='$debutREQ' AND `date`<='$finREQ' AND `{$dbprefix}pl_poste`.`absent`<>'1' AND `{$dbprefix}pl_poste`.`supprime`<>'1' ";
+        $req.="AND `{$dbprefix}postes`.`lunch`='0' AND `{$dbprefix}postes`.`quota_sp`='1'";
         $req.="ORDER BY `nom`,`prenom`;";
 
         $db->query($req);
@@ -1769,6 +1784,13 @@ class StatisticController extends BaseController
                 // Vérifie à partir de la table absences si l'agent est absent
                 // S'il est absent, on met à 1 la variable $elem['absent']
                 foreach ($absencesDB as $a) {
+
+                    if (($this->config('Absences-Exclusion') == 1 and $a['valide'] == 99999)
+                        or $this->config('Absences-Exclusion') == 2)
+                    {
+                        continue;
+                    }
+
 
                     // Ignore teleworking absences for compatible positions
                     if (in_array($a['motif'], $teleworking_absence_reasons) and $elem['teleworking']) {
@@ -1802,13 +1824,13 @@ class StatisticController extends BaseController
                     foreach ($dates as $d) {
                         $tab[$elem['perso_id']][$d[0]] = array('total'=>0);
                         foreach ($groups as $g) {
-                            $tab[$elem['perso_id']][$d[0]]['groupe'][$g->id()] = 0;
+                            $tab[$elem['perso_id']][$d[0]]['groupe'][$g['id']] = 0;
                         }
                     }
 
                     // Totaux par groupe de postes
                     foreach ($groups as $g){
-                        $tab[$elem['perso_id']]['groupe'][$g->id()] = 0;
+                        $tab[$elem['perso_id']]['groupe'][$g['id']] = 0;
                     }
                 }
 
@@ -1820,8 +1842,7 @@ class StatisticController extends BaseController
                     if (!array_key_exists("site{$elem['site']}", $tab[$elem['perso_id']])) {
                         $tab[$elem['perso_id']]["site{$elem['site']}"] = 0;
                     }
-                    $tab[$elem['perso_id']]["site{$elem['site']}"] += diff_heures($elem['debut'], $elem['fin'], "decimal");    // ajout des heures sur toutes la période par site
-                    $tab[$elem['perso_id']]["site{$elem['site']}"] = $tab[$elem['perso_id']]["site{$elem['site']}"];
+                    $tab[$elem['perso_id']]["site{$elem['site']}"] += diff_heures($elem['debut'], $elem['fin'], "decimal");
                 }
 
                 $totalHeures+=diff_heures($elem['debut'], $elem['fin'], "decimal");        // compte la somme des heures sur la période
@@ -1833,17 +1854,17 @@ class StatisticController extends BaseController
 
                 // Totaux par groupe de postes
                 foreach ($groups as $g) {
-                    if (is_array($groupes[$g->id()]) and in_array($elem['poste'], $groupes[$g->id()])) {
-                        $tab[$elem['perso_id']]['groupe'][$g->id()] += diff_heures($elem['debut'], $elem['fin'], "decimal");
-                        $tab[$elem['perso_id']][$elem['date']]['groupe'][$g->id()] += diff_heures($elem['debut'], $elem['fin'], "decimal");
-                        $totauxGroupesHeures[$g->id()] += diff_heures($elem['debut'], $elem['fin'], "decimal");
+                    if (is_array($groupes[$g['id']]) and in_array($elem['poste'], $groupes[$g['id']])) {
+                        $tab[$elem['perso_id']]['groupe'][$g['id']] += diff_heures($elem['debut'], $elem['fin'], "decimal");
+                        $tab[$elem['perso_id']][$elem['date']]['groupe'][$g['id']] += diff_heures($elem['debut'], $elem['fin'], "decimal");
+                        $totauxGroupesHeures[$g['id']] += diff_heures($elem['debut'], $elem['fin'], "decimal");
 
-                        if (!in_array($g->id(), $used_groups)) {
-                            $used_groups[] = $g->id();
+                        if (!in_array($g['id'], $used_groups)) {
+                            $used_groups[] = $g['id'];
                         }
 
-                        if (!in_array($elem['perso_id'], $totauxGroupesPerso[$g->id()])) {
-                            $totauxGroupesPerso[$g->id()][] = $elem['perso_id'];
+                        if (!in_array($elem['perso_id'], $totauxGroupesPerso[$g['id']])) {
+                            $totauxGroupesPerso[$g['id']][] = $elem['perso_id'];
                         }
                     }
                 }
@@ -1852,7 +1873,7 @@ class StatisticController extends BaseController
 
         // Delete groups which are not used on requested period
         foreach ($groups as $k => $v) {
-            if (!in_array($v->id(), $used_groups)) {
+            if (!in_array($v['id'], $used_groups)) {
                 unset($groups[$k]);
             }
         }
@@ -1871,7 +1892,7 @@ class StatisticController extends BaseController
 
         // Totaux par groupe de postes
         foreach ($groups as $g) {
-            $totauxGroupesPerso[$g->id()] = count($totauxGroupesPerso[$g->id()]);
+            $totauxGroupesPerso[$g['id']] = count($totauxGroupesPerso[$g['id']]);
         }
 
         // pour chaque jour, on compte les heures et les agents
@@ -1926,7 +1947,7 @@ class StatisticController extends BaseController
 
            foreach ($dates as $d) {
                 foreach ($groups as $g) {
-                    $tab[$key][$d[0]]['groupe'][$g->id()] = heure4($tab[$key][$d[0]]["groupe"][$g->id()]);
+                    $tab[$key][$d[0]]['groupe'][$g['id']] = heure4($tab[$key][$d[0]]["groupe"][$g['id']]);
                 }
             }
 
@@ -1989,11 +2010,7 @@ class StatisticController extends BaseController
             } else {
                 $siteHeures[$i] = "-";
             }
-            if (array_key_exists($i, $siteAgents) and $siteAgents[$i]!=0) {
-                $siteAgents[$i] = $siteAgents[$i];
-            } else {
-                $siteAgents[$i] = "-";
-            } 
+            $siteAgents[$i] = (array_key_exists($i, $siteAgents) and $siteAgents[$i] != 0) ? $siteAgents[$i] : "-"; 
         }
 
         // Groups for export
@@ -2002,14 +2019,14 @@ class StatisticController extends BaseController
         if ($selection_groupe and !empty($groups)) {
             foreach ($groups as $g) {
                 $group_keys[] = array(
-                    'id' => $g->id(), 
-                    'name' => $g->valeur(),
+                    'id' => $g['id'], 
+                    'name' => $g['value'],
                 );
             }
         }
 
         // passage en session du tableau pour le fichier export.php
-        $_SESSION['stat_tab'] = $tab;
+        $session->set('statisticsTab', $tab);
         $_SESSION['stat_heures'] = $heures;
         $_SESSION['stat_agents'] = $agents;
         $_SESSION['stat_dates'] = $dates;
@@ -2044,9 +2061,7 @@ class StatisticController extends BaseController
         return $this->output('statistics/time.html.twig');
     }
 
-    /**
-     * @Route("/statistics/supportposition", name="statistics.supportposition", methods={"GET", "POST"})
-     */
+    #[Route(path: '/statistics/supportposition', name: 'statistics.supportposition', methods: ['GET', 'POST'])]
     public function supportposition(Request $request, Session $session)
     {
         //	Variables :
@@ -2064,14 +2079,13 @@ class StatisticController extends BaseController
         $post_postes = isset($post['postes'])?$post['postes']:null;
         $post_sites = isset($post['selectedSites'])?$post['selectedSites']:null;
 
-        $joursParSemaine = $this->config('Dimanche')?7:6;
-
         //		--------------		Initialisation  des variables 'debut','fin' et 'poste'		-------------------
-        if (!$debut and array_key_exists('stat_debut', $_SESSION)) {
-            $debut = $_SESSION['stat_debut'];
+        if (!$debut) {
+            $debut = $session->get('statisticsStart');
         }
-        if (!$fin and array_key_exists('stat_fin', $_SESSION)) {
-            $fin = $_SESSION['stat_fin'];
+
+        if (!$fin) {
+            $fin = $session->get('statisticsEnd');
         }
         if (!$tri and array_key_exists('stat_poste_tri', $_SESSION)) {
             $tri = $_SESSION['stat_poste_tri'];
@@ -2087,8 +2101,8 @@ class StatisticController extends BaseController
             $tri = "cmp_01";
         }
 
-        $_SESSION['stat_debut'] = $debut;
-        $_SESSION['stat_fin'] = $fin;
+        $session->set('statisticsStart', $debut);
+        $session->set('statisticsEnd', $fin);
         $_SESSION['stat_poste_tri'] = $tri;
 
         $debutSQL = dateFr($debut);
@@ -2139,17 +2153,13 @@ class StatisticController extends BaseController
         $_SESSION['stat_poste_sites'] = $selectedSites;
 
         // Filtre les sites dans les requêtes SQL
-        if ($nbSites > 1 and is_array($selectedSites)) {
-            $sitesSQL = "0,".implode(",", $selectedSites);
-        } else {
-            $sitesSQL = "0,1";
-        }
+        $sitesSQL = ($nbSites > 1 and is_array($selectedSites)) ? "0,".implode(",", $selectedSites) : "0,1";
 
         // Teleworking
         $teleworking_absence_reasons = array();
         $absences_reasons = $this->entityManager->getRepository(AbsenceReason::class)->findBy(array('teleworking' => 1));
         foreach ($absences_reasons as $elem) {
-            $teleworking_absence_reasons[] = $elem->valeur();
+            $teleworking_absence_reasons[] = $elem->getValue();
         }
 
         $tab = array();
@@ -2217,8 +2227,8 @@ class StatisticController extends BaseController
 
                 // $poste_tab : table of positions with id, name, area, mandatory/reinforcement, teleworking
                 foreach ($postes_list as $elem) {
-                    if ($elem->id() == $poste) {
-                        $poste_tab = array($poste, $elem->nom(), $elem->etage(), $elem->obligatoire(), $elem->teleworking());
+                    if ($elem->getId() == $poste) {
+                        $poste_tab = array($poste, $elem->getName(), $elem->getFloor(), $elem->getMandatory(), $elem->isTeleworking());
                         break;
                     }
                 }
@@ -2232,6 +2242,12 @@ class StatisticController extends BaseController
                         if ( !empty($absencesDB[$elem['perso_id']]) ) {
 
                             foreach ($absencesDB[$elem['perso_id']] as $a) {
+
+                                if (($this->config('Absences-Exclusion') == 1 and $a['valide'] == 99999)
+                                    or $this->config('Absences-Exclusion') == 2)
+                                {
+                                    continue;
+                                }
 
                                 // Ignore teleworking absences for compatible positions
                                 if (in_array($a['motif'], $teleworking_absence_reasons) and $poste_tab[4]) {
@@ -2275,7 +2291,6 @@ class StatisticController extends BaseController
         $s = new \statistiques();
         $s->debut = $debutSQL;
         $s->fin = $finSQL;
-        $s->joursParSemaine=$joursParSemaine;
         $s->selectedSites=$selectedSites;
         $s->ouverture();
         $ouverture = $s->ouvertureTexte;
@@ -2284,7 +2299,7 @@ class StatisticController extends BaseController
         usort($tab, $tri);
 
         //	Passage en session du tableau pour le fichier export.php
-        $_SESSION['stat_tab'] = $tab;
+        $session->set('statisticsTab', $tab);
 
         $siteEtage = array();
         $multisites = array();
@@ -2310,14 +2325,10 @@ class StatisticController extends BaseController
                 $siteEtage[] = $elem[0][2];
             }
 
-            if (!empty($siteEtage)) {
-                $siteEtage = "(".implode(" ", $siteEtage).")";
-            } else {
-                $siteEtage = null;
-            }
+            $siteEtage = !empty($siteEtage) ? "(".implode(" ", $siteEtage).")" : null;
     
             $jour = ($nbJours > 0) ? floatval($elem[2]) / $nbJours : 0;
-            $hebdo = $jour*$joursParSemaine;
+            $hebdo = \statistiques::average($elem[2], $debut, $fin);
             $elem["jour"] = heure4(round($jour, 2));
             $elem["hebdo"] = heure4(round($hebdo, 2));
             $elem["siteEtage"] = $siteEtage;
@@ -2326,15 +2337,13 @@ class StatisticController extends BaseController
                 for ($i = 1; $i <= $nbSites; $i++) {
                     if ($elem["sites"][$i] and $elem["sites"][$i] != $elem[2]) {
                         // Calcul des moyennes
-                        $jour = ($nbJours > 0) ? floatval($elem['sites'][$i]) / $nbJours : 0;
-                        $hebdo = $jour * $joursParSemaine;
+                        $hebdo = \statistiques::average($elem['sites'][$i], $debut, $fin);
                         $elem["sites"][$i] = heure4($elem["sites"][$i]);
                         $elem["site_hebdo"][$i] = heure4($hebdo);
                     }
                 }
             }
             foreach ($elem[1] as &$date) {
-                $date[3] = dateAlpha($date[0])." : ".heure4($date[2]);
                 foreach ($date[1] as &$horaires) {
                     $horaires[3] = heure2($horaires[0])." - ".heure2($horaires[1])." : ".heure4($horaires[2]);
                 }
@@ -2359,9 +2368,7 @@ class StatisticController extends BaseController
         return $this->output('statistics/supportposition.html.twig');
     }
 
-    /**
-     * @Route("/statistics/position", name="statistics.position", methods={"GET", "POST"})
-     */
+    #[Route(path: '/statistics/position', name: 'statistics.position', methods: ['GET', 'POST'])]
     public function position(Request $request, Session $session)
     {
         // Initialisation des variables :
@@ -2376,8 +2383,6 @@ class StatisticController extends BaseController
         $post_postes = isset($post['postes']) ? $post['postes'] : null;
         $post_sites = isset($post['selectedSites']) ? $post['selectedSites'] : null;
 
-        $joursParSemaine = $this->config('Dimanche') ? 7 : 6;
-
         $nbSites = $this->config('Multisites-nombre');
 
         if (!array_key_exists('stat_poste_postes', $_SESSION)) {
@@ -2385,12 +2390,12 @@ class StatisticController extends BaseController
             $_SESSION['stat_poste_tri'] = null;
         }
 
-        if (!$debut and array_key_exists("stat_debut", $_SESSION)) {
-            $debut = $_SESSION['stat_debut'];
+        if (!$debut) {
+            $debut = $session->get('statisticsStart');
         }
 
-        if (!$fin and array_key_exists("stat_fin", $_SESSION)) {
-            $fin = $_SESSION['stat_fin'];
+        if (!$fin) {
+            $fin = $session->get('statisticsEnd');
         }
 
         if (!$tri and array_key_exists("stat_poste_tri", $_SESSION)) {
@@ -2409,8 +2414,8 @@ class StatisticController extends BaseController
             $tri = "cmp_01";
         }
 
-        $_SESSION['stat_debut'] = $debut;
-        $_SESSION['stat_fin'] = $fin;
+        $session->set('statisticsStart', $debut);
+        $session->set('statisticsEnd', $fin);
         $_SESSION['stat_poste_tri'] = $tri;
 
         $debutSQL = dateFr($debut);
@@ -2460,17 +2465,13 @@ class StatisticController extends BaseController
         $_SESSION['stat_poste_sites'] = $selectedSites;
 
         // Filtre les sites dans les requêtes SQL
-        if ($nbSites > 1 and is_array($selectedSites)) {
-            $sitesSQL = "0,".implode(",", $selectedSites);
-        } else {
-            $sitesSQL = "0,1";
-        }
+        $sitesSQL = ($nbSites > 1 and is_array($selectedSites)) ? "0,".implode(",", $selectedSites) : "0,1";
 
         // Teleworking
         $teleworking_absence_reasons = array();
         $absences_reasons = $this->entityManager->getRepository(AbsenceReason::class)->findBy(array('teleworking' => 1));
         foreach ($absences_reasons as $elem) {
-            $teleworking_absence_reasons[] = $elem->valeur();
+            $teleworking_absence_reasons[] = $elem->getValue();
         }
 
         $tab = array();
@@ -2536,8 +2537,8 @@ class StatisticController extends BaseController
 
                 // $poste_tab : table of positions with id, name, area, mandatory/reinforcement, teleworking
                 foreach ($postes_list as $elem) {
-                    if ($elem->id() == $poste) {
-                        $poste_tab = array($poste, $elem->nom(), $elem->etage(), $elem->obligatoire(), $elem->teleworking());
+                    if ($elem->getId() == $poste) {
+                        $poste_tab = array($poste, $elem->getName(), $elem->getFloor(), $elem->getMandatory(), $elem->isTeleworking());
                         break;
                     }
                 }
@@ -2549,6 +2550,12 @@ class StatisticController extends BaseController
                             // S'il est absent : continue
                             if ( !empty($absencesDB[$elem['perso_id']]) ) {
                                 foreach ($absencesDB[$elem['perso_id']] as $a) {
+
+                                    if (($this->config('Absences-Exclusion') == 1 and $a['valide'] == 99999)
+                                        or $this->config('Absences-Exclusion') == 2)
+                                    {
+                                        continue;
+                                    }
 
                                     // Ignore teleworking absences for compatible positions
                                     if (in_array($a['motif'], $teleworking_absence_reasons) and $poste_tab[4]) {
@@ -2612,7 +2619,6 @@ class StatisticController extends BaseController
         $s = new \statistiques();
         $s->debut = $debutSQL;
         $s->fin = $finSQL;
-        $s->joursParSemaine = $joursParSemaine;
         $s->selectedSites = $selectedSites;
         $s->ouverture();
         $ouverture = $s->ouvertureTexte;
@@ -2621,9 +2627,9 @@ class StatisticController extends BaseController
         usort($tab, $tri);
 
         // passage en session du tableau pour le fichier export.php
-        $_SESSION['stat_tab'] = $tab;
+        $session->set('statisticsTab', $tab);
 
-        if($tab){
+        if($tab !== []){
             foreach($tab as $key => $elem){
                 $siteEtage = array();
                 if ($nbSites >1) {
@@ -2637,21 +2643,14 @@ class StatisticController extends BaseController
                 if ($tab[$key][0][2]) {
                     $siteEtage[] = $tab[$key][0][2];
                 }
-                if (!empty($siteEtage)) {
-                    $siteEtage="(".implode(" ", $siteEtage).")";
-                } else {
-                    $siteEtage=null;
-                }
+                $siteEtage = !empty($siteEtage) ? "(".implode(" ", $siteEtage).")" : null;
                 $jour = ($nbJours > 0) ? $tab[$key][2] / $nbJours : 0;
-                $hebdo = $jour*$joursParSemaine;
-                $av_jour = null;
-                $av_hebdo = null;
+                $hebdo = \statistiques::average($tab[$key][2], $debut, $fin);
 
                 if ($nbSites>1) {
                     for ($i = 1 ; $i <= $nbSites; $i++) {
                         $total = $tab[$key]["sites"][$i];
-                        $av_jour = ($nbJours > 0) ? $total / $nbJours : 0;
-                        $average = $av_jour * $joursParSemaine;
+                        $average = \statistiques::average($total, $debut, $fin);
                         $tab[$key]["sites"][$i] = array(
                             'total' => $total,
                             'average' => $average
@@ -2661,8 +2660,6 @@ class StatisticController extends BaseController
 
                 $tab[$key]["jour"] = $jour;
                 $tab[$key]["hebdo"] = $hebdo;
-                $tab[$key]["av_hebdo"] = $av_hebdo;
-                $tab[$key]["av_jour"] = $av_jour;
                 $tab[$key]["siteEtage"] = $siteEtage;
             }
 
@@ -2710,9 +2707,9 @@ class StatisticController extends BaseController
             $end = \DateTime::createFromFormat('Y-m-d H:i:s', $elem['date'] . ' ' . $elem['fin']);
 
             foreach ($holidays as $holiday) {
-                if ($holiday->perso_id() == $elem['perso_id'] 
-                    and $holiday->debut() < $end
-                    and $holiday->fin() > $start) {
+                if ($holiday->getUser() == $elem['perso_id'] 
+                    and $holiday->getStart() < $end
+                    and $holiday->getEnd() > $start) {
 
                     if ($continue) {
                         return true;
@@ -2730,6 +2727,320 @@ class StatisticController extends BaseController
         return $elem;
     }
 
+    /*
+    *  Description :
+    *  Permet d'exporter les différentes statistiques. Recherche les informations dans la bases de données voulues ($_GET['nom']),
+    *  les place dans les tableaux $cellules et $lignes, puis les écrit dans un fichier (data/stat_$_GET['nom'])
+    */
+    #[Route(path: '/statistics/export', name: 'statistics.export', methods: ['GET'])]
+    public function export(Request $request, Session $session)
+    {
+        // Initialisation des variables
+        $nom = $request->get('name');
+        $type = $request->get('type');
+
+        $nom = filter_var($nom, FILTER_SANITIZE_URL);
+        $type = filter_var($type, FILTER_CALLBACK, array('options' => 'sanitize_file_extension'));
+
+        // Compter les jours ouvrables (ou ouvrés) entre début et fin
+        $debut = $session->get('statisticsStart');
+        $fin = $session->get('statisticsEnd');
+        $debutSQL = dateFr($debut);
+        $finSQL = dateFr($fin);
+
+        $nbJours = $this->entityManager->getRepository(PlanningPosition::class)->countDistinctDatesBetween($debutSQL, $finSQL);
+
+        $filename = "stat_{$nom}_" . date("YmdHis");
+
+        if ($type == 'csv') {
+            $separateur = "';'";
+            $filename .= '.csv';
+        } else {
+            $separateur = "\t";
+            $filename .= '.xls';
+        }
+
+        if (!$session->get('statisticsTab') || empty($session->get('statisticsTab'))) {
+            $session->getFlashBag()->add('error', 'Aucune donnée à exporter');
+            $referer = $request->headers->get('referer');
+            return $this->redirect($referer);
+        } else {
+            $tab = $session->get('statisticsTab');
+        }
+
+        $debutAlpha = dateAlpha($debutSQL);
+        $finAlpha = dateAlpha($finSQL);
+
+        // Suppression des <sup></sup> dans les dates
+        $debutAlpha = preg_replace('/<.[^>]*>/', '', $debutAlpha);
+        $finAlpha = preg_replace('/<.[^>]*>/', '', $finAlpha);
+
+
+        $lignes=array();
+
+        switch ($nom) {
+            case "postes": 									// Postes
+                $lignes=array("Statistiques par poste du $debutAlpha au $finAlpha",null);
+                $lignes[]="Les agents";
+                $lignes[]=implode($separateur, array("Poste","Etage","Obligatoire/renfort","Heures","Moyenne jour","Moyenne hebdo","Nom de l'agent","Prénom de l'agent","Heures par agent"));
+                foreach ($tab as $elem) {
+                    $jour = ($nbJours > 0) ? $elem[2] / $nbJours : 0;
+                    $hebdo = statistiques::average($elem[2], $debut, $fin);
+                    foreach ($elem[1] as $agent) {
+                        $cellules=array();
+                        $cellules[]=$elem[0][1];			// nom du poste
+                        $cellules[]=$elem[0][2];			// Etage
+                        $cellules[]=$elem[0][3];			// Obligatoire
+                        $cellules[]=number_format($elem[2], 2, ',', ' ');	// Nombre d'heures
+                        $cellules[]=number_format($jour, 2, ',', ' ');	// moyenne jour
+                        $cellules[]=number_format($hebdo, 2, ',', ' ');	// moyenne hebdo
+                        $cellules[]=$agent[1];				// Nom de l'agent
+                        $cellules[]=$agent[2];				// Prénom
+                        $cellules[]=number_format($agent[3], 2, ',', ' ');	// Heures par agent
+                        $lignes[]=implode($separateur, $cellules);
+                    }
+                }
+                $lignes[]=null;
+                $lignes[]="Les services";
+                foreach ($tab as $elem) {
+                    $jour = ($nbJours > 0) ? $elem[2] / $nbJours : 0;
+                    $hebdo = statistiques::average($elem[2], $debut, $fin);
+                    foreach ($elem["services"] as $service) {
+                        $cellules=array();
+                        $cellules[]=$elem[0][1];				// nom du poste
+                        $cellules[]=$elem[0][2];				// Etage
+                        $cellules[]=$elem[0][3];				// Obligatoire
+                        $cellules[]=number_format($elem[2], 2, ',', ' ');		// Nombre d'heures
+                        $cellules[]=number_format($jour, 2, ',', ' ');		// moyenne jour
+                        $cellules[]=number_format($hebdo, 2, ',', ' ');		// moyenne hebdo
+                        $cellules[]=str_replace("ZZZ_", null, $service["nom"]);	// Nom du service
+                        $cellules[]=number_format($service["heures"], 2, ',', ' ');// Heures par agent
+                        $lignes[]=implode($separateur, $cellules);
+                    }
+                }
+                $lignes[]=null;
+                $lignes[]="Les statuts";
+                foreach ($tab as $elem) {
+                    $jour = ($nbJours > 0) ? $elem[2] / $nbJours : 0;
+                    $hebdo = statistiques::average($elem[2], $debut, $fin);
+                    foreach ($elem["statuts"] as $statut) {
+                        $cellules=array();
+                        $cellules[]=$elem[0][1];				// nom du poste
+                        $cellules[]=$elem[0][2];				// Etage
+                        $cellules[]=$elem[0][3];				// Obligatoire
+                        $cellules[]=number_format($elem[2], 2, ',', ' ');		// Nombre d'heures
+                        $cellules[]=number_format($jour, 2, ',', ' ');		// moyenne jour
+                        $cellules[]=number_format($hebdo, 2, ',', ' ');		// moyenne hebdo
+                        $cellules[]=str_replace("ZZZ_", null, $statut["nom"]);	// Nom du statut
+                        $cellules[]=number_format($statut["heures"], 2, ',', ' ');	// Heures par agent
+                        $lignes[]=implode($separateur, $cellules);
+                    }
+                }
+                break;
+        
+            case "postes_synthese": 							// Postes (synthèse)
+                $lignes=array("Statistiques par poste (synthèse) du $debutAlpha au $finAlpha",null);
+                $lignes[]=implode($separateur, array("Poste","Etage","Obligatoire/renfort","Heures","Moyenne jour","Moyenne hebdo"));
+                foreach ($tab as $elem) {
+                    $jour = ($nbJours > 0) ? $elem[2] / $nbJours : 0;
+                    $hebdo = statistiques::average($elem[2], $debut, $fin);
+                    $total_heures+=$elem[2];
+                    $total_jour+=$jour;
+                    $total_hebdo+=$hebdo;
+                    $cellules=array();
+                    $cellules[]=$elem[0][1];									// nom du poste
+                    $cellules[]=$elem[0][2];									// Etage
+                    $cellules[]=$elem[0][3];									// Obligatoire
+                    $cellules[]=number_format($elem[2], 2, ',', ' ');				// Nombre d'heures
+                    $cellules[]=number_format(round($jour, 2), 2, ',', ' ');		// moyenne jour
+                    $cellules[]=number_format(round($hebdo, 2), 2, ',', ' ');		// moyenne hebdo
+                    $lignes[]=implode($separateur, $cellules);
+                }
+                $lignes[]=implode($separateur, array("Total","","",number_format($total_heures, 1, ',', ' '),number_format(round($total_jour, 2), 2, ',', ' '),number_format(round($total_hebdo, 2), 2, ',', ' ')));
+                break;
+        
+            case "postes_renfort": 							// Postes de renfort
+                $lignes=array("Poste de renfort du $debutAlpha au $finAlpha",null);
+                $lignes[]=implode($separateur, array("Poste","Etage","Heures","Moyenne jour","Moyenne hebdo","Jours","Heures par jour","Début","Fin","Heures"));
+                foreach ($tab as $elem) {
+                    $jour = ($nbJours > 0) ? $elem[2] / $nbJours : 0;
+                    $hebdo = statistiques::average($elem[2], $debut, $fin);
+                    foreach ($elem[1] as $date) {
+                        foreach ($date[1] as $horaires) {
+                            $cellules=array();
+                            $cellules[]=$elem[0][1];									// nom du poste
+                            $cellules[]=$elem[0][2];									// Etage
+                            $cellules[]=number_format($elem[2], 2, ',', ' ');				// Nombre d'heures
+                            $cellules[]=number_format(round($jour, 2), 2, ',', ' ');		// moyenne jour
+                            $cellules[]=number_format(round($hebdo, 2), 2, ',', ' ');		// moyenne hebdo
+                            $cellules[]=dateFr($date[0]);								// date
+                            $cellules[]=number_format($date[2], 2, ',', ' ');				// heures par jour
+                            $cellules[]=$horaires[0];									// debut
+                            $cellules[]=$horaires[1];									// fin
+                            $cellules[]=number_format($horaires[2], 2, ',', ' ');			// heures
+                            $lignes[]=implode($separateur, $cellules);
+                        }
+                    }
+                }
+                break;
+        
+            // Absences
+            case "absences":
+                $debut=date($_SESSION['oups']['stat_absences_debut']);
+                $fin=date($_SESSION['oups']['stat_absences_fin']);
+                $motifs=$_SESSION['oups']['stat_absences_motifs'];
+                $totaux=$_SESSION['oups']['stat_absences_totaux'];
+            
+                // Première ligne et entête du tableau
+                $lignes[]="Statistiques sur les absences du $debut au $fin";		// Affichage du nom des colonnes
+                $tmp=array("Nom","Prénom","Total","Total d'heures");
+                foreach ($motifs as $m) {
+                    $tmp[]=str_replace("<br/>", " ", $m)." Nombre";
+                    $tmp[]=str_replace("<br/>", " ", $m)." Heures";
+                }
+                $lignes[]=implode($separateur, $tmp);
+            
+                // Contenu
+                foreach ($tab as $elem) {
+                    $cellules=array();
+                    $cellules[]=html_entity_decode($elem['nom'], ENT_QUOTES|ENT_IGNORE, "UTF-8");		// Nom et prénom
+                    $cellules[]=html_entity_decode($elem['prenom'], ENT_QUOTES|ENT_IGNORE, "UTF-8");
+                    $cellules[]=$elem['total'];								// Total
+                    $cellules[]=$elem['totalHeures'];							// Total d'heures
+                    foreach ($motifs as $m) {
+                        $cellules[]=$elem[$m]['total'];							// Nombre d'absences par motif
+                        $cellules[]=$elem[$m]['heures'];							// Heures d'absences par motif
+                    }
+                    $lignes[]=implode($separateur, $cellules);
+                }
+            
+                // Totaux (dernière ligne)
+                $cellules=array("Totaux","",$totaux['_general'],$totaux['_generalHeures']);
+                foreach ($motifs as $m) {								// Nombre d'absences par motif
+                    $cellules[]=$totaux[$m]['frequence'];
+                    $cellules[]=$totaux[$m]['heures'];
+                }
+                $lignes[]=implode($separateur, $cellules);
+                break;
+        
+            case "temps":									// Feuille de temps
+                $debutFr=dateFr($_SESSION['oups']['stat_temps_debut']);
+                $finFr=dateFr($_SESSION['oups']['stat_temps_fin']);
+                $dates=$_SESSION['stat_dates'];
+                $heures=$_SESSION['stat_heures'];
+                $agents=$_SESSION['stat_agents'];
+                $totauxGroupesHeures = $_SESSION['oups']['stat_groupesHeures'];
+                $totauxGroupesPerso = $_SESSION['oups']['stat_groupesPerso'];
+                $groupes_keys = $_SESSION['oups']['stat_groupes'];
+            
+                $lignes[]="Du $debutFr au $finFr";		// Affichage du nom des colonnes
+                $tmp=array("Nom","Prénom","Statut");
+            
+                foreach ($dates as $d) {
+                    $tmp[]=str_replace("<br/>", " ", $d[1]);
+                }
+            
+                // Totaux par groupe de postes
+                if (!empty($groupes_keys)) {
+                    foreach ($groupes_keys as $g) {
+                        $tmp[] = $g['name'];
+                    }
+                }
+            
+                $tmp[]="Total";
+                $tmp[]="Max";
+                $tmp[]="Moyenne Hebdo.";
+                $tmp[]=" Max. Hebdo.";
+                $lignes[]=implode($separateur, $tmp);
+                foreach ($tab as $elem) {
+                    $cellules=array();
+                    $cellules[]=html_entity_decode($elem['nom'], ENT_QUOTES|ENT_IGNORE, "UTF-8");		// Nom et prénom
+                    $cellules[]=html_entity_decode($elem['prenom'], ENT_QUOTES|ENT_IGNORE, "UTF-8");
+                    $cellules[]=html_entity_decode($elem['statut'], ENT_QUOTES|ENT_IGNORE, "UTF-8");	// Statut
+                    foreach ($dates as $d) {								// Heures de chaque jour
+                        $cellules[] = is_numeric(heure4($elem[$d[0]]['total'])) ? number_format(heure4($elem[$d[0]]['total']), 2, ',', '') : null;
+                    }
+                
+                    // Totaux par groupe de postes
+                    if (!empty($groupes_keys)) {
+                        foreach ($groupes_keys as $g) {
+                            $cellules[] = number_format((float) heure4($elem['groupe'][$g['id']]), 2, ',', '');
+                        }
+                    }
+                
+                    $cellules[] = is_numeric(heure4($elem['total'])) ? number_format(heure4($elem['total']), 2, ',', '') : null;               // Total d'heures sur la période
+                    $cellules[] = is_numeric(heure4($elem['max'])) ? number_format(heure4($elem['max']), 2, ',', '') : null;                   // Nombre d'heures maximum sur la période
+                    $cellules[] = is_numeric(heure4($elem['semaine'])) ? number_format(heure4($elem['semaine']), 2, ',', '') : null;           // Moyenne d'heures par semaine
+                    $cellules[] = is_numeric(heure4($elem['heuresHebdo'])) ? number_format(heure4($elem['heuresHebdo']), 2, ',', '') : null;   // Quota
+                    $lignes[]=implode($separateur, $cellules);
+                }
+                
+                // ligne "Nombre d'heures"
+                $cellules = array("Nombre d'heures","","");
+                foreach ($dates as $d) {
+                    $cellules[] = is_numeric($heures[$d[0]]) ? number_format($heures[$d[0]], 2, ',', '') : null;
+                }
+            
+                // Totaux par groupe de postes
+                if (!empty($groupes_keys)) {
+                    foreach ($groupes_keys as $g) {
+                        $cellules[] = number_format(heure4($totauxGroupesHeures[$g['id']]), 2, ',', '');
+                    }
+                }
+            
+                $cellules[] = is_numeric($_SESSION['oups']['stat_totalHeures']) ? number_format($_SESSION['oups']['stat_totalHeures'], 2, ',', '') : null;
+                $lignes[]=implode($separateur, $cellules);
+                $cellules=array("Nombre d'agents","","");						// Lignes "Nombres d'agents
+                foreach ($dates as $d) {
+                    $cellules[] = is_numeric($_SESSION['oups']['stat_nbAgents'][$d[0]]) ? $_SESSION['oups']['stat_nbAgents'][$d[0]] : null;
+                }
+                $total=0;
+                foreach ($_SESSION['oups']['stat_nbAgents'] as $elem) {
+                    $total += (float) $elem;
+                }
+                
+                // Totaux par groupe de postes
+                if (!empty($groupes_keys)) {
+                    foreach ($groupes_keys as $g) {
+                        $cellules[] = $totauxGroupesPerso[$g['id']];
+                    }
+                }
+            
+                $cellules[]=$total; //$agents[7];
+                $lignes[]=implode($separateur, $cellules);
+                break;
+        
+            case "samedis": // Samedis
+                $lignes=statistiquesSamedis($tab, $debutAlpha, $finAlpha, $separateur, $nbJours);
+                break;
+        
+            default:
+                $lignes = statistiques1($nom, $tab, $debutAlpha, $finAlpha, $separateur, $nbJours, $debut, $fin);
+                break;
+        }
+
+        $lignes=array_map("utf8_decode", $lignes);
+        $lignes=array_map("html_entity_decode_latin1", $lignes);
+
+        $content = '';
+        foreach ($lignes as $line) {
+            if ($type === 'csv') {
+                $content .= "'$line'\n";
+            } else {
+                $content .= $line . "\n";
+            }
+        }
+
+        $response = new Response($content);
+
+        $contentDisposition = $response->headers->makeDisposition('attachment', $filename);
+        $contentType = ($type === 'csv') ? 'text/csv; charset=ISO-8859-1' : 'application/octet-stream; charset=ISO-8859-1';
+
+        $response->headers->set('Content-Disposition', $contentDisposition);
+        $response->headers->set('Content-Type', $contentType);
+        
+        return $response;
+    }
 
     /**
      * Init and give Statistics Hours
@@ -2745,11 +3056,7 @@ class StatisticController extends BaseController
         }
 
         if (!$hours) {
-            if ($session->get('statisticsInit')) {
-                $hours = $session->get('statisticsHours');
-            } else { 
-                $hours = $this->config('Statistiques-Heures');
-            }
+            $hours = $session->get('statisticsInit') ? $session->get('statisticsHours') : $this->config('Statistiques-Heures');
         }
 
         return $hours;
@@ -2757,8 +3064,9 @@ class StatisticController extends BaseController
 
     /**
      * Give Hours Table
+     * @return mixed[]
      */
-    private function getHoursTables($heures_tab_global, $heures_tab, $elem, $statisticsHours)
+    private function getHoursTables($heures_tab_global, $heures_tab, $elem, $statisticsHours): array
     {
         if (!$statisticsHours) {
             return array($heures_tab, $heures_tab_global);
@@ -2787,8 +3095,9 @@ class StatisticController extends BaseController
 
     /**
      * Give used positions
+     * @return mixed[]
      */
-    private function getPositions($supportOnly = false)
+    private function getPositions($supportOnly = false): array
     {
 
         $filter = array('statistiques' => 1);
@@ -2802,11 +3111,11 @@ class StatisticController extends BaseController
 
         // Find used positions (we do not want to show positions that are never used)
         $usedPositions = array();
-        $plannings = $this->entityManager->getRepository(PlanningPosition::class)->findAll();
+        $plannings = $this->entityManager->getRepository(PlanningPosition::class)->getPositions();
 
         foreach ($plannings as $elem) {
-            if (!in_array($elem->poste(), $usedPositions)) {
-                $usedPositions[] = $elem->poste();
+            if (!in_array($elem->getPosition(), $usedPositions)) {
+                $usedPositions[] = $elem->getPosition();
             }
         }
 
@@ -2814,12 +3123,12 @@ class StatisticController extends BaseController
 
         foreach ($positions as $elem) {
             // Keep only used positions
-            if (!in_array($elem->id(), $usedPositions)) {
+            if (!in_array($elem->getId(), $usedPositions)) {
                 continue;
             }
 
             // Add floor information
-            $elem->etage($floors->find($elem->etage()) ? $floors->find($elem->etage())->valeur() : null);
+            $elem->setFloor($floors->find($elem->getFloor()) ? $floors->find($elem->getFloor())->getValue() : null);
             $result[] = $elem;
         }
 

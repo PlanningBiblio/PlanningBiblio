@@ -1,29 +1,31 @@
 <?php
+
 namespace App\Controller;
 
 use App\Controller\BaseController;
-
-use Symfony\Component\Routing\Annotation\Route;
+use App\Entity\Config;
+use App\Planno\Helper\ConfigHelper;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
-use App\Model\ConfigParam;
+use Symfony\Component\Routing\Annotation\Route;
 
 class ConfigController extends BaseController
 {
-    /**
-     * @Route("/config", name="config.index", methods={"GET"})
-     */
+    #[Route(path: '/config/{options?}', name: 'config.index', methods: ['GET'])]
     public function index(Request $request)
     {
         // Temporary folder
         $tmp_dir=sys_get_temp_dir();
 
-        $url = $this->entityManager->getRepository(ConfigParam::class)->findOneBy(
-            array('nom' => 'URL')
-        );
+        $url = $this->entityManager->getRepository(Config::class)
+            ->findOneBy(['nom' => 'URL'])
+            ->getValue();
 
-        $configParams = $this->entityManager->getRepository(ConfigParam::class)->findBy(
-            array(),
+        $technical = $request->get('options') == 'technical' ? 1 : 0;
+
+        $configParams = $this->entityManager->getRepository(Config::class)->findBy(
+            array('technical' => $technical),
             array('categorie' => 'ASC', 'ordre' => 'ASC', 'id' => 'ASC')
         );
 
@@ -31,22 +33,21 @@ class ConfigController extends BaseController
         foreach ($configParams as $cp) {
 
             // Do not display hidden information
-            if ($cp->type() == "hidden") {
+            if ($cp->getType() == 'hidden') {
                 continue;
             }
 
             $elem = array(
-                'type'          => $cp->type(),
-                'nom'           => $cp->nom(),
-                'valeur'        => html_entity_decode($cp->valeur(), ENT_QUOTES|ENT_HTML5),
-                'valeurs'       => html_entity_decode($cp->valeurs(), ENT_QUOTES|ENT_HTML5),
-                'categorie'     => $cp->categorie(),
-                'commentaires'  => html_entity_decode($cp->commentaires(), ENT_QUOTES|ENT_HTML5),
-                'extra'       => $cp->extra(),
+                'type'          => $cp->getType(),
+                'nom'           => $cp->getName(),
+                'valeur'        => html_entity_decode($cp->getValue(), ENT_QUOTES|ENT_HTML5),
+                'valeurs'       => html_entity_decode($cp->getValues(), ENT_QUOTES|ENT_HTML5),
+                'categorie'     => $cp->getCategory(),
+                'commentaires'  => html_entity_decode($cp->getComment(), ENT_QUOTES|ENT_HTML5),
             );
 
-            if ($cp->type() == "password") {
-                $elem['valeur']=decrypt($elem['valeur']);
+            if ($cp->getType() == 'password') {
+                $elem['valeur'] = '';
             }
             switch ($elem['type']) {
                 case "checkboxes":
@@ -77,93 +78,87 @@ class ConfigController extends BaseController
                     break;
             }
             $elem['commentaires'] = str_replace("[TEMP]", $tmp_dir, $elem['commentaires']);
-            $elem['commentaires'] = str_replace("[SERVER]", $url->valeur(), $elem['commentaires']);
+            $elem['commentaires'] = str_replace("[SERVER]", $url, $elem['commentaires']);
             $category = str_replace('_', '', $elem['categorie']);
-            $elements[$category][$cp->nom()] = $elem;
+            $elements[$category][$cp->getName()] = $elem;
         }
 
         $this->templateParams(array(
             'elements'  => $elements,
-            'error'     => $request->query->get('error'),
-            'post'      => $request->query->get('post'),
-            'warning'   => $request->query->get('warning')
+            'technical' => $technical
         ));
-
 
         return $this->output('config/index.html.twig');
     }
 
-    /**
-     * @Route("/config", name="config.update"), methods={"POST"})
-     */
-    public function update(Request $request, Session $session)
+    #[Route(path: '/config', name: 'config.update', methods: ['POST'])]
+    public function update(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
     {
+        if (!$this->csrf_protection($request)) {
+            return $this->redirectToRoute('access-denied');
+        }
+
         $params = $request->request->all();
+
         // Demo mode
-        if ($params && !empty($this->config('demo'))) {
+        if ($params !== [] && !empty($this->config('demo'))) {
             $error = "La modification de la configuration n'est pas autorisée sur la version de démonstration.";
             $error .= "#BR#Merci de votre compréhension";
         }
-        elseif ($params && CSRFTokenOK($params['CSRFToken'], $_SESSION)) {
-
-            $configParams = $this->entityManager->getRepository(ConfigParam::class)->findBy(
-                array(), array('categorie' => 'ASC', 'ordre' => 'ASC', 'id' => 'ASC')
-            );
-
-            foreach ($configParams as $cp) {
-                if (in_array($cp->type(), ['hidden','info']) and $cp->nom() != 'URL') {
-                    continue;
-                }
-                // boolean and checkboxes elements.
-                if (!isset($params[$cp->nom()])) {
-                    if ($cp->type() == 'boolean') {
-                        $params[$cp->nom()] = '0';
-                    } else {
-                        $params[$cp->nom()] = array();
-                    }
-                }
-                $value = $params[$cp->nom()];
-
-                if (is_string($value)) {
-                    $value = trim($value);
-                }
-
-                // App URL
-                if ($cp->nom() == 'URL') {
-                    $request::setTrustedProxies(array($request->server->get('REMOTE_ADDR')), Request::HEADER_X_FORWARDED_ALL);
-                    $value = $request->getSchemeAndHttpHost() . $request->getBaseUrl();
-                }
-                if (substr($cp->nom(), -9)=="-Password") {
-                    $value = encrypt($value);
-                }
-                // Checkboxes
-                if (is_array($value)) {
-                    $value = json_encode($value);
-                }
-
-                if ($cp->type() == 'color') {
-                    $value = filter_var($value, FILTER_CALLBACK, ['options' => 'sanitize_color']);
-                }
-
-                try {
-                    $cp->valeur($value);
-                    $this->entityManager->persist($cp);
-                }
-                catch (Exception $e) {
-                    $error = 'Une erreur est survenue pendant la modification de la configuration !';
-                }
-            }
-            $this->entityManager->flush();
-
+        elseif ($params !== []) {
+            $configHelper = new ConfigHelper();
+            $error = $configHelper->saveConfig($params);
         }
 
-        if (isset($error)) {
+        if (isset($error) && $error != null) {
             $session->getFlashBag()->add('error', $error);
         } else {
             $flash = 'La configuration a été modifiée avec succès';
             $session->getFlashBag()->add('notice', $flash);
         }
 
-        return $this->redirectToRoute('config.index');
+        $options = $params['technical'] ? ['options' => 'technical'] : [];
+
+        return $this->redirectToRoute('config.index', $options);
+    }
+
+    #[Route('/config/ldap-test', name: 'config.ldap_test', methods: ['POST'])]
+    public function ldapTest(Request $request): \Symfony\Component\HttpFoundation\Response
+    {
+        $filter = $request->get('filter');
+        $host = $request->get('host');
+        $idAttribute = $request->get('idAttribute');
+        $protocol = $request->get('protocol');
+        $rdn = $request->get('rdn');
+        $suffix = $request->get('suffix');
+        $password = $request->get('password');
+        $port = $request->get('port');
+
+        $port = filter_var($port, FILTER_SANITIZE_NUMBER_INT);
+
+        if ($password == '') {
+            $configRepository = $this->entityManager->getRepository(Config::class);
+            $password = decrypt($configRepository->getValue('LDAP-Password'));
+        }
+
+        // Connexion au serveur LDAP
+        $url = $protocol . '://' . $host . ':' . $port;
+
+        $return = ['error'];
+
+        if ($fp = @fsockopen($host, $port, $errno, $errstr, 5)) {
+            if ($ldapconn = ldap_connect($url)) {
+                ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3);
+                ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0);
+
+                if ($bind = @ldap_bind($ldapconn, $rdn, $password)) {
+                    $return = $search = @ldap_search($ldapconn, $suffix, $filter, array($idAttribute)) ? ['ok'] : ['search'];
+                } else {
+                    $return = ['bind'];
+                }
+            }
+        }
+
+        return new Response(json_encode($return));
     }
 }

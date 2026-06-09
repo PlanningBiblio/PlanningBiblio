@@ -8,17 +8,15 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
-use App\Model\Skill;
-use App\Model\Agent;
-use App\Model\Position;
+use App\Entity\Skill;
+use App\Entity\Agent;
+use App\Entity\Position;
 
-require_once(__DIR__.'/../../public/activites/class.activites.php');
+require_once(__DIR__ . '/../../legacy/Class/class.activites.php');
 
 class SkillController extends BaseController
 {
-    /**
-     * @Route("/skill", name ="skill.index", methods={"GET"})
-     */
+    #[Route(path: '/skill', name: 'skill.index', methods: ['GET'])]
     public function index(Request $request, Session $session)
     {
         //        Recherche des activites
@@ -59,17 +57,15 @@ class SkillController extends BaseController
 
         if ($result){
             foreach ($result as $elem){
-                $tab[] = html_entity_decode($elem['postes'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+                $tab[] = $elem['postes'];
             }
         }
 
-        if(!empty($tab)){
-            foreach($tab as $elem){
-                if(is_array ($elem)){
-                    foreach ($elem as $act){
-                        if (!in_array ($act, $activites_utilisees)){
-                            $activites_utilisees[] = $act;
-                        }
+        foreach($tab as $elem){
+            if(is_array ($elem)){
+                foreach ($elem as $act){
+                    if (!in_array ($act, $activites_utilisees)){
+                        $activites_utilisees[] = $act;
                     }
                 }
             }
@@ -79,8 +75,8 @@ class SkillController extends BaseController
         $agents = $this->entityManager->getRepository(Agent::class)->findAll();
         foreach ($activites as $skill) {
             foreach ($agents as $agent) {
-                if (in_array($skill->id(), $agent->skills())) {
-                    $activites_utilisees[] = $skill->id();
+                if (in_array($skill->getId(), $agent->getSkills())) {
+                    $activites_utilisees[] = $skill->getId();
                     continue 2;
                 }
             }
@@ -98,9 +94,7 @@ class SkillController extends BaseController
         return $this->output('skill/index.html.twig');
     }
 
-    /**
-     * @Route("/skill/add", name ="skill.add", methods={"GET"})
-     */
+    #[Route(path: '/skill/add', name: 'skill.add', methods: ['GET'])]
     public function add(Request $request, Session $session){
 
         $this->templateParams(array(
@@ -110,13 +104,11 @@ class SkillController extends BaseController
         return $this->output('skill/edit.html.twig');
     }
 
-    /**
-     * @Route("/skill/{id}", name = "skill.edit", methods={"GET"})
-     */
+    #[Route(path: '/skill/{id}', name: 'skill.edit', methods: ['GET'])]
     public function edit(Request $request, Session $session){
 
         $id =  $request->get('id');
-        $nom = $this->entityManager->getRepository(Skill::class)->find($id)->nom();
+        $nom = $this->entityManager->getRepository(Skill::class)->find($id)->getName();
 
         $this->templateParams(array(
             'skill_name'=>$nom,
@@ -127,10 +119,8 @@ class SkillController extends BaseController
     }
 
 
-    /**
-     * @Route("/skill", name = "skill.save", methods={"POST"})
-     */
-    public function save(Request $request, Session $session){
+    #[Route(path: '/skill', name: 'skill.save', methods: ['POST'])]
+    public function save(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse{
         $id = $request->get('id');
         $nom = $request->get('nom');
 
@@ -144,7 +134,7 @@ class SkillController extends BaseController
         } else {
             if(!$id){
                 $skill = new Skill();
-                $skill->nom($nom);
+                $skill->setName($nom);
                 try{
                     $this->entityManager->persist($skill);
                     $this->entityManager->flush();
@@ -160,7 +150,7 @@ class SkillController extends BaseController
                 }
             }else{
                 $skill = $this->entityManager->getRepository(Skill::class)->find($id);
-                $skill->nom($nom);
+                $skill->setName($nom);
                 try{
                     $this->entityManager->persist($skill);
                     $this->entityManager->flush();
@@ -180,11 +170,8 @@ class SkillController extends BaseController
         return $this->redirectToRoute('skill.index');
     }
 
-    /**
-     * @Route("/skill", name="skill.delete", methods={"DELETE"})
-     */
-
-    public function delete_skill(Request $request, Session $session){
+    #[Route(path: '/skill', name: 'skill.delete', methods: ['DELETE'])]
+    public function delete_skill(Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse{
 
         $id = $request->get('id');
 
@@ -205,10 +192,7 @@ class SkillController extends BaseController
             $session->getFlashBag()->add('notice',"L'activité a bien été supprimée");
             return $this->json("Ok");
         }
-
-
     }
-
 }
 
 ?>

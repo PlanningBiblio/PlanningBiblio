@@ -3,7 +3,7 @@
 {% extends 'base.html.twig' %}
 
 {% block specificjs %}
-  <script type='text/JavaScript' src='{{ asset("absences/js/modif.js") }}'></script>
+  <script type="text/JavaScript" src="{{ asset('js/absence.js') }}"></script>
 {% endblock %}
 
 {% block page %}
@@ -21,7 +21,7 @@
           Vous n'êtes pas autorisé(e) à modifier cette absence.<br/><br/>
           <a href='{{ asset("absence") }}'>Retour à la liste des absences</a><br/><br/>
       {% else %}
-        <form name='form' id='form' method='post' action='{{ asset("absence") }}' onsubmit='return verif_absences(\"debut=date1;fin=date2;motif\");'>
+        <form name="form" id="form" method="post" action="{{ asset('absence') }}">
           <input type="hidden" name="_token" value="{{ csrf_token('') }}" />
           <input type='hidden' name='CSRFToken' value='{{ CSRFToken }}' />
           <input type='hidden' name='perso_id' value='{{ absence.perso_id }}' />
@@ -35,6 +35,7 @@
           <table class='tableauFiches'>
             {% for agent in agents %}
               <input type='hidden' name='perso_ids[]' value='{{ agent.perso_id}}' id='hidden{{ agent.perso_id}}' class='perso_ids_hidden'/>
+              <input type="hidden" id="agent_{{ agent.perso_id }}" value="{{ agent.nom }} {{ agent.prenom }} {% if agent.deleted > 0 %} (supprimé) {% endif %}" />
             {% endfor %}
 
             {% if agents_multiples %}
@@ -59,9 +60,9 @@
 
                     {% for a in agents_tous %}
                       {% if a.id in absence.perso_id %}
-                        <option value='{{ a.id }}' id='option{{ a.id }}' style="display:none;">{{ a.nom }} {{ a.prenom }}</option>
+                        <option value='{{ a.id }}' id='option{{ a.id }}' style="display:none;">{{ a.lastname }} {{ a.firstname }}</option>
                       {% else %}
-                        <option value='{{ a.id }}' id='option{{ a.id }}'>{{ a.nom }} {{ a.prenom }}</option>
+                        <option value='{{ a.id }}' id='option{{ a.id }}'>{{ a.lastname }} {{ a.firstname }}</option>
                       {% endif %}
                     {% endfor %}
                   </select>
@@ -99,7 +100,7 @@
               <tr>
                 <td class="textAlignRight"><label>Date de début</label> </td>
                 <td style='white-space:nowrap;'>
-                  <input type='text' name='debut' value='{{ debut }}' style='width:100%;' class='datepicker'/>
+                  <input type="text" name="debut" value="{{ debut }}" style="width:100%;" class="datepicker start-date form-control"/>
                 </td>
               </tr>
                 {% if hre_debut == '00:00:00' and hre_fin == '23:59:59' %}
@@ -120,7 +121,7 @@
                   <label>Date de fin</label>
                 </td>
                 <td style='white-space:nowrap;'>
-                  <input type='text' name='fin' value='{{ fin }}' style='width:100%;' class='datepicker'/>
+                  <input type="text" name="fin" value="{{ fin }}" style="width:100%;" class="datepicker end-date form-control"/>
                 </td>
               </tr>
                 {% if hre_debut == '00:00:00' and hre_fin == '23:59:59' %}
@@ -133,6 +134,10 @@
                     <input name="hre_fin" class="planno-timepicker center ui-widget-content ui-corner-all abs-timepicker"
                       value="{% if hre_fin != '23:59:59' %}{{ hre_fin | date('H:i')}}{% endif %}"/>
                 </td>
+              </tr>
+              <tr>
+                  <td></td>
+                  <td class="invalid-feedback">{% trans from 'validators' %}Please choose a valid date interval.{% endtrans %}</td>
               </tr>
 
               <tr>
@@ -158,22 +163,22 @@
                       {% for r in reasons %}
                         {% if r.type == 2 %}
                           {% if r.valeur == absence.motif %}
-                          <option value="{{ r.valeur }}" class="padding20" selected="selected">
+                          <option value="{{ r.valeur }}" data-workflow="{{ r.notification_workflow }}" class="padding20" selected="selected">
                           {% else %}
-                          <option value="{{ r.valeur }}" class="padding20">
+                          <option value="{{ r.valeur }}" data-workflow="{{ r.notification_workflow }}" class="padding20">
                           {% endif %}
                             &nbsp;&nbsp;&nbsp;{{ r.valeur }}
                           </option>
                         {% else %}
                           {% if r.type == 1 %}
-                            <option value="{{ r.valeur }}" class="bold" disabled="disabled">
+                            <option value="{{ r.valeur }}" data-workflow="{{ r.notification_workflow }}" class="bold" disabled="disabled">
                               {{ r.valeur }}
                             </option>
                           {% else %}
                             {% if r.valeur == absence.motif %}
-                            <option value="{{ r.valeur }}" class="bold" selected="selected">
+                            <option value="{{ r.valeur }}" data-workflow="{{ r.notification_workflow }}" class="bold" selected="selected">
                             {% else %}
-                            <option value="{{ r.valeur }}" class="bold">
+                            <option value="{{ r.valeur }}" data-workflow="{{ r.notification_workflow }}" class="bold">
                             {% endif %}
                               {{ r.valeur }}
                             </option>
@@ -182,7 +187,9 @@
                       {% endfor %}
                     </select>
                   {% if admin and not config('Planook') %}
-                    <span class='pl-icon pl-icon-add' title='Ajouter' style='cursor:pointer;' id='add-motif-button'/>
+                    <button type="button" class="btn btn-icon" data-bs-toggle="modal" data-bs-target="#add-reason-modal">
+                      <span class="pl-icon pl-icon-add" title="Ajouter un motif"></span>
+                    </button>
                   {% endif %}
                 </td>
               </tr>
@@ -287,11 +294,11 @@
               <tr>
                 <td colspan='2'><br/>
                   {% if absence.editable %}
-                    <input type='button' class='ui-button ui-button-type3' value='Supprimer' id='absence-bouton-supprimer' data-id='{{ id }}'/> 
-                    <input type='button' class='ui-button ui-button-type2' value='Annuler' onclick="annuler(1);"/> 
-                    <input type='submit' class='ui-button' value='Valider'/>
+                    <input type="button" class="btn btn-danger" value="Supprimer" id="absence-bouton-suppression" data-id="{{ id }}"/> 
+                    <input type="button" class="btn btn-secondary" value="Annuler" onclick="annuler(1);"/> 
+                    <input type="submit" class="btn btn-primary" value="Valider"/>
                   {% else %}
-                    <a href='{{ asset("absence") }}' class='ui-button'>Retour</a>
+                    <a href="{{ asset('absence') }}" class="btn btn-primary">Retour</a>
                   {% endif %}
 
                 </td>
@@ -304,12 +311,45 @@
           <p>La modification des règles de récurrence n'est pas possible.</p>
         </div>
 
-        <div id="recurrence-alert" title="Modification d'une absence récurrente" class='noprint' style='display:none;'>
-          <p>Souhaitez-vous modifier uniquement cet événement, tous les événements de la série, ou cet événement et ceux qui le suivent dans la série ?</p>
+        <div class="modal modal-lg" id="recurrence-modification-modal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="recurrence-modification-title" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="recurrence-modification-title">Modification d'une absence récurrente</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans %}Close{% endtrans %}"></button>
+              </div>
+              <div class="modal-body" style="text-align:center; min-height : 109px; align-content: center;">
+                <p>Souhaitez-vous modifier uniquement cet événement, cet événement et ceux qui le suivent dans la série ou tous les événements de la série ?</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans %}Cancel{% endtrans %}</button>
+                <button type="button" class="btn btn-primary" id="modification-current">{% trans %}This event only{% endtrans %}</button>
+                <button type="button" class="btn btn-primary" id="modification-next">{% trans %}This event and the following ones{% endtrans %}</button>
+                <button type="button" class="btn btn-primary" id="modification-all">{% trans %}All events{% endtrans %}</button>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div id="recurrence-alert-suppression" title="Suppression d'une absence récurrente" class='noprint' style="display:none;">
-          <p>Souhaitez-vous supprimer uniquement cet événement, tous les événements de la série, ou cet événement et ceux qui le suivent dans la série ?</p>
+
+        <div class="modal modal-lg" id="recurrence-suppression-modal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="recurrence-suppression-title" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="recurrence-suppression-title">Suppression d'une absence récurrente</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans %}Close{% endtrans %}"></button>
+              </div>
+              <div class="modal-body" style="text-align:center; min-height : 109px; align-content: center;">
+                <p>Souhaitez-vous supprimer uniquement cet événement, cet événement et ceux qui le suivent dans la série ou tous les événements de la série ?</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans %}Cancel{% endtrans %}</button>
+                <button type="button" class="btn btn-danger" id="deletion-current">{% trans %}This event only{% endtrans %}</button>
+                <button type="button" class="btn btn-danger" id="deletion-next">{% trans %}This event and the following ones{% endtrans %}</button>
+                <button type="button" class="btn btn-danger" id="deletion-all">{% trans %}All events{% endtrans %}</button>
+              </div>
+            </div>
+          </div>
         </div>
       {% endif %}
       {% include 'absences/reasons.html.twig' %}

@@ -1,11 +1,8 @@
 <?php
 
-use App\Model\Agent;
-use App\Model\Manager;
-use App\Model\ConfigParam;
-
-use Tests\PLBWebTestCase;
+use App\Entity\Agent;
 use Tests\FixtureBuilder;
+use Tests\PLBWebTestCase;
 
 class AgentControllerCreateLoginTest extends PLBWebTestCase
 {
@@ -13,22 +10,12 @@ class AgentControllerCreateLoginTest extends PLBWebTestCase
     {
         parent::setUp();
 
+        $this->config->setParam('ICS-Server3', 0);
+
         $this->builder->delete(Agent::class);
     }
 
-    protected function setParam($name, $value)
-    {
-        $GLOBALS['config'][$name] = $value;
-        $param = $this->entityManager
-            ->getRepository(ConfigParam::class)
-            ->findOneBy(['nom' => $name]);
-
-        $param->valeur($value);
-        $this->entityManager->persist($param);
-        $this->entityManager->flush();
-    }
-
-    public function testCreateLogin()
+    public function testCreateLogin(): void
     {
         $this->setUpPantherClient();
 
@@ -61,7 +48,7 @@ class AgentControllerCreateLoginTest extends PLBWebTestCase
 
         foreach ($expectedLogins as $elem) {
             // Set config
-            $this->setParam('Auth-LoginLayout', $elem[0]);
+            $this->config->setParam('Auth-LoginLayout', $elem[0]);
 
             // Open the add agent form
             $crawler = $this->client->request('GET', '/agent/add');
@@ -72,15 +59,16 @@ class AgentControllerCreateLoginTest extends PLBWebTestCase
             $crawler->filter('input[id=mail]')->sendKeys('johnny.doe@example.com');
 
             // Submit the form
-            $button = $crawler->filter('.ui-tab-submit');
+            $button = $crawler->filter('#post_form_agent');
             $button->click();
+            $this->client->waitFor('#tableAgents');
 
             // Check the record
             $id = $this->entityManager->getRepository(Agent::class)->getMaxId();
 
             $crawler = $this->client->request('GET', '/agent/' . $id);
             $login = $crawler->filter('#login');
-            $this->assertEquals($elem[1], $login->text());
+            $this->assertEquals($elem[1],  $login->attr('value'));
         }
     }
 }

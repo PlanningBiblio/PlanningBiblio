@@ -24,14 +24,14 @@
 -- UPDATE config SET valeur='1', type='info' WHERE nom='Absences-agent-preselection';
 -- UPDATE config SET valeur='0', type='info' WHERE nom='Absences-tous';
 -- UPDATE config SET valeur='1', type='info' WHERE nom='Absences-journeeEntiere';
--- UPDATE config SET valeur='', type='info' WHERE nom='Absences-notifications-A1';
--- UPDATE config SET valeur='', type='info' WHERE nom='Absences-notifications-A2';
--- UPDATE config SET valeur='', type='info' WHERE nom='Absences-notifications-A3';
--- UPDATE config SET valeur='', type='info' WHERE nom='Absences-notifications-A4';
--- UPDATE config SET valeur='', type='info' WHERE nom='Absences-notifications-B1';
--- UPDATE config SET valeur='', type='info' WHERE nom='Absences-notifications-B2';
--- UPDATE config SET valeur='', type='info' WHERE nom='Absences-notifications-B3';
--- UPDATE config SET valeur='', type='info' WHERE nom='Absences-notifications-B4';
+-- UPDATE config SET valeur='[]', type='info' WHERE nom='Absences-notifications-A1';
+-- UPDATE config SET valeur='[]', type='info' WHERE nom='Absences-notifications-A2';
+-- UPDATE config SET valeur='[]', type='info' WHERE nom='Absences-notifications-A3';
+-- UPDATE config SET valeur='[]', type='info' WHERE nom='Absences-notifications-A4';
+-- UPDATE config SET valeur='[]', type='info' WHERE nom='Absences-notifications-B1';
+-- UPDATE config SET valeur='[]', type='info' WHERE nom='Absences-notifications-B2';
+-- UPDATE config SET valeur='[]', type='info' WHERE nom='Absences-notifications-B3';
+-- UPDATE config SET valeur='[]', type='info' WHERE nom='Absences-notifications-B4';
 -- UPDATE config SET valeur='0', type='info' WHERE nom='Absences-notifications-agent-par-agent';
 -- UPDATE config SET valeur='', type='info' WHERE nom='Absences-notifications-titre';
 -- UPDATE config SET valeur='', type='info' WHERE nom='Absences-notifications-message';
@@ -53,10 +53,10 @@
 -- -- Emploi du temps en semaines paires et impaires
 -- UPDATE config SET valeur='1', valeurs='1,2' WHERE nom='nb_semaine';
 -- UPDATE config SET valeur='0' , type='info' WHERE nom='EDTSamedi';
--- UPDATE config SET valeur='', type='info' WHERE nom='PlanningHebdo-notifications1';
--- UPDATE config SET valeur='', type='info' WHERE nom='PlanningHebdo-notifications2';
--- UPDATE config SET valeur='', type='info' WHERE nom='PlanningHebdo-notifications3';
--- UPDATE config SET valeur='', type='info' WHERE nom='PlanningHebdo-notifications4';
+-- UPDATE config SET valeur='[]', type='info' WHERE nom='PlanningHebdo-notifications1';
+-- UPDATE config SET valeur='[]', type='info' WHERE nom='PlanningHebdo-notifications2';
+-- UPDATE config SET valeur='[]', type='info' WHERE nom='PlanningHebdo-notifications3';
+-- UPDATE config SET valeur='[]', type='info' WHERE nom='PlanningHebdo-notifications4';
 -- UPDATE config SET valeur='0', type='info' WHERE nom='PlanningHebdo-notifications-agent-par-agent';
 -- -- Interdire la 2ème pause
 -- UPDATE config SET valeur='0', type='info' WHERE nom='PlanningHebdo-Pause2';
@@ -70,6 +70,8 @@
 -- UPDATE config SET valeur='0', type='info' WHERE nom='ICS-Export';
 -- -- Interdire l’ajout de serveur LDAP
 -- UPDATE config SET valeur='', type='info' WHERE nom='LDAP-Host';
+-- -- Interdire l’import LDIF
+-- UPDATE config SET valeur='', type='info' WHERE nom='LDIF-File';
 -- -- Forcer la configuration de la messagerie
 -- UPDATE config SET valeur='IsMail' WHERE nom='Mail-IsMail-IsSMTP';
 -- UPDATE config SET valeur='127.0.0.1' WHERE nom='Mail-Host';
@@ -89,7 +91,8 @@
 -- UPDATE config SET valeur='0', type='info' WHERE nom='hres4semaines';
 -- UPDATE config SET valeur='0', type='info' WHERE nom='ClasseParService';
 -- UPDATE config SET valeur='0', type='info' WHERE nom='Planning-Absences-Heures-Hebdo';
--- UPDATE config SET valeur='0', type='info' WHERE nom='Planning-Notifications';
+-- UPDATE config SET valeur='-2', type='info' WHERE nom='Planning-InitialNotification';
+-- UPDATE config SET valeur='-2', type='info' WHERE nom='Planning-ChangeNotification';
 -- UPDATE config SET valeur='0', type='info' WHERE nom='Planning-TableauxMasques';
 -- UPDATE config SET valeur='0', type='info' WHERE nom='Planning-AppelDispo';
 -- UPDATE config SET valeur='0', type='info' WHERE nom='Planning-agents-volants';
@@ -117,6 +120,6 @@
 -- INSERT INTO `select_abs` (`valeur`,`rang`, `notification_workflow`) VALUES ('Stage', '12', 'A');
 -- INSERT INTO `select_abs` (`valeur`,`rang`, `notification_workflow`) VALUES ('Non justifiée', '13', 'A');
 -- INSERT INTO `select_abs` (`valeur`,`rang`, `notification_workflow`) VALUES ('Autre', '14', 'A');
--- Adaptation des droits d'accès 
+-- -- Adaptation des droits d'accès 
 -- UPDATE `personnel` set `droits` = '[4,5,6,20,21,22,99,100,201,301,1001]' WHERE `id` = 1; 
 -- 

@@ -8,16 +8,20 @@
     <table class="statistics-div">
       <tr style='vertical-align:top;'>
         <td id='stat-col1'>
-          <form name='form' id='form' action='{{ asset("statistics/agent") }}' method='post'>
+          <form name="form" id="form" action="{{ asset('statistics/agent') }}" method="post" onsubmit="return verif_form('debut=date1;fin=date2');" novalidate>
             <input type="hidden" name="statisticsDefaultHours" id="statisticsDefaultHours" value="{{ config('Statistiques-Heures') }}" />
             <table>
               <tr>
                 <td><label >Début</label></td>
-                <td><input type='text' name='debut' value='{{ debut }}' class='datepicker'/></td>
+                <td><input type="text" name="debut" value="{{ debut }}" class="datepicker start-date form-control"/></td>
               </tr>
               <tr>
                 <td><label >Fin</label></td>
-                <td><input type='text' name='fin' value='{{ fin }}' class='datepicker'/></td>
+                <td><input type="text" name="fin" value="{{ fin }}" class="datepicker end-date form-control" required/></td>
+              </tr>
+              <tr>
+                <td></td>
+                <td class="invalid-feedback">{% trans from 'validators' %}Please choose a valid date interval.{% endtrans %}</td>
               </tr>
               <tr style='vertical-align:top'>
                 <td><label >Agents</label></td>
@@ -57,9 +61,9 @@
                       <option value='Tous'>Tous</option>
                         {% for i in 1..nbSites %}
                           {% if i in selectedSites %}
-                            <option value='{{ i }}' selected='selected'>{{ multisites[i] | raw }}</option>
+                            <option value='{{ i }}' selected='selected'>{{ multisites[i] }}</option>
                           {% else %}
-                            <option value='{{ i }}'>{{ multisites[i] | raw }}</option>
+                            <option value='{{ i }}'>{{ multisites[i] }}</option>
                           {% endif %}
                         {% endfor %}
                     </select>
@@ -68,8 +72,8 @@
               {% endif %}
               <tr>
                 <td colspan='2' style='text-align:center;padding:10px;'>
-                  <input type='button' id="reset" value='Effacer' onclick="$('#form').trigger('reset'); $('#form').submit(); location.href='{{ asset('statistics/agent') }}';" class='ui-button ui-button-type3' />
-                  &nbsp;&nbsp;<input type='submit' value='OK' class='ui-button' />
+                  <input type="button" id="reset" value="{% trans %}Clear{% endtrans %}" onclick="$('#form').trigger('reset'); $('#form').submit(); location.href='{{ asset('statistics/agent') }}';" class="btn btn-secondary" />
+                  &nbsp;&nbsp;<input type="submit" role="button" value="{% trans %}Search{% endtrans %}" class="btn btn-primary" />
                 </td>
               </tr>
               <tr>
@@ -80,8 +84,8 @@
               <tr>
                 <td>Exporter </td>
                 <td>
-                  <a href="javascript:export_stat('agent','csv');">CSV</a>&nbsp;&nbsp;
-                  <a href="javascript:export_stat('agent','xsl');">XSL</a>
+                  <a href="{{ path('statistics.export', {name: 'agent', type: 'csv'}) }}">CSV</a>&nbsp;&nbsp;
+                  <a href="{{ path('statistics.export', {name: 'agent', type: 'xsl'}) }}">XSL</a>
                 </td>
               </tr>
               <tr>
@@ -100,6 +104,7 @@
         <td>
           {% if tab is not empty %}
             <b>Statistiques par agent du {{ debut }} au {{ fin }}</b>
+            {# raw is needed because ouverture contains HTML (see statistiques::ouverture) #}
             {{ ouverture | raw }}
             <table border='1' cellspacing='0' cellpadding='0' class="statistics-table">
               <tr class='th'>
@@ -140,7 +145,7 @@
                         {% for i in 1..nbSites %}
                           {% if elem.sites[i] %}
                             <tr>
-                              <td colspan='2' style='padding-top:20px;'><u>{{ multisites[i] | raw }}</u></td>
+                              <td colspan='2' style='padding-top:20px;'><u>{{ multisites[i] }}</u></td>
                             </tr>
                             <tr>
                               <td>Total</td>
@@ -227,5 +232,5 @@
 {% endblock %}
 
 {% block specificjs %}
-  <script type="text/JavaScript" src="{{ asset('js/plb/statistics.js') }}"></script>
+  <script type="text/JavaScript" src="{{ asset('js/statistic.js') }}"></script>
 {% endblock %}

@@ -1,25 +1,40 @@
 {# planning/poste/comments.html.twig #}
 
-<div id='pl-notes-div1' {{ comments.notesDisplay }} >
+<div id="pl-notes-div1" {% if not comments.display %} style="display:none;" {% endif %} >
   {{ comments.notes | raw_black_listed }}
 </div>
 
-<div id='pl-notes-div1-validation'>
-  {{ comments.notesSuppression }}{{comments.notesValidation }}
+<div id="pl-notes-div1-validation">
+  {{ comments.deleted }}{{comments.validation }}
 </div>
 
 {% if autorisationNotes %}
-  <div id='pl-notes-div2' class='noprint'>
-    <input type='button' class='ui-button ui-button-type2 noprint' id='pl-notes-button' value='Ajouter un commentaire' />
+  <div id="pl-notes-div2" class="noprint">
+    <button id="pl-notes-button" type="button" class="btn btn-primary noprint" data-bs-toggle="modal" data-bs-target="#pl-notes-modal">Ajouter un commentaire</button>
   </div>
 
-  <div id="pl-notes-form" title="Commentaire" class='noprint' style='display:none;'>
-    <p class="validateTips" id='pl-notes-tips'>
-      Vous pouvez écrire ici un commentaire qui sera affiché en bas du planning.
-    </p>
+  <div class="modal" id="pl-notes-modal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="pl-notes-modal-title" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
 
-    <form>
-      <textarea id='pl-notes-text'>{{ comments.notesTextarea | raw_black_listed }}</textarea>
-    </form>
+        <div class="modal-header">
+          <h5 class="modal-title" id="pl-notes-modal-title">Commentaire</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans %}Close{% endtrans %}"></button>
+        </div>
+
+        <div class="modal-body" style="text-align: left;">
+          <p class="validateTips" id="pl-notes-tips">Vous pouvez écrire ici un commentaire qui sera affiché en bas du planning.</p>
+          <form id="pl-notes-form">
+            <textarea id="pl-notes-text" class="emoji-picker-textarea form-control">{{ comments.textarea | raw_black_listed }}</textarea>
+            <div class="invalid-feedback ms-1">Commentaire invalide</div>     
+          </form>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans %}Cancel{% endtrans %}</button>
+          <button type="submit" class="btn btn-primary" form="pl-notes-form">{% trans %}Save{% endtrans %}</button>
+        </div>
+      </div>
+    </div>
   </div>
 {% endif %}

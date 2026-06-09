@@ -4,14 +4,14 @@
   <tr valign='top'>
     <td style='width:400px'>Nom :</td>
     <td>
-      <span id='nom'>{{ nom }}</span>
+      <span id='nom'>{{ agent.lastName }}</span>
     </td>
   </tr>
 
   <tr>
     <td>Prénom :</td>
     <td>
-      <span id='prenom'>{{ prenom }}</span>
+      <span id='prenom'>{{ agent.firstName }}</span>
     </td>
   </tr>
 
@@ -19,35 +19,35 @@
     <td>E-mail :</td>
 
     <td>
-      <a href='mailto:{{ mail }}'><span id='mail'>{{ mail }}</span></a>
+      <a href='mailto:{{ agent.mail }}'><span id='mail'>{{ agent.mail }}</span></a>
     </td>
   </tr>
 
   {% if not config('Planook') %}
     <tr>
       <td>Statut :</td>
-      <td style='white-space:nowrap'>{{ statut | striptags | raw }}</td>
+      <td style='white-space:nowrap'>{{ agent.status }}</td>
     </tr>
 
     <tr>
       <td>Contrat :</td>
-      <td>{{ categorie }}</td>
+      <td>{{ agent.category }}</td>
     </tr>
 
     <tr>
       <td>Service de rattachement:</td>
-      <td style='white-space:nowrap'>{{ service | striptags | raw }}</td>
+      <td style='white-space:nowrap'>{{ agent.service }}</td>
     </tr>
 
     <tr>
       <td>Heures de service public par semaine:</td>
-      <td>{{ heuresHebdo_label }}</td>
+      <td>{{  agent.weeklyServiceHours | time  }}</td>
     </tr>
   {% endif %}
 
   <tr>
     <td>Heures de travail par semaine:</td>
-    <td>{{ heuresTravail_label }}</td>
+    <td>{{  agent.weeklyWorkingHours | time  }}</td>
   </tr>
 
   <tr>
@@ -66,11 +66,11 @@
     </td>
   </tr>
 
-  {% if multi_site %}
+  {% if config('Multisites-nombre') > 1 %}
     <tr style='vertical-align:top;'>
       <td>Sites :</td>
       <td>
-        {% for s in sites_select %}
+        {% for s in sitesSelect %}
           {% if s.checked %}
           {{ s.name }}<br/>
           {% endif %}
@@ -81,18 +81,18 @@
 
   <tr>
     <td>Date d'arrivée</td>
-    <td>{{ arrivee }}</td>
+    <td>{{ agent.arrival | dateOrNull('d/m/Y') }}</td>
   </tr>
 
   <tr>
     <td>Date de départ</td>
-    <td>{{ depart }}</td>
+    <td>{{ agent.departure | dateOrNull('d/m/Y') }}</td>
   </tr>
 
   {% if not config('Planook') %}
     <tr>
       <td>Matricule :</td>
-      <td>{{ matricule }}</td>
+      <td>{{ agent.employeeNumber }}</td>
     </tr>
 
     <tr>
@@ -106,13 +106,13 @@
 
     <tr style='vertical-align:top;'>
       <td>Informations :</td>
-      <td>{{ informations_str }}</td>
+      <td>{{ agent.information | nl2br }}</td>
     </tr>
 
-    {% if recup_agent > 1 %}
+    {% if config('Recup-Agent') > 0 %}
       <tr style='vertical-align:top;'>
         <td>Récupération :</td>
-        <td>{{ recup_str }}</td>
+        <td>{{ agent.recoveryMenu | nl2br }}</td>
       </tr>
     {% endif %}
   {% endif %}
@@ -120,7 +120,7 @@
   {% if id %}
     <tr>
       <td>Login :</td>
-      <td>{{ login }}</td>
+      <td>{{ agent.login }}</td>
     </tr>
   {% endif %}
 </table>

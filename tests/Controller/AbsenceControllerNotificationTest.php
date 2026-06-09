@@ -1,11 +1,9 @@
 <?php
 
-use App\Model\Agent;
-use App\Model\ConfigParam;
-use App\Model\Manager;
-
-use Tests\PLBWebTestCase;
+use App\Entity\Agent;
+use App\Entity\Manager;
 use Tests\FixtureBuilder;
+use Tests\PLBWebTestCase;
 
 class AbsenceControllerNotificationTest extends PLBWebTestCase
 {
@@ -18,28 +16,16 @@ class AbsenceControllerNotificationTest extends PLBWebTestCase
         $GLOBALS['config']['Absences-validation'] = 1;
     }
 
-    protected function setParam($name, $value)
-    {
-        $GLOBALS['config'][$name] = $value;
-        $param = $this->entityManager
-            ->getRepository(ConfigParam::class)
-            ->findOneBy(['nom' => $name]);
-
-        $param->valeur($value);
-        $this->entityManager->persist($param);
-        $this->entityManager->flush();
-    }
-
     private function createAbsenceFor($agent, $status = 0)
     {
         $date = new DateTime('now + 3 day');
 
         $absence = new \absences();
-        $absence->debut = $date->format('Y-m-d');
-        $absence->fin = $date->format('Y-m-d');
+        $absence->debut = $date->format('d/m/Y');
+        $absence->fin = $date->format('d/m/Y');
         $absence->hre_debut = '00:00:00';
         $absence->hre_fin = '23:59:59';
-        $absence->perso_ids = array($agent->id());
+        $absence->perso_ids = array($agent->getId());
         $absence->commentaires = '';
         $absence->motif = 'AbsenceControllerAbsenceStatusesTest';
         $absence->valide = $status;
@@ -53,28 +39,28 @@ class AbsenceControllerNotificationTest extends PLBWebTestCase
         return $absence->id;
     }
 
-    public function testAbsenceList()
+    public function testAbsenceList(): void
     {
-        $this->setParam('Absences-notifications-agent-par-agent', 1);
-        $this->setParam('Multisites-nombre', 1);
+        $this->config->setParam('Absences-notifications-agent-par-agent', 1);
+        $this->config->setParam('Multisites-nombre', 1);
 
         $client = static::createClient();
 
         $jdupont = $this->builder->build(Agent::class, array(
             'login' => 'jdupont', 'nom' => 'Dupont', 'prenom' => 'Jean',
-            'sites' => '', 'droits' => array(99,100)
+            'sites' => [], 'droits' => array(99,100)
         ));
         $jdevoe = $this->builder->build(Agent::class, array(
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
-            'sites' => '["1","2"]', 'droits' => array(99,100)
+            'sites' => ["1","2"], 'droits' => array(99,100)
         ));
         $abreton = $this->builder->build(Agent::class, array(
             'login' => 'abreton', 'nom' => 'Breton', 'prenom' => 'Aubert',
-            'sites' => '["1"]', 'droits' => array(99,100)
+            'sites' => ["1"], 'droits' => array(99,100)
         ));
         $kboivin = $this->builder->build(Agent::class, array(
             'login' => 'kboivin', 'nom' => 'Boivin', 'prenom' => 'Karel',
-            'sites' => '["2"]', 'droits' => array(202,502,99,100)
+            'sites' => ["2"], 'droits' => array(202,502,99,100)
         ));
 
         $this->createAbsenceFor($jdupont, 2);
@@ -84,18 +70,18 @@ class AbsenceControllerNotificationTest extends PLBWebTestCase
 
         // Make kboivin manager of jdupont
         $manager = new Manager();
-        $manager->perso_id($jdupont);
-        $manager->notification_level1(0);
+        $manager->setUser($jdupont);
+        $manager->setLevel1Notification(0);
         $kboivin->addManaged($manager);
 
         // Make kboivin manager of abreton
         $manager = new Manager();
-        $manager->perso_id($abreton);
-        $manager->notification_level1(0);
+        $manager->setUser($abreton);
+        $manager->setLevel1Notification(0);
         $kboivin->addManaged($manager);
 
         // Login with agent without rights for absences
-        $this->logInAgent($jdupont, $jdupont->droits());
+        $this->logInAgent($jdupont, $jdupont->getACL());
         $crawler = $client->request('GET', '/absence?perso_id=0');
 
         $this->assertSelectorNotExists('select#perso_id');
@@ -106,7 +92,7 @@ class AbsenceControllerNotificationTest extends PLBWebTestCase
         $this->assertStringContainsString('Dupont Jean', $result->text('Node does not exist', false));
 
         // Login with agent having rights for absences
-        $this->logInAgent($kboivin, $kboivin->droits());
+        $this->logInAgent($kboivin, $kboivin->getACL());
         $crawler = $client->request('GET', '/absence?perso_id=0');
 
         $agents_select = $crawler->filter('select#perso_id option');

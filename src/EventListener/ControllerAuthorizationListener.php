@@ -10,8 +10,8 @@ use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\Yaml\Yaml;
 
-use App\Model\Agent;
-use App\Model\Access;
+use App\Entity\Agent;
+use App\Entity\Access;
 
 use ReflectionClass;
 
@@ -35,7 +35,7 @@ class ControllerAuthorizationListener
         $this->entityManager = $em;
     }
 
-    public function onKernelRequest(RequestEvent $event)
+    public function onKernelRequest(RequestEvent $event): void
     {
         $page = $event->getRequest()->getPathInfo();
         $page = preg_replace('/([a-z-\/]*).*/', "$1", $page);
@@ -46,9 +46,14 @@ class ControllerAuthorizationListener
             return;
         }
 
+        if (substr($page, 0, 12) == '/unsubscribe') {
+            return;
+        }
+
         // Droits necessaires pour consulter la page en cours
+        $loginId = $event->getRequest()->getSession()->get('loginId');
         $accesses = $this->entityManager->getRepository(Access::class)->findBy(array('page' => $page));
-        $logged_in = $this->entityManager->find(Agent::class, $_SESSION['login_id']);
+        $logged_in = $this->entityManager->find(Agent::class, $loginId);
 
         $route = $event->getRequest()->attributes->get('_route');
 
@@ -77,7 +82,7 @@ class ControllerAuthorizationListener
         }
     }
 
-    private function canAccess($route)
+    private function canAccess($route): bool
     {
         if (!isset($this->permissions[$route])) {
             return true;
@@ -114,12 +119,19 @@ class ControllerAuthorizationListener
         return false;
     }
 
-    private function triggerAccessDenied(RequestEvent $event){
+    private function triggerAccessDenied(RequestEvent $event): void
+    {
+        $request = $event->getRequest();
+        $session = $request->getSession();
+        $reason = $session->get('AccessDeniedReason', '');
+        $session->remove('AccessDeniedReason');
 
-        $body = $this->twig->render('access-denied.html.twig', $this->templateParams);
+        $params = array_merge($this->templateParams, ['reason' => $reason]);
+
+        $content = $this->twig->render('access-denied.html.twig', $params);
 
         $response = new Response();
-        $response->setContent($body);
+        $response->setContent($content);
         $response->setStatusCode(403);
 
         $event->setResponse($response);

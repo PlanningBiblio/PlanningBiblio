@@ -5,13 +5,13 @@ namespace App\Repository;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\Common\Collections\Criteria;
 
-use App\Model\Agent;
-use App\Model\Position;
-use App\Model\Skill;
+use App\Entity\Agent;
+use App\Entity\Position;
+use App\Entity\Skill;
 
 class SkillRepository extends EntityRepository
 {
-    public function purge($id)
+    public function purge($id): int
     {
         $entityManager = $this->getEntityManager();
         $all_skills = $entityManager->getRepository(Position::class)->getAllSkills();
@@ -32,7 +32,7 @@ class SkillRepository extends EntityRepository
         return 1;
     }
 
-    public function purgeAll($limit_date) {
+    public function purgeAll($limit_date): int {
         $entityManager = $this->getEntityManager();
         $builder = $entityManager->createQueryBuilder();
         $builder->select('a')
@@ -43,10 +43,9 @@ class SkillRepository extends EntityRepository
         $results = $builder->getQuery()->getResult();
         $deleted_skill = 0;
         foreach ($results as $result) {
-            $deleted = $this->purge($result->id());
-            if ($deleted) $deleted_skill++;
+            $deleted = $this->purge($result->getId());
+            if ($deleted !== 0) $deleted_skill++;
         }
         return $deleted_skill;
     }
-
 }

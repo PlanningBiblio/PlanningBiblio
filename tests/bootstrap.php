@@ -1,9 +1,12 @@
 <?php
 require_once __DIR__.'/../vendor/autoload.php';
 
-use Doctrine\ORM\Tools\Setup;
+use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Tools\Setup;
 use Symfony\Component\Dotenv\Dotenv;
+
+exec(__DIR__ . '/../vendor/bin/bdi detect drivers');
 
 $_SERVER['APP_ENV'] = 'test';
 $_SERVER['KERNEL_CLASS'] = 'App\Kernel';
@@ -24,8 +27,6 @@ $config['dbport'] = preg_replace($pattern, '\4', $database_url);
 $config['dbname'] = preg_replace($pattern, '\5', $database_url);
 $config['dbprefix'] = $_ENV['DATABASE_PREFIX'];
 
-//$config = parse_ini_file(__DIR__ . '/config.ini');
-
 $dbname = $config['dbname'];
 $dbprefix='';
 
@@ -37,8 +38,8 @@ $sql[]="DROP DATABASE IF EXISTS `$dbname`;";
 $sql[]="CREATE DATABASE IF NOT EXISTS `$dbname` CHARACTER SET utf8 COLLATE utf8_bin;";
 $sql[]="USE $dbname;";
 
-include __DIR__ . '/../public/setup/db_structure.php';
-include __DIR__ . '/../public/setup/db_data.php';
+include __DIR__ . '/../legacy/migrations/schema.php';
+include __DIR__ . '/../legacy/migrations/data.php';
 
 if ($dbconn) {
     foreach ($sql as $elem) {
@@ -47,11 +48,19 @@ if ($dbconn) {
     mysqli_close($dblink);
 }
 
-include_once(__DIR__ . '/../init/init.php');
-include_once(__DIR__.'/../init/init_templates.php');
+// Run migrations
+exec(__DIR__ . '/../bin/console doctrine:migrations:migrate --env=test -q');
 
-$entitiesPath = array('src/Model');
-$emConfig = Setup::createAnnotationMetadataConfiguration($entitiesPath, true);
+include_once(__DIR__ . '/../init/init.php');
+include_once(__DIR__ . '/../init/init_templates.php');
+
+$entitiesPath = array('src/Entity');
+$emConfig = Setup::createAttributeMetadataConfiguration($entitiesPath, true);
+
+// Handle table prefix.
+$evm = new \Doctrine\Common\EventManager;
+$tablePrefix = new App\Entity\Extensions\TablePrefix($config['dbprefix']);
+$evm->addEventListener(\Doctrine\ORM\Events::loadClassMetadata, $tablePrefix);
 
 $dbParams = array(
     'driver'   => 'pdo_mysql',
@@ -62,4 +71,5 @@ $dbParams = array(
 );
 
 global $entityManager;
-$entityManager = EntityManager::create($dbParams, $emConfig);
+$conn = DriverManager::getConnection($dbParams);
+$entityManager = new EntityManager($conn, $emConfig, $evm);

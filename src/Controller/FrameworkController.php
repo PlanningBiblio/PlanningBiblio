@@ -3,24 +3,22 @@
 namespace App\Controller;
 
 use App\Controller\BaseController;
-use App\Model\PlanningPositionLines;
-use App\Model\Position;
-use App\PlanningBiblio\Framework;
-
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use App\Entity\PlanningPositionLines;
+use App\Entity\Position;
+use App\Planno\Framework;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\Routing\Annotation\Route;
 
-require_once(__DIR__ . '/../../public/planning/poste/fonctions.php');
-require_once(__DIR__ . '/../../public/postes/class.postes.php');
+require_once(__DIR__ . '/../../legacy/Class/class.planningFunctions.php');
+require_once(__DIR__ . '/../../legacy/Class/class.postes.php');
 
 class FrameworkController extends BaseController
 {
-    /**
-     * @Route ("/framework", name="framework.index", methods={"GET"})
-     */
+    #[Route(path: '/framework', name: 'framework.index', methods: ['GET'])]
     public function index (Request $request, Session $session){
         $nbSites = $this->config('Multisites-nombre');
 
@@ -47,11 +45,7 @@ class FrameworkController extends BaseController
 
         if($tableaux){
             foreach ($tableaux as &$elem) {
-                if (array_key_exists($elem['tableau'], $tabAffect)) {
-                    $utilisation=dateFr($tabAffect[$elem['tableau']]);
-                } else {
-                    $utilisation="Jamais";
-                }
+                $utilisation = array_key_exists($elem['tableau'], $tabAffect) ? dateFr($tabAffect[$elem['tableau']]) : "Jamais";
                 $elem['tabAffect'] = $utilisation;
 
                 if ($nbSites > 1){
@@ -62,11 +56,7 @@ class FrameworkController extends BaseController
         // Récupération de tableaux supprimés dans l'année
         if (!empty($tableauxSupprimes)) {
             foreach ($tableauxSupprimes as &$elem) {
-                if (array_key_exists($elem['tableau'], $tabAffect)) {
-                    $utilisation=dateFr($tabAffect[$elem['tableau']]);
-                } else {
-                    $utilisation="Jamais";
-                }
+                $utilisation = array_key_exists($elem['tableau'], $tabAffect) ? dateFr($tabAffect[$elem['tableau']]) : "Jamais";
                 $elem['tabAffect'] = $utilisation;
             }
         }
@@ -90,8 +80,8 @@ class FrameworkController extends BaseController
             foreach ($lignes as &$elem) {
                 $db2 = new \db();
                 $db2->select("pl_poste_lignes", "*", "poste='{$elem['id']}' AND type='ligne'");
-                $delete = $db2->result ? false : true;
-                $elem['delete'] = $delete == true ? true : false;
+                $delete = !(bool) $db2->result;
+                $elem['delete'] = $delete == true;
             }
         }
 
@@ -109,10 +99,9 @@ class FrameworkController extends BaseController
         return $this->output("/framework/index.html.twig");
     }
 
-    /**
-     * @Route ("/framework/info", name="framework.save_table_info", methods={"POST"})
-     */
-    public function saveInfo(Request $request, Session $session){
+    #[Route(path: '/framework/info', name: 'framework.save_table_info', methods: ['POST'])]
+    public function saveInfo(Request $request, Session $session): JsonResponse
+    {
         $post = $request->request->all();
         $id = $post["id"];
         $CSRFToken = $post["CSRFToken"];
@@ -149,7 +138,7 @@ class FrameworkController extends BaseController
             $t->id = $id;
             $t->CSRFToken = $CSRFToken;
 
-            $not_used = $t->is_used() ? false : true;
+            $not_used = !$t->is_used();
             if ($not_used) {
                 $t->setNumbers($nombre);
             }
@@ -167,15 +156,13 @@ class FrameworkController extends BaseController
             return $this->json('OK');
         }
     }
-     /**
-     * @Route ("/framework/add", name="framework.add_table", methods={"GET"})
-     */
-     public function addTable (Request $request, Session $session){
+
+    #[Route(path: '/framework/add', name: 'framework.add_table', methods: ['GET'])]
+    public function addTable (Request $request, Session $session): Response
+    {
         $CSRFToken = $GLOBALS['CSRFSession'];
-        $cfgType = $request->get("cfg-type");
-        $cfgTypeGet = $request->get("cfg-type");
-        $tableauNumero = $request->request->get("numero");
-        $tableauGet = $request->get("numero");
+        $cfgType = $request->query->get('cfg-type');
+        $cfgTypeGet = $request->query->get('cfg-type');
         $nbSites = $this->config('Multisites-nombre');
 
         // Choix de l'onglet (cfg-type)
@@ -189,13 +176,6 @@ class FrameworkController extends BaseController
             $cfgType = "infos";
         }
         $_SESSION['cfg_type'] = $cfgType;
-
-        $tableauNom = '';
-        if ($tableauNumero) {
-            $db = new \db();
-            $db->select2("pl_poste_tab", "*", array("tableau"=>$tableauNumero));
-            $tableauNom = $db->result[0]['nom'];
-        }
 
         $multisites = array();
         if ($nbSites>1) {
@@ -214,8 +194,8 @@ class FrameworkController extends BaseController
                 "nbSites"       => $nbSites,
                 "nombre"        => null,
                 "site"          => null,
-                "tableauNom"    => $tableauNom,
-                "tableauNumero" => $tableauNumero,
+                'tableauNom'    => null,
+                'tableauNumero' => null,
                 "tableaux"      => null,
                 "tabs"          => null,
                 "used"          => false,
@@ -223,22 +203,15 @@ class FrameworkController extends BaseController
         );
 
         return $this->output('framework/edit_tab.html.twig');
+    }
 
-     }
-    /**
-     * @Route ("/framework/{id}", name="framework.edit_table", methods={"GET"})
-     */
-    public function editTable (Request $request, Session $session){
+    #[Route(path: '/framework/{id}', name: 'framework.edit_table', methods: ['GET'])]
+    public function editTable (Request $request, Session $session): Response
+    {
         $CSRFToken = $GLOBALS['CSRFSession'];
-        $cfgType = $request->get("cfg-type");
-        $tableauNumero = $request->request->get("id");
-        $tableauGet = $request->get("id");
+        $cfgType = $request->query->get('cfg-type');
+        $tableauNumero = $request->attributes->get('id');
         $nbSites = $this->config('Multisites-nombre');
-
-        // Choix du tableau
-        if ($tableauGet) {
-            $tableauNumero = $tableauGet;
-        }
 
         // Choix de l'onglet (cfg-type)
         if (!$cfgType and in_array("cfg_type", $_SESSION)) {
@@ -271,7 +244,6 @@ class FrameworkController extends BaseController
         if ($t->is_used()) {
             $cfgType = 'infos';
         }
-
 
         // Site
         if ($nbSites > 1 && $tableauNumero) {
@@ -328,7 +300,6 @@ class FrameworkController extends BaseController
             }
         }
 
-
         $this->templateParams(
             array(
                 "cfgType"       => $cfgType,
@@ -350,24 +321,21 @@ class FrameworkController extends BaseController
         return $this->output('framework/edit_tab.html.twig');
     }
 
-    /**
-     * @Route ("/framework", name="framework.save_table", methods={"POST"})
-     */
-    public function saveTable (Request $request, Session $session){
+    #[Route(path: '/framework', name: 'framework.save_table', methods: ['POST'])]
+    public function saveTable (Request $request, Session $session): RedirectResponse
+    {
         $post = $request->request->all();
         $CSRFToken = $post['CSRFToken'];
         $tableauNumero = $post['numero'];
 
         $framework = new Framework();
         $framework->id = $tableauNumero;
+
         if ($framework->is_used()) {
-            return $this->redirectToRoute('framework.edit_table',
-                array(
-                    'id' => $tableauNumero,
-                    'cfg-type' => 0,
-                    'msg' => 'Tableau déjà utilisé. Vous ne pouvez pas modifier les horaires.',
-                    'msgType' => 'error'
-                ));
+            $error = 'Tableau déjà utilisé. Vous ne pouvez pas modifier les horaires.';
+            $session->getFlashBag()->add('error', $error);
+
+            return $this->redirectToRoute('framework.edit_table', ['id' => $tableauNumero, 'cfg-type' => 0]);
         }
 
         if (isset($post['action'])) {
@@ -376,7 +344,6 @@ class FrameworkController extends BaseController
             $db->delete("pl_poste_horaires", array("numero"=>$tableauNumero));
 
             $keys = array_keys($post);
-
             foreach ($keys as $key) {
                 if ($key != "page" and $key != "action" and $key != "numero") {
                     $tmp = explode("_", $key);				// debut_1_22
@@ -402,22 +369,22 @@ class FrameworkController extends BaseController
             $db = new \db();
             $db->CSRFToken = $CSRFToken;
             $db->insert("pl_poste_horaires", $values);
+
             if (!$db->error) {
-                $msg = "Les horaires ont été modifiés avec succès";
-                $msgType = "success";
+                $notice = 'Les horaires ont été modifiés avec succès';
+                $session->getFlashBag()->add('notice', $notice);
             } else {
-                $msg = "Une erreur est survenue lors de l'enregistrement des horaires";
-                $msgType = "error";
+                $error = 'Une erreur est survenue lors de l\'enregistrement des horaires';
+                $session->getFlashBag()->add('error', $error);
             }
 
-            return $this->redirectToRoute('framework.edit_table', array("id" => $tableauNumero, "cfg-type"=> $post['cfg-type'], "msg" => $msg, "msgType" => $msgType));
+            return $this->redirectToRoute('framework.edit_table', ['id' => $tableauNumero, 'cfg-type' => $post['cfg-type']]);
         }
     }
 
-    /**
-     * @Route ("framework-table/save-line", name="framework.save_table_line", methods={"POST"})
-     */
-    public function saveTableLine(Request $request, Session $session){
+    #[Route(path: 'framework-table/save-line', name: 'framework.save_table_line', methods: ['POST'])]
+    public function saveTableLine(Request $request, Session $session): JsonResponse
+    {
         $form_post = $request->request->all();
         $CSRFToken = $form_post['CSRFToken'];
         $tableauNumero = $form_post['id'];
@@ -452,11 +419,11 @@ class FrameworkController extends BaseController
                 }
 
                 $line = new PlanningPositionLines();
-                $line->numero($tableauNumero);
-                $line->tableau($tab[1]);
-                $line->ligne($tab[2]);
-                $line->poste($value);
-                $line->type($type);
+                $line->setNumber($tableauNumero);
+                $line->setTable($tab[1]);
+                $line->setLine($tab[2]);
+                $line->setPosition($value);
+                $line->setType($type);
 
                 $this->entityManager->persist($line);
                 $this->entityManager->flush();
@@ -496,10 +463,9 @@ class FrameworkController extends BaseController
         return $this->json('ok');
     }
 
-     /**
-     * @Route ("/framework", name="framework.delete_table", methods={"DELETE"})
-     */
-    public function deleteTable (Request $request, Session $session){
+     #[Route(path: '/framework', name: 'framework.delete_table', methods: ['DELETE'])]
+    public function deleteTable (Request $request, Session $session): JsonResponse
+    {
         $post = $request->request->all();
         $CSRFToken = $post['CSRFToken'];
         $tableau = $post['tableau'];
@@ -524,12 +490,12 @@ class FrameworkController extends BaseController
         return $this->json('ok');
     }
 
-     /**
-     * @Route ("/framework-batch_delete", name="framework.delete_selected_tables", methods={"GET"})
-     */
-    public function deleteSelectedTables (Request $request, Session $session){
-        $CSRFToken = $request->get("CSRFToken");
-        $ids = $request->get("ids");
+    // TODO, FIXME : this route should use the POST method
+    #[Route(path: '/framework-batch_delete', name: 'framework.delete_selected_tables', methods: ['GET'])]
+    public function deleteSelectedTables (Request $request, Session $session): JsonResponse
+    {
+        $CSRFToken = $request->query->get('CSRFToken');
+        $ids = $request->query->get('ids');
         $dbprefix = $GLOBALS['dbprefix'];
 
         $today = date("Y-m-d H:i:s");
@@ -546,13 +512,12 @@ class FrameworkController extends BaseController
         return $this->json('ok');
     }
 
-    /**
-    * @Route ("/framework/restore_table", name="framework.restore_table", methods={"POST"})
-    */
-    public function restoreTable (Request $request, Session $session) {
-        $CSRFToken = $request->get("CSRFToken");
-        $id = $request->get("id");
-        $name = $request->get("name");
+    #[Route(path: '/framework/restore_table', name: 'framework.restore_table', methods: ['POST'])]
+    public function restoreTable (Request $request, Session $session): JsonResponse
+    {
+        $CSRFToken = $request->request->get('CSRFToken');
+        $id = $request->request->get('id');
+        $name = $request->request->get('name');
 
         $postes=array();
 
@@ -604,17 +569,15 @@ class FrameworkController extends BaseController
         return $this->json('OK');
     }
 
-    /**
-     * @Route ("/framework-group/add", name="framework.add_group", methods={"GET"})
-     */
-    public function addGroup (Request $request, Session $session){
+    #[Route(path: '/framework-group/add', name: 'framework.add_group', methods: ['GET'])]
+    public function addGroup (Request $request, Session $session): Response
+    {
         // Initialisation des variables
-        $id = $request->get("id");
         $CSRFToken = $GLOBALS['CSRFSession'];
         $multisites = array();
 
-        if($this->config('Multisites-nombre') > 1){
-            for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++){
+        if ($this->config('Multisites-nombre') > 1) {
+            for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
                 $multisites[$i] = $this->config("Multisites-site{$i}");
             }
         }
@@ -653,17 +616,16 @@ class FrameworkController extends BaseController
         return $this->output('framework/edit_group.html.twig');
     }
 
-    /**
-     * @Route ("/framework-group/{id}", name="framework.edit_group", methods={"GET"})
-     */
-    public function editGroup (Request $request, Session $session){
+    #[Route(path: '/framework-group/{id}', name: 'framework.edit_group', methods: ['GET'])]
+    public function editGroup (Request $request, Session $session): Response
+    {
         // Initialisation des variables
-        $id = $request->get("id");
+        $id = $request->attributes->get('id');
         $CSRFToken = $GLOBALS['CSRFSession'];
         $multisites = array();
 
-        if($this->config('Multisites-nombre') > 1){
-            for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++){
+        if ($this->config('Multisites-nombre') > 1) {
+            for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
                 $multisites[$i] = $this->config("Multisites-site{$i}");
             }
         }
@@ -688,7 +650,6 @@ class FrameworkController extends BaseController
         $key = array_keys($groupes, $groupe);
         unset($groupes[$key[0]]);
 
-
         $semaine = array("lundi","mardi","mercredi","jeudi","vendredi","samedi");
         if ($this->config('Dimanche')) {
             $semaine[] = "dimanche";
@@ -711,10 +672,9 @@ class FrameworkController extends BaseController
         return $this->output('framework/edit_group.html.twig');
     }
 
-    /**
-     * @Route ("/framework-group", name="framework.save_group", methods={"POST"})
-     */
-    public function saveGroup (Request $request, Session $session){
+    #[Route(path: '/framework-group', name: 'framework.save_group', methods: ['POST'])]
+    public function saveGroup (Request $request, Session $session): RedirectResponse
+    {
         $post = $request->request->all();
         $CSRFToken = $post['CSRFToken'];
         unset($post['CSRFToken']);
@@ -727,10 +687,9 @@ class FrameworkController extends BaseController
         return $this->redirectToRoute('framework.index');
     }
 
-    /**
-     * @Route ("/framework-group", name="framework.delete_group", methods={"DELETE"})
-     */
-    public function deleteGroup (Request $request, Session $session){
+    #[Route(path: '/framework-group', name: 'framework.delete_group', methods: ['DELETE'])]
+    public function deleteGroup (Request $request, Session $session): JsonResponse
+    {
         $CSRFToken =  $request->request->get("CSRFToken");
         $id = $request->request->get("id");
         
@@ -741,27 +700,24 @@ class FrameworkController extends BaseController
         return $this->json(null);
     }
 
-    /**
-     * @Route ("/framework-line/add", name="framework.add_line", methods={"GET"})
-     */
-    public function addLine (Request $request, Session $session){
+    #[Route(path: '/framework-line/add', name: 'framework.add_line', methods: ['GET'])]
+    public function addLine (Request $request, Session $session): Response
+    {
         $CSRFToken = $GLOBALS['CSRFSession'];
 
-        $this->templateParams(
-            array(
-                "CSRFToken"    => $CSRFToken,
-            )
-        );
-        return $this->output("/framework/edit_lines.html.twig");
+        $this->templateParams([
+            'CSRFToken' => $CSRFToken
+        ]);
+
+        return $this->output('framework/edit_lines.html.twig');
     }
 
-    /**
-     * @Route ("/framework-line/{id}", name="framework.edit_line", methods={"GET"})
-     */
-    public function editLine (Request $request, Session $session){
+    #[Route(path: '/framework-line/{id}', name: 'framework.edit_line', methods: ['GET'])]
+    public function editLine (Request $request, Session $session): Response
+    {
         // Initialisation des variables
         $CSRFToken = $GLOBALS['CSRFSession'];
-        $id = $request->get('id');
+        $id = $request->attributes->get('id');
 
         // Récupération de la ligne
         $db = new \db();
@@ -778,10 +734,9 @@ class FrameworkController extends BaseController
         return $this->output("/framework/edit_lines.html.twig");
     }
 
-    /**
-     * @Route ("/framework-line", name="framework.save_line", methods={"POST"})
-     */
-    public function saveLine (Request $request, Session $session){
+    #[Route(path: '/framework-line', name: 'framework.save_line', methods: ['POST'])]
+    public function saveLine (Request $request, Session $session): RedirectResponse
+    {
         $post = $request->request->all();
         $id = $post['id'];
         $nom = $post['nom'];
@@ -812,17 +767,14 @@ class FrameworkController extends BaseController
                 $msg = "Une erreur a eu lieu lors de l'enregistrement de la ligne." ;
                 $msgType = "error";
             }
-
         }
 
         return $this->redirectToRoute('framework.index', array("msg" => $msg, "msgType" => $msgType));
-
     }
 
-    /**
-     * @Route ("/framework-line", name="framework.delete_line", methods={"DELETE"})
-     */
-    public function deleteLine (Request $request, Session $session){
+    #[Route(path: '/framework-line', name: 'framework.delete_line', methods: ['DELETE'])]
+    public function deleteLine (Request $request, Session $session): JsonResponse
+    {
         $post = $request->request->all();
         $id = $post['id'];
         $CSRFToken = $post['CSRFToken'];
@@ -831,99 +783,93 @@ class FrameworkController extends BaseController
         $t->id = $id;
         $t->CSRFToken = $CSRFToken;
         $t->deleteLine();
+
         return $this->json('ok');
     }
 
-    /**
-     * @Route ("/framework/copy/{id}", name="framework.copy_table", methods={"GET", "POST"})
-     */
-    public function copyTable (Request $request, Session $session){
-
+    #[Route(path: '/framework/copy', name: 'framework.copy_table', methods: ['POST'])]
+    public function copyTable (Request $request, Session $session): RedirectResponse
+    {
         // Initilisation des variables
-        $confirm = $request->get('confirm');
-        $CSRFToken = $request->get('CSRFToken');
-        $nom = trim($request->get('nom'));
-        $numero1 = $request->get('id');
-        $confirm = filter_var($confirm, FILTER_CALLBACK, array("options"=>"sanitize_on"));
+        $CSRFToken = $request->request->get('CSRFToken');
+        $nom = trim($request->request->get('nom'));
+        $numero1 = $request->request->get('id');
         $dbprefix = $GLOBALS['dbprefix'];
 
-        if ($confirm) {
-            //		Copie des horaires
-            $values = array();
-            $db = new \db();
-            $db->select2("pl_poste_horaires", array("debut","fin","tableau"), array("numero"=>$numero1), "ORDER BY `tableau`,`debut`,`fin`");
-            if ($db->result) {
-                $db2 = new \db();
-                $db2->select2("pl_poste_tab", array(array("name"=>"MAX(tableau)","as"=>"tableau"),"site"));
-                $numero2 = $db2->result[0]['tableau']+1;
-                foreach ($db->result as $elem) {
-                    if (array_key_exists('tableau', $elem)) {
-                        $values[] = array(":debut"=>$elem['debut'], ":fin"=>$elem['fin'], ":tableau"=>$elem['tableau'], ":numero"=>$numero2);
-                    }
-                }
-                $req = "INSERT INTO `{$dbprefix}pl_poste_horaires` (`debut`,`fin`,`tableau`,`numero`) VALUES (:debut, :fin, :tableau, :numero);";
-                $db2 = new \dbh();
-                $db2->CSRFToken = $CSRFToken;
-                $db2->prepare($req);
-                foreach ($values as $elem) {
-                    $db2->execute($elem);
-                }
-
-                // Récupération du site
-                $db2 = new \db();
-                $db2->select2("pl_poste_tab", "site", array("tableau"=>$numero1));
-                $site=$db2->result[0]["site"];
-
-                // Enregistrement du nouveau tableau
-                $db2 = new \db();
-                $db2->CSRFToken = $CSRFToken;
-                $db2->insert("pl_poste_tab", array("nom"=>$nom ,"tableau"=>$numero2, "site"=>$site));
-            } else {		// par sécurité, si pas d'horaires à  copier, on stop le script pour éviter d'avoir une incohérence dans les numéros de tableaux
-               return new RedirectResponse($this->config('URL')."/index.php?page=planning/postes_cfg/modif.php&cfg-type=horaires&numero={$numero1}");
-
-            }
-
-            //		Copie des lignes
-            $values = array();
-            $db->select2("pl_poste_lignes", array("tableau","ligne","poste","type"), array("numero"=>$numero1), "ORDER BY `tableau`,`ligne`");
-            if ($db->result) {
-                foreach ($db->result as $elem) {
-                    if (array_key_exists('ligne', $elem)) {
-                        $values[] = array(":tableau"=>$elem['tableau'], ":ligne"=>$elem['ligne'], ":poste"=>$elem['poste'], ":type"=>$elem['type'],
-            "numero"=>$numero2);
-                    }
-                }
-                $req = "INSERT INTO `{$dbprefix}pl_poste_lignes` (`tableau`,`ligne`,`poste`,`type`,`numero`) ";
-                $req .= "VALUES (:tableau, :ligne, :poste, :type, :numero)";
-                $db2 = new \dbh();
-                $db2->CSRFToken = $CSRFToken;
-                $db2->prepare($req);
-                foreach ($values as $elem) {
-                    $db2->execute($elem);
+        // Copie des horaires
+        $values = array();
+        $db = new \db();
+        $db->select2("pl_poste_horaires", array("debut","fin","tableau"), array("numero"=>$numero1), "ORDER BY `tableau`,`debut`,`fin`");
+        if ($db->result) {
+            $db2 = new \db();
+            $db2->select2("pl_poste_tab", array(array("name"=>"MAX(tableau)","as"=>"tableau"),"site"));
+            $numero2 = $db2->result[0]['tableau']+1;
+            foreach ($db->result as $elem) {
+                if (array_key_exists('tableau', $elem)) {
+                    $values[] = array(":debut"=>$elem['debut'], ":fin"=>$elem['fin'], ":tableau"=>$elem['tableau'], ":numero"=>$numero2);
                 }
             }
-
-            //		Copie des cellules grises
-            $values = array();
-            $db->select2("pl_poste_cellules", array("ligne","colonne","tableau"), array("numero"=>$numero1), "ORDER BY `tableau`,`ligne`,`colonne`");
-            if ($db->result) {
-                foreach ($db->result as $elem) {
-                    if (array_key_exists('ligne', $elem) and array_key_exists('colonne', $elem)) {
-                        $values[] = array(":ligne"=>$elem['ligne'], ":colonne"=>$elem['colonne'], ":tableau"=>$elem['tableau'], ":numero"=>$numero2);
-                    }
-                }
-                $req = "INSERT INTO `{$dbprefix}pl_poste_cellules` (`ligne`,`colonne`,`tableau`,`numero`) ";
-                $req .= "VALUES (:ligne, :colonne, :tableau, :numero)";
-                $db2 = new \dbh();
-                $db2->CSRFToken = $CSRFToken;
-                $db2->prepare($req);
-                foreach ($values as $elem) {
-                    $db2->execute($elem);
-                }
+            $req = "INSERT INTO `{$dbprefix}pl_poste_horaires` (`debut`,`fin`,`tableau`,`numero`) VALUES (:debut, :fin, :tableau, :numero);";
+            $db2 = new \dbh();
+            $db2->CSRFToken = $CSRFToken;
+            $db2->prepare($req);
+            foreach ($values as $elem) {
+                $db2->execute($elem);
             }
 
-            // Retour à  la page principale
-            return $this->redirectToRoute('framework.index', array("cfg-type" => "horaires", "numero" => $numero2 ));
+            // Récupération du site
+            $db2 = new \db();
+            $db2->select2("pl_poste_tab", "site", array("tableau"=>$numero1));
+            $site=$db2->result[0]["site"];
+
+            // Enregistrement du nouveau tableau
+            $db2 = new \db();
+            $db2->CSRFToken = $CSRFToken;
+            $db2->insert("pl_poste_tab", array("nom"=>$nom ,"tableau"=>$numero2, "site"=>$site));
+        } else {		// par sécurité, si pas d'horaires à  copier, on stop le script pour éviter d'avoir une incohérence dans les numéros de tableaux
+           return new RedirectResponse($this->config('URL')."/index.php?page=planning/postes_cfg/modif.php&cfg-type=horaires&numero={$numero1}");
         }
+
+        // Copie des lignes
+        $values = array();
+        $db->select2("pl_poste_lignes", array("tableau","ligne","poste","type"), array("numero"=>$numero1), "ORDER BY `tableau`,`ligne`");
+        if ($db->result) {
+            foreach ($db->result as $elem) {
+                if (array_key_exists('ligne', $elem)) {
+                    $values[] = array(":tableau"=>$elem['tableau'], ":ligne"=>$elem['ligne'], ":poste"=>$elem['poste'], ":type"=>$elem['type'],
+        "numero"=>$numero2);
+                }
+            }
+            $req = "INSERT INTO `{$dbprefix}pl_poste_lignes` (`tableau`,`ligne`,`poste`,`type`,`numero`) ";
+            $req .= "VALUES (:tableau, :ligne, :poste, :type, :numero)";
+            $db2 = new \dbh();
+            $db2->CSRFToken = $CSRFToken;
+            $db2->prepare($req);
+            foreach ($values as $elem) {
+                $db2->execute($elem);
+            }
+        }
+
+        // Copie des cellules grises
+        $values = array();
+        $db->select2("pl_poste_cellules", array("ligne","colonne","tableau"), array("numero"=>$numero1), "ORDER BY `tableau`,`ligne`,`colonne`");
+        if ($db->result) {
+            foreach ($db->result as $elem) {
+                if (array_key_exists('ligne', $elem) and array_key_exists('colonne', $elem)) {
+                    $values[] = array(":ligne"=>$elem['ligne'], ":colonne"=>$elem['colonne'], ":tableau"=>$elem['tableau'], ":numero"=>$numero2);
+                }
+            }
+            $req = "INSERT INTO `{$dbprefix}pl_poste_cellules` (`ligne`,`colonne`,`tableau`,`numero`) ";
+            $req .= "VALUES (:ligne, :colonne, :tableau, :numero)";
+            $db2 = new \dbh();
+            $db2->CSRFToken = $CSRFToken;
+            $db2->prepare($req);
+            foreach ($values as $elem) {
+                $db2->execute($elem);
+            }
+        }
+
+        // Retour à  la page principale
+        return $this->redirectToRoute('framework.index', array("cfg-type" => "horaires", "numero" => $numero2 ));
     }
 }

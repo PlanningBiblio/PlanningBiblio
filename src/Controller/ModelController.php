@@ -9,35 +9,33 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
 
-use App\Model\Model;
-use App\Model\ModelAgent;
+use App\Entity\Model;
+use App\Entity\ModelAgent;
 
-require_once(__DIR__ . '/../../public/include/db.php');
+require_once(__DIR__ . '/../../legacy/Common/db.php');
 
 class ModelController extends BaseController
 {
-    /**
-     * @Route("/model", name="model.index", methods={"GET"})
-     */
+    #[Route(path: '/model', name: 'model.index', methods: ['GET'])]
     public function index(Request $request, Session $session)
     {
         $all_models = $this->entityManager->getRepository(Model::class)->findAll();
 
         $models = array();
         foreach ($all_models as $model) {
-            if (!isset($models[$model->site() . $model->nom()])) {
-                $models[$model->site() . $model->nom()] = array(
-                    'name' => $model->nom(),
-                    'week' => $model->jour() == 9 ? 0 : 1,
-                    'id' => $model->model_id(),
-                    'site' => $model->site()
+            if (!isset($models[$model->getSite() . $model->getName()])) {
+                $models[$model->getSite() . $model->getName()] = array(
+                    'name' => $model->getName(),
+                    'week' => $model->getDay() == 9 ? 0 : 1,
+                    'id' => $model->getModelId(),
+                    'site' => $model->getSite()
                 );
             }
         }
 
         $multi_sites = $this->config('Multisites-nombre') > 1 ? 1 : 0;
         $sites = array();
-        if ($multi_sites) {
+        if ($multi_sites !== 0) {
             for ($i=1; $i < $this->config('Multisites-nombre')+1; $i++) {
                 $sites[$i] = $this->config("Multisites-site$i");
             }
@@ -52,10 +50,8 @@ class ModelController extends BaseController
         return $this->output('admin/model/index.html.twig');
     }
 
-    /**
-     * @Route("/model", name="model.save", methods={"POST"})
-     */
-    public function save(Request $request, Session $session)
+    #[Route(path: '/model', name: 'model.save', methods: ['POST'])]
+    public function save(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         $id = $request->get('id');
         $name = $request->get('name');
@@ -71,7 +67,7 @@ class ModelController extends BaseController
             ->findBy(array('model_id' => $id));
 
         foreach ($models as $model) {
-            $model->nom($name);
+            $model->setName($name);
             $this->entityManager->persist($model);
         }
 
@@ -81,10 +77,8 @@ class ModelController extends BaseController
         return $this->redirectToRoute('model.index');
     }
 
-    /**
-     * @Route("/model-add", name="model.add", methods={"POST", "GET"})
-     */
-    public function add(Request $request, Session $session)
+    #[Route(path: '/model-add', name: 'model.add', methods: ['POST', 'GET'])]
+    public function add(Request $request, Session $session): \Symfony\Component\HttpFoundation\Response
     {
         $name = $request->get('name');
         $site = $request->get('site');
@@ -120,10 +114,10 @@ class ModelController extends BaseController
                 $select->select2('pl_poste', '*', array('date' => $date, 'site' => $site));
                 if ($select->result) {
                     $delete->CSRFToken = $CSRFToken;
-                    $delete->delete('pl_poste_modeles', array('model_id' => $existing_model->model_id()));
+                    $delete->delete('pl_poste_modeles', array('model_id' => $existing_model->getModelId()));
                     $delete = new \db();
                     $delete->CSRFToken = $CSRFToken;
-                    $delete->delete('pl_poste_modeles_tab', array('model_id' => $existing_model->model_id()));
+                    $delete->delete('pl_poste_modeles_tab', array('model_id' => $existing_model->getModelId()));
                 }
             }
         }
@@ -135,9 +129,7 @@ class ModelController extends BaseController
         return $response;
     }
 
-    /**
-     * @Route("/model/{id}", name="model.edit", methods={"GET"})
-     */
+    #[Route(path: '/model/{id}', name: 'model.edit', methods: ['GET'])]
     public function edit(Request $request)
     {
         $id = $request->get('id');
@@ -151,10 +143,8 @@ class ModelController extends BaseController
     }
 
 
-    /**
-     * @Route("/model/{id}", name="model.delete", methods={"DELETE"})
-     */
-    public function delete(Request $request, Session $session)
+    #[Route(path: '/model/{id}', name: 'model.delete', methods: ['DELETE'])]
+    public function delete(Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse
     {
         $id = $request->get('id');
 
@@ -177,7 +167,7 @@ class ModelController extends BaseController
         return $this->json(array('id' => $id));
     }
 
-  public function save_model($nom, $date, $semaine, $site, $CSRFToken)
+  public function save_model($nom, $date, $semaine, $site, $CSRFToken): void
   {
       $dbprefix=$GLOBALS['config']['dbprefix'];
       $d = new \datePl($date);

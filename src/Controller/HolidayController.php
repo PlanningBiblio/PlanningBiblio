@@ -4,38 +4,44 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 
-use App\Model\AbsenceReason;
-use App\Model\Agent;
-use App\Model\Holiday;
+use App\Entity\Agent;
 
-use App\PlanningBiblio\Helper\HolidayHelper;
-use App\PlanningBiblio\Helper\HourHelper;
-use App\PlanningBiblio\Helper\WeekPlanningHelper;
+use App\Planno\Helper\HolidayHelper;
+use App\Planno\Helper\HourHelper;
+use App\Planno\Helper\WeekPlanningHelper;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
-require_once(__DIR__ . '/../../public/conges/class.conges.php');
-require_once(__DIR__ . '/../../public/personnel/class.personnel.php');
-require_once(__DIR__ . '/../../public/planningHebdo/class.planningHebdo.php');
+require_once(__DIR__ . '/../../legacy/Class/class.conges.php');
+require_once(__DIR__ . '/../../legacy/Class/class.personnel.php');
+require_once(__DIR__ . '/../../legacy/Class/class.planningHebdo.php');
 
 class HolidayController extends BaseController
 {
-    /**
-     * @Route("/holiday/index", name="holiday.index", methods={"GET"})
-     */
-    public function index(Request $request)
+    #[Route(path: '/holiday', name: 'holiday.index', methods: ['GET'])]
+    public function index(Request $request, Session $session): Response
     {
-        $annee = $request->get('annee');
-        $congesAffiches = $request->get('congesAffiches');
-        $perso_id = $request->get('perso_id');
-        $reset = $request->get('reset');
-        $supprimes = $request->get('supprimes');
-        $voir_recup = $request->get('recup');
+        $session = $request->getSession();
+
+        $debut = $request->query->get('debut');
+        $fin = $request->query->get('fin');
+        $perso_id = $request->query->get('perso_id');
+        $reset = $request->query->get('reset');
+        $supprimes = $request->query->get('supprimes');
+        $voir_recup = $request->query->get('recup');
 
         $lang = $GLOBALS['lang'];
+
+        if (!$debut) {
+            $debut = $session->get('HolidayStart');
+        }
+
+         if (!$fin) {
+            $fin = $session->get('HolidayEnd');
+        }
 
         // Gestion des droits d'administration
         // NOTE : Ici, pas de différenciation entre les droits niveau 1 et niveau 2
@@ -44,47 +50,44 @@ class HolidayController extends BaseController
         list($admin, $adminN2) = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('holiday')
-            ->getValidationLevelFor($_SESSION['login_id']);
+            ->getValidationLevelFor($session->get('loginId'));
 
         if (($admin or $adminN2) and $perso_id==null) {
-            $perso_id=isset($_SESSION['oups']['conges_perso_id'])?$_SESSION['oups']['conges_perso_id']:$_SESSION['login_id'];
+            $perso_id = $_SESSION['oups']['conges_perso_id'] ?? $session->get('loginId');
         } elseif ($perso_id==null) {
-            $perso_id=$_SESSION['login_id'];
+            $perso_id = $session->get('loginId');
         }
 
-        $agents_supprimes=isset($_SESSION['oups']['conges_agents_supprimes'])?$_SESSION['oups']['conges_agents_supprimes']:false;
-        $agents_supprimes=($annee and $supprimes)?true:$agents_supprimes;
-        $agents_supprimes=($annee and !$supprimes)?false:$agents_supprimes;
-
-        if (!$annee) {
-            $annee=isset($_SESSION['oups']['conges_annee'])?$_SESSION['oups']['conges_annee']:(date("m")<9?date("Y")-1:date("Y"));
-        }
-
-        if (!$congesAffiches) {
-            $congesAffiches=isset($_SESSION['oups']['congesAffiches'])?$_SESSION['oups']['congesAffiches']:"aVenir";
-        }
+        $agents_supprimes = isset($_SESSION['oups']['conges_agents_supprimes'])?$_SESSION['oups']['conges_agents_supprimes']:false;
+        $agents_supprimes = (!empty($request->get('debut')) and !empty($request->get('supprimes'))) ? true : $agents_supprimes;
+        $agents_supprimes = (!empty($request->get('debut')) and empty($request->get('supprimes'))) ? false :$agents_supprimes;
 
         if ($reset) {
-            $annee=date("m")<9?date("Y")-1:date("Y");
-            $perso_id=$_SESSION['login_id'];
+            $debut = null;
+            $fin = null;
+            $perso_id = $session->get('loginId');
             $agents_supprimes=false;
         }
-        $_SESSION['oups']['conges_annee']=$annee;
-        $_SESSION['oups']['congesAffiches']=$congesAffiches;
+
+        // Default start & end
+        if (!$debut) {
+            $debut = date('d/m/Y');
+        }
+        if (!$fin) {
+            $fin = date('d/m/Y', strtotime(dateFr($debut) . ' +1 year'));
+        }
+
+        $session->set('HolidayStart', $debut);
+        $session->set('HolidayEnd', $fin);
         $_SESSION['oups']['conges_perso_id']=$perso_id;
         $_SESSION['oups']['conges_agents_supprimes']=$agents_supprimes;
 
-
-        $debut=$annee."-09-01";
-        $fin=($annee+1)."-08-31";
-
-        if ($congesAffiches=="aVenir") {
-            $debut=date("Y-m-d");
-        }
+        $debutSQL = dateSQL($debut);
+        $finSQL = dateSQL($fin);
 
         $c = new \conges();
-        $c->debut = $debut;
-        $c->fin = $fin . " 23:59:59";
+        $c->debut = $debutSQL;
+        $c->fin = $finSQL . ' 23:59:59';
         if ($perso_id != 0) {
             $c->perso_id = $perso_id;
         }
@@ -109,8 +112,8 @@ class HolidayController extends BaseController
         $managed = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('holiday')
-            ->getManagedFor($_SESSION['login_id'], $agents_supprimes);
-        $perso_ids = array_map(function($a) { return $a->id(); }, $managed);
+            ->getManagedFor($session->get('loginId'), $agents_supprimes);
+        $perso_ids = array_map(function($a) { return $a->getId(); }, $managed);
 
         // Recherche des agents pour la fonction nom()
         $p = new \personnel();
@@ -135,10 +138,9 @@ class HolidayController extends BaseController
             'conges_mode'           => $this->config('Conges-Mode'),
             'show_recovery'         => $voir_recup,
             'agent_name'            => nom($perso_id, "prenom nom", $agents),
-            'from_year'             => $annee,
-            'to_year'               => $annee + 1,
+            'debut'                 => $debut,
+            'fin'                   => $fin,
             'years'                 => $annees,
-            'forthcoming'           => $congesAffiches == "aVenir" ? 1 : 0,
             'balance'               => $this->config('Conges-Recuperations') == '0' or !$voir_recup ? 1 : 0,
             'recovery'              => $this->config('Conges-Recuperations') == '0' or $voir_recup ? 1 : 0,
             'perso_ids'             => $perso_ids,
@@ -171,8 +173,8 @@ class HolidayController extends BaseController
                 }
             }
 
-            $elem['start'] = str_replace("00h00", "", dateFr($elem['debut'], true));
-            $elem['end'] = str_replace("23h59", "", dateFr($elem['fin'], true));
+            $elem['start'] = $elem['debut'];
+            $elem['end'] = $elem['fin'];
 
             $force = null;
             if ($voir_recup) {
@@ -183,7 +185,7 @@ class HolidayController extends BaseController
                 $elem['days'] = $holiday_helper->hoursToDays($elem['heures'], $elem['perso_id']);
             }
             $elem['status'] = "Demandé, ".dateFr($elem['saisie'], true);
-            $elem['validationDate'] = dateFr($elem['saisie'], true);
+            $elem['statusDate'] = $elem['saisie'];
 
             foreach (array('solde_prec', 'solde_actuel',
                 'reliquat_prec', 'reliquat_actuel',
@@ -211,24 +213,24 @@ class HolidayController extends BaseController
 
             if ($elem['valide'] < 0) {
                 $elem['status'] = "Refusé, ".nom(-$elem['valide'], 'nom p', $agents);
-                $elem['validationDate'] = dateFr($elem['validation'], true);
+                $elem['statusDate'] = $elem['validation'];
             } elseif ($elem['valide'] or $elem['information']) {
                 $elem['status'] = "Validé, ".nom($elem['valide'], 'nom p', $agents);
-                $elem['validationDate'] = dateFr($elem['validation'], true);
+                $elem['statusDate'] = $elem['validation'];
             } elseif ($elem['valide_n1']) {
                 $elem['status'] = $elem['valide_n1'] > 0 ? $lang['leave_table_accepted_pending'] : $lang['leave_table_refused_pending'];
-                $elem['validationDate'] = dateFr($elem['validation_n1'], true);
+                $elem['statusDate'] = $elem['validation_n1'];
                 $elem['validationStyle'] = "font-weight:bold;";
             }
 
             if ($elem['information']) {
                 $elem['nom'] = $elem['information']<999999999?nom($elem['information'], 'nom p', $agents).", ":null;	// >999999999 = cron
                 $elem['status'] = "Mise à jour des crédits, " . $elem['nom'];
-                $elem['validationDate'] = dateFr($elem['info_date'], true);
+                $elem['statusDate'] = $elem['info_date'];
                 $elem['validationStyle'] = '';
             } elseif ($elem['supprime']) {
                 $elem['status'] = "Supprimé, ".nom($elem['supprime'], 'nom p', $agents);
-                $elem['validationDate'] = dateFr($elem['suppr_date'], true);
+                $elem['statusDate'] = $elem['suppr_date'];
                 $elem['validationStyle'] = '';
             }
 
@@ -252,8 +254,8 @@ class HolidayController extends BaseController
                 $origin->fetch();
                 $data = $origin->elements[0];
 
-                $elem['origin_start'] = str_replace("00h00", "", dateFr($data['debut'], true));
-                $elem['origin_end'] = str_replace("23h59", "", dateFr($data['fin'], true));
+                $elem['origin_start'] = $data['debut'];
+                $elem['origin_end'] = $data['fin'];
             }
 
             $elem['nom'] = nom($elem['perso_id'], 'nom p', $agents);
@@ -266,24 +268,23 @@ class HolidayController extends BaseController
         return $this->output('conges/index.html.twig');
     }
 
-    /**
-     * @Route("/ajax/holidays-hours-to-days", name="ajax.holidays-hours-to-days", methods={"GET"})
-     */
-    public function hoursToDays(Request $request, Session $session)
+    #[Route(path: '/ajax/holidays-hours-to-days', name: 'ajax.holidays-hours-to-days', methods: ['GET'])]
+    public function hoursToDays(Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse
     {
         $hours_to_convert = $request->get('hours_to_convert');
         $hours_per_year = $request->get('hours_per_year');
         $holiday_helper = new HolidayHelper();
         $results = array();
-        $results['hoursToDays'] = $holiday_helper->hoursToDays($hours_to_convert, null, $hours_per_year);
-        $results['hoursPerDay'] = $holiday_helper->hoursPerDay(null, $hours_per_year);
+
+        $results['hoursToDecimalDays'] = $holiday_helper->hoursToDays($hours_to_convert, null, $hours_per_year, true);
+        $results['decimalHoursPerDay'] = $holiday_helper->hoursPerDay(null, $hours_per_year);
+
+        $results['hoursMinutesPerDay'] = HourHelper::decimalToHoursMinutes($results['decimalHoursPerDay'])['as_string'];
         return $this->json($results);
     }
 
-    /**
-     * @Route("/holiday/edit", name="holiday.update", methods={"POST"})
-     * @Route("/holiday/edit/{id}", name="holiday.edit", methods={"GET"})
-     */
+    #[Route(path: '/holiday/edit', name: 'holiday.update', methods: ['POST'])]
+    #[Route(path: '/holiday/edit/{id}', name: 'holiday.edit', methods: ['GET'])]
     public function edit(Request $request, Session $session)
     {
         $id = $request->get('id');
@@ -350,9 +351,9 @@ class HolidayController extends BaseController
             ->getRepository(Agent::class)
             ->setModule('holiday')
             ->forAgent($perso_id)
-            ->getValidationLevelFor($_SESSION['login_id']);
+            ->getValidationLevelFor($session->get('loginId'));
 
-        if (!$adminN1 and !$adminN2 and $perso_id != $_SESSION['login_id']) {
+        if (!$adminN1 and !$adminN2 and $perso_id != $session->get('loginId')) {
             return $this->output('access-denied.html.twig');
         }
 
@@ -361,7 +362,7 @@ class HolidayController extends BaseController
         }
 
         $this->templateParams(array('CSRFToken' => $GLOBALS['CSRFSession']));
-        $valide=$data['valide']>0?true:false;
+        $valide=$data['valide']>0;
         $displayRefus = ($data['valide_n1'] < 0 and ($adminN1 or $adminN2)) ? null : "display:none;";
         $displayRefus = $data['valide'] > 0 ? "display:none;" : $displayRefus;
         $debut=dateFr(substr($data['debut'], 0, 10));
@@ -416,12 +417,15 @@ class HolidayController extends BaseController
         $reliquat_jours = null;
 
         $hoursPerDay = null;
+        $hoursPerDayInHoursMinutes = null;
         if ($holiday_helper->showHoursToDays()) {
-            $hoursPerDay = $holiday_helper->hoursPerDay($perso_id);
 
-            $anticipation_jours = $holiday_helper->hoursToDays($conges_anticipation, $perso_id, null, true);
-            $credit_jours = $holiday_helper->hoursToDays($conges_credit, $perso_id, null, true);
-            $reliquat_jours = $holiday_helper->hoursToDays($conges_reliquat, $perso_id, null, true);
+            $hoursPerDay               = $holiday_helper->hoursPerDay($perso_id);
+            $hoursPerDayInHoursMinutes = HourHelper::decimalToHoursMinutes($hoursPerDay)['as_string'];
+
+            $anticipation_jours = $holiday_helper->hoursToDays($conges_anticipation, $perso_id, null, true, '/ ');
+            $credit_jours       = $holiday_helper->hoursToDays($conges_credit,       $perso_id, null, true, '/ ');
+            $reliquat_jours     = $holiday_helper->hoursToDays($conges_reliquat,     $perso_id, null, true, '/ ');
         }
 
         $templateParams = array(
@@ -433,6 +437,7 @@ class HolidayController extends BaseController
             'start_halfday'         => $data['start_halfday'],
             'end_halfday'           => $data['end_halfday'],
             'hours_per_day'         => $hoursPerDay,
+            'hours_per_day_in_hhmm' => $hoursPerDayInHoursMinutes,
             'reliquat'              => $reliquat,
             'reliquat2'             => $holiday_helper->HumanReadableDuration($reliquat),
             'reliquat_jours'        => $reliquat_jours,
@@ -514,10 +519,8 @@ class HolidayController extends BaseController
         return $this->output('conges/edit.html.twig');
     }
 
-    /**
-     * @Route("/holiday", name="holiday.save", methods={"POST"})
-     */
-    public function add_confirm(Request $request, Session $session)
+    #[Route(path: '/holiday', name: 'holiday.save', methods: ['POST'])]
+    public function add_confirm(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         $result = $this->save($request);
 
@@ -534,12 +537,12 @@ class HolidayController extends BaseController
         return $this->redirectToRoute('holiday.index');
     }
 
-    /**
-     * @Route("/holiday/new", name="holiday.new", methods={"GET", "POST"})
-     * @Route("/holiday/new/{perso_id}", name="holiday.new.new", methods={"GET", "POST"})
-     */
+    #[Route(path: '/holiday/new', name: 'holiday.new', methods: ['GET', 'POST'])]
+    #[Route(path: '/holiday/new/{perso_id}', name: 'holiday.new.new', methods: ['GET', 'POST'])]
     public function add(Request $request)
     {
+        $session = $request->getSession();
+
         // Initialisation des variables
         $perso_id = $request->get('perso_id');
         $dbprefix = $GLOBALS['dbprefix'];
@@ -551,22 +554,22 @@ class HolidayController extends BaseController
         if ($perso_id) {
             $agentRepository->forAgent($perso_id);
         }
-        list($admin, $adminN2) = $agentRepository->getValidationLevelFor($_SESSION['login_id']);
+        list($admin, $adminN2) = $agentRepository->getValidationLevelFor($session->get('loginId'));
 
         if (!$perso_id) {
-            $perso_id = $_SESSION['login_id'];
+            $perso_id = $session->get('loginId');
         }
 
         $sites_select = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('holiday')
-            ->getManagedSitesFor($_SESSION['login_id']);
+            ->getManagedSitesFor($session->get('loginId'));
 
         $agents_multiples = (($admin || $adminN2) && $this->config('Conges-Recuperations') == 1);
 
         // Si pas de droits de gestion des congés, on force $perso_id = son propre ID
         if (!$admin && !$adminN2) {
-            $perso_id=$_SESSION['login_id'];
+            $perso_id = $session->get('loginId');
         }
 
         // Calcul des crédits de récupération disponibles lors de l'ouverture du formulaire (date du jour)
@@ -575,7 +578,7 @@ class HolidayController extends BaseController
 
         // Initialisation des variables
         $holiday_helper = new HolidayHelper();
-        $perso_id=$perso_id?$perso_id:$_SESSION['login_id'];
+        $perso_id = $perso_id ?? $session->get('loginId');
         $p=new \personnel();
         $p->fetchById($perso_id);
         $conges_anticipation = $p->elements[0]['conges_anticipation'];
@@ -592,12 +595,15 @@ class HolidayController extends BaseController
         $reliquat_jours = null;
 
         $hoursPerDay = null;
+        $hoursPerDayInHoursMinutes = null;
         if ($holiday_helper->showHoursToDays()) {
-            $hoursPerDay = $holiday_helper->hoursPerDay($perso_id);
 
-            $anticipation_jours = $holiday_helper->hoursToDays($conges_anticipation, $perso_id, null, true);
-            $credit_jours = $holiday_helper->hoursToDays($conges_credit, $perso_id, null, true);
-            $reliquat_jours = $holiday_helper->hoursToDays($conges_reliquat, $perso_id, null, true);
+            $hoursPerDay               = $holiday_helper->hoursPerDay($perso_id);
+            $hoursPerDayInHoursMinutes = HourHelper::decimalToHoursMinutes($hoursPerDay)['as_string'];
+
+            $anticipation_jours = $holiday_helper->hoursToDays($conges_anticipation, $perso_id, null, true, '/ ');
+            $credit_jours       = $holiday_helper->hoursToDays($conges_credit,       $perso_id, null, true, '/ ');
+            $reliquat_jours     = $holiday_helper->hoursToDays($conges_reliquat,     $perso_id, null, true, '/ ');
         }
 
         if ($balance[4] < 0) {
@@ -624,6 +630,7 @@ class HolidayController extends BaseController
             'conges_tous'           => $this->config('Conges-tous'),
             'CSRFToken'             => $GLOBALS['CSRFSession'],
             'hours_per_day'         => $hoursPerDay,
+            'hours_per_day_in_hhmm' => $hoursPerDayInHoursMinutes ?? null,
             'reliquat'              => $reliquat,
             'reliquat2'             => $holiday_helper->HumanReadableDuration($reliquat),
             'reliquat_jours'        => $reliquat_jours,
@@ -639,12 +646,12 @@ class HolidayController extends BaseController
             'anticipation2'         => $holiday_helper->HumanReadableDuration($anticipation),
             'anticipation_jours'    => $anticipation_jours,
             'agent_name'            => $_SESSION['login_nom'] . ' ' . $_SESSION['login_prenom'],
-            'login_id'              => $_SESSION['login_id'],
+            'login_id'              => $session->get('loginId'),
             'login_nom'             => $_SESSION['login_nom'],
             'login_prenom'          => $_SESSION['login_prenom'],
             'accepted_pending_str'  => $lang['leave_dropdown_accepted_pending'],
             'refused_pending_str'   => $lang['leave_dropdown_refused_pending'],
-            'loggedin_id'           => $_SESSION['login_id'],
+            'loggedin_id'           => $session->get('loginId'),
             'loggedin_name'         => $_SESSION['login_nom'],
             'loggedin_firstname'    => $_SESSION['login_prenom'],
             'selected_agent_id'     => $perso_id,
@@ -672,11 +679,10 @@ class HolidayController extends BaseController
         return $this->output('conges/add.html.twig');
     }
 
-    /**
-     * @Route("/holiday/accounts", name="holiday.accounts", methods={"GET"})
-     */
+    #[Route(path: '/holiday/accounts', name: 'holiday.accounts', methods: ['GET'])]
     public function account(Request $request)
     {
+        $session = $request->getSession();
 
         $droits = $GLOBALS['droits'];
         $admin = false;
@@ -738,7 +744,7 @@ class HolidayController extends BaseController
         $managed = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('holiday')
-            ->getManagedFor($_SESSION['login_id'], $agents_supprimes);
+            ->getManagedFor($session->get('loginId'), $agents_supprimes);
 
         $c = new \conges();
         if ($agents_supprimes) {
@@ -761,10 +767,8 @@ class HolidayController extends BaseController
         return $this->output('conges/accounts.html.twig');
     }
 
-    /**
-     * @Route("/ajax/holiday-halfday-hours", name="ajax.holiday-halfday-hours", methods={"GET"})
-     */
-    public function halfdayHours(Request $request)
+    #[Route(path: '/ajax/holiday-halfday-hours', name: 'ajax.holiday-halfday-hours', methods: ['GET'])]
+    public function halfdayHours(Request $request): \Symfony\Component\HttpFoundation\Response
     {
         $agent = $request->get('agent');
         $start = $request->get('start');
@@ -821,10 +825,8 @@ class HolidayController extends BaseController
         return $response;
     }
 
-    /**
-     * @Route("/ajax/check-planning", name="ajax.checkplanning", methods={"POST"})
-     */
-    public function checkPlanning(Request $request)
+    #[Route(path: '/ajax/check-planning', name: 'ajax.checkplanning', methods: ['POST'])]
+    public function checkPlanning(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
     {
         $perso_ids = json_decode($request->get('perso_ids'));
         $start =dateSQL($request->get('start'));
@@ -854,7 +856,7 @@ class HolidayController extends BaseController
             }
         }
         if (!empty($agents)) {
-            $message = "Impossible de déterminer le nombre d'heures correspondant aux congés demandés pour les agents suivants: " . join(', ', $agents);
+            $message = "Impossible de déterminer le nombre d'heures correspondant aux congés demandés pour les agents suivants: " . implode(', ', $agents);
             if ($unknownHours > $maxAgentsDisplay) {
                 $agentsLeft = $unknownHours - $maxAgentsDisplay;
                 $message .= " et " . $agentsLeft . ($agentsLeft == 1 ? " autre." : " autres.");
@@ -863,10 +865,8 @@ class HolidayController extends BaseController
         return $this->json($message);
     }
 
-    /**
-     * @Route("/ajax/holiday-credit", name="ajax.holidaycredit", methods={"GET"})
-     */
-    public function checkCredit(Request $request)
+    #[Route(path: '/ajax/holiday-credit', name: 'ajax.holidaycredit', methods: ['GET'])]
+    public function checkCredit(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
     {
         // Initilisation des variables
         $id = $request->get('id');
@@ -914,10 +914,8 @@ class HolidayController extends BaseController
         return $this->json($result);
     }
 
-    /**
-     * @Route("/ajax/current-credits", name="ajax.currentcredits", methods={"get"})
-     */
-    public function current_credits(Request $request)
+    #[Route(path: '/ajax/current-credits', name: 'ajax.currentcredits', methods: ['get'])]
+    public function current_credits(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
     {
         $agent_id = $request->get('id');
 
@@ -925,19 +923,21 @@ class HolidayController extends BaseController
 
         $hh = new HolidayHelper();
         $holiday_account = array(
-            'holiday_balance' => $hh->HumanReadableDuration($agent->conges_reliquat()),
-            'holiday_balance_decimal' => $agent->conges_reliquat() ?? 0,
-            'holiday_credit' => $hh->HumanReadableDuration($agent->conges_credit()),
-            'holiday_credit_decimal' => $agent->conges_credit() ?? 0,
-            'holiday_debit' => $hh->HumanReadableDuration($agent->conges_anticipation()),
-            'holiday_debit_decimal' => $agent->conges_anticipation() ?? 0
+            'holiday_balance' => $hh->HumanReadableDuration($agent->getHolidayRemainder()),
+            'holiday_balance_decimal' => $agent->getHolidayRemainder() ?? 0,
+            'holiday_credit' => $hh->HumanReadableDuration($agent->getHolidayCredit()),
+            'holiday_credit_decimal' => $agent->getHolidayCredit() ?? 0,
+            'holiday_debit' => $hh->HumanReadableDuration($agent->getHolidayAnticipation()),
+            'holiday_debit_decimal' => $agent->getHolidayAnticipation() ?? 0
         );
 
         return $this->json($holiday_account);
     }
 
-    private function save($request)
+    private function save($request): array
     {
+        $session = $request->getSession();
+
         $perso_id = $request->get('perso_id');
         $debut = $request->get('debut');
         $fin = $request->get('fin');
@@ -958,7 +958,7 @@ class HolidayController extends BaseController
         $commentaires = $request->get('commentaires');
         $refus = $request->get('refus');
         $valide = $request->get('valide');
-        $login_id = $_SESSION['login_id'];
+        $login_id = $session->get('loginId');
         $lang = $GLOBALS['lang'];
 
         $request->request->set('valide_init', $valide);
@@ -1036,8 +1036,8 @@ class HolidayController extends BaseController
 
             // Récupération des adresses e-mails de l'agent et des responsables pour l'envoi des alertes
             $agent = $this->entityManager->find(Agent::class, $perso_id);
-            $nom = $agent->nom();
-            $prenom = $agent->prenom();
+            $nom = $agent->getLastname();
+            $prenom = $agent->getFirstname();
 
             // Choix du sujet et des destinataires en fonction du degré de validation
             switch ($valide) {
@@ -1101,7 +1101,10 @@ class HolidayController extends BaseController
         );
     }
 
-    private function update($request)
+    /**
+     * @return mixed[]
+     */
+    private function update($request): array
     {
         $post = $request->request->all();
 
@@ -1144,8 +1147,8 @@ class HolidayController extends BaseController
         // Envoi d'une notification par email
         // Récupération des adresses e-mails de l'agent et des responsables pour m'envoi des alertes
         $agent = $this->entityManager->find(Agent::class, $perso_id);
-        $nom = $agent->nom();
-        $prenom = $agent->prenom();
+        $nom = $agent->getLastname();
+        $prenom = $agent->getFirstname();
 
         $recover = ($post['debit'] == 'recuperation' && $this->config('Conges-Recuperations') == '1') ? 1 : 0;
 
@@ -1153,25 +1156,25 @@ class HolidayController extends BaseController
         switch ($valide) {
         // Modification sans validation
         case 0:
-          $sujet = $recover ? "Modification d'une récupération" : "Modification de congés";
+          $sujet = $recover !== 0 ? "Modification d'une récupération" : "Modification de congés";
           $notifications='2';
           break;
         // Validations Niveau 2
         case 1:
-          $sujet = $recover ? "Validation d'une récupération" : "Validation de congés";
+          $sujet = $recover !== 0 ? "Validation d'une récupération" : "Validation de congés";
           $notifications='4';
           break;
         case -1:
-          $sujet = $recover ? "Refus d'une récupération" : "Refus de congés";
+          $sujet = $recover !== 0 ? "Refus d'une récupération" : "Refus de congés";
           $notifications='4';
           break;
         // Validations Niveau 1
         case 2:
-          $sujet = $recover ? $lang['comp_time_subject_accepted_pending'] : $lang['leave_subject_accepted_pending'];
+          $sujet = $recover !== 0 ? $lang['comp_time_subject_accepted_pending'] : $lang['leave_subject_accepted_pending'];
           $notifications='3';
           break;
         case -2:
-          $sujet = $recover ? $lang['comp_time_subject_refused_pending'] : $lang['leave_subject_refused_pending'];
+          $sujet = $recover !== 0 ? $lang['comp_time_subject_refused_pending'] : $lang['leave_subject_refused_pending'];
           $notifications='3';
           break;
         }
@@ -1226,7 +1229,7 @@ class HolidayController extends BaseController
     /**
      * Make mail message
      */
-    private function makeMail($subject, $name, $begin, $end, $begin_hour, $end_hour, $comment, $refusal, $status, $id, $recover = 0) {
+    private function makeMail($subject, $name, $begin, $end, $begin_hour, $end_hour, $comment, $refusal, $status, $id, $recover = 0): string {
         $message  = "<b><u>$subject :</u></b><br/>";
         $message .= "<ul><li>Agent : <strong>$name</strong></li>";
         $message .= "<li>Début : <strong>$begin";

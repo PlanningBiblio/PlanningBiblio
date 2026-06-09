@@ -3,38 +3,38 @@
 namespace App\Controller;
 
 use App\Controller\BaseController;
-use App\PlanningBiblio\Helper\HolidayHelper;
-use App\Model\Agent;
+use App\Planno\Helper\HolidayHelper;
+use App\Entity\Agent;
 
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 
-include_once(__DIR__ . '/../../public/conges/class.conges.php');
+include_once(__DIR__ . '/../../legacy/Class/class.conges.php');
 
 class CompTimeController extends BaseController
 {
-    /**
-     * @Route("/comptime/add", name="comptime.add", methods={"GET"})
-     */
+    #[Route(path: '/comptime/add', name: 'comptime.add', methods: ['GET'])]
     public function add(Request $request)
     {
+        $session = $request->getSession();
+
         $dbprefix = $GLOBALS['dbprefix'];
         $perso_id = filter_input(INPUT_GET, 'perso_id', FILTER_SANITIZE_NUMBER_INT);
 
         if (!$perso_id) {
-            $perso_id = $_SESSION['login_id'];
+            $perso_id = $session->get('loginId');
         }
 
         list($admin, $adminN2) = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('holiday')
             ->forAgent($perso_id)
-            ->getValidationLevelFor($_SESSION['login_id']);
+            ->getValidationLevelFor($session->get('loginId'));
 
         if (!$admin and !$adminN2) {
-            $perso_id=$_SESSION['login_id'];
+            $perso_id = $session->get('loginId');
         }
 
         $c = new \conges();
@@ -67,7 +67,7 @@ class CompTimeController extends BaseController
         $managed = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('holiday')
-            ->getManagedFor($_SESSION['login_id']);
+            ->getManagedFor($session->get('loginId'));
 
         $information = array();
         $date = date("Y-m-d");
@@ -77,8 +77,8 @@ class CompTimeController extends BaseController
             foreach ($db->result as $elem) {
                 $information[] = 'Du '. dateFr($elem['debut'])
                     . ' au ' . dateFr($elem['fin'])
-                    . ' :<br/>' . str_replace("\n", '<br/>', $elem['texte'])
-                    . "<br/><br/>\n";
+                    . " :\n" . $elem['texte']
+                    . "\n\n";
             }
         }
 
@@ -105,11 +105,11 @@ class CompTimeController extends BaseController
         return $this->output('comptime/add.html.twig');
     }
 
-    /**
-     * @Route("/comptime", name="comptime.save", methods={"POST"})
-     */
-    public function save(Request $request, Session $session)
+    #[Route(path: '/comptime', name: 'comptime.save', methods: ['POST'])]
+    public function save(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
     {
+        $session = $request->getSession();
+
         $CSRFToken = $request->get('CSRFToken');
         $perso_id = $request->get('perso_id');
 
@@ -142,8 +142,8 @@ class CompTimeController extends BaseController
             $data['confirm'] = 'confirm';
             $data['debit'] = 'recuperation';
             $data['valide_init'] = 1;
-            $data['valide'] = $_SESSION['login_id'];
-            $data['valide_n1'] = $_SESSION['login_id'];
+            $data['valide'] = $session->get('loginId');
+            $data['valide_n1'] = $session->get('loginId');
             $data['validation'] = date('Y-m-d H:i:s');
             $data['validation_n1'] = date('Y-m-d H:i:s');
         }
@@ -155,8 +155,8 @@ class CompTimeController extends BaseController
 
         // Récupération des adresses e-mails de l'agent et des responsables pour l'envoi des alertes
         $agent = $this->entityManager->find(Agent::class, $perso_id);
-        $nom = $agent->nom();
-        $prenom = $agent->prenom();
+        $nom = $agent->getLastname();
+        $prenom = $agent->getFirstname();
 
         // Choix des destinataires en fonction de la configuration
         if ($this->config('Absences-notifications-agent-par-agent')) {
@@ -182,7 +182,7 @@ class CompTimeController extends BaseController
         if ($hre_fin != '23:59:59') {
             $message .= ' ' . heure3($hre_fin);
         }
-        if ($commentaires) {
+        if ($commentaires !== '' && $commentaires !== '0') {
             $message .= "<br/><br/>Commentaire :<br/>$commentaires<br/>";
         }
 

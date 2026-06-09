@@ -8,19 +8,17 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
-use App\Model\Position;
-use App\Model\SelectFloor;
-use App\Model\SelectGroup;
-use App\Model\Skill;
+use App\Entity\Position;
+use App\Entity\SelectFloor;
+use App\Entity\SelectGroup;
+use App\Entity\Skill;
 
-require_once(__DIR__ . '/../../public/postes/class.postes.php');
-require_once(__DIR__ . '/../../public/activites/class.activites.php');
+require_once(__DIR__ . '/../../legacy/Class/class.postes.php');
+require_once(__DIR__ . '/../../legacy/Class/class.activites.php');
 
 class PositionController extends BaseController
 {
-    /**
-     * @Route("/position", name="position.index", methods={"GET"})
-     */
+    #[Route(path: '/position', name: 'position.index', methods: ['GET'])]
     public function index(Request $request)
     {
         //            Affichage de la liste des postes
@@ -68,12 +66,12 @@ class PositionController extends BaseController
 
         $positions = array();
 
-        foreach ($postes as $id => $value) {
+        foreach ($postes as $value) {
             // Affichage des 3 premières activités dans le tableau, toutes les activités dans l'infobulle
 
             $activites = array();
             $activitesAffichees = array();
-            $activitesPoste = $value->activites();
+            $activitesPoste = $value->getActivities();
 
             if (is_array($activitesPoste)) {
                 foreach ($activitesPoste as $act) {
@@ -92,18 +90,18 @@ class PositionController extends BaseController
             }
 
             if ($nbMultisite>1) {
-                $site = $this->config("Multisites-site{$value->site()}") ? $this->config("Multisites-site{$value->site()}") :"-";
+                $site = $this->config("Multisites-site{$value->getSite()}") ? $this->config("Multisites-site{$value->getSite()}") :"-";
                 $new['site'] = $site;
             }
-            $new['nom'] =  $value->nom();
+            $new['nom'] =  $value->getName();
             $new['activites'] = $activites;
             $new['activitesAffichees'] = $activitesAffichees;
-            $new['id'] = $value->id();
-            $new['groupe'] = $groups->find($value->groupe()) ? $groups->find($value->groupe())->valeur() : null;
-            $new['etage'] = $floors->find($value->etage()) ? $floors->find($value->etage())->valeur() : null;
-            $new['statistiques'] = $value->statistiques();
-            $new['bloquant'] = $value->bloquant();
-            $new['obligatoire'] = $value->obligatoire();
+            $new['id'] = $value->getId();
+            $new['groupe'] = $groups->find($value->getGroup()) ? $groups->find($value->getGroup())->getValue() : null;
+            $new['etage'] = $floors->find($value->getFloor()) ? $floors->find($value->getFloor())->getValue() : null;
+            $new['statistiques'] = $value->isStatistics();
+            $new['bloquant'] = $value->isBlocking();
+            $new['obligatoire'] = $value->getMandatory();
             $positions[] = $new;
         }
 
@@ -112,10 +110,8 @@ class PositionController extends BaseController
         return $this->output('position/index.html.twig');
     }
 
-    /**
-     * @Route("/position/add", name="position.add", methods={"GET"})
-     * @Route("/position/{id}", name="position.edit", methods={"GET"})
-     */
+    #[Route(path: '/position/add', name: 'position.add', methods: ['GET'])]
+    #[Route(path: '/position/{id}', name: 'position.edit', methods: ['GET'])]
     public function edit(Request $request)
     {
         // Initialisation des variables
@@ -123,23 +119,25 @@ class PositionController extends BaseController
 
         if (is_numeric($id)) {
             $position  =  $this->entityManager->getRepository(Position::class)->find($id);
-            $nom =  $position->nom();
-            $etage = $position->etage();
-            $groupe = $position->groupe();
-            $groupe_id = $position->groupe_id();
-            $categories  =  $position->categories() ?  : array();
-            $site = $position->site();
-            $activites = $position->activites();
-            $obligatoire = $position->obligatoire() =="Obligatoire"?"checked='checked'":"";
-            $renfort = $position->obligatoire() == "Renfort"?"checked='checked'":"";
-            $stat1 = $position->statistiques()?"checked='checked'":"";
-            $stat2 = !$position->statistiques()?"checked='checked'":"";
-            $bloq1 = $position->bloquant()?"checked='checked'":"";
-            $bloq2 = !$position->bloquant()?"checked='checked'":"";
-            $teleworking1 = $position->teleworking() ? "checked='checked'" : "";
-            $teleworking2 = !$position->teleworking() ? "checked='checked'" : "";
-            $lunch1 = $position->lunch() ? "checked='checked'" : "";
-            $lunch2 = !$position->lunch() ? "checked='checked'" : "";
+            $nom =  $position->getName();
+            $etage = $position->getFloor();
+            $groupe = $position->getGroup();
+            $groupe_id = $position->getGroupId();
+            $categories  =  $position->getCategories() ?  : array();
+            $site = $position->getSite();
+            $activites = $position->getActivities();
+            $obligatoire = $position->getMandatory() == 'Obligatoire' ? 'checked="checked"' : '';
+            $renfort = $position->getMandatory() == 'Renfort' ? 'checked="checked"' : '';
+            $stat1 = $position->isStatistics() ? 'checked="checked"' : '';
+            $stat2 = !$position->isStatistics() ? 'checked="checked"' : '';
+            $quota_sp1 = $position->isQuotaSP() ? 'checked="checked"' : '';
+            $quota_sp2 = !$position->isQuotaSP() ? 'checked="checked"' : '';
+            $bloq1 = $position->isBlocking() ? 'checked="checked"' : '';
+            $bloq2 = !$position->isBlocking() ? 'checked="checked"' : '';
+            $teleworking1 = $position->isTeleworking() ? 'checked="checked"' : '';
+            $teleworking2 = !$position->isTeleworking() ? 'checked="checked"' : '';
+            $lunch1 = $position->isLunch() ? 'checked="checked"' : '';
+            $lunch2 = !$position->isLunch() ? 'checked="checked"' : '';
         } else {
             $id = null;
             $nom =  null;
@@ -153,6 +151,8 @@ class PositionController extends BaseController
             $renfort = null;
             $stat1 = 'checked';
             $stat2 = null;
+            $quota_sp1 = 'checked';
+            $quota_sp2 = null;
             $bloq1 = 'checked';
             $bloq2 = null;
             $teleworking1 = null;
@@ -239,6 +239,8 @@ class PositionController extends BaseController
             'lunch2'        => $lunch2,
             'bloq1'         => $bloq1,
             'bloq2'         => $bloq2,
+            'quota_sp1'     => $quota_sp1,
+            'quota_sp2'     => $quota_sp2,
             'floors'        => $floors,
             'groups'        => $groups,
             'nbSites'       => $nbSites,
@@ -254,10 +256,8 @@ class PositionController extends BaseController
         return $this->output('position/edit.html.twig');
     }
 
-    /**
-     * @Route("/position", name="position.save", methods={"POST"})
-     */
-    public function save(Request $request, Session $session)
+    #[Route(path: '/position', name: 'position.save', methods: ['POST'])]
+    public function save(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         $CSRFToken = $request->get('CSRFToken');
         $nom = $request->get('nom');
@@ -274,31 +274,32 @@ class PositionController extends BaseController
 
             $activites = $request->get('activites', []);
             $categories = $request->get('categories', []);
-            $site = $request->get('site', 1);
-            $bloquant = $request->get('bloquant', 1);
-            $lunch = $request->get('lunch', 0);
-            $statistiques = $request->get('statistiques', 1);
-            $teleworking = $request->get('teleworking', 0);
+            $bloquant = $request->get('bloquant', true);
+            $quota_sp = $request->get('quota_sp', true);
+            $lunch = $request->get('lunch', false);
+            $statistiques = (bool) $request->get('statistiques', true);
+            $teleworking = $request->get('teleworking', false);
             $etage = $request->get('etage',"");
             $groupe = $request->get('groupe', "");
-            $groupe_id = $request->get('group_id', "");
+            $groupe_id = (int) $request->get('group_id', "");
             $obligatoire = $request->get('obligatoire', 'Obligatoire');
-            $site = $request->get('site', "");
+            $site = (int) $request->get('site', 1);
 
             if (!$id){
                 $position = new Position;
-                $position->nom($nom);
-                $position->activites($activites);
-                $position->categories($categories);
-                $position->bloquant($bloquant);
-                $position->statistiques($statistiques);
-                $position->teleworking($teleworking);
-                $position->lunch($lunch);
-                $position->etage($etage);
-                $position->groupe($groupe);
-                $position->groupe_id($groupe_id);
-                $position->obligatoire($obligatoire);
-                $position->site($site);
+                $position->setName($nom);
+                $position->setActivities($activites);
+                $position->setCategories($categories);
+                $position->setBlocking($bloquant);
+                $position->setQuotaSP($quota_sp);
+                $position->setStatistics($statistiques);
+                $position->setTeleworking($teleworking);
+                $position->setLunch($lunch);
+                $position->setFloor($etage);
+                $position->setGroup($groupe);
+                $position->setGroupId($groupe_id);
+                $position->setMandatory($obligatoire);
+                $position->setSite($site);
 
                 try{
                     $this->entityManager->persist($position);
@@ -316,19 +317,20 @@ class PositionController extends BaseController
                 }
 
             } else {
-                $position=$this->entityManager->getRepository(Position::class)->find($id);
-                $position->nom($nom);
-                $position->activites($activites);
-                $position->categories($categories);
-                $position->bloquant($bloquant);
-                $position->statistiques($statistiques);
-                $position->teleworking($teleworking);
-                $position->lunch($lunch);
-                $position->etage($etage);
-                $position->groupe($groupe);
-                $position->groupe_id($groupe_id);
-                $position->obligatoire($obligatoire);
-                $position->site($site);
+                $position = $this->entityManager->getRepository(Position::class)->find($id);
+                $position->setName($nom);
+                $position->setActivities($activites);
+                $position->setCategories($categories);
+                $position->setBlocking($bloquant);
+                $position->setQuotaSP($quota_sp);
+                $position->setStatistics($statistiques);
+                $position->setTeleworking($teleworking);
+                $position->setLunch($lunch);
+                $position->setFloor($etage);
+                $position->setGroup($groupe);
+                $position->setGroupId($groupe_id);
+                $position->setMandatory($obligatoire);
+                $position->setSite($site);
 
                 try{
                     $this->entityManager->persist($position);
@@ -350,16 +352,14 @@ class PositionController extends BaseController
         return $this->redirectToRoute('position.index');
     }
 
-    /**
-     * @Route("/position",name="position.delete", methods={"DELETE"})
-     */
-     public function delete_position(Request $request, Session $session){
+    #[Route(path: '/position', name: 'position.delete', methods: ['DELETE'])]
+     public function delete_position(Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse{
 
         $id = $request->get('id');
         $p = $this->entityManager->getRepository(Position::class)->find($id);
 
         $date = new \DateTime();
-        $p->supprime($date);
+        $p->setDelete($date);
         try{
             $this->entityManager->persist($p);
             $this->entityManager->flush();

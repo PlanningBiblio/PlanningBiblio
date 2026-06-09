@@ -1,7 +1,6 @@
 <?php
 
-use App\Model\Agent;
-use App\Model\Holiday;
+use App\Entity\Agent;
 
 use Tests\PLBWebTestCase;
 use Tests\FixtureBuilder;
@@ -24,14 +23,14 @@ class HolidayControllerHolidayCreditTest extends PLBWebTestCase
         $this->logInAgent($admin, array(100));
     }
 
-    public function testHolidayOnHalfday()
+    public function testHolidayOnHalfday(): void
     {
         $entityManager = $this->entityManager;
 
         $jdevoe = $this->builder->build(Agent::class, array('login' => 'jdevoe'));
         $this->addWorkingHours($jdevoe, array('09:00:00', '12:30:00', '13:30:00', '17:00:00'));
 
-        $jdevoe_id = $jdevoe->id();
+        $jdevoe_id = $jdevoe->getId();
         $url = "/ajax/holiday-credit?debut=24/01/2022&fin=24/01/2022&hre_debut=00:00:00&hre_fin=23:59:59&perso_id=$jdevoe_id&start_halfday=morning&end_halfday=morning";
 
         $this->client->request('GET', $url);
@@ -57,7 +56,7 @@ class HolidayControllerHolidayCreditTest extends PLBWebTestCase
         $this->assertEquals($result->rest, 0, 'Morning Holiday rest is 0');
     }
 
-    private function addWorkingHours($agent, $times)
+    private function addWorkingHours($agent, $times): void
     {
         $workinghours = array(
             0 => array('0' => $times[0], '1' => $times[1], '2' => $times[2], '3' => $times[3]),
@@ -73,7 +72,7 @@ class HolidayControllerHolidayCreditTest extends PLBWebTestCase
         $id = $db->insert(
             'planning_hebdo',
             array(
-                'perso_id' => $agent->id(),
+                'perso_id' => $agent->getId(),
                 'debut' => '2021-01-01',
                 'fin' => '2090-12-31',
                 'temps' => json_encode($workinghours),
@@ -84,7 +83,7 @@ class HolidayControllerHolidayCreditTest extends PLBWebTestCase
         );
     }
 
-    private function deleteWorkingHours()
+    private function deleteWorkingHours(): void
     {
         $db = new \db();
         $db->CSRFToken = '00000';

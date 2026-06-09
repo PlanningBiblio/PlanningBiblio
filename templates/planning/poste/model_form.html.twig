@@ -1,32 +1,38 @@
 {# planning/poste/model_form.html.twig #}
 
-<div style="text-align:center">
-  <form name="form" id="form" method="post" action="{{ asset('modelimport') }}" onsubmit="return ctrl_form('model');">
-    <input type='hidden' name='CSRFToken' value='{{ CSRFToken }}' />
-    <input type='hidden' name='_token' value='{{ csrf_token('') }}' />
-    <input type='hidden' name='date' value='{{ date }}' />
-    <input type='hidden' name='site' value='{{ site }}' />
+<div class="modal-body" style="text-align:center">
+  <form name="form" id="import-model-form" method="post" action="{{ asset('modelimport') }}" onsubmit="return ctrl_form('model');">
+    <input type="hidden" name="CSRFToken" value="{{ CSRFSession }}" />
+    <input type="hidden" name="_token" value="{{ csrf_token("") }}" />
+    <input type="hidden" name="date" value="{{ date }}" />
+    <input type="hidden" name="site" value="{{ site }}" />
 
     {% if models | length == 0 %}
-      <div style="margin: 20px auto;">
-        Aucun modèle enregistré
+      <div class="row">
+        <p>
+          {% trans %}No models saved{% endtrans %}
+        </p>
+        <script>
+          $('#import-model-button').addClass('disabled');
+          $('#import-model-button').attr('type', 'button');
+        </script>
       </div>
 
     {% else %}
-      <div style="margin: 20px auto;" class="important">
-        Attention, le planning actuel sera remplacé par le modèle
+      <div class="row">
+        <p class="important">
+          {% trans %}Please note that the current schedule will be replaced by the new model{% endtrans %}
+        </p>
       </div>
 
       {% if models | length > 1 %}
 
-        <div style="margin: 20px auto;">
-          Sélectionnez le modèle à importer
-          <br />
-          <br />
-          <select name='model' id='model'>
-            <option value=''>&nbsp;</option>
+        <div class="row mb-2 justify-content-center">
+          <label for="model" class="form-label">{% trans %}Select the template to import{% endtrans %} :</label>
+          <select name="model" id="model" class="form-select form-select-sm" style="max-width: fit-content;text-align:center;">
+            <option hidden disabled selected value=""></option>
             {% for m in models %}
-              <option value='{{ m.model_id }}'>{{ m.nom }}{% if m.isWeek %} (semaine){% endif %}</option>
+              <option value="{{ m.modelId }}">{{ m.name }}{% if m.isWeek %} (semaine){% endif %}</option>
             {% endfor %}
           </select>
         </div>
@@ -34,16 +40,22 @@
       {% else %}
 
         {% set model = models | first  %}
-        <input type='hidden' name='model' id='model' value='{{ model.model_id }}' />
-        <div style="margin: 20px auto;">
-          Importer le modèle "{{ model.nom }}"{%if model.isWeek %} (semaine){% endif %} ?
+        <input type="hidden" name="model" id="model" value="{{ model.modelId }}" />
+        <div class="row">
+          <p>
+            {% trans with {'%name%': model.name} %}Import the "%name%" model{% endtrans %}{%if model.isWeek %}({% trans %}week{% endtrans %}){% endif %} ?
+          </p>
         </div>
 
     {% endif %}
 
-    <div style="margin: 20px auto;">
-      Importer les absents ?
-      <input type='checkbox' name='absents' checked='checked' />
+    <div class="row mt-3 mb-2 justify-content-center">
+      <div class="col-auto">
+        <div class="form-check-prepend">
+          <label for="absents-check" class="col-auto form-check-label">{% trans %}Import absent agents{% endtrans %} :</label>
+          <input class="form-check-input m-1 mx-2" type="checkbox" id="absents-check" name="absents" checked="checked">
+        </div>
+      </div>
     </div>
 
   {% endif %}

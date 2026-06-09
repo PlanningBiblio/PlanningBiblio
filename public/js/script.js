@@ -1,16 +1,4 @@
 /**
-Planning Biblio
-Licence GNU/GPL (version 2 et au dela)
-Voir les fichiers README.md et LICENSE
-@copyright 2011-2018 Jérôme Combes
-
-Fichier : js/script.js
-Création : mai 2011
-@author Jérôme Combes <jerome@planningbiblio.fr>
-@author Farid Goara <farid.goara@u-pem.fr>
-@author Etienne Cavalié
-
-
 Description :
 Fichier contenant les principales fonctions JavaScript
 
@@ -158,92 +146,15 @@ function ctrl_form(champs){
     return true;
 }
 
-// checkDate1 : utilisée pour valider les formulaires Jquery-UI, la date (o) doit être supérieure ou égale à aujourd'hui
-function checkDate1( o, n) {
-  if(n==undefined){
-    n=false;
+function date_range_validation(date1_value, date2_value, strict=false) {
+  // Checks the validity of a date range
+  var format = Translator.trans('MM/DD/YYYY');
+  var date1 = dayjs(date1_value, format)
+  var date2 = dayjs(date2_value, format)
+  if (strict){
+    return (date2.diff(date1, 'day') > 0);
   }
-  var today=new Date();
-  var d=new Date();
-  tmp=o.val().split("/");
-  d.setDate(parseInt(tmp[0]));
-  d.setMonth(parseInt(tmp[1])-1);
-  d.setFullYear(parseInt(tmp[2]));
-  diff=dateDiff(today,d);
-  if(diff.day<0){
-    if(n){
-      o.addClass( "ui-state-error" );
-      updateTips( n , 'error');
-    }
-    return false;
-  } else {
-    return true;
-  }
-}
-
-// checkDate2 : utilisée pour valider les formulaires Jquery-UI. date2 doit être supérieur à date1
-function checkDate2( date1, date2, n ) {
-  var d1=new Date();
-  tmp=date1.val().split("/");
-  d1.setDate(parseInt(tmp[0]));
-  d1.setMonth(parseInt(tmp[1])-1);
-  d1.setFullYear(parseInt(tmp[2]));
-
-  var d2=new Date();
-  tmp=date2.val().split("/");
-  d2.setDate(parseInt(tmp[0]));
-  d2.setMonth(parseInt(tmp[1])-1);
-  d2.setFullYear(parseInt(tmp[2]));
-
-  diff=dateDiff(d1,d2);
-  if(diff.day<0){
-    date2.addClass( "ui-state-error" );
-    updateTips( n , 'error');
-    return false;
-  } else {
-    return true;
-  }
-}
-
-// checkDiff : utilisée pour valider les formulaires Jquery-U, o1 et o2 doivent avoir des valeurs différentes
-function checkDiff( o1, o2, n ) {
-  if (o1.val() == o2.val()){
-    o2.addClass( "ui-state-error" );
-    updateTips( n , 'error');
-    return false;
-  } else {
-    return true;
-  }
-}
-
-// checkRegexp : utilisée pour valider les formulaires Jquery-UI.
-function checkRegexp( o, regexp, n ) {
-  if ( !( regexp.test( o.val() ) ) ) {
-    o.addClass( "ui-state-error" );
-    updateTips( n , 'error');
-    return false;
-  } else {
-    return true;
-  }
-}
-
-function dateDiff(date1,date2){
-  var diff={}
-  var tmp=date2-date1;
-
-  tmp=Math.floor(tmp/1000);
-  diff.sec=tmp%60;
-  
-  tmp=Math.floor((tmp-diff.sec)/60);
-  diff.min=tmp%60;
-  
-  tmp=Math.floor((tmp-diff.min)/60);
-  diff.hour=tmp%24;
-
-  tmp=Math.floor((tmp-diff.hour)/24);
-  diff.day=tmp;
-  
-  return diff;
+  return (date2.diff(date1, 'day') >= 0);
 }
   
 function dateFr(date){
@@ -335,12 +246,11 @@ function decompte(dcpt){
 
 
 function padding20(elem) {
-    if(elem.val()==2){
-      elem.prev("font").removeClass("bold");
-      elem.prev("font").addClass("padding20");
-    }else{
-      elem.prev("font").addClass("bold");
-      elem.prev("font").removeClass("padding20");
+    if(elem.val() == 2) {
+      elem.parent('div').prev('span').addClass('ps-4');
+    }
+    else {
+      elem.parent('div').prev('span').removeClass('ps-4');
     }
 }
 
@@ -398,28 +308,33 @@ function deleteAbsenceDocument(id) {
 }
 
 function deleteAbsenceInfo(id) {
-    if (confirm("Etes vous sûr(e) de vouloir supprimer cette information ?")) {
-        $('#form').prepend("<input type='hidden' name='_method' value='DELETE' />");
-        $('#form').submit();
-    }
+    deleteAjax(id, 'absences/info', 'Êtes vous sûr(e) de vouloir supprimer cette information ?');
 }
 
-
 function deleteAbsenceBlock(id) {
-    if (confirm("Êtes-vous sûr(e) de vouloir supprimer ce blocage ?")) {
-        $('#form').prepend("<input type='hidden' name='_method' value='DELETE' />");
-        $('#form').prepend("<input type='hidden' name='id' value='" + id + "' />");
-        $('#form').submit();
-    }
+    deleteAjax(id, 'absence/block', 'Êtes-vous sûr(e) de vouloir supprimer ce blocage ?');
 }
 
 function deleteAdminInfo(id) {
-    if (confirm("Etes vous sûr(e) de vouloir supprimer cette information ?")) {
-        $('#form').prepend("<input type='hidden' name='_method' value='DELETE' />");
-        $('#form').submit();
-    }
+    deleteAjax(id, 'admin/info', 'Êtes vous sûr(e) de vouloir supprimer cette information ?');
 }
 
+function deleteAjax(id, route, message) {
+    if (confirm(message)) {
+        $.ajax({
+            url: url(route),
+            type: 'delete',
+            dataType: 'json',
+            data: {id: id, _token: $('#_token').val()},
+            success: function(result) {
+                window.location.href=url(route);
+            },
+            error: function(result){
+              CJInfo('Une erreur est survenue lors de la suppression', 'error');
+            }
+        });
+    }
+}
 
 function diffMinutes(debut,fin){		// Calcul la différence en minutes entre 2 heures (formats H:i:s)
   var d=new Date("Mon, 26 Aug 2013 "+debut);
@@ -477,11 +392,6 @@ function information(message,type,top,time){
   timeoutJSInfo=window.setTimeout("$('#JSInformation').remove()",time);
 }
 
-function modif_mdp(){
-  document.form.action.value="mdp";
-  document.form.submit();
-}
-
 function removeAccents(strAccents){
   strAccents = strAccents.split('');
   strAccentsOut = new Array();
@@ -506,7 +416,10 @@ function removeAccents(strAccents){
  * @param int id : ID de l'agent
  * @param string nom : Prénom et Nom de l'agent (pour affichage de la confirmation
  */
-function resetICSURL(id, CSRFToken, nom){
+function resetICSURL(id, nom)
+{
+  var _token = $('input[name=_token]').val();
+
   if(nom == undefined){
     var res = confirm("Etes vous sûr(e) de vouloir réinitialiser les URL de vos agendas ICS ?");
   } else {
@@ -515,10 +428,10 @@ function resetICSURL(id, CSRFToken, nom){
   
   if(res){
     $.ajax({
-      url: url('ics/ajax.resetURL.php'),
+      url: url('agent/ics/reset-url'),
       type: "post",
       dataType: "json",
-      data: {id: id, CSRFToken: CSRFToken},
+      data: {id: id, _token: _token},
       success: function(result){
         $("#urlIcs").html("<a href='"+result.url+"'>"+result.url+"</a>");
         $("#urlIcsWithAbsences").html("<a href='"+result.url+"&absences=1'>"+result.url+"&absences=1</a>");
@@ -569,7 +482,7 @@ function updateAgentsList(me,select_id){
   var in_array=false;
 
   $.ajax({
-    url: url('personnel/ajax.updateAgentsList.php'),
+    url: url('agent/update-list'),
     type: "get",
     data: "deleted="+deleted,
     success: function(result){
@@ -592,6 +505,12 @@ function updateAgentsList(me,select_id){
   });
 }
 
+// This function will replace the updateTips function
+function updateAlert(text, translationOptions = null) {
+  text = Translator.trans(text, translationOptions);
+  $('#alert-text').text(text);
+  $('#alert').removeClass('d-none');
+}
 
 // updateTips : utilisée pour valider les formulaires Jquery-UI
 function updateTips( text , type) {
@@ -607,6 +526,25 @@ function updateTips( text , type) {
   $(".validateTips").html(text);
 
   CJErrorHighlight( $(".validateTips"), type);
+}
+
+// This function is intended to replace verif_date() in the long term
+// It checks the validity of a date (string) and ensures it complies with a specific format
+// The date format is loaded from the translation files for the selected locale
+function date_validation(date_value) {
+  format = Translator.trans('MM/DD/YYYY');
+  return dayjs(date_value, format, true).isValid();
+};
+
+// This function checks the validity of a time value
+function time_validation(time_value) {
+  format = 'HH:mm';
+  return dayjs(time_value, format, true).isValid() ;
+}
+
+// This function checks the validity of an integer value
+function int_validation(value) {
+  return !isNaN(value) && parseInt(Number(value)) == value && !isNaN(parseInt(value, 10));
 }
 
 function verif_date(d){
@@ -648,11 +586,16 @@ function verif_date(d){
   }
   return ok;
 }
- 
-function verif_form(champs,form){
-  if(form==undefined){
-    form="form";
+
+function verif_form(champs, form='form', callback=null)
+{
+  // Checks if the form was submitted with invalid inputs and stops the submission
+  if ($('.is-invalid').length > 0) {
+    event.preventDefault();
+    event.stopPropagation();
+    return;
   }
+
   erreurs="";
   valeur1="";
   valeur2="";
@@ -705,12 +648,16 @@ function verif_form(champs,form){
     return false;
   }
   else{
-    if(valeur1 && valeur2 && valeur2<valeur1){
-      CJInfo("Le champ "+objet2+" doit être supérieur au champ "+objet1,"error");
+    if(valeur1 && valeur2 && valeur2 < valeur1) {
       return false;
     }
-    else{
-      return true;
+    else {
+      if (callback) {
+        return window[callback]();
+      } 
+      else {
+        return true;
+      }
     }
   }
 }
@@ -775,117 +722,185 @@ function position(object,top,left){
   }
 }
 //	--------------------------------	FIN Aide		---------------------------------	//
-//	--------------------------------	Statistiques		---------------------------------	//
-function export_stat(nom,type){
-  $.ajax({
-    url: url('statistiques/export.php'),
-    type: "get",
-    data: "nom="+nom+"&type="+type,
-    success: function(result){
-      window.open("/data/"+result);
-    },
-    error: function(){
-      information("Une erreur est survenue lors de l'exportation.","error");
-    }
-  });
-}
 
-function verif_select(nom){
-  if(document.form.elements[nom+'[]'].value=="Tous"){
-    for(i=document.form.elements[nom+'[]'].length-1;i>0;i--){
-      document.form.elements[nom+'[]'][i].selected=true;
-    }
-    document.form.elements[nom+'[]'][0].selected=false;
-  }
-}
-//	--------------------------------	FIN Statistiques	---------------------------------	//
 
-// Initialisations JQuery-UI
+// Initialisations JQuery-UI / Bootstrap
 $(function(){
-  $(document).ready(function() {
-    $(".ui-accordion").accordion({
-      heightStyle: "content",
-      collapsible: "true",
-      active: "false"
-    });
 
-    $(".ui-button").button();
-    $(".datepicker").datepicker({
-      showOtherMonths: true,
-      selectOtherMonths: true,
-    });
-
-    $(".datepicker").addClass("center ui-widget-content ui-corner-all");
-    $(".datepicker").attr('autocomplete','off');
-
-    /**
-    * Initialiser le calendrier avec la date choisie
-    * @author Farid Goara
-    */
-    if ($("#date").length > 0){
-      if ($("#date").attr("data-set-calendar") != 'undefined' && $("#date").attr("data-set-calendar")!= false  ){
-	var strSelectedDate=$("#date").attr("data-set-calendar");
-	if(strSelectedDate){
-	  var arrSelectedDate=strSelectedDate.split("-");
-	  var numYear = arrSelectedDate[0];
-	  var numMonth = parseInt(arrSelectedDate[1]) - 1;
-	  var numDay = arrSelectedDate[2];
-	  var objSelectedDate = new Date(numYear,numMonth,numDay);
-	  $(".datepicker").datepicker("setDate",objSelectedDate);
-	}
-      }
+  $('form').on('submit', function(e){
+    if (this.checkValidity() === false || $('.is-invalid').length > 0) {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
     }
+    $(this).addClass('was-validated');
+  });
 
-    /**
-    * Initialiser le defaultDate du calendrier de fin avec eventuelle date choisie dans le calendrier debut
-    * @author Farid Goara
-    */
-    $(".datepicker").focusin(function(){
-      if($(this).attr("name") == "fin"){
-	var objDateDefaultFin = "";
-	var objDateCurrentDeb = "";
-	if($('input[name="debut"]').datepicker("getDate")){
-	  if(!$(this).datepicker("option","defaultDate" )){
-	    $(this).datepicker("option","defaultDate",$('input[name="debut"]').datepicker("getDate"));
-	  }
-	  else{
-	    objDateDefaultFin = new Date($(this).datepicker("option","defaultDate"));
-	    objDateCurrentDeb = new Date($('input[name="debut"]').datepicker("getDate"));
-	    if(objDateDefaultFin.getDate() != objDateCurrentDeb.getDate() || objDateDefaultFin.getMonth() != objDateCurrentDeb.getMonth() || objDateDefaultFin.getYear() != objDateCurrentDeb.getYear()){
-	      $(this).datepicker("option","defaultDate",$('input[name="debut"]').datepicker("getDate"));
-	    }
-	  }
-	}
+  $('.form-control').on('change', function(e){
+    $('#alert').addClass('d-none');
+  })
+
+  $(document).ready(function() {
+
+    $("#pl-calendar").bootstrapDP({
+      format: 'yyyy-mm-dd',
+      todayHighlight: true,
+      language: Translator.locale,
+      toggleActive : true,
+    });
+
+    $("input.datepicker").bootstrapDP({
+      format: 'dd/mm/yyyy',
+      language: Translator.locale,
+      todayHighlight: true,
+      autoclose: true,
+      forceParse : false
+    });
+
+    $(".datepicker").attr('autocomplete','off');
+    $(".datepicker").attr('placeholder', Translator.trans('mm/dd/yyyy'));
+
+    // Message display when date input is invalid
+    $('.datepicker:not(.start-date):not(.end-date)').on('change',function() {
+       var required = typeof($(this).attr('required')) != 'undefined';
+       var date = $(this).bootstrapDP('getDate');
+       var valid_date = date_validation($(this).val());
+
+      if ((date == null && required ) || (date != null && !valid_date)) {
+        $(this).addClass('is-invalid');
+      }
+      else {
+        $(this).removeClass('is-invalid');
       }
     });
 
-    // Onglets
-    $(".ui-tabs").tabs({
-      active: $(".ui-tabs").attr("data-active"),
-      // Fonctions personnalisées pour les tabs .ui-tab-cancel et .ui-tab-submit dans personnel/modif.php
-      beforeActivate: function(event,ui){
-	if($(ui.newTab).hasClass("ui-tab-cancel")){
- 	  window.location.href=$(".ui-tab-cancel > a").attr("href");
-	  return false;
-	}
-	if($(ui.newTab).hasClass("ui-tab-submit")){
- 	  var command=$(".ui-tab-submit > a").attr("href");
-	  if(command.substring(0,11)=="javascript:"){
-	    command=command.substring(11,command.length);
-	    eval(command);
-	  }
-	  return false;
-	}
-      },
-      disabled: $(".ui-tabs").attr("data-disabled") ? jQuery.parseJSON($(".ui-tabs").attr("data-disabled")) : []
+    // Message display when time input is invalid
+    $('.time').on('input',function(e) {
+      $('#alert').addClass('d-none');
+      var required = typeof($(this).attr('required')) != 'undefined';
+      var valid_time = time_validation($(this).val());
+
+      if ((!$(this).val() && required ) || ($(this).val() && !valid_time)) {
+        $(this).addClass('is-invalid');
+      }
+      else {
+        $(this).removeClass('is-invalid');
+      }
     });
-    $(".ui-tab-submit").css("position","absolute");
-    $(".ui-tab-submit").css("right",5);
-    $(".ui-tab-submit").css("top",7);
-    var right=$(".ui-tab-submit").length>0?$(".ui-tab-submit").width()+10:5;
-    $(".ui-tab-cancel").css("position","absolute");
-    $(".ui-tab-cancel").css("right",right);
-    $(".ui-tab-cancel").css("top",7);
+
+    // Invalid message feedback when date interval is not valid and disabled submit button
+    $('.datepicker.end-date').on('change',function() {
+      var valid_start = date_validation($('.datepicker.start-date').val());
+      var valid_end = date_validation($(this).val());
+      var end_required = typeof($(this).attr('required')) != 'undefined';
+      var start = $('.datepicker.start-date').bootstrapDP('getDate');
+      var end = $(this).bootstrapDP('getDate');
+      var feedback = $(this).parent().parent().siblings().children('.invalid-feedback');
+
+      if((end == null && end_required ) || (end != null && !valid_end)){
+        $(this).addClass('is-invalid');
+        if(feedback.text() == Translator.trans("Please choose a valid date interval.") || !$('.datepicker.start-date').hasClass('is-invalid')){
+          $('.datepicker.start-date').removeClass('is-invalid');
+          feedback.text(Translator.trans("Please enter a valid end date"));
+          feedback.show();
+        }
+        return;
+      }
+
+      if (!valid_end && !valid_start){
+        return;
+      }
+
+      if(valid_end && !valid_start) {
+        $(this).removeClass('is-invalid');
+        return;
+      }
+
+      if(valid_start && valid_end && end < start) {
+        $(this).addClass('is-invalid');
+        $('.datepicker.start-date').addClass('is-invalid');
+        feedback.text(Translator.trans("Please choose a valid date interval.", 'validators'));
+        feedback.show();
+        return;
+      }
+
+      $(this).removeClass('is-invalid');
+      $('.datepicker.start-date').removeClass('is-invalid');
+      feedback.hide()
+    });
+
+    $('.datepicker.start-date').on('change',function() {
+      var valid_start = date_validation($(this).val());
+      var valid_end = date_validation($('.datepicker.end-date').val());
+      var end_required = typeof($('.datepicker.end-date').attr('required')) != 'undefined';
+      var start = $(this).bootstrapDP('getDate');
+      var end = $('.datepicker.end-date').bootstrapDP('getDate');
+      var feedback = $(this).parent().parent().siblings().children('.invalid-feedback')
+
+      if(!valid_start) {
+        if(valid_end) {
+          $('.datepicker.end-date').removeClass('is-invalid');
+        }
+        $(this).addClass('is-invalid');
+        feedback.text(Translator.trans("Please enter a valid start date"));
+        feedback.show();
+        return;
+      }
+
+      if(valid_start && ((end != null && !valid_end) || (end == null && end_required ))) {
+        $(this).removeClass('is-invalid');
+        feedback.text(Translator.trans("Please enter a valid end date"));
+        return;
+      }
+
+      if((valid_end && valid_start && start > end)) {
+        $(this).addClass('is-invalid');
+        $('.datepicker.end-date').addClass('is-invalid');
+        feedback.text(Translator.trans("Please choose a valid date interval.", 'validators'));
+        feedback.show();
+        return;
+      }
+
+      $(this).removeClass('is-invalid');
+      $('.datepicker.end-date').removeClass('is-invalid');
+      feedback.hide()
+    });
+
+    // One year limitation on research form
+
+    $('.start-date.one-year').on('change', function(e) {
+      var start = dayjs($('.start-date').val(), Translator.trans('DD/MM/YYYY'));
+      var end = dayjs($('.end-date').val(), Translator.trans('DD/MM/YYYY'));
+      var valid_start = date_validation($('.start-date').val());
+      var valid_end = date_validation($('.end-date').val());
+      var feedback = $(this).parent().parent().siblings().children('.invalid-feedback');
+
+      if (valid_end && valid_start) {
+        if (end.diff(start, 'year', true) > 1) {
+          end = start.add(1, 'year');
+          $('.end-date').val(end.format(Translator.trans('DD/MM/YYYY')));
+          feedback.text(Translator.trans('Search results are limited to a period of one year'));
+          feedback.show()
+        }
+      }
+    });
+
+    $('.end-date.one-year').on('change', function(e) {
+      var start = dayjs($('.start-date').val(), Translator.trans('DD/MM/YYYY'));
+      var end = dayjs($('.end-date').val(), Translator.trans('DD/MM/YYYY'));
+      var valid_start = date_validation($('.start-date').val());
+      var valid_end = date_validation($('.end-date').val());
+      var feedback = $(this).parent().parent().siblings().children('.invalid-feedback');
+
+      if (valid_end && valid_start) {
+        if (end.diff(start, 'year', true) > 1) {
+          start = end.subtract(1, 'year');
+          $('.start-date').val(start.format(Translator.trans('DD/MM/YYYY')));
+          feedback.text(Translator.trans('Search results are limited to a period of one year'));
+          feedback.show()
+        }
+      }
+    });
 
     granularity = $('form #granularity').val();
     step = setTimePickerStep(granularity);
@@ -922,12 +937,30 @@ $(function(){
       minHour: '0',
       maxTime: '17:00',
       maxHour: '17',
+      dynamic: false,
     });
 
+    // Initializes and creates emoji set from sprite sheet
+    $('.emoji-picker-textarea').each(function() {
+      $(this).next('div.invalid-feedback').andSelf().wrapAll('<div class="emoji-picker-container"></div>');
+      $(this).attr('data-emojiable', 'true');
+      $(this).attr('data-emoji-input', 'image');
+    });
+
+    window.emojiPicker = new EmojiPicker({
+        emojiable_selector: '[data-emojiable=true]',
+        assetsPath: url('vendor/emoji-lib/img/'),
+        popupButtonClasses: 'bi bi-emoji-smile'
+    });
+
+    window.emojiPicker.discover();
+
+    $('.emoji-wysiwyg-editor').on('input', function() {
+      $(this).removeClass('is-invalid');
+      $(this).prev('textarea').removeClass('is-invalid');
+    })
   });
 
   // Infobulles
   $(document).tooltip();
 });
-
-

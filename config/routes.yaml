@@ -4,3 +4,6 @@
 #index:
 #    path: /
 #    defaults: { _controller: 'App\Controller\DefaultController::index' }
+controllers:
+    resource: ../src/Controller/
+    type: attribute

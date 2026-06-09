@@ -5,16 +5,15 @@ namespace App\Controller;
 use App\Controller\BaseController;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
-use App\Model\AbsenceInfo;
+use App\Entity\AbsenceInfo;
 
 class AbsenceInfoController extends BaseController
 {
-    /**
-     * @Route("/absences/info", name="absences.info.index", methods={"GET"})
-     */
+    #[Route(path: '/absences/info', name: 'absences.info.index', methods: ['GET'])]
     public function index(Request $request, Session $session)
     {
         $today = date('Y-m-d');
@@ -33,9 +32,7 @@ class AbsenceInfoController extends BaseController
         return $this->output('absenceInfo/index.html.twig');
     }
 
-    /**
-     * @Route("/absences/info/add", name="absences.info.add", methods={"GET"})
-     */
+    #[Route(path: '/absences/info/add', name: 'absences.info.add', methods: ['GET'])]
     public function add(Request $request)
     {
         $this->templateParams(array(
@@ -48,9 +45,7 @@ class AbsenceInfoController extends BaseController
         return $this->output('absenceInfo/edit.html.twig');
     }
 
-    /**
-     * @Route("/absences/info/{id}", name="absences.info.edit", methods={"GET"})
-     */
+    #[Route(path: '/absences/info/{id}', name: 'absences.info.edit', methods: ['GET'])]
     public function edit(Request $request)
     {
         $id = $request->get('id');
@@ -59,18 +54,16 @@ class AbsenceInfoController extends BaseController
 
         $this->templateParams(array(
             'id'    => $id,
-            'start' => date_format($info->debut(), "d/m/Y"),
-            'end'   => date_format($info->fin(), "d/m/Y"),
-            'text'  => $info->texte()
+            'start' => date_format($info->getStart(), "d/m/Y"),
+            'end'   => date_format($info->getEnd(), "d/m/Y"),
+            'text'  => $info->getComment(),
         ));
 
         return $this->output('absenceInfo/edit.html.twig');
     }
 
-    /**
-     * @Route("/absences/info", name="absences.info.update", methods={"POST"})
-     */
-    public function update(Request $request, Session $session)
+    #[Route(path: '/absences/info', name: 'absences.info.update', methods: ['POST'])]
+    public function update(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
@@ -88,16 +81,16 @@ class AbsenceInfoController extends BaseController
 
         if ($id) {
             $info = $this->entityManager->getRepository(AbsenceInfo::class)->find($id);
-            $info->debut($start);
-            $info->fin($end);
-            $info->texte($text);
+            $info->setStart($start);
+            $info->setEnd($end);
+            $info->setComment($text);
             $flash = "L'information a bien été modifiée.";
         } else {
             // Store a new info
             $info = new AbsenceInfo();
-            $info->debut($start);
-            $info->fin($end);
-            $info->texte($text);
+            $info->setStart($start);
+            $info->setEnd($end);
+            $info->setComment($text);
             $flash = "L'information a bien été enregistrée.";
         }
 
@@ -108,13 +101,15 @@ class AbsenceInfoController extends BaseController
         return $this->redirectToRoute('absences.info.index');
     }
 
-    /**
-     * @Route("/absences/info", name="absences.info.delete", methods={"DELETE"})
-     */
-    public function delete(Request $request, Session $session)
+    #[Route(path: '/absences/info', name: 'absences.info.delete', methods: ['DELETE'])]
+    public function delete(Request $request, Session $session): \Symfony\Component\HttpFoundation\Response
     {
         if (!$this->csrf_protection($request)) {
-            return $this->redirectToRoute('access-denied');
+            $response = new Response();
+            $response->setStatusCode(403);
+            $response->setContent(json_encode('CSRF error'));
+
+            return $response;
         }
 
         $id = $request->get('id');
@@ -124,9 +119,13 @@ class AbsenceInfoController extends BaseController
         $this->entityManager->flush();
 
         $flash = "L'information a bien été supprimée.";
-
         $session->getFlashBag()->add('notice', $flash);
-        return $this->redirectToRoute('absences.info.index');
+
+        $response = new Response();
+        $response->setStatusCode(200);
+        $response->setContent(json_encode('OK'));
+
+        return $response;
     }
 
 }

@@ -1,6 +1,6 @@
 <?php
 
-use App\PlanningBiblio\Menu;
+use App\Planno\Menu;
 
 $m = new Menu();
 $menu = $m->get();

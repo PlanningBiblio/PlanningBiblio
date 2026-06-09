@@ -1,8 +1,8 @@
 {# planning/poste/date-menu.html.twig #}
 
 {% block specificjs %}
-  <script type="text/JavaScript" src='js/plb/undo.js'></script>
-  <script type="text/JavaScript" src='js/plb/redo.js'></script>
+  <script type="text/JavaScript" src='js/planning-undo.js'></script>
+  <script type="text/JavaScript" src='js/planning-redo.js'></script>
 {% endblock %}
 
 <!-- Show title and calendar widgets -->
@@ -14,7 +14,7 @@
 
   <div id='tab_titre' class="container-fluid">
     <div class="row">
-      <div id='pl-calendar' class="datepicker {{ week_view ? 'datepickerSemaine' }}"></div>
+      <div id="pl-calendar" class="datepicker {{ week_view ? 'datepickerSemaine' }}" data-date="{{date}}"></div>
       <div class='col-xxl titreSemFixe'>
         <div id='week_planning'>
           <b>Semaine {{ affSem }}</b>
@@ -26,7 +26,7 @@
 
         {% if not week_view %}
           <div id='date_planning'>
-            Planning du {{ date | datefull | raw }}
+            Planning du {{ date | datefull }}
             {% if public_holiday %}
               <font id='ferie'>{{ public_holiday }}</font>
             {% endif %}
@@ -34,17 +34,17 @@
         {% endif %}
 
         <div class='noprint' id='tab_jours'>
-          <ul valign='top' style="padding-left: 0px;">
-            <li style="font-size: 13pt;" class="days_li"><a href="{{ asset('index') }}?date={{ dates[0] }}" class="{{ date == dates[0] and not week_view ? 'menuRed' : 'menu' }}" >Lundi</a> / </li>
-            <li style="font-size: 13pt;" class="days_li"><a href="{{ asset('index') }}?date={{ dates[1] }}" class="{{ date == dates[1] and not week_view ? 'menuRed' : 'menu' }}" >Mardi</a> / </li>
-            <li style="font-size: 13pt;" class="days_li"><a href="{{ asset('index') }}?date={{ dates[2] }}" class="{{ date == dates[2] and not week_view ? 'menuRed' : 'menu' }}" >Mercredi</a> / </li>
-            <li style="font-size: 13pt;" class="days_li"><a href="{{ asset('index') }}?date={{ dates[3] }}" class="{{ date == dates[3] and not week_view ? 'menuRed' : 'menu' }}" >Jeudi</a> / </li>
-            <li style="font-size: 13pt;" class="days_li"><a href="{{ asset('index') }}?date={{ dates[4] }}" class="{{ date == dates[4] and not week_view ? 'menuRed' : 'menu' }}" >Vendredi</a> / </li>
-            <li style="font-size: 13pt;" class="days_li"><a href="{{ asset('index') }}?date={{ dates[5] }}" class="{{ date == dates[5] and not week_view ? 'menuRed' : 'menu' }}" >Samedi</a></li>
+          <ul class="days_ul">
+            <li><a href="{{ path('home', {date: dates[0]}) }}" {% if date == dates[0] and not week_view %} class="active" {% endif %}>Lundi</a> / </li>
+            <li><a href="{{ path('home', {date: dates[1]}) }}" {% if date == dates[1] and not week_view %} class="active" {% endif %}>Mardi</a> / </li>
+            <li><a href="{{ path('home', {date: dates[2]}) }}" {% if date == dates[2] and not week_view %} class="active" {% endif %}>Mercredi</a> / </li>
+            <li><a href="{{ path('home', {date: dates[3]}) }}" {% if date == dates[3] and not week_view %} class="active" {% endif %}>Jeudi</a> / </li>
+            <li><a href="{{ path('home', {date: dates[4]}) }}" {% if date == dates[4] and not week_view %} class="active" {% endif %}>Vendredi</a> / </li>
+            <li><a href="{{ path('home', {date: dates[5]}) }}" {% if date == dates[5] and not week_view %} class="active" {% endif %}>Samedi</a></li>
             {% if config('Dimanche') %}
-              <li align='center' style="font-size: 13pt;" class="days_li"> / <a href="{{ asset('index') }}?date={{ dates[6] }}"  class="{{ date == dates[6] ? 'menuRed' : 'menu' }}" >Dimanche</a> </li>
+              <li> / <a href="{{ path('home', {date: dates[6]}) }}" {% if date == dates[6] and not week_view %} class="active" {% endif %}>Dimanche</a> </li>
             {% endif %}
-            <li style="font-size: 13pt;" class="days_li"> / <a href="{{ asset('week') }}" class="{{ week_view ?'menuRed' : 'menu' }}" >Semaine</a></li>
+            <li> / <a href="{{ asset('week') }}" {% if week_view %} class="active" {% endif %}>Semaine</a></li>
           </ul>
         </div>
 
@@ -59,11 +59,10 @@
             <span class='pl-icon pl-icon-printer'></span>
           </a>
 
-          <a href="{{ asset('index') }}" title="Actualiser">
+          <a href="{{ path('home') }}" title="Actualiser">
             <span class='pl-icon pl-icon-refresh'>
           </a>
 
-          <div id='planningTips'>&nbsp;</div>
         {% else %}
           {% if ( userCan('300', site) or userCan('1000', site) ) and config('CatAFinDeService') %}
             <div id='pl-verif-categorie-A'></div>
@@ -72,46 +71,45 @@
           <div id='validation'>
             <div class='pl-validation' style="{{ locked ?: 'display:none'}}">
               <u>Validation</u><br/>
-              {{ perso2 }} {{ date_validation2 }} {{ heure_validation2 }}
+              {{ lockPerson }} {{ lockDate | datefr }}
             </div>
 
             {% if userCan('300', site) or userCan('1000', site) %}
-              <span id='icon-lock' class='pl-icon pl-icon-lock pointer noprint' title='Déverrouiller le planning' style="{{ locked ?: 'display:none'}}"></span></a>
-
-              <span id='icon-unlock' class='pl-icon pl-icon-unlock pointer noprint' title='Verrouiller le planning' style="{{ locked ? 'display:none'}}"></span></a>
+              <span id="icon-lock" class="pl-icon pl-icon-lock pointer noprint" title="Déverrouiller le planning" {% if not locked %} style="display:none;" {% endif %}></span>
+              <span id="icon-unlock" class="pl-icon pl-icon-unlock pointer noprint" title="Verrouiller le planning" {% if locked %} style="display:none;" {% endif %}></span>
             {% endif %}
 
             {% if userCan('300', site) %}
-              <a href='#' title='Enregistrer comme modèle'>
-                <span class='pl-icon pl-icon-save'></span>
-              </a>
 
-              <a id="planning-import" href='#' title='Importer un modèle' style="{{ locked ? 'display:none;' }}">
-                <span class='pl-icon pl-icon-open'></span>
-              </a>
+              <button id="planning-save" type="button" class="btn btn-icon disabled" data-bs-toggle="modal" data-bs-target="#save-model-modal">
+                <span class="pl-icon pl-icon-save" title="Enregistrer comme modèle"></span>
+              </button>
 
-              <a id="planning-drop" title='Supprimer le planning' style="{{ locked ? 'display:none;' }}">
-                <span class='pl-icon pl-icon-drop'></span>
-              </a>
+              <button id="planning-import" type="button" class="btn btn-icon" data-bs-toggle="modal" data-bs-target="#import-model-modal" style="{{ locked ? 'display:none;' }}">
+                <span class="pl-icon pl-icon-open" title="Importer un modèle"></span>
+              </button>
+
+              <button id="planning-drop" type="button" class="btn btn-icon" data-bs-toggle="modal" data-bs-target="#drop-model-modal" style="{{ locked ? 'display:none;' }}">
+                <span class="pl-icon pl-icon-drop" title="Supprimer le planning"></span>
+              </button>
             {% endif %}
 
-            <a href='javascript:print();' title='Imprimer le planning'>
-              <span class='pl-icon pl-icon-printer'></span>
+            <a href="javascript:print();">
+              <span class="pl-icon pl-icon-printer" title="Imprimer le planning"></span>
             </a>
 
-            <a href="{{ asset('index') }}?date={{ date }}&amp;site={{ site }}" title="Actualiser">
-              <span class='pl-icon pl-icon-refresh'>
+            <a href="{{ path('home') }}">
+              <span class="pl-icon pl-icon-refresh" title="Actualiser">
             </a>
 
           </div>
 
-          <div id='planningTips'>&nbsp;</div>
           {% if (userCan('300', site) or userCan('1000', site)) and not locked %}
             <div id='undo-redo' class='pl-undo' style="{{ locked ? 'display:none;' }}">
               {% if undoable %}
-                <a id="undo-action" href='javascript:void(0);'><span class="pl-icon pl-icon-undo"></span></a> - 
+                <a id="undo-action" href='javascript:void(0);'><span class="pl-icon pl-icon-undo"></span></a> -
               {% else %}
-                <a id="undo-action" class="isDisabled" href='javascript:void(0);'><span class="pl-icon pl-icon-undo"></span></a> - 
+                <a id="undo-action" class="isDisabled" href='javascript:void(0);'><span class="pl-icon pl-icon-undo"></span></a> -
               {% endif %}
 
               {% if redoable %}
@@ -129,11 +127,5 @@
         {% endif %}
       </div>
     </div>
-  </div>  
-</div>  
-
-<div id='messages_infos' >
-  <marquee scrollamount="3">
-    {{ messages_infos }}
-  </marquee>
+  </div>
 </div>

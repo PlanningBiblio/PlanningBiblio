@@ -1,7 +1,7 @@
 <?php
 
-use App\Model\Agent;
-use App\Model\HolidayInfo;
+use App\Entity\Agent;
+use App\Entity\HolidayInfo;
 
 use Symfony\Component\DomCrawler\Crawler;
 
@@ -10,7 +10,7 @@ use Tests\FixtureBuilder;
 
 class HolidayInfoControllerTest extends PLBWebTestCase
 {
-    public function testAdd()
+    public function testAdd(): void
     {
         $entityManager = $this->entityManager;
 
@@ -22,22 +22,19 @@ class HolidayInfoControllerTest extends PLBWebTestCase
 
         $this->logInAgent($agent, array(100,401,601));
 
-        $start = \DateTime::createFromFormat("d/m/Y", '05/10/2022');
-        $end = \DateTime::createFromFormat("d/m/Y", '10/10/2022');
-
         $_SESSION['oups']['CSRFToken'] = '00000';
-        $this->client->request('POST', '/holiday-info', array('debut' => '05/10/2022 00:00:00', 'fin' => '10/10/2022 00:00:00', 'texte' => 'salut', 'CSRFToken' => '00000'));
+        $this->client->request('POST', '/holiday-info', array('debut' => '05/10/2022', 'fin' => '10/10/2022', 'texte' => 'salut', 'CSRFToken' => '00000'));
         $info = $entityManager->getRepository(HolidayInfo::class)->findOneBy(array('texte' => 'salut'));
 
-        $this->assertEquals('2022-10-05', $info->debut()->format('Y-m-d'), "debut is ok");
-        $this->assertEquals('2022-10-10', $info->fin()->format('Y-m-d'), "fin is ok");
-        $this->assertEquals('salut', $info->texte(), 'info texte is salut');
+        $this->assertEquals('2022-10-05', $info->getStart()->format('Y-m-d'), "debut is ok");
+        $this->assertEquals('2022-10-10', $info->getEnd()->format('Y-m-d'), "fin is ok");
+        $this->assertEquals('salut', $info->getComment(), 'info texte is salut');
 
     }
 
 
 
-    public function testNewForm()
+    public function testNewForm(): void
     {
         $entityManager = $this->entityManager;
 
@@ -62,21 +59,23 @@ class HolidayInfoControllerTest extends PLBWebTestCase
         $result = $crawler->filter('label')->eq(2);
         $this->assertEquals($result->text('Node does not exist', false), 'Texte : ','label 3 is Texte');
 
-        $result = $crawler->filterXPath('//input[@class="datepicker"]');
-        $this->assertEquals($result->eq(0)->attr('name'),'debut','input datepicker name is start');
-        $this->assertEquals($result->eq(1)->attr('name'),'fin','input datepicker name is end');
+        $result = $crawler->filterXPath('//input[contains(@class, "start-date")]');
+        $this->assertEquals($result->attr('name'),'debut','input datepicker name is start');
+
+        $result = $crawler->filterXPath('//input[contains(@class, "end-date")]');
+        $this->assertEquals($result->attr('name'),'fin','input datepicker name is end');
 
         $result = $crawler->filterXPath('//textarea');
         $this->assertEquals($result->attr('name'),'texte','textarea name is texte');
 
-        $class = $crawler->filterXPath('//input[@class="ui-button ui-button-type1 ui-corner-all"]');
-        $this->assertEquals($class->attr('value'),'Valider','input submit value is Valider');
+        $class = $crawler->filterXPath('//input[@class="btn btn-primary"]');
+        $this->assertEquals($class->attr('value'),'Valider','input button submit value is Valider');
 
-        $result = $crawler->filterXPath('//a[@class="ui-button ui-button-type2 ui-widget ui-button-type1 ui-corner-all ui-button-text-only"]/span');
+        $result = $crawler->filterXPath('//a[@class="btn btn-secondary"]/span');
         $this->assertEquals($result->text('Node does not exist', false), 'Annuler','a/span button is Annuler');
     }
 
-    public function testFormEdit()
+    public function testFormEdit(): void
     {
         $entityManager = $this->entityManager;
 
@@ -91,15 +90,15 @@ class HolidayInfoControllerTest extends PLBWebTestCase
         $end = \DateTime::createFromFormat("d/m/Y", '10/10/2022');
 
         $info = new HolidayInfo();
-        $info->debut($start);
-        $info->fin($end);
-        $info->texte('salut');
+        $info->setStart($start);
+        $info->setEnd($end);
+        $info->setComment('salut');
 
 
         $entityManager->persist($info);
         $entityManager->flush();
 
-        $id = $info->id();
+        $id = $info->getId();
 
         $crawler = $this->client->request('GET', "/holiday-info/$id");
 
@@ -121,17 +120,17 @@ class HolidayInfoControllerTest extends PLBWebTestCase
         $class = $crawler->filterXPath('//textarea');
         $this->assertEquals($class->text('Node does not exist', false), 'salut','input submit text is salut');
 
-        $class = $crawler->filterXPath('//input[@class="ui-button ui-button-type1 ui-corner-all"]');
-        $this->assertEquals($class->attr('value'),'Valider','input submit value is Valider');
+        $class = $crawler->filterXPath('//input[@class="btn btn-primary"]');
+        $this->assertEquals($class->attr('value'),'Valider','input submit button value is Valider');
 
-        $result = $crawler->filterXPath('//a[@class="ui-button ui-button-type2 ui-widget ui-button-type1 ui-corner-all ui-button-text-only"]/span');
+        $result = $crawler->filterXPath('//a[@class="btn btn-secondary"]/span');
         $this->assertEquals($result->text('Node does not exist', false), 'Annuler','a/span button is Annuler');
 
-        $class = $crawler->filterXPath('//a[@class="ui-button ui-button-type3 ui-widget ui-button-type1 ui-corner-all ui-button-text-only"]/span');
+        $class = $crawler->filterXPath('//a[@class="btn btn-danger"]/span');
         $this->assertEquals($class->text('Node does not exist', false), 'Supprimer','a button is Supprimer');
     }
 
-    public function testHolidayInfoList()
+    public function testHolidayInfoList(): void
     {
         $entityManager = $this->entityManager;
         date_default_timezone_set('UTC');
@@ -146,7 +145,7 @@ class HolidayInfoControllerTest extends PLBWebTestCase
 
         $this->assertSelectorTextContains('h3', 'Informations sur les congés');
 
-        $result = $crawler->filterXPath('//a[@class="ui-button"]');
+        $result = $crawler->filterXPath('//a[@class="btn btn-primary"]');
         $this->assertEquals('Ajouter', $result->text('Node does not exist', false), 'a is Ajouter');
 
         $this->assertSelectorTextContains('p', 'Aucune information enregistrée.');
@@ -155,9 +154,9 @@ class HolidayInfoControllerTest extends PLBWebTestCase
         $end = new DateTime('+1 month +1 day');
 
         $info = new HolidayInfo();
-        $info->debut($start);
-        $info->fin($end);
-        $info->texte('hello');
+        $info->setStart($start);
+        $info->setEnd($end);
+        $info->setComment('hello');
 
         $entityManager->persist($info);
         $entityManager->flush();
@@ -166,7 +165,7 @@ class HolidayInfoControllerTest extends PLBWebTestCase
 
         $this->assertSelectorTextContains('h3', 'Informations sur les congés');
 
-        $result = $crawler->filterXPath('//a[@class="ui-button"]');
+        $result = $crawler->filterXPath('//a[@class="btn btn-primary"]');
         $this->assertEquals('Ajouter', $result->text('Node does not exist', false), 'a is Ajouter');
 
         $result = $crawler->filterXPath('//th[@class="dataTableDateFR"]');

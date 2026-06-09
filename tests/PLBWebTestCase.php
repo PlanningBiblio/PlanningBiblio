@@ -2,9 +2,11 @@
 
 namespace Tests;
 
+use App\Entity\Config;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
+use Facebook\WebDriver\WebDriverDimension;
 use Facebook\WebDriver\WebDriverSelect;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\Panther\PantherTestCase;
@@ -15,6 +17,68 @@ class PLBWebTestCase extends PantherTestCase
     protected $client;
     protected $CSRFToken;
     protected $entityManager;
+    protected $config;
+
+    /**
+     * The addConfig function allows you to test additional parameters that are usually found in the custom_options.php file
+     */
+    protected function addConfig($name, $value): void
+    {
+        $c = new Config();
+        $c->setName($name);
+        $c->setValue($value);
+        $this->entityManager->persist($c);
+    }
+
+    protected function setData($dataSet = 'default')
+    {
+        $config = $GLOBALS['config'];
+
+        $file = __DIR__ . "/data/$dataSet.sql";
+
+        if (file_exists($file)) {
+            $dblink= mysqli_init();
+            $dbconn = mysqli_real_connect($dblink, $config['dbhost'], $config['dbuser'], $config['dbpass'], 'mysql');
+
+            if ($dbconn) {
+                $handle = fopen($file, 'r');
+                $queries = "USE {$config['dbname']};";
+
+                if ($handle) {
+                    while (($line = fgets($handle)) !== false) {
+                        if (in_array(substr($line, 0, 1), ['-', '/', 'c', 's', 'L', 'U'])) {
+                            continue;
+                        }
+                        $queries .= $line;
+                    }
+                    fclose($handle);
+                }
+                mysqli_multi_query($dblink, $queries);
+                mysqli_close($dblink);       
+                sleep(3);
+
+                exec(__DIR__ . '/../bin/console doctrine:migrations:migrate --env=test -q');
+            }
+        sleep(3);
+        }
+    }
+
+    protected function setParam($name, $value)
+    {
+        $GLOBALS['config'][$name] = $value;
+        $param = $this->entityManager
+            ->getRepository(Config::class)
+            ->findOneBy(['nom' => $name]);
+
+        if (!$param) {
+            $this->addConfig($name, $value);
+        } else {
+            $param->setValue($value);
+            $this->entityManager->persist($param);
+        }
+
+        $this->entityManager->flush();
+    }
 
     protected function setUp(): void
     {
@@ -26,6 +90,7 @@ class PLBWebTestCase extends PantherTestCase
         $this->CSRFToken = $CSRFToken;
         $this->builder = new FixtureBuilder();
         $this->entityManager = $entityManager;
+        $this->config = $entityManager->getRepository(Config::class);
 
         $_SESSION['oups']['Auth-Mode'] = 'SQL';
         $_SESSION['login_id'] = 1;
@@ -34,18 +99,18 @@ class PLBWebTestCase extends PantherTestCase
     }
 
     protected function logInAgent($agent, $rights = array(99, 100)) {
-        $_SESSION['login_id'] = $agent->id();
+        $_SESSION['login_id'] = $agent->getId();
 
-        $agent->droits($rights);
+        $agent->setACL($rights);
 
         global $entityManager;
         $entityManager->persist($agent);
         $entityManager->flush();
 
         $GLOBALS['droits'] = $rights;
-
-        $session = self::$container->get('session');
-        $session->set('loginId', $agent->id());
+        $crawler = $this->client->request('GET', '/login');
+        $session = $this->client->getRequest()->getSession();
+        $session->set('loginId', $agent->getId());
         $session->save();
     
         $cookie = new Cookie($session->getName(), $session->getId());
@@ -61,6 +126,9 @@ class PLBWebTestCase extends PantherTestCase
                 '--headless'
             )
         );
+
+        $size = new WebDriverDimension(1600, 1000);
+        $this->client->manage()->window()->maximize()->setSize($size);
     }
 
     protected function login($agent)
@@ -69,14 +137,14 @@ class PLBWebTestCase extends PantherTestCase
         global $entityManager;
 
         $password = password_hash("MyPass", PASSWORD_BCRYPT);
-        $agent->password($password);
+        $agent->setPassword($password);
         $entityManager->persist($agent);
         $entityManager->flush();
 
         $crawler = $this->client->request('GET', '/login');
 
         $form = $crawler->selectButton('Valider')->form();
-        $form['login'] = $agent->login();
+        $form['login'] = $agent->getLogin();
         $form['password'] = 'MyPass';
 
         $crawler = $this->client->submit($form);
@@ -89,7 +157,6 @@ class PLBWebTestCase extends PantherTestCase
         $this->client->request('GET', '/logout');
     }
 
-
     protected function jqueryAjaxFinished(): callable
     {
         return static function ($driver): bool {
@@ -97,7 +164,7 @@ class PLBWebTestCase extends PantherTestCase
         };
     }
 
-    protected function getSelect($id = null)
+    protected function getSelect($id = null): \Facebook\WebDriver\WebDriverSelect
     {
         $driver = $this->client->getWebDriver();
 
@@ -106,7 +173,10 @@ class PLBWebTestCase extends PantherTestCase
         return $select;
     }
 
-    protected function getSelectValues($id = null)
+    /**
+     * @return mixed[]
+     */
+    protected function getSelectValues($id = null): array
     {
         $select = $this->getSelect($id);
         $options = array();
@@ -118,7 +188,10 @@ class PLBWebTestCase extends PantherTestCase
         return $options;
     }
 
-    protected function getElementsText($selector = null)
+    /**
+     * @return mixed[]
+     */
+    protected function getElementsText($selector = null): array
     {
         $driver = $this->client->getWebDriver();
 
@@ -130,5 +203,11 @@ class PLBWebTestCase extends PantherTestCase
         }
 
         return $values;
+    }
+
+    protected function restore()
+    {
+        include __DIR__ . '/bootstrap.php';
+        sleep(1);
     }
 }

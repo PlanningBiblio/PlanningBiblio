@@ -21,7 +21,7 @@ services:
         exclude: '../src/{DependencyInjection,Migrations,Tests,Kernel.php}'
 
     notifier:
-        class: App\PlanningBiblio\Notifier
+        class: App\Planno\Notifier
         public: true
 
     # controllers are imported separately to make sure services can be injected
@@ -55,8 +55,7 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
-    App\Model\Extensions\TablePrefix:
+    App\Entity\Extensions\TablePrefix:
         arguments:
             $prefix: '%env(resolve:DATABASE_PREFIX)%'
-        tags:
-            - { name: doctrine.event_subscriber }
+        public: true

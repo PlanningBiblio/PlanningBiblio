@@ -1,17 +1,11 @@
 <?php
-use App\Model\Agent;
-use App\Model\Holiday;
-use App\Model\Absence;
-use App\Model\Position;
-use App\Model\PlanningPosition;
 
-use App\PlanningBiblio\WorkingHours;
-
+use App\Entity\Absence;
+use App\Entity\Agent;
+use App\Planno\WorkingHours;
 use Symfony\Component\DomCrawler\Crawler;
-
-use Tests\PLBWebTestCase;
 use Tests\FixtureBuilder;
-
+use Tests\PLBWebTestCase;
 
 class AgentControllerPasswordTest extends PLBWebTestCase
 {
@@ -22,19 +16,7 @@ class AgentControllerPasswordTest extends PLBWebTestCase
         $this->builder->delete(Agent::class);
     }
 
-    protected function setParam($name, $value)
-    {
-        $GLOBALS['config'][$name] = $value;
-        $param = $this->entityManager
-            ->getRepository(ConfigParam::class)
-            ->findOneBy(['nom' => $name]);
-
-        $param->valeur($value);
-        $this->entityManager->persist($param);
-        $this->entityManager->flush();
-    }
-
-    public function testPasswordChangeWithCSRFOk()
+    public function testPasswordChangeWithCSRFOk(): void
     {
         global $entityManager;
         $_SESSION['oups']['CSRFToken'] = '00000';
@@ -54,7 +36,9 @@ class AgentControllerPasswordTest extends PLBWebTestCase
 
         $this->logInAgent($agent, array(100,99,401,601));
 
-        $token = $this->client->getContainer()->get('security.csrf.token_manager')->getToken('');
+        $crawler = $this->client->request('GET', '/agent/' . $agent->getId());
+        $extract_result = $crawler->filter('input#_token')->extract(array('value'));
+        $token = $extract_result[0];
 
         $crawler = $this->client->request('POST', '/ajax/change-own-password', array(
             'current_password' => 'Password_1',
@@ -62,8 +46,8 @@ class AgentControllerPasswordTest extends PLBWebTestCase
             '_token' => $token,
         ));
 
-        $agent = $entityManager->find(Agent::class, $agent->id());
-        $this->assertTrue(password_verify('Password_changed2', $agent->password()));
+        $agent = $entityManager->find(Agent::class, $agent->getId());
+        $this->assertTrue(password_verify('Password_changed2', $agent->getPassword()));
 
         $result = $crawler->filterXPath('//p');
         $this->assertEquals($result->text('Node does not exist', false), 'Password successfully changed');
@@ -71,7 +55,7 @@ class AgentControllerPasswordTest extends PLBWebTestCase
     }
 
 
-    public function testPasswordChangeWithFakeCSRF()
+    public function testPasswordChangeWithFakeCSRF(): void
     {
         global $entityManager;
         $_SESSION['oups']['CSRFToken'] = '00000';
@@ -95,9 +79,9 @@ class AgentControllerPasswordTest extends PLBWebTestCase
             '_token' => 'fake_token',
         ));
 
-        $agent = $entityManager->find(Agent::class, $agent->id());
-        $this->assertFalse(password_verify('Password_changed2', $agent->password()));
-        $this->assertTrue(password_verify('Password_1', $agent->password()));
+        $agent = $entityManager->find(Agent::class, $agent->getId());
+        $this->assertFalse(password_verify('Password_changed2', $agent->getPassword()));
+        $this->assertTrue(password_verify('Password_1', $agent->getPassword()));
 
     }
 }

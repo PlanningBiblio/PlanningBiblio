@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
@@ -11,8 +12,6 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-use App\PlanningBiblio\Logger;
-
 #[AsCommand(
     name: 'app:purge:log-table',
     description: 'Purge Planno log table',
@@ -20,6 +19,13 @@ use App\PlanningBiblio\Logger;
 class PurgeLogTableCommand extends Command
 {
     use LockableTrait;
+    use \App\Traits\LoggerTrait;
+
+    public function __construct(EntityManagerInterface $entityManager)
+    {
+        $this->entityManager = $entityManager;
+        parent::__construct();
+    }
 
     protected function configure(): void
     {
@@ -52,11 +58,12 @@ Example: php bin/console app:purge:log-table "12 MONTH"
         $query = "DELETE FROM " . $_ENV['DATABASE_PREFIX'] . "log WHERE timestamp < (NOW() - INTERVAL $delay)";
         $statement = $em->getConnection()->prepare($query);
         $result = $statement->execute();
-        $logger = new Logger($em, $input->getOption('stdout'));
-        $logger->log("Log table entries older than $delay purged (" . $result->rowCount() . " deleted)", "PurgeLogTable");
+        $this->log("Log table entries older than $delay purged (" . $result->rowCount() . " deleted)", "PurgeLogTable");
         $this->release();
 
-        $io->success("Log table entries older than $delay purged (" . $result->rowCount() . " deleted)");
+        if ($output->isVerbose()) {
+            $io->success("Log table entries older than $delay purged (" . $result->rowCount() . " deleted)");
+        }
 
         return Command::SUCCESS;
     }

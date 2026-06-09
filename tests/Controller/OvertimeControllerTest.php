@@ -1,9 +1,7 @@
-
 <?php
 
-use App\Model\Agent;
-use App\Model\OverTime;
-use App\Model\Holiday;
+use App\Entity\Agent;
+use App\Entity\OverTime;
 
 use Symfony\Component\DomCrawler\Crawler;
 
@@ -14,7 +12,7 @@ use Tests\FixtureBuilder;
 class OvertimeControllerTest extends PLBWebTestCase
 {
 
-    public function testSave()
+    public function testSave(): void
     {
         $entityManager = $this->entityManager;
 
@@ -31,14 +29,14 @@ class OvertimeControllerTest extends PLBWebTestCase
         $date = new DateTime('+1 day');
 
         $overTime = new OverTime();
-        $overTime->date($date);
-        $overTime->perso_id($agent->id());
-        $overTime->heures('0.5');
-        $overTime->commentaires('heures supp');
-        $overTime->saisie_par($agent->id());
-        $overTime->modif('0');
-        $overTime->valide_n1('0');
-        $overTime->valide('0');
+        $overTime->setDate($date);
+        $overTime->setUser($agent->getId());
+        $overTime->setHours('0.5');
+        $overTime->setComment('heures supp');
+        $overTime->setEntry($agent->getId());
+        $overTime->setChange('0');
+        $overTime->setValidLevel1('0');
+        $overTime->setValidLevel2('0');
 
         $entityManager->persist($overTime);
         $entityManager->flush();
@@ -47,7 +45,7 @@ class OvertimeControllerTest extends PLBWebTestCase
             'POST',
             '/overtime',
             array(
-                'id' => $overTime->id(),
+                'id' => $overTime->getId(),
                 'heures' => '01:30',
                 'commentaires' => 'ploup',
                 'CSRFToken' => '00000'
@@ -55,11 +53,11 @@ class OvertimeControllerTest extends PLBWebTestCase
         );
 
         $overTime2 = $entityManager->getRepository(OverTime::class)->findOneBy(array('commentaires' => 'ploup'));
-        $this->assertEquals('0.5', $overTime2->heures(), 'heures is 0.5');
-        $this->assertEquals('heures supp', $overTime2->commentaires(), 'Commentaire is heures supp');
+        $this->assertEquals('0.5', $overTime2->getHours(), 'heures is 0.5');
+        $this->assertEquals('heures supp', $overTime2->getComment(), 'Commentaire is heures supp');
     }
 
-    public function testIndex()
+    public function testIndex(): void
     {
         $entityManager = $this->entityManager;
         date_default_timezone_set('UTC');
@@ -69,7 +67,7 @@ class OvertimeControllerTest extends PLBWebTestCase
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe', 'nom' => 'John'));
         $this->logInAgent($agent, array(100));
 
-        $crawler = $this->client->request('GET', "/overtime?annee=2022&perso_id=" .$agent->id());
+        $crawler = $this->client->request('GET', "/overtime?annee=2022&perso_id=" . $agent->getId());
 
         $result = $crawler->filterXPath('//h3[@class="noprint"]');
         $this->assertEquals('Heures supplémentaires', $result->text('Node does not exist', false), 'h3 is Heures supplémentaires');
@@ -77,10 +75,10 @@ class OvertimeControllerTest extends PLBWebTestCase
         $result = $crawler->filterXPath('//h4[@class="noprint"]');
         $this->assertEquals('Liste des demandes d\'heures supplémentaires', $result->text('Node does not exist', false), 'h4 is Liste des demandes de récupération');
 
-        $result = $crawler->filterXPath('//input[@class="ui-button"]');
+        $result = $crawler->filterXPath('//input[contains(@class, "btn-primary")]');
         $this->assertEquals('Rechercher', $result->attr("value"),'input value is Rechercher');
 
-        $result = $crawler->filterXPath('//input[@class="ui-button ui-button-type2"]');
+        $result = $crawler->filterXPath('//input[contains(@class, "btn-secondary")]');
         $this->assertEquals('Réinitialiser', $result->attr("value"),'input value is Réinitialiser');
 
         $result = $crawler->filterXPath('//th');
@@ -89,35 +87,34 @@ class OvertimeControllerTest extends PLBWebTestCase
         $this->assertEquals('Crédits', $result->eq(4)->text('Node does not exist', false), 'Crédits is table title');
         $this->assertEquals('Commentaires', $result->eq(5)->text('Node does not exist', false), 'Commentaires is table title');
 
-        $result = $crawler->filterXPath('//button[@id="dialog-button"]');
+        $result = $crawler->filterXPath('//button[@id="add-overtime-button"]');
         $this->assertEquals('Nouvelle demande', $result->text('Node does not exist', false), 'button text is Nouvelle demande');
 
         $result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-edit"]');
         $this->assertEmpty($result,'span logo edit title doesnt exist');
 
-        $y = date("Y");
+        $d1= date('d/m/Y');
+        $d2 = date('d/m/Y', strtotime(dateFr($d1) . ' -1 year'));
+        $d3 = date('d/m/Y', strtotime(dateFr($d1) . ' +1 year'));
         $date = new DateTime('+1 day');
 
         $overTime = new OverTime();
-        $overTime->date($date);
-        $overTime->perso_id($agent->id());
-        $overTime->heures('0.5');
-        $overTime->commentaires('heures supp');
-        $overTime->saisie_par($agent->id());
-        $overTime->modif('0');
-        $overTime->valide_n1('0');
-        $overTime->valide('1');
+        $overTime->setDate($date);
+        $overTime->setUser($agent->getId());
+        $overTime->setHours('0.5');
+        $overTime->setComment('heures supp');
+        $overTime->setEntry($agent->getId());
+        $overTime->setChange('0');
+        $overTime->setValidLevel1('0');
+        $overTime->setValidLevel2('1');
 
         $entityManager->persist($overTime);
         $entityManager->flush();
 
-        if (date('m') < 9) {
-            $y = $y -1;
-        }
-
         $crawler = $this->client->request('GET', '/overtime', array(
-            'annee' => "$y",
-            'perso_id' => $agent->id(),
+            'start' => $d1,
+            'end' => $d3,
+            'perso_id' => $agent->getId(),
         ));
 
         $result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-edit"]');
@@ -128,8 +125,7 @@ class OvertimeControllerTest extends PLBWebTestCase
         $this->assertStringContainsString($date->format('d/m/Y'), $result->text('Node does not exist', false), 'Date is ok');
         $this->assertStringContainsString('0h30', $result->text('Node does not exist', false), 'heures is 0h30');
 
-        $y2 = $y - 1;
-        $crawler = $this->client->request('GET', "/overtime?annee=$y2&perso_id=" .$agent->id());
+        $crawler = $this->client->request('GET', "/overtime?start=$d2&end=$d1&perso_id=" . $agent->getId());
 
         $result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-edit"]');
         $this->assertEmpty($result,'span logo edit title doesnt exist');
@@ -140,7 +136,7 @@ class OvertimeControllerTest extends PLBWebTestCase
         $agent_no_overtime = $builder->build(Agent::class, array('login' => 'jover'));
         $this->logInAgent($agent_no_overtime, array(100));
 
-        $crawler = $this->client->request('GET', "/overtime?annee=2022&perso_id=" .$agent_no_overtime->id());
+        $crawler = $this->client->request('GET', "/overtime?annee=2022&perso_id=" . $agent_no_overtime->getId());
 
         $result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-edit"]');
         $this->assertEmpty($result,'span logo edit title doesnt exist');
@@ -149,19 +145,19 @@ class OvertimeControllerTest extends PLBWebTestCase
         $this->assertEquals('Heures supplémentaires', $result->text('Node does not exist', false), 'h3 is Récupérations');
 
         $overTime2 = new OverTime();
-        $overTime2->date($date);
-        $overTime2->perso_id($agent_no_overtime->id());
-        $overTime2->heures('1.5');
-        $overTime2->commentaires('plop');
-        $overTime2->saisie_par($agent_no_overtime->id());
-        $overTime2->modif('0');
-        $overTime2->valide_n1('0');
-        $overTime2->valide('1');
+        $overTime2->setDate($date);
+        $overTime2->setUser($agent_no_overtime->getId());
+        $overTime2->setHours('1.5');
+        $overTime2->setComment('plop');
+        $overTime2->setEntry($agent_no_overtime->getId());
+        $overTime2->setChange('0');
+        $overTime2->setValidLevel1('0');
+        $overTime2->setValidLevel2('1');
 
         $entityManager->persist($overTime2);
         $entityManager->flush();
 
-        $crawler = $this->client->request('GET', "/overtime?annee=$y&perso_id=" .$agent_no_overtime->id());
+        $crawler = $this->client->request('GET', "/overtime?start=$d1&end=$d3&perso_id=" . $agent_no_overtime->getId());
 
         $result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-edit"]');
         $this->assertEquals($result->attr('title'),'Modifier','span logo edit title is Modifier');
@@ -172,7 +168,7 @@ class OvertimeControllerTest extends PLBWebTestCase
         $this->assertStringContainsString('1h30', $result->text('Node does not exist', false), 'heures is 1h30');
     }
 
-    public function testEdit()
+    public function testEdit(): void
     {
         $entityManager = $this->entityManager;
 
@@ -190,19 +186,19 @@ class OvertimeControllerTest extends PLBWebTestCase
         $date = new DateTime('+1 day');
 
         $overTime = new OverTime();
-        $overTime->date($date);
-        $overTime->perso_id($agent->id());
-        $overTime->heures('0.5');
-        $overTime->commentaires('heures supp');
-        $overTime->saisie_par($agent->id());
-        $overTime->modif('0');
-        $overTime->valide_n1('0');
-        $overTime->valide('1');
+        $overTime->setDate($date);
+        $overTime->setUser($agent->getId());
+        $overTime->setHours('0.5');
+        $overTime->setComment('heures supp');
+        $overTime->setEntry($agent->getId());
+        $overTime->setChange('0');
+        $overTime->setValidLevel1('0');
+        $overTime->setValidLevel2('1');
 
         $entityManager->persist($overTime);
         $entityManager->flush();
 
-        $id = $overTime->id();
+        $id = $overTime->getId();
 
         $crawler = $this->client->request('GET', "/overtime/$id");
 

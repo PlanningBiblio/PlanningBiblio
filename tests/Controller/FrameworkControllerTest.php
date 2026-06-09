@@ -1,20 +1,14 @@
 <?php
 
-use App\Model\ConfigParam;
-use App\Model\Agent;
-use App\Model\Absence;
-use App\Model\PlanningPosition;
-use App\Model\PlanningPositionTab;
-use App\Model\PlanningPositionLines;
-use App\Model\PlanningPositionTabGroup;
-use App\Model\PlanningPositionTabAffectation;
-
-use App\PlanningBiblio\Framework;
-
+use App\Entity\Absence;
+use App\Entity\Agent;
+use App\Entity\PlanningPosition;
+use App\Entity\PlanningPositionTabAffectation;
+use App\Entity\PlanningPositionTab;
+use App\Planno\Framework;
 use Symfony\Component\DomCrawler\Crawler;
-
-use Tests\PLBWebTestCase;
 use Tests\FixtureBuilder;
+use Tests\PLBWebTestCase;
 
 class FrameworkControllerTest extends PLBWebTestCase
 {
@@ -25,23 +19,11 @@ class FrameworkControllerTest extends PLBWebTestCase
         $this->builder->delete(Agent::class);
     }
 
-    protected function setParam($name, $value)
-    {
-        $GLOBALS['config'][$name] = $value;
-        $param = $this->entityManager
-            ->getRepository(ConfigParam::class)
-            ->findOneBy(['nom' => $name]);
-
-        $param->valeur($value);
-        $this->entityManager->persist($param);
-        $this->entityManager->flush();
-    }
-
-    public function testListTable()
+    public function testListTable(): void
     {
         $_SESSION['oups']['CSRFToken'] = '00000';
         $this->CSRFToken = '00000';
-        $this->setParam('Multisites-nombre', 1);
+        $this->config->setParam('Multisites-nombre', 1);
 
         global $entityManager;
 
@@ -112,7 +94,7 @@ class FrameworkControllerTest extends PLBWebTestCase
         $result = $crawler->filterXPath('//a[@href="/framework/add"]');
         $this->assertStringContainsString("Nouveau tableau", $result->text());
 
-        $result = $crawler->filterXPath('//div[@id="table-list_wrapper"]/div/div[@class="dataTables_length"]/label');
+        $result = $crawler->filterXPath('//div[@id="table-list_wrapper"]/div/div/div[@class="dt-length"]/label');
         $this->assertStringContainsString("Afficher",$result->text());
         $this->assertStringContainsString("10",$result->text());
         $this->assertStringContainsString("25",$result->text());
@@ -121,7 +103,7 @@ class FrameworkControllerTest extends PLBWebTestCase
         $this->assertStringContainsString("100",$result->text());
         $this->assertStringContainsString("All",$result->text());
 
-        $result = $crawler->filterXPath('//div[@id="tableaux-listes"]/form/div/div[@class="dt-buttons ui-buttonset"]/button');
+        $result = $crawler->filterXPath('//div[@id="table-list_wrapper"]/div[@class="dt-buttons"]/button');
         $this->assertEquals($result->eq(0)->text(),"Copier");
         $this->assertEquals($result->eq(1)->text(),"Excel");
         $this->assertEquals($result->eq(2)->text(),"CSV");
@@ -130,11 +112,11 @@ class FrameworkControllerTest extends PLBWebTestCase
 
     }
 
-    public function testListLine()
+    public function testListLine(): void
     {
         $_SESSION['oups']['CSRFToken'] = '00000';
         $this->CSRFToken = '00000';
-        $this->setParam('Multisites-nombre', 1);
+        $this->config->setParam('Multisites-nombre', 1);
 
         global $entityManager;
 
@@ -176,7 +158,7 @@ class FrameworkControllerTest extends PLBWebTestCase
         $result = $crawler->filterXPath('//div[@id="tableaux-separations"]/p/input');
         $this->assertEquals($result->attr('value'),"Nouvelle ligne");
 
-        $result = $crawler->filterXPath('//div[@id="tableaux-separations"]/div[@id="table-separations_wrapper"]/div/div[@class="dataTables_length"]/label');
+        $result = $crawler->filterXPath('//div[@id="tableaux-separations"]/div[@id="table-separations_wrapper"]/div/div/div[@class="dt-length"]/label');
         $this->assertStringContainsString("Afficher",$result->text());
         $this->assertStringContainsString("10",$result->text());
         $this->assertStringContainsString("25",$result->text());
@@ -185,7 +167,7 @@ class FrameworkControllerTest extends PLBWebTestCase
         $this->assertStringContainsString("100",$result->text());
         $this->assertStringContainsString("All",$result->text());
 
-        $result = $crawler->filterXPath('//div[@id="tableaux-separations"]/div[@id="table-separations_wrapper"]/div[@class="dt-buttons ui-buttonset"]/button');
+        $result = $crawler->filterXPath('//div[@id="tableaux-separations"]/div[@id="table-separations_wrapper"]/div[@class="dt-buttons"]/button');
         $this->assertEquals($result->eq(0)->text(),"Copier");
         $this->assertEquals($result->eq(1)->text(),"Excel");
         $this->assertEquals($result->eq(2)->text(),"CSV");
@@ -194,11 +176,11 @@ class FrameworkControllerTest extends PLBWebTestCase
 
     }
 
-    public function testListGroup()
+    public function testListGroup(): void
     {
         $_SESSION['oups']['CSRFToken'] = '00000';
         $this->CSRFToken = '00000';
-        $this->setParam('Multisites-nombre', 1);
+        $this->config->setParam('Multisites-nombre', 1);
 
         global $entityManager;
 
@@ -268,7 +250,7 @@ class FrameworkControllerTest extends PLBWebTestCase
         $result = $crawler->filterXPath('//div[@id="tableaux-groupes"]/p/input');
         $this->assertEquals($result->attr('value'),"Nouveau groupe");
 
-        $result = $crawler->filterXPath('//div[@id="tableaux-groupes"]/div[@id="table-groups_wrapper"]/div/div[@class="dataTables_length"]/label');
+        $result = $crawler->filterXPath('//div[@id="tableaux-groupes"]/div[@id="table-groups_wrapper"]/div/div/div[@class="dt-length"]/label');
         $this->assertStringContainsString("Afficher",$result->text());
         $this->assertStringContainsString("10",$result->text());
         $this->assertStringContainsString("25",$result->text());
@@ -277,7 +259,7 @@ class FrameworkControllerTest extends PLBWebTestCase
         $this->assertStringContainsString("100",$result->text());
         $this->assertStringContainsString("All",$result->text());
 
-        $result = $crawler->filterXPath('//div[@id="tableaux-groupes"]/div[@id="table-groups_wrapper"]/div[@class="dt-buttons ui-buttonset"]/button');
+        $result = $crawler->filterXPath('//div[@id="tableaux-groupes"]/div[@id="table-groups_wrapper"]/div[@class="dt-buttons"]/button');
         $this->assertEquals($result->eq(0)->text(),"Copier");
         $this->assertEquals($result->eq(1)->text(),"Excel");
         $this->assertEquals($result->eq(2)->text(),"CSV");
@@ -285,11 +267,11 @@ class FrameworkControllerTest extends PLBWebTestCase
         $this->assertEquals($result->eq(4)->text(),"Imprimer");
     }
 
-    public function testGroupAdd()
+    public function testGroupAdd(): void
     {
         $_SESSION['oups']['CSRFToken'] = '00000';
         $this->CSRFToken = '00000';
-        $this->setParam('Multisites-nombre', 1);
+        $this->config->setParam('Multisites-nombre', 1);
 
         global $entityManager;
 
@@ -334,11 +316,11 @@ class FrameworkControllerTest extends PLBWebTestCase
         $this->assertTrue(in_array(0, $table_list), 'Tab1');
     }
 
-    public function testEditAffectedTable()
+    public function testEditAffectedTable(): void
     {
         $_SESSION['oups']['CSRFToken'] = '00000';
         $this->CSRFToken = '00000';
-        $this->setParam('Multisites-nombre', 1);
+        $this->config->setParam('Multisites-nombre', 1);
 
         global $entityManager;
 
@@ -387,7 +369,7 @@ class FrameworkControllerTest extends PLBWebTestCase
         $planning_position = $this->builder->build(
             PlanningPosition::class,
             array(
-                'perso_id' => $agent->id(),
+                'perso_id' => $agent->getId(),
                 'date' => $date,
                 'debut' => \DateTime::createFromFormat("H:i:s", "08:00:00"),
                 'fin' => \DateTime::createFromFormat("H:i:s", "18:00:00"),
@@ -405,11 +387,9 @@ class FrameworkControllerTest extends PLBWebTestCase
         $result = $crawler->filterXPath('//h3');
         $this->assertEquals($result->text(),'Configuration du tableau "tab1"');
 
-        $result = $crawler->filterXPath('//ul[@class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all"]/li');
+        $result = $crawler->filter('ul.nav-tabs li button');
         $this->assertEquals($result->eq(0)->text(),'Infos générales');
         $this->assertEmpty($result->eq(0)->attr('aria-disabled'));
-
-
 
         $this->assertEquals($result->eq(1)->text(),'Horaires');
         $this->assertEquals($result->eq(1)->attr('aria-disabled'),'true');
@@ -418,11 +398,11 @@ class FrameworkControllerTest extends PLBWebTestCase
         $this->assertEquals($result->eq(2)->attr('aria-disabled'),'true');
     }
 
-    public function testEditNoAffectedTable()
+    public function testEditNoAffectedTable(): void
     {
         $_SESSION['oups']['CSRFToken'] = '00000';
         $this->CSRFToken = '00000';
-        $this->setParam('Multisites-nombre', 1);
+        $this->config->setParam('Multisites-nombre', 1);
 
         global $entityManager;
 
@@ -462,7 +442,7 @@ class FrameworkControllerTest extends PLBWebTestCase
         $result = $crawler->filterXPath('//h3');
         $this->assertEquals($result->text(),'Configuration du tableau "tab1"');
 
-        $result = $crawler->filterXPath('//ul[@class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all"]/li');
+        $result = $crawler->filter('ul.nav-tabs li button');
         $this->assertEquals($result->eq(0)->text(),'Infos générales');
         $this->assertEmpty($result->eq(0)->attr('aria-disabled'));
 

@@ -1,33 +1,19 @@
 <?php
 
-use App\Model\Agent;
-use App\Model\ConfigParam;
-
-use Tests\PLBWebTestCase; 
+use App\Entity\Agent;
 use Tests\FixtureBuilder;
+use Tests\PLBWebTestCase; 
 
 class AgentControllerTest extends PLBWebTestCase
 {
     protected function setUp(): void
     {
         parent::setUp();
-
+        $this->config->setParam('Hamac-csv', '');
         $this->builder->delete(Agent::class);
     }
 
-    protected function setParam($name, $value)
-    {
-        $GLOBALS['config'][$name] = $value;
-        $param = $this->entityManager
-            ->getRepository(ConfigParam::class)
-            ->findOneBy(['nom' => $name]);
-
-        $param->valeur($value);
-        $this->entityManager->persist($param);
-        $this->entityManager->flush();
-    }
-
-    public function testAddPost()
+    public function testAddPost(): void
     {
         global $entityManager;
 
@@ -41,67 +27,78 @@ class AgentControllerTest extends PLBWebTestCase
             'mail' => 'jdupont@mail.fr', 'droits' => array(21,100,99,4)
         ));
 
-        $this->logInAgent($agent, $agent->droits());
-
-        $_SESSION['oups']['CSRFToken'] = '00000';
+        $this->logInAgent($agent, $agent->getACL());
 
         $start = date('d/m/Y', strtotime(' -3 day'));
         $end = date('d/m/Y', strtotime(' +3 day'));
 
-        $this->client->request(
-            'POST',
-            '/agent',
-            array(
-                'nom' => 'Boivin',
-                'prenom' => 'Karel',
-                'CSRFToken' => "00000",
-                'login' => 'karel.boivin',
-                'droits' => array(100,99),
-                'mail' => 'kboivin@mail.fr',
-                'statut' => 'cbjncdk',
-                'categorie' => 'dadczz',
-                'service' => 'zedcscq',
-                'arrivee' => $start,
-                'depart' => $end,
-                'postes' => '',
-                'action' => 'ajout',
-                'actif' => 1,
-                'commentaires' => '',
-                'last_login' => '',
-                'heures_hebdo' => '',
-                'heures_travail' => '',
-                'sites' => json_encode(["2", "4"]),
-                'temps' => '',
-                'informations' => '',
-                'recup' => '',
-                'supprime' => '',
-                'mailsResponsables' => '',
-                'matricule' => '',
-                'code_ics' => '',
-                'url_ics' => '',
-                'check_ics' => '',
-                'check_hamac' => '',
-                'conges_credit' => '',
-                'conges_reliquat' => '',
-                'conges_anticipation' => '',
-                'comp_time' => '',
-                'conges_annuel' => '',
-                'managers' => '',
-                'managed' => '',
-            )
-        );
+        // Get CSRFToken
+        $crawler = $this->client->request('GET', '/agent/add');
+        $extract_result = $crawler->filter('input#_token')->extract(array('value'));
+        $token = $extract_result[0];
+
+        $formData = [
+            '_token' => $token,
+            'nom' => 'Boivin',
+            'prenom' => 'Karel',
+            'login' => 'karel.boivin',
+            'droits' => array(100,99),
+            'mail' => 'kboivin@mail.fr',
+            'statut' => 'cbjncdk',
+            'categorie' => 'dadczz',
+            'service' => 'zedcscq',
+            'arrivee' => $start,
+            'depart' => $end,
+            'postes' => '[]',
+            'action' => 'add',
+            'actif' => 1,
+            'commentaires' => '',
+            'last_login' => '',
+            'heures_hebdo' => '',
+            'heures_travail' => '',
+            'sites' => [2, 4],
+            'temps' => '',
+            'informations' => '',
+            'recup' => '',
+            'supprime' => '',
+            'mailsResponsables' => '',
+            'matricule' => '',
+            'code_ics' => '',
+            'url_ics' => '',
+            'check_ics' => '',
+            'check_hamac' => '',
+            'conges_credit' => '',
+            'conges_reliquat' => '',
+            'conges_anticipation' => '',
+            'comp_time' => '',
+            'conges_annuel' => '',
+            'managers' => '',
+            'managed' => '',
+        ];
+
+        $this->client->request('POST', '/agent', $formData);
 
         $info = $entityManager->getRepository(Agent::class)->findOneBy(array('nom' => 'Boivin'));
 
-        $this->assertEquals('karel.boivin', $info->login(), 'login');
-        $this->assertEquals('Boivin', $info->nom(), 'nom');
-        $this->assertEquals('Karel', $info->prenom(), 'prenom');
-        $this->assertEquals('kboivin@mail.fr', $info->mail(), 'mail');
-        $this->assertEquals($start, $info->arrivee()->format("d/m/Y"), 'arrivee');
-        $this->assertEquals($end, $info->depart()->format("d/m/Y"), 'depart');
+        $this->assertEquals('karel.boivin', $info->getLogin(), 'login');
+        $this->assertEquals('Boivin', $info->getLastname(), 'nom');
+        $this->assertEquals('Karel', $info->getFirstname(), 'prenom');
+        $this->assertEquals('kboivin@mail.fr', $info->getMail(), 'mail');
+        $this->assertEquals($start, $info->getArrival()->format("d/m/Y"), 'arrivee');
+        $this->assertEquals($end, $info->getDeparture()->format("d/m/Y"), 'depart');
+
+        // Test with wront CSRF Token
+        $formData['_token'] .= 'wrong token';
+        $formData['login'] = 'new.user';
+
+        $this->client->request('POST', '/agent', $formData);
+        $this->assertEquals($this->client->getResponse()->getStatusCode(), 302, 'Wrong CSRF Token returns 302');
+
+        $info = $entityManager->getRepository(Agent::class)->findOneBy(['login' => 'new.user']);
+        $this->assertNull($info, 'Wrong CSRF Token, Agent is not created');
     }
 
-    public function testAddFormElement() {
+    public function testAddFormElement(): void {
         $GLOBALS['config']['Multisites-nombre'] = 1;
         $GLOBALS['config']['Granularite'] = 30;
         $GLOBALS['config']['LDAP-Host'] = '';
@@ -110,10 +107,10 @@ class AgentControllerTest extends PLBWebTestCase
 
         $kboivin = $this->builder->build(Agent::class, array(
             'login' => 'kboivin', 'nom' => 'Boivin', 'prenom' => 'Karel',
-            'sites' => '["1"]', 'droits' => array(21,100,99,4)
+            'sites' => ["1"], 'droits' => array(21,100,99,4)
         ));
 
-        $this->logInAgent($kboivin, $kboivin->droits());
+        $this->logInAgent($kboivin, $kboivin->getACL());
         $crawler = $this->client->request('GET', '/agent');
 
         $result = $crawler->filterXPath('//table[@id="tableAgents"]/thead');
@@ -156,7 +153,7 @@ class AgentControllerTest extends PLBWebTestCase
 
         $crawler = $this->client->request('GET', '/agent');
 
-        $result = $crawler->filterXPath('//input[@class="ui-button ui-button-type2"]');
+        $result = $crawler->filterXPath('//input[@class="btn btn-secondary"]');
 
         $this->assertEquals('Import LDAP', $result->attr('value'));
 
@@ -185,7 +182,7 @@ class AgentControllerTest extends PLBWebTestCase
         $this->assertEquals('1h15', $result->eq(3)->text('Node does not exist', false));
     }
 
-    public function testEditFormElement() {
+    public function testEditFormElement(): void {
 
         $GLOBALS['config']['Multisites-nombre'] = 2;
         $GLOBALS['config']['Granularite'] = 30;
@@ -193,39 +190,38 @@ class AgentControllerTest extends PLBWebTestCase
         $GLOBALS['config']['LDAP-Suffix'] = '';
         $GLOBALS['config']['Conges-Enable'] = 1;
         $GLOBALS['config']['PlanningHebdo'] = 0;
-
-        unset($_ENV['MS_GRAPH_CLIENT_ID']);
+        $GLOBALS['config']['MSGraph-ClientID'] = '';
 
         $jdupont = $this->builder->build(Agent::class, array(
             'login' => 'jdupont', 'nom' => 'Dupont', 'prenom' => 'Jean',
-            'sites' => '["1"]', 'droits' => array(100,99)
+            'sites' => ["1"], 'droits' => array(100,99)
         ));
 
         $kboivin = $this->builder->build(Agent::class, array(
             'login' => 'kboivin', 'nom' => 'Boivin', 'prenom' => 'Karel',
-            'sites' => '["1"]', 'droits' => array(21,100,99,4)
+            'sites' => ["1"], 'droits' => array(21,100,99,4)
         ));
 
-        $id = $jdupont->id();
+        $id = $jdupont->getId();
 
         //$this->login($kboivin);
 
-        $this->logInAgent($kboivin, $kboivin->droits());
+        $this->logInAgent($kboivin, $kboivin->getACL());
         $crawler = $this->client->request('GET', "/agent/$id");
 
         $this->assertSelectorTextContains('h3', 'Dupont Jean');
 
         ///////INFOS GENERALES/////////
 
-        $result = $crawler->filterXPath('//div[@class="ui-tabs"]/ul/li');
+        $result = $crawler->filter('ul.nav-tabs li button');
 
-        $this->assertEquals('Infos générales', $result->eq(0)->text('Node does not exist', false));
-        $this->assertEquals('Activités', $result->eq(1)->text('Node does not exist', false));
-        $this->assertEquals('Heures de présence', $result->eq(2)->text('Node does not exist', false));
-        $this->assertEquals('Congés', $result->eq(3)->text('Node does not exist', false));
-        $this->assertEquals('Droits d\'accès', $result->eq(4)->text('Node does not exist', false));
-        $this->assertEquals('Annuler', $result->eq(5)->text('Node does not exist', false));
-        $this->assertEquals('Valider', $result->eq(6)->text('Node does not exist', false));
+        $this->assertStringContainsString('Infos générales', $result->eq(0)->text('Node does not exist', false));
+        $this->assertStringContainsString('Activités', $result->eq(1)->text('Node does not exist', false));
+        $this->assertStringContainsString('Heures de présence', $result->eq(2)->text('Node does not exist', false));
+        $this->assertStringContainsString('Congés', $result->eq(3)->text('Node does not exist', false));
+        $this->assertStringContainsString('Droits d\'accès', $result->eq(4)->text('Node does not exist', false));
+        $this->assertStringContainsString('Annuler', $result->eq(5)->text('Node does not exist', false));
+        $this->assertStringContainsString('Valider', $result->eq(6)->text('Node does not exist', false));
 
         $result = $crawler->filterXPath('//table[@style="width:90%;"]');
 
@@ -244,7 +240,7 @@ class AgentControllerTest extends PLBWebTestCase
         $this->assertStringContainsString('Matricule :', $result->text('Node does not exist', false));
         $this->assertStringContainsString('E-mails des responsables :', $result->text('Node does not exist', false));
         $this->assertStringContainsString('Informations :', $result->text('Node does not exist', false));
-        $this->assertStringContainsString('Login :', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Identifiant :', $result->text('Node does not exist', false));
 
         $result = $crawler->filterXPath('//input[@name="nom"]');
         $this->assertEquals('Dupont', $result->attr('value'));
@@ -258,8 +254,8 @@ class AgentControllerTest extends PLBWebTestCase
         $result = $crawler->filterXPath('//input[@name="sites[]"]')->eq(1);
         $this->assertEmpty($result->attr('checked'));
 
-        $result = $crawler->filterXPath('//span[@id="login"]');
-        $this->assertEquals($result->text('Node does not exist', false), 'jdupont');
+        $result = $crawler->filterXPath('//input[@id="login"]');
+        $this->assertEquals('jdupont', $result->attr('value'));
 
         ///////ACTIVITES/////////
 

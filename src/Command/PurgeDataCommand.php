@@ -11,7 +11,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-use App\PlanningBiblio\DataPurger;
+use App\Planno\DataPurger;
 
 #[AsCommand(
     name: 'app:purge:data',
@@ -63,7 +63,9 @@ Example: php bin/console app:purge:data "5"
 
         $this->release();
 
-        $io->success('Purge completed.');
+        if ($output->isVerbose()) {
+            $io->success('Purge completed.');
+        }
 
         return Command::SUCCESS;
     }

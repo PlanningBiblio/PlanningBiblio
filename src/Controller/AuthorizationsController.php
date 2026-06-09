@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Controller\BaseController;
-use App\PlanningBiblio\OpenIDConnect;
+use App\Planno\OpenIDConnect;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -11,15 +11,13 @@ use Symfony\Component\Routing\Annotation\Route;
 
 use Psr\Log\LoggerInterface;
 
-include_once(__DIR__ . '/../../public/include/function.php');
-include_once(__DIR__ . '/../../public/ldap/class.ldap.php');
+include_once(__DIR__ . '/../../legacy/Common/function.php');
+include_once(__DIR__ . '/../../legacy/Class/class.ldap.php');
 
 class AuthorizationsController extends BaseController
 {
 
-    /**
-     * @Route("/login", name="login", methods={"GET"})
-     */
+    #[Route(path: '/login', name: 'login', methods: ['GET'])]
     public function login(Request $request, LoggerInterface $logger = null)
     {
 
@@ -37,23 +35,41 @@ class AuthorizationsController extends BaseController
         $redirect_url = $request->get('redirURL');
         $new_login = $request->get('newlogin');
 
+        // SSO Link
+        $sSOLink = null;
+
+        if ($this->config('Auth-Mode') == 'OpenIDConnect' and !empty($this->config('OIDC-Provider'))) {
+            if (stristr($this->config('OIDC-Provider'), 'google')) {
+                $sSOLink = 'Se connecter avec un compte Google';
+            } elseif (stristr($this->config('OIDC-Provider'), 'microsoft')) {
+                $sSOLink = 'Se connecter avec un compte Microsoft';
+            } else {
+                $sSOLink = 'Se connecter avec un compte professionnel';
+            }
+        }
+
+        if (substr($this->config('Auth-Mode'), 0, 3) == 'CAS' and !empty($this->config('CAS-Hostname'))) {
+            $sSOLink = 'Se connecter avec un compte CAS';
+        }
+
         $this->templateParams(array(
             'show_menu' => 0,
             'redirect_url' => $redirect_url,
             'new_login' => $new_login,
             'demo_mode' => empty($this->config('demo')) ? 0 : 1,
             'error' => $error,
+            'sSOLink' => $sSOLink,
         ));
 
         return $this->output('login.html.twig');
     }
 
-    /**
-     * @Route("/login", name="login.check", methods={"POST"})
-     */
+    #[Route(path: '/login', name: 'login.check', methods: ['POST'])]
     public function check_login(Request $request, LoggerInterface $logger = null)
     {
         $this->redirectCAS($request, $logger);
+
+        $session = $request->getSession();
 
         $login = $request->get('login');
         $password = $request->get('password');
@@ -88,7 +104,7 @@ class AuthorizationsController extends BaseController
                     $auth = false;
                     if ($login and $_POST['auth'] == 'CAS'
                         and array_key_exists('login_id', $_SESSION)
-                        and $login == $_SESSION['login_id']) {
+                        and $login == $session->get('loginId')) {
                         $auth = true;
                     }
                     if (!$auth) {
@@ -130,7 +146,7 @@ class AuthorizationsController extends BaseController
 
                 $db = new \db();
                 $db->CSRFToken = $CSRFToken;
-                $db->update("personnel", array("last_login"=>date("Y-m-d H:i:s")), array("id"=>$_SESSION['login_id']));
+                $db->update('personnel', array('last_login' => date('Y-m-d H:i:s')), array('id' => $session->get('loginId')));
                 return $this->redirect($this->config('URL') . "/$redirect_url");
             } else {
                 $error = "unknown_user";
@@ -149,10 +165,8 @@ class AuthorizationsController extends BaseController
         return $this->output('login.html.twig');
     }
 
-    /**
-     * @Route("/logout", name="logout", methods={"GET"})
-     */
-    public function logout(Request $request)
+    #[Route(path: '/logout', name: 'logout', methods: ['GET'])]
+    public function logout(Request $request): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         session_destroy();
 
@@ -161,7 +175,7 @@ class AuthorizationsController extends BaseController
         $session->invalidate();
 
         $authArgs = null;
-        if (substr($this->config('Auth-Mode'), 0, 3) == 'CAS') {
+        if (in_array($this->config('Auth-Mode'), ['CAS', 'CAS-SQL', 'OpenIDConnect'])) {
             $authArgs = $_SESSION['oups']['Auth-Mode'] == 'CAS' ? null: '?noCAS';
         }
 
@@ -177,30 +191,32 @@ class AuthorizationsController extends BaseController
 
         if ($this->config('Auth-Mode') == 'OpenIDConnect') {
             $oidc = new OpenIDConnect();
-            $oidc->logout();
+            $oidc->logout($request);
         }
 
         return $this->redirect($this->config('URL') . "/login$authArgs");
     }
 
-    /**
-     * @Route("/access-denied", name="access-denied", methods={"GET"})
-     */
-    public function denied(Request $request)
+    #[Route(path: '/access-denied', name: 'access-denied', methods: ['GET'])]
+    public function denied(Request $request): \Symfony\Component\HttpFoundation\Response
     {
+        // Managed by ControllerAuthorizationListener::triggerAccessDenied
         $content = $this->renderView('access-denied.html.twig');
         return new Response($content, 403);
     }
 
-    private function redirectCAS(Request $request, $logger)
+    private function redirectCAS(Request $request, $logger): string
     {
+        $session = $request->getSession();
+
         if ((substr($this->config('Auth-Mode'), 0, 3) == 'CAS' or $this->config('Auth-Mode') == 'OpenIDConnect')
             and !isset($_GET['noCAS'])
-            and empty($_SESSION['login_id'])
+            and empty($session->get('loginId'))
             and !isset($_POST['login'])
             and !isset($_POST['acces'])) {
 
             $redirURL = $_GET['redirURL'] ?? '';
+            // TODO : replace "$_SESSION['oups']['Auth-Mode']" with $session->set('Auth-Mode', 'SSO') 
             $_SESSION['oups']['Auth-Mode']="CAS";
 
             $login = null;
@@ -214,7 +230,7 @@ class AuthorizationsController extends BaseController
             // OpenID Connect
             } elseif ($this->config('Auth-Mode') == 'OpenIDConnect') {
                 $oidc = new OpenIDConnect();
-                $user = $oidc->auth();
+                $user = $oidc->auth($request);
                 $login = $user ? $user->login : null;
             }
 
@@ -224,7 +240,7 @@ class AuthorizationsController extends BaseController
 
             // If user's login doesn't exist,
             // show an unauthorized message
-            if (!$db->result) {
+            if (!$db->result or empty($login)) {
                 // Redirect to error page
                 return 'cas_unknown_user';
             }
@@ -249,7 +265,7 @@ class AuthorizationsController extends BaseController
             // Update last_login field.
             $db = new \db();
             $db->CSRFToken = $CSRFToken;
-            $db->update("personnel", array("last_login"=>date("Y-m-d H:i:s")), array("id"=>$_SESSION['login_id']));
+            $db->update('personnel', array('last_login' => date('Y-m-d H:i:s')), array('id' => $session->get('loginId')));
 
             // Redirect
             header('Location: ' . $this->config('URL') . "/$redirURL");

@@ -1,0 +1,13 @@
+# bazinga_js_translation:
+#     resource: "@BazingaJsTranslationBundle/Resources/config/routing/routing.yml"
+
+bazinga_jstranslation_js:
+    defaults: { _controller: bazinga.jstranslation.controller::getTranslationsAction, _format: "js", locale : '%kernel.default_locale%'}
+    path:  /js/translations/{locale}.js
+    methods:  [ GET ]
+    options:
+        i18n: false
+        expose: true
+    requirements:
+        _format: js|json
+        domain: "[\\w]+"

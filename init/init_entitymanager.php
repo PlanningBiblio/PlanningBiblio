@@ -1,7 +1,7 @@
 <?php
 /*
  * Planning Biblio
- * Licence GNU/GPL (version 2 et au dela)
+ * Licence AGPL (version 3 et au dela)
  * see README.md et LICENSE
  * @copyright 2011-2019 Jérôme Combes
 
@@ -14,17 +14,21 @@
  *   Load ORM
  */
 
-use Doctrine\ORM\Tools\Setup;
+use App\Entity\Extensions\TablePrefix;
+use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\EntityManager;
-use App\Model\Extensions\TablePrefix;
+use Doctrine\ORM\ORMSetup;
+
+require_once __DIR__ . '/../legacy/Common/config.php';
+$config = $GLOBALS['config'];
 
 // Instanciating entity manager.
-$entitiesPath = array(__DIR__.'/../src/Model');
-$emConfig = Setup::createAnnotationMetadataConfiguration($entitiesPath, true);
+$entitiesPath = array(__DIR__.'/../src/Entity');
+$emConfig = ORMSetup::createAttributeMetadataConfiguration($entitiesPath, true);
 
 // Handle table prefix.
 $evm = new \Doctrine\Common\EventManager;
-$tablePrefix = new App\Model\Extensions\TablePrefix($config['dbprefix']);
+$tablePrefix = new App\Entity\Extensions\TablePrefix($config['dbprefix']);
 $evm->addEventListener(\Doctrine\ORM\Events::loadClassMetadata, $tablePrefix);
 
 $dbParams = array(
@@ -37,4 +41,5 @@ $dbParams = array(
 );
 
 global $entityManager;
-$entityManager = EntityManager::create($dbParams, $emConfig, $evm);
+$conn = DriverManager::getConnection($dbParams);
+$entityManager = new EntityManager($conn, $emConfig, $evm);

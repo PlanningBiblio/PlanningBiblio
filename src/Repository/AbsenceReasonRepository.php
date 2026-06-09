@@ -4,11 +4,14 @@ namespace App\Repository;
 
 use Doctrine\ORM\EntityRepository;
 
-use App\Model\AbsenceReason;
+use App\Entity\AbsenceReason;
 
 class AbsenceReasonRepository extends EntityRepository
 {
-    public function getRemoteWorkingDescriptions()
+    /**
+     * @return mixed[]
+     */
+    public function getRemoteWorkingDescriptions(): array
     {
         $entityManager = $this->getEntityManager();
 
@@ -18,7 +21,7 @@ class AbsenceReasonRepository extends EntityRepository
                                          ->findBy(array('teleworking' => 1));
 
         foreach ($absence_reasons as $reason) {
-            $teleworking_reasons[] = $reason->valeur();
+            $teleworking_reasons[] = $reason->getValue();
         }
 
         return $teleworking_reasons;

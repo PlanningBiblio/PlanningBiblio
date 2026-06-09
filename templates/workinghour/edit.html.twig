@@ -3,8 +3,7 @@
 {% extends 'base.html.twig' %}
 
 {% block specificjs %}
-  <script type='text/JavaScript' src='{{ asset("planningHebdo/js/script.planningHebdo.js") }}'></script>
-  <script type='text/JavaScript' src='{{ asset("js/plb/workinghour.js") }}'></script>
+  <script type="text/JavaScript" src="{{ asset('js/workingHour.js') }}"></script>
 {% endblock %}
 
 {% block page %}
@@ -21,7 +20,7 @@
           <h3>Heures de {{ nomAgent }} du {{ debut1Fr }} au {{ fin1Fr }}</h3>
         {% endif %}
         <div id='working_hours'>
-          <form name='form1' method='post' action="{{ asset('workinghour') }}" onsubmit='return plHebdoVerifForm();'>
+          <form name="form1" method="post" action="{{ asset('workinghour') }}" onsubmit="return plHebdoVerifForm($(this));" novalidate>
             {% if id > 0 and copy is null and request_exception is null %}
               <input type='hidden' name='perso_id' value='{{ perso_id }}' id='perso_id' />
             {% else %}
@@ -37,29 +36,39 @@
               {% else %}
                 <h3>Nouveaux horaires</h3>
               {% endif %}
-              <div id='plHebdo-perso-id'>
+              <div id="plHebdo-perso-id">
                 {% if managed | length > 1 and request_exception is null %}
-                  <label for='perso_id'>Pour l'agent</label>
-                  <select name='perso_id' class='ui-widget-content ui-corner-all' id='perso_id' style='position:absolute; left:400px; text-align:center;' >
-                    <option value=''>&nbsp;</option>
+                <div class="row">
+                <label class="col-2 col-form-label" for="perso_id">{% trans %}Agent{% endtrans %}</label>
+                <div class="col-2">
+                  <select name="perso_id" class="form-select form-select-sm pe-0" id="perso_id" style="text-align: center;">
+                    <option hidden disabled selected value=""></option>
                     {% for m in managed %}
-                      <option value='{{ m.id }}' {{ (perso_id == m.id) ? "selected = 'selected'" : " " }} >{{ m.nom }} {{ m.prenom }}</option>
+                      <option value="{{ m.id }}" {{ (perso_id == m.id) ? "selected = 'selected'" : " " }} >{{ m.lastname }} {{ m.firstname }}</option>
                     {% endfor %}
                   </select>
                 {% else %}
-                  <input type='hidden' name='perso_id' value='{{ perso_id }}' id='perso_id' />
+                  <input type="hidden" name="perso_id" value="{{ perso_id }}" id="perso_id" />
                 {% endif %}
               </div>
+            </div>
             {% endif %}
-            <div id='periode'>
-              <p>
-                <label  for='debut'>Début d'utilisation</label>
-                <input type='text' name='debut' {% if request_exception is null %}value='{{ debut1Fr }}'{% endif %} class='datepicker' style='position:absolute; left:400px; width:200px;' />
-              </p>
-              <p>
-                <label for='fin'>Fin d'utilisation</label>
-                <input type='text' name='fin' {% if request_exception is null %}value='{{ fin1Fr }}'{% endif %} class='datepicker' style='position:absolute; left:400px; width:200px;' />
-              </p>
+            <div id="periode">
+              <div class="row">
+                <label class="col-2 col-form-label" for="debut">{% trans %}Starting date{% endtrans %} :</label>
+                <div class="col-2">
+                  <input type="text" name="debut" {% if request_exception is null %} value="{{ debut1Fr }}" {% endif %} class="datepicker form-control start-date m-0" />
+                </div>
+              </div>
+              <div class="row">
+                <label class="col-2 col-form-label" for="fin">{% trans %}Ending date{% endtrans %} :</label>
+                <div class="col-2">
+                  <input type="text" name="fin" {% if request_exception is null %} value="{{ fin1Fr }}" {% endif %} class="datepicker form-control end-date m-0" required/>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-3 offset-2 invalid-feedback">{% trans from 'validators' %}Please choose a valid date interval.{% endtrans %}</div>
+              </div>
             </div> <!-- id=periode -->
             {% if thisNbSemaine is defined and copy is defined and copy != '' and nbSemaine is defined and thisNbSemaine != nbSemaine %}
             <div id='cycle'>
@@ -150,27 +159,27 @@
               {% else %}
                 <p>
                   <label>Validation</label>
-                  <span id="validation" style='position:absolute; left:200px;'>{{ entity_state_desc }}</span>
+                  <span id="validation">{{ entity_state_desc }}</span>
                 </p>
               {% endif %}
             {% endif %}
             <div id='boutons' style='padding-top:50px;'>
-              <input type='button' value='Retour' onclick='location.href="{{ retour }}";' class='ui-button ui-button-type2' />
+              <input type="button" value="Retour" onclick="location.href='{{ retour }}';" class="btn btn-secondary" />
               {% if ((adminN1 == true or adminN2 == true  or modifAutorisee == true ) and (not request_exception and not is_exception and not copy and not is_new)) %}
-                <input type='button' value='Ajouter une exception' onclick="location.href='{{asset("workinghour")}}/{{id}}?exception={{id}}&retour={{exception_back}}';" style='margin-left:30px;' class='ui-button ui-button-type2' />
+                <input type="button" value="Ajouter une exception" onclick="location.href='{{asset('workinghour')}}/{{id}}?exception={{id}}&retour={{exception_back}}';" style="margin-left:30px;" class="btn btn-primary" />
               {% endif %}
               {% if admin == true and (cle == null or cle == "") %}
                 {% if request_exception == true %}
-                  <input id="save-exception" type="submit" value="Enregistrer l'exception" style="margin-left:30px;" class="ui-button" />
+                  <input id="save-exception" type="submit" value="Enregistrer l'exception" style="margin-left:30px;" class="btn btn-primary" />
                 {% else %}
-                  <input type='submit' value='Enregistrer' style="margin-left:30px"; class='ui-button' />
+                  <input type="submit" value="Enregistrer" style="margin-left:30px"; class="btn btn-primary"/>
                 {% endif %}
               {% else %}
                 {% if modifAutorisee == true %}
                   {% if request_exception == true %}
-                    <input id="save-exception" type="submit" value="Enregistrer l'exception" style="margin-left:30px;" class="ui-button" />
+                    <input id="save-exception" type="submit" value="Enregistrer l'exception" style="margin-left:30px;" class="btn btn-primary" />
                   {% else %}
-                    <input type='submit' value='Enregistrer' style='margin-left:30px;' class='ui-button' />
+                    <input type="submit" value="Enregistrer" style="margin-left:30px;" class="btn btn-primary" />
                   {% endif %}
                 {% endif %}
               {% endif %}

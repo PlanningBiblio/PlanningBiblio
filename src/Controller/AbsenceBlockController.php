@@ -5,16 +5,14 @@ namespace App\Controller;
 use App\Controller\BaseController;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
-
-use App\Model\AbsenceBlock;
+use App\Entity\AbsenceBlock;
 
 class AbsenceBlockController extends BaseController
 {
-    /**
-     * @Route("/absence/block", name="absence.block.index", methods={"GET"})
-     */
+    #[Route("/absence/block", name: "absence.block.index", methods: ["GET"])]
     public function index(Request $request, Session $session)
     {
         $blocks = $this->entityManager->getRepository(AbsenceBlock::class)
@@ -28,9 +26,7 @@ class AbsenceBlockController extends BaseController
         return $this->output('absenceBlock/index.html.twig');
     }
 
-    /**
-     * @Route("/absence/block/add", name="absence.block.add", methods={"GET"})
-     */
+    #[Route("/absence/block/add", name: "absence.block.add", methods: ["GET"])]
     public function add(Request $request)
     {
         $this->templateParams(array(
@@ -43,57 +39,53 @@ class AbsenceBlockController extends BaseController
         return $this->output('absenceBlock/edit.html.twig');
     }
 
-    /**
-     * @Route("/absence/block/{id<\d+>}", name="absence.block.edit", methods={"GET"})
-     */
+    #[Route("/absence/block/{id<\d+>}", name: "absence.block.edit", methods: ["GET"])]
     public function edit(Request $request)
     {
-        $id = $request->get('id');
+        $id = $request->attributes->getInt('id');
 
         $block = $this->entityManager->getRepository(AbsenceBlock::class)->find($id);
 
         $this->templateParams(array(
             'id'    => $id,
-            'start' => date_format($block->start(), "d/m/Y"),
-            'end'   => date_format($block->end(), "d/m/Y"),
-            'text'  => $block->comment()
+            'start' => date_format($block->getStart(), "d/m/Y"),
+            'end'   => date_format($block->getEnd(), "d/m/Y"),
+            'text'  => $block->getComment()
         ));
 
         return $this->output('absenceBlock/edit.html.twig');
     }
 
-    /**
-     * @Route("/absence/block", name="absence.block.update", methods={"POST"})
-     */
-    public function update(Request $request, Session $session)
+    #[Route("/absence/block", name: "absence.block.update", methods: ["POST"])]
+    public function update(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         if (!$this->csrf_protection($request)) {
             $session->getFlashBag()->add('error', 'CSRF Token Error');
             return $this->redirectToRoute('absence.block.index');
         }
 
-        $id = $request->get('id');
-        $start = \DateTime::createFromFormat("d/m/Y", $request->get('start'));
-        $end = \DateTime::createFromFormat("d/m/Y", $request->get('end'));
+        $id = $request->request->filter('id', 0, \FILTER_SANITIZE_NUMBER_INT, ['flags' => \FILTER_NULL_ON_FAILURE]);
+        $start = \DateTime::createFromFormat('d/m/Y', $request->request->get('start'));
+        $end = \DateTime::createFromFormat('d/m/Y', $request->request->get('end'));
 
         if (empty($end)) {
           $end = $start;
         }
 
-        $text = trim($request->get('text'));
+        $text = trim($request->request->get('text'));
 
         if ($id) {
             $block = $this->entityManager->getRepository(AbsenceBlock::class)->find($id);
-            $block->start($start);
-            $block->end($end);
-            $block->comment($text);
+            $block->setStart($start);
+            $block->setEnd($end);
+            $block->setComment($text);
             $flash = "Le blocage a bien été modifié.";
         } else {
             // Store a new block
             $block = new AbsenceBlock();
-            $block->start($start);
-            $block->end($end);
-            $block->comment($text);
+            $block->setStart($start);
+            $block->setEnd($end);
+            $block->setComment($text);
             $flash = "Le blocage a bien été enregistré.";
         }
 
@@ -104,25 +96,30 @@ class AbsenceBlockController extends BaseController
         return $this->redirectToRoute('absence.block.index');
     }
 
-    /**
-     * @Route("/absence/block", name="absence.block.delete", methods={"DELETE"})
-     */
-    public function delete(Request $request, Session $session)
+    #[Route("/absence/block", name: "absence.block.delete", methods: ["DELETE"])]
+    public function delete(Request $request, Session $session): \Symfony\Component\HttpFoundation\Response
     {
         if (!$this->csrf_protection($request)) {
-            $session->getFlashBag()->add('error', 'CSRF Token Error');
-            return $this->redirectToRoute('absence.block.index');
+            $response = new Response();
+            $response->setStatusCode(403);
+            $response->setContent(json_encode('CSRF error'));
+
+            return $response;
         }
 
-        $id = $request->get('id');
+        $id = $request->request->get('id');
 
         $block = $this->entityManager->getRepository(AbsenceBlock::class)->find($id);
         $this->entityManager->remove($block);
         $this->entityManager->flush();
 
         $flash = "Le blocage a bien été supprimé.";
-
         $session->getFlashBag()->add('notice', $flash);
-        return $this->redirectToRoute('absence.block.index');
+
+        $response = new Response();
+        $response->setStatusCode(200);
+        $response->setContent(json_encode('OK'));
+
+        return $response;
     }
 }

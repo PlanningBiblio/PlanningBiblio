@@ -5,13 +5,37 @@
 {% block page %}
 
   <h3>Heures de présence</h3>
-  <div id='buttons'>
-    <form name='form' method='get' action='{{ asset("workinghour") }}'>
-      Début : <input type='text' name='debut' class='datepicker' value='{{ debut }}' />
-      &nbsp;&nbsp;Fin : <input type='text' name='fin' class='datepicker' value='{{ fin }}' />
-      &nbsp;&nbsp;<input type='submit' value='OK' class='ui-button' />
-      &nbsp;&nbsp;<input type='button' value='Effacer' onclick="location.href='{{ asset("workinghour") }}?reset=on'" class='ui-button ui-button-type2' />
-     <a class='ui-button ui-button-type2' href='{{ asset("workinghour") }}/add?retour={{ asset("workinghour") }}' style='position:absolute; right:95px;'>Entrer de nouveaux horaires</a>
+  <div id="buttons">
+    <form name="form" method="get" action="{{ asset('workinghour') }}" onsubmit="return plHebdoVerifForm($(this));" novalidate>
+      <div class="row row-search">
+
+        <label class="col-xl-auto col-form-label mt-2" for="workinghour-search-start">{% trans %}Start{% endtrans %} :</label>
+        <div class="col-xl-auto ps-0">
+          <input id="workinghour-search-start" type="text" name="debut" class="datepicker form-control start-date" value="{{ debut }}"/>
+        </div>
+
+        <label class="col-xl-auto col-form-label mt-2" for="workinghour-search-end">{% trans %}End{% endtrans %} :</label>
+        <div class="col-xl-auto ps-0">
+          <input id="workinghour-search-end" type="text" name="fin" class="datepicker form-control end-date" value="{{ fin }}" required/>
+        </div>
+
+        <div class="col-xl-4 ps-0">
+          <input type="submit" role="button" value="{% trans %}Search{% endtrans %}" class="btn btn-primary m-2"/>
+          <input type="button" value="{% trans %}Clear{% endtrans %}" onclick="location.href='{{ asset('workinghour') }}?reset=on'" class="btn btn-secondary m-2" />        
+          {% if admin and config('PlanningHebdo-resetCycles') and config('nb_semaine') > 2 %}
+            <a role="button" class="btn btn-primary m-2" href="{{ path('workinghour.cycle') }}">{% trans %}Cycle management{% endtrans %}</a>
+          {% endif %}
+        </div>
+
+        <div class="col-xl text-end">
+          <a class="btn btn-primary m-2 me-0" role="button" href="{{ asset('workinghour') }}/add?retour={{ asset('workinghour') }}">{% trans %}Enter new schedules{% endtrans %}</a>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="invalid-feedback">{% trans from 'validators' %}Please choose a valid date interval.{% endtrans %}</div>
+      </div>
+
     </form>
   </div>
   <br/>
@@ -43,7 +67,7 @@
             <a href="{{ asset('workinghour')}}/{{ elem.id }}?retour={{ asset("workinghour") }}"/>
               <span class='pl-icon pl-icon-edit' title='Voir'></span>
             </a>
-            {% if elem.cle == null %}
+            {% if elem.cle == null and admin %}
               <a href='{{ asset('workinghour') }}/{{ elem.id }}?copy={{ elem.id }}&retour={{ asset("workinghour") }}'/>
                 <span class='pl-icon pl-icon-copy' title='Copier'></span>
               </a>
@@ -54,19 +78,20 @@
           </td>
           <td>{{ elem.surname }}</td>
           <td>{{ elem.firstname }}</td>
-          <td>{{ elem.service | raw }}</td>
+          <td>{{ elem.service }}</td>
           <td>{{ elem.debut }}</td>
           <td>{{ elem.fin }}</td>
           <td>{{ elem.saisie }}</td>
           <td {{ (elem.valide >= 0) ? " " : "class='red'"}} >{{ elem.validation }}</td>
           <td {{ (elem.valide >= 0) ? " " : "class='red'"}} >{{ elem.validation_date }}</td>
           <td>{{ (elem.actuel != 0) ? "Oui" : " "}}</td>
-          <td>{{ elem.commentaires | raw }}</td>
+          <td>{{ elem.commentaires | nl2br }}</td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
 {% endblock %}
 {% block specificjs %}
-  <script type="text/javascript" src='{{ asset("planningHebdo/js/script.planningHebdo.js") }}'></script>
+  <script type="text/javascript" src="{{ asset('js/workingHour.js') }}"></script>
 {% endblock %}
+

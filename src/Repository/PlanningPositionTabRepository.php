@@ -4,20 +4,20 @@ namespace App\Repository;
 
 use Doctrine\ORM\EntityRepository;
 
-use App\Model\HiddenTables;
-use App\Model\PlanningPositionCells;
-use App\Model\PlanningPositionLines;
-use App\Model\PlanningPositionHours;
-use App\Model\PlanningPositionTabAffectation;
-use App\Model\PlanningPositionTab;
-use App\Model\PlanningPositionTabGroup;
+use App\Entity\HiddenTables;
+use App\Entity\PlanningPositionCells;
+use App\Entity\PlanningPositionLines;
+use App\Entity\PlanningPositionHours;
+use App\Entity\PlanningPositionTabAffectation;
+use App\Entity\PlanningPositionTab;
+use App\Entity\PlanningPositionTabGroup;
 
 class PlanningPositionTabRepository extends EntityRepository
 {
-    public function purge($id)
+    public function purge($id): int
     {
         $planningPositionTab = $this->find($id);
-        $tableau = $planningPositionTab->tableau();
+        $tableau = $planningPositionTab->getTable();
         $entityManager = $this->getEntityManager();
 
         $objects = $entityManager->getRepository(PlanningPositionTabAffectation::class)->findBy(['tableau' => $tableau]); 
@@ -25,7 +25,7 @@ class PlanningPositionTabRepository extends EntityRepository
             return 0;
         }
 
-        $this->removeObjects(HiddenTables::class,          'tableau', $tableau);
+        $this->removeObjects(HiddenTables::class,          'tableId', $tableau);
         $this->removeObjects(PlanningPositionCells::class, 'numero',  $tableau);
         $this->removeObjects(PlanningPositionHours::class, 'numero',  $tableau);
         $this->removeObjects(PlanningPositionLines::class, 'numero',  $tableau);
@@ -48,7 +48,7 @@ class PlanningPositionTabRepository extends EntityRepository
         return 1;
     }
 
-    public function purgeAll($limit_date) {
+    public function purgeAll($limit_date): int {
         $entityManager = $this->getEntityManager();
         $builder = $entityManager->createQueryBuilder();
         $builder->select('a')
@@ -59,14 +59,14 @@ class PlanningPositionTabRepository extends EntityRepository
         $results = $builder->getQuery()->getResult();
         $deleted_planning_position_tab = 0;
         foreach ($results as $result) {
-            $deleted = $this->purge($result->id());
-            if ($deleted) $deleted_planning_position_tab++;
+            $deleted = $this->purge($result->getId());
+            if ($deleted !== 0) $deleted_planning_position_tab++;
         }
         return $deleted_planning_position_tab;
     }
 
 
-    private function removeObjects($class, $field, $value) {
+    private function removeObjects($class, $field, $value): void {
         $entityManager = $this->getEntityManager();
         $objects = $entityManager->getRepository($class)->findBy([$field => $value]);
         foreach ($objects as $object) {

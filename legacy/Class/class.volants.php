@@ -1,0 +1,86 @@
+<?php
+/**
+Description :
+Classe utilisée pour la gestion des agents volants
+
+Cette page est appelée par la page planning/volants/index.php
+*/
+
+
+require_once __DIR__ . '/../Common/function.php';
+require_once 'class.personnel.php';
+
+class volants
+{
+    public $error;
+    public $selected = array();
+    public $tous = array();
+
+    public function __construct()
+    {
+    }
+  
+    public function fetch($date): void
+    {
+
+    // Date du lundi
+        $d = new datePl($date);
+        $date = $d->dates[0];
+
+        // Tous les agents
+        $p = new personnel();
+        $p->fetch('nom', 'Actif');
+        $tous = $p->elements;
+
+        // Agents sélectionnés
+        $selected = array();
+        $selectionnes = array();
+
+        $db = new db();
+        $db->select2('volants', null, array('date' => $date));
+        if ($db->result) {
+            foreach ($db->result as $elem) {
+                $selected[] = $elem['perso_id'];
+                $selectionnes[] = array($elem['perso_id'], nom($elem['perso_id'], $tous));
+            }
+        }
+
+        // Agents disponibles
+        $dispo = array();
+        foreach ($tous as $elem) {
+            if (!in_array($elem['id'], $selected)) {
+                $dispo[] = array($elem['id'], nom($elem['id'], $tous));
+            }
+        }
+    
+        $this->selected = $selected;
+        $this->tous = $tous;
+    }
+  
+    public function set($date, $ids, $CSRFToken): void
+    {
+        $db = new db();
+        $db->CSRFToken = $CSRFToken;
+        $db->delete('volants', array('date' => $date));
+        if ($db->error) {
+            $this->error = $db->error;
+        }
+  
+        if (!empty($ids)) {
+            $db = new dbh();
+            $db->CSRFToken = $CSRFToken;
+
+            $db->prepare("INSERT INTO `{$GLOBALS['dbprefix']}volants` (`date`, `perso_id`) VALUES (:date, :perso_id);");
+            foreach ($ids as $elem) {
+                $db->execute([
+                    ':date' => $date,
+                    ':perso_id' => $elem
+                ]);
+            }
+
+            if ($db->error) {
+                $this->error = $db->error;
+            }
+        }
+    }
+}

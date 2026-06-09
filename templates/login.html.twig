@@ -56,9 +56,17 @@
   
             <tr>
               <td colspan='2' align='center'><br/>
-                <input type='submit' class='ui-button ui-button-type1' value='Valider' />
+                <input type="submit" role="button" class="btn btn-primary" value="Valider" />
               </td>
             </tr>
+  
+            {% if sSOLink %}
+              <tr>
+                <td colspan='2' align='center'><br/>
+                  <a href='{{ path('home') }}'>{{ sSOLink }}</a>
+                </td>
+              </tr>
+            {% endif %}
   
             {% if demo_mode %}
               <tr>
@@ -73,7 +81,7 @@
             {% if config("Auth-Anonyme") %}
               <tr>
                 <td colspan="2" align="center"><br/>
-                  <a href="{{ asset('index') }}?login=anonyme">Accès anonyme</a>
+                  <a href="{{ path('home') }}?login=anonyme">Accès anonyme</a>
                 </td>
               </tr>
             {% endif %}

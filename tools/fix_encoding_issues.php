@@ -1,7 +1,7 @@
 <?php
 
 require_once(__DIR__ . '/../init/init.php');
-require_once(__DIR__ . '/../public/include/db.php');
+require_once(__DIR__ . '/../legacy/Common/db.php');
 
 $tables = array (
     array(
@@ -9,7 +9,6 @@ $tables = array (
         'fields' => array(
             'cal_name',
             'commentaires',
-            'etat',
             'groupe',
             'ical_key',
             'motif',

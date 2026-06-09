@@ -12,12 +12,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class LegalNoticesController extends BaseController
 {
 
-    /**
-     * @Route("/legal-notices", name="legal-notices", methods={"GET"})
-     */
+    #[Route(path: '/legal-notices', name: 'legal-notices', methods: ['GET'])]
     public function index(Request $request)
     {
-        $show_menu = empty($_SESSION['login_id']) ? 0 : 1;
+        $session = $request->getSession();
+
+        $show_menu = empty($session->get('loginId')) ? 0 : 1;
 
         $this->templateParams(array(
             'show_menu' => $show_menu,

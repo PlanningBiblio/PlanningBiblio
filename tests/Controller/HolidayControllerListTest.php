@@ -1,12 +1,10 @@
 <?php
 
-use App\Model\Agent;
-use App\Model\Holiday;
-use App\Model\ConfigParam;
-use App\Model\Manager;
-
-use Tests\PLBWebTestCase;
+use App\Entity\Agent;
+use App\Entity\Holiday;
+use App\Entity\Manager;
 use Tests\FixtureBuilder;
+use Tests\PLBWebTestCase;
 
 class HolidayControllerListTest extends PLBWebTestCase
 {
@@ -17,18 +15,6 @@ class HolidayControllerListTest extends PLBWebTestCase
         $this->builder->delete(Agent::class);
 
         $GLOBALS['config']['Absences-validation'] = 1;
-    }
-
-    protected function setParam($name, $value)
-    {
-        $GLOBALS['config'][$name] = $value;
-        $param = $this->entityManager
-            ->getRepository(ConfigParam::class)
-            ->findOneBy(['nom' => $name]);
-
-        $param->valeur($value);
-        $this->entityManager->persist($param);
-        $this->entityManager->flush();
     }
 
     private function createHolidayFor($agent, $status = 0)
@@ -43,18 +29,18 @@ class HolidayControllerListTest extends PLBWebTestCase
         ));
 
         $holiday = $this->builder->build(Holiday::class, array(
-            'perso_id' => $agent->id(), 'debut' => $date, 'fin' => $date,
-            'commentaires' => 'pop','origin_id' => $holiday1->id(), 'regul_id' => $holiday1->id(),
+            'perso_id' => $agent->getId(), 'debut' => $date, 'fin' => $date,
+            'commentaires' => 'pop','origin_id' => $holiday1->getId(), 'regul_id' => $holiday1->getId(),
         ));
 
-        return $holiday->id();
+        return $holiday->getId();
     }
 
-    public function testHolidayList()
+    public function testHolidayList(): void
     {
-        $this->setParam('Absences-notifications-agent-par-agent', 1);
-        $this->setParam('Multisites-nombre', 1);
-        $this->setParam('PlanningHebdo', 0);
+        $this->config->setParam('Absences-notifications-agent-par-agent', 1);
+        $this->config->setParam('Multisites-nombre', 1);
+        $this->config->setParam('PlanningHebdo', 0);
 
         $client = static::createClient();
 
@@ -69,19 +55,19 @@ class HolidayControllerListTest extends PLBWebTestCase
 
         $jdupont = $this->builder->build(Agent::class, array(
             'login' => 'jdupont', 'nom' => 'Dupont', 'prenom' => 'Jean',
-            'sites' => '', 'droits' => array(99,100), 'temps' => json_encode($workinghours)
+            'sites' => [], 'droits' => array(99,100), 'temps' => $workinghours
         ));
         $jdevoe = $this->builder->build(Agent::class, array(
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
-            'sites' => '["1","2"]', 'droits' => array(99,100), 'temps' => json_encode($workinghours)
+            'sites' => ["1","2"], 'droits' => array(99,100), 'temps' => $workinghours
         ));
         $abreton = $this->builder->build(Agent::class, array(
             'login' => 'abreton', 'nom' => 'Breton', 'prenom' => 'Aubert',
-            'sites' => '["1"]', 'droits' => array(99,100), 'temps' => json_encode($workinghours)
+            'sites' => ["1"], 'droits' => array(99,100), 'temps' => $workinghours
         ));
         $kboivin = $this->builder->build(Agent::class, array(
             'login' => 'kboivin', 'nom' => 'Boivin', 'prenom' => 'Karel',
-            'sites' => '["2"]', 'droits' => array(202,502,99,100), 'temps' => json_encode($workinghours)
+            'sites' => ["2"], 'droits' => array(202,502,99,100), 'temps' => $workinghours
         ));
 
         $this->createHolidayFor($jdupont, 2);
@@ -91,19 +77,24 @@ class HolidayControllerListTest extends PLBWebTestCase
 
         // Make kboivin manager of jdupont
         $manager = new Manager();
-        $manager->perso_id($jdupont);
-        $manager->notification_level1(0);
+        $manager->setUser($jdupont);
+        $manager->setLevel1Notification(0);
         $kboivin->addManaged($manager);
 
         // Make kboivin manager of abreton
         $manager = new Manager();
-        $manager->perso_id($abreton);
-        $manager->notification_level1(0);
+        $manager->setUser($abreton);
+        $manager->setLevel1Notification(0);
         $kboivin->addManaged($manager);
 
+        $date = new DateTime();
+        $debut = $date->format('d/m/Y');
+        $date = new DateTime('now + 1 year');
+        $fin= $date->format('d/m/Y');
+
         // Login with agent without rights for holiday
-        $this->logInAgent($jdupont, $jdupont->droits());
-        $crawler = $client->request('GET', '/holiday/index');
+        $this->logInAgent($jdupont, $jdupont->getACL());
+        $crawler = $client->request('GET', "/holiday?debut=$debut&fin=$fin");
 
         $this->assertSelectorNotExists('select#perso_id');
 
@@ -111,8 +102,8 @@ class HolidayControllerListTest extends PLBWebTestCase
         $this->assertStringNotContainsString('Nom', $result->text(null,false));
 
         // Login with agent having rights for holiday
-        $this->logInAgent($kboivin, $kboivin->droits());
-        $crawler = $client->request('GET', '/holiday/index');
+        $this->logInAgent($kboivin, $kboivin->getACL());
+        $crawler = $client->request('GET', "/holiday?debut=$debut&fin=$fin");
 
         $agents_select = $crawler->filter('select#perso_id option');
         $this->assertCount(4, $agents_select, 'KBoivin can select 4 options in the list (All, Admin and 3 agents)');
@@ -128,28 +119,28 @@ class HolidayControllerListTest extends PLBWebTestCase
         $this->assertStringContainsString('Dupont J', $result->text(null,false));
     }
 
-    public function testStatuses()
+    public function testStatuses(): void
     {
-        $this->setParam('Absences-notifications-agent-par-agent', 1);
-        $this->setParam('Multisites-nombre', 1);
-        $this->setParam('PlanningHebdo', 1);
-        $this->setParam('Multisites-nombre', 1);
-        $this->setParam('Absences-notifications-agent-par-agent', 0);
-        $this->setParam('PlanningHebdo', 0);
-        $this->setParam('Conges-Enable', 1);
-        $this->setParam('Conges-Mode', 'heures');
-        $this->setParam('Conges-Heures', 0);
-        $this->setParam('Conges-validation', 1);
-        $this->setParam('Conges-Validation-N2', 0);
-        $this->setParam('Conges-Recuperations', 1);
-        $this->setParam('Conges-tous', 0);
-        $this->setParam('Conges-Rappels-Jours', 14);
-        $this->setParam('Conges-demi-journees', 1);
-        $this->setParam('Conges-fullday-switching-time', 4);
-        $this->setParam('Conges-fullday-reference-time', '');
-        $this->setParam('Conges-planningVide', 1);
-        $this->setParam('Conges-apresValidation', 1);
-        $this->setParam('Recup-Uneparjour', 1);
+        $this->config->setParam('Absences-notifications-agent-par-agent', 1);
+        $this->config->setParam('Multisites-nombre', 1);
+        $this->config->setParam('PlanningHebdo', 1);
+        $this->config->setParam('Multisites-nombre', 1);
+        $this->config->setParam('Absences-notifications-agent-par-agent', 0);
+        $this->config->setParam('PlanningHebdo', 0);
+        $this->config->setParam('Conges-Enable', 1);
+        $this->config->setParam('Conges-Mode', 'heures');
+        $this->config->setParam('Conges-Heures', 0);
+        $this->config->setParam('Conges-validation', 1);
+        $this->config->setParam('Conges-Validation-N2', 0);
+        $this->config->setParam('Conges-Recuperations', 1);
+        $this->config->setParam('Conges-tous', 0);
+        $this->config->setParam('Conges-Rappels-Jours', 14);
+        $this->config->setParam('Conges-demi-journees', 1);
+        $this->config->setParam('Conges-fullday-switching-time', 4);
+        $this->config->setParam('Conges-fullday-reference-time', '');
+        $this->config->setParam('Conges-planningVide', 1);
+        $this->config->setParam('Conges-apresValidation', 1);
+        $this->config->setParam('Recup-Uneparjour', 1);
         $this->setUpPantherClient();
 
         $this->setUpPantherClient();
@@ -157,19 +148,19 @@ class HolidayControllerListTest extends PLBWebTestCase
 
         $jdupont = $this->builder->build(Agent::class, array(
             'login' => 'jdupont', 'nom' => 'Dupont', 'prenom' => 'Jean',
-            'sites' => '', 'droits' => array(99,100)
+            'sites' => [], 'droits' => array(99,100)
         ));
         $jdevoe = $this->builder->build(Agent::class, array(
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
-            'sites' => '["1","2"]', 'droits' => array(99,100)
+            'sites' => ["1","2"], 'droits' => array(99,100)
         ));
         $abreton = $this->builder->build(Agent::class, array(
             'login' => 'abreton', 'nom' => 'Breton', 'prenom' => 'Aubert',
-            'sites' => '["1"]', 'droits' => array(99,100)
+            'sites' => ["1"], 'droits' => array(99,100)
         ));
         $kboivin = $this->builder->build(Agent::class, array(
             'login' => 'kboivin', 'nom' => 'Boivin', 'prenom' => 'Karel',
-            'sites' => '["2"]', 'droits' => array(3,4,5,6,9,17,20,21,22,23,25,99,100,201,202,301,302,401,402,501,502,601,602,701,801,802,901,1001,1002,1101,1201,1301)
+            'sites' => ["2"], 'droits' => array(3,4,5,6,9,17,20,21,22,23,25,99,100,201,202,301,302,401,402,501,502,601,602,701,801,802,901,1001,1002,1101,1201,1301)
         ));
 
         $this->createHolidayFor($jdupont, 2);
@@ -179,14 +170,14 @@ class HolidayControllerListTest extends PLBWebTestCase
 
         // Make kboivin manager of jdupont
         $manager = new Manager();
-        $manager->perso_id($jdupont);
-        $manager->notification_level1(0);
+        $manager->setUser($jdupont);
+        $manager->setLevel1Notification(0);
         $kboivin->addManaged($manager);
 
         // Make kboivin manager of abreton
         $manager = new Manager();
-        $manager->perso_id($abreton);
-        $manager->notification_level1(0);
+        $manager->setUser($abreton);
+        $manager->setLevel1Notification(0);
         $kboivin->addManaged($manager);
 
         // Login
@@ -205,12 +196,12 @@ class HolidayControllerListTest extends PLBWebTestCase
         $this->assertCount(6, $agents_list);
         $this->assertTrue(in_array(0, $agents_list), '-- Ajoutez un agent --');
         $this->assertTrue(in_array(1, $agents_list), 'Admin');
-        $this->assertTrue(in_array($jdupont->id(), $agents_list), 'jdevoe');
-        $this->assertTrue(in_array($abreton->id(), $agents_list), 'abreton');
-        $this->assertTrue(in_array($kboivin->id(), $agents_list), 'kboivin');
+        $this->assertTrue(in_array($jdupont->getId(), $agents_list), 'jdevoe');
+        $this->assertTrue(in_array($abreton->getId(), $agents_list), 'abreton');
+        $this->assertTrue(in_array($kboivin->getId(), $agents_list), 'kboivin');
 
         $agent_select = $this->getSelect('perso_ids');
-        $agent_select->selectByValue($abreton->id());
+        $agent_select->selectByValue($abreton->getId());
 
         $this->client->getWebDriver()->wait()->until($this->jqueryAjaxFinished());
 

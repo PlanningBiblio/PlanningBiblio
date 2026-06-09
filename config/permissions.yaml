@@ -7,6 +7,10 @@
     - 100
 "absence.edit":
     - 100
+"absence.import.select_file":
+    - 1401
+"absence.import.process_file":
+    - 1401
 "absence.index":
     - 100
 "absence.save":
@@ -23,6 +27,8 @@
     - 301
 "absence.block.update":
     - 301
+"absence.supporting_doc":
+    - 701
 "absences.document.index":
     - 100
 "absences.document.delete":
@@ -43,11 +49,11 @@
     - 201
 "account.index":
     - 100
-"admin.info.addform":
+"admin.info.add":
     - 23
 "admin.info.delete":
     - 23
-"admin.info.editform":
+"admin.info.edit":
     - 23
 "admin.info.update":
     - 23
@@ -57,10 +63,20 @@
     - 100
 "agent.add":
     - 21
+"agent.check_login":
+    - 21
+"agent.bulk.delete":
+    - 21
+"agent.bulk.update":
+    - 21
 "agent.delete":
     - 21
 "agent.edit":
     - 4
+"agent.ics.reset_url":
+    - 100
+"agent.ics.send_url":
+    - 100
 "agent.index":
     - 4
 "agent.ldap":
@@ -74,7 +90,11 @@
 "agent.password":
     - 100
 "agent.save":
-    - 4
+    - 21
+"agent.send_password":
+    - 21
+"agent.update_list":
+    - 100
 "ajax.agentsbysites":
     - 100
 "ajax.checkplanning":
@@ -101,13 +121,17 @@
     - 100
 "ajax.checkpassword":
     - 100
-"ajax.update_agent_login":
-    - 21
 "ajax.sanitizehtml":
+    - 100
+"ajax.update.select.options":
     - 100
 "calendar.index":
     - 100
 "config.index":
+    - 20
+"config.ldap_test":
+    - 20
+"config.technical":
     - 20
 "config.update":
     - 20
@@ -115,6 +139,10 @@
     - 25
 "closingday.save":
     - 25
+"overtime.add":
+    - 100
+"overtime.check":
+    - 100
 "overtime.edit":
     - 100
 "overtime.index":
@@ -195,6 +223,8 @@
     - 100
 "home":
     - 99
+"homeWithSite":
+    - 99
 "index":
     - 99
 "legalnotices":
@@ -217,10 +247,34 @@
     - 301
 "model.form":
     - 100
+"planning.call_for_help.get_message":
+    - 301
+"planning.call_for_help.send_mail":
+    - 301
 "planning.delete":
     - 100
+"planning.end_of_service.check":
+    - 100
+"planning.hidden_tables.get":
+    - 100
+"planning.hidden_tables.set":
+    - 100
+"planning.notes":
+    - 100
+"planning.notifications":
+    - 100
+"planning.setFramework":
+    - 301
+"planning.setFrameworkGroup":
+    - 301
 "planning.week":
     - 99
+"planning.refresh":
+    - 100
+"planning.validation":
+    - 301
+"planning.update.cell":
+    - 301
 "planningjob.contextmenu":
     - 100
 "planningjob.undo":
@@ -253,6 +307,8 @@
     - 17
 "statistics.attendeesmissing":
     - 1301
+"statistics.export":
+    - 17
 "statistics.index":
     - 17
 "statistics.position":
@@ -269,14 +325,28 @@
     - 17
 "statistics.time":
     - 17
-"workinghour.index":
-    - 100
 "workinghour.add":
     - 100
+"workinghour.check":
+    - 100
+"workinghour.delete":
+    - 1101
+    - 1201
 "workinghour.edit":
+    - 100
+"workinghour.index":
     - 100
 "workinghour.save":
     - 100
-"workinghour.delete":
+"workinghour.cycle":
+    - 1101
+    - 1201
+"workinghour.cycle.delete":
+    - 1101
+    - 1201
+"workinghour.cycle.edit":
+    - 1101
+    - 1201
+"workinghour.cycle.save":
     - 1101
     - 1201

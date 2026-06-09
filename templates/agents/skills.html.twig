@@ -7,23 +7,21 @@
       <div id='dispo_div'>
         <ul>
           {% for elem in postes_dispo %}
-            <li>{{ elem[1] | raw }}</li>
+            <li>{{ elem[1] }}</li>
           {% endfor %}
         </ul>
       </div>
     </td>
 
     <td>
-      <b>Activités attribu&eacute;es</b><br/>
+      <b>Activités attribuées</b><br/>
       <div id='attrib_div'>
         <ul>
           {% for elem in postes_attribues %}
-            <li>{{ elem[1] | raw }}</li>
+            <li>{{ elem[1] }}</li>
           {% endfor %}
         </ul>
       </div>
-
-      <input type='hidden' name='postes' id='postes' value="{{ postes }}"/>
     </td>
   </tr>
 </table>

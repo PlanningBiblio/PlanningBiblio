@@ -2,7 +2,7 @@
 
 namespace App\EventListener;
 
-use App\Model\ConfigParam;
+use App\Entity\Config;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,24 +18,32 @@ class LoginListener
         $this->entityManager = $em;
     }
 
-    public function onKernelRequest(RequestEvent $event)
+    public function onKernelRequest(RequestEvent $event): void
     {
         $route = $event->getRequest()->getPathInfo();
         $route = ltrim($route, '/');
 
         $session = $event->getRequest()->getSession();
 
-        $config = $this->entityManager->getRepository(ConfigParam::class);
-        $url = $config->findOneBy(array('nom' => 'URL'));
+        $config = $this->entityManager->getRepository(Config::class);
+        $url = $config->findOneBy(array('nom' => 'URL'))->getValue();
 
         // Prevent user accessing to login page if he is already authenticated
         if (!empty($session->get('loginId')) and $route == 'login') {
-            $event->setResponse(new RedirectResponse($url->valeur()));
+            $event->setResponse(new RedirectResponse($url));
         }
 
         // Redirect to the login page if there is no session
         // Except for the following routes
         if (in_array($route, ['login', 'logout', 'legal-notices', 'ical'])) {
+            return;
+        }
+
+        if (substr($route, 0, 4) == '_wdt') {
+            return;
+        }
+
+        if (substr($route, 0, 11) == 'unsubscribe') {
             return;
         }
 
@@ -52,7 +60,7 @@ class LoginListener
 
             // Anonymous login
             $login = $event->getRequest()->get('login');
-            if ($login and $login === "anonyme" and $config->findOneBy(array('nom' => 'Auth-Anonyme'))->valeur()) {
+            if ($login and $login === 'anonyme' and $config->findOneBy(array('nom' => 'Auth-Anonyme'))->getValue()) {
                 $_SESSION['login_id']=999999999;
                 $_SESSION['login_nom']="Anonyme";
                 $_SESSION['login_prenom']="";
@@ -69,7 +77,7 @@ class LoginListener
 
             $routeParams = !empty($routeParams) ? '?' . implode('&', $routeParams) : null;
 
-            $event->setResponse(new RedirectResponse($url->valeur() . '/login' . $routeParams));
+            $event->setResponse(new RedirectResponse($url . '/login' . $routeParams));
         }
     }
 }

@@ -1,0 +1,211 @@
+<?php
+/**
+ * Description :
+ * Classe personnel : contient la fonction personnel::fetch permettant de rechercher les agents.
+ * personnel::fetch prend en paramètres $tri (nom de la colonne), $actif (string), $name (string, nom ou prenom de l'agent)
+ * 
+ * Page appelée par les autres fichiers du dossier personnel
+*/
+
+require_once __DIR__ . '/../Common/config.php';
+
+class personnel
+{
+    public $elements=array();
+    // supprime : permet de sélectionner les agents selon leur état de suppression
+    // Tableau, valeur 0=pas supprimé, 1=1ère suppression (corbeille), 2=suppression définitive
+    public $supprime=array(0);
+  
+    public $CSRFToken;
+
+    public $offset = 0;
+
+    public $responsablesParAgent;
+
+    // Will be replaced by AgentRepository::get
+    public function fetch($tri="nom", $actif=null, $name=null)
+    {
+        $filter = array('id' => '<> 2');
+
+        // Filtre selon le champ actif (administratif, service public)
+        $actif = htmlentities(strval($actif), ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
+        if ($actif !== '' && $actif !== '0') {
+            $filter['actif'] = $actif;
+        }
+
+        // Filtre selon le champ supprime
+        $supprime=implode(',', $this->supprime);
+        $filter['supprime'] = "IN{$supprime}";
+
+        if (!$GLOBALS['config']['Absences-notifications-agent-par-agent']) {
+            $this->responsablesParAgent = false;
+        }
+
+        if ($this->responsablesParAgent) {
+            $db=new db();
+            $db->selectLeftJoin(
+                array('personnel', 'id'),
+                array('responsables', 'perso_id'),
+                array('id', 'nom', 'prenom', 'mail', 'mails_responsables', 'statut', 'categorie', 'service', 'actif', 'droits', 'sites', 'check_ics', 'check_hamac'),
+                array('responsable', 'notification_level1', 'notification_level2'),
+                $filter,
+                array(),
+                "ORDER BY $tri"
+      );
+        } else {
+            $db=new db();
+            $db->select2("personnel", null, $filter, "ORDER BY $tri");
+        }
+
+        $all=$db->result;
+
+        // Si pas de résultat, on quitte
+        if (!$db->result) {
+            return false;
+        }
+
+        //	By default $result=$all
+        $result=array();
+        foreach ($all as $elem) {
+            if (empty($result[$elem['id']])) {
+                $result[$elem['id']]=$elem;
+                $result[$elem['id']]['sites']=json_decode(html_entity_decode($elem['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+                $result[$elem['id']]['mails_responsables'] = explode(";", html_entity_decode($elem['mails_responsables'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'));
+
+                // Contrôle des calendriers ICS distants : Oui/Non ?
+                $check_ics = json_decode($result[$elem['id']]['check_ics']);
+                $result[$elem['id']]['ics_1'] = !empty($check_ics[0]);
+                $result[$elem['id']]['ics_2'] = !empty($check_ics[1]);
+                $result[$elem['id']]['ics_3'] = !empty($check_ics[2]);
+        
+                if ($this->responsablesParAgent) {
+                    // Ajout des responsables et notifications
+                    $result[$elem['id']]['responsables'] = array(array(
+                        'responsable' => $elem['responsable'],
+                        'notification_level1' => $elem['notification_level1'],
+                        'notification_level2' => $elem['notification_level2']
+                    ));
+          
+                    unset($result[$elem['id']]['responsable']);
+                    unset($result[$elem['id']]['notification_level1']);
+                }
+            } elseif ($this->responsablesParAgent) {
+                // Ajout des responsables et notifications
+                $result[$elem['id']]['responsables'][] = array(
+                    'responsable' => $elem['responsable'],
+                    'notification_level1' => $elem['notification_level1'],
+                    'notification_level2' => $elem['notification_level2']
+                );
+            }
+        }
+
+        //	If name, keep only matching results
+        if ($name) {
+            $result=array();
+            foreach ($all as $elem) {
+                if (pl_stristr($elem['nom'], $name) or pl_stristr($elem['prenom'], $name)) {
+                    $result[$elem['id']]=$elem;
+                    $result[$elem['id']]['sites']=json_decode(html_entity_decode($elem['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+                    $result[$elem['id']]['mails_responsables'] = explode(";", html_entity_decode($elem['mails_responsables'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'));
+
+                    // Contrôle des calendriers ICS distants : Oui/Non ?
+                    $check_ics = json_decode($result[$elem['id']]['check_ics']);
+                    $result[$elem['id']]['ics_1'] = !empty($check_ics[0]);
+                    $result[$elem['id']]['ics_2'] = !empty($check_ics[1]);
+                    $result[$elem['id']]['ics_3'] = !empty($check_ics[2]);
+                }
+            }
+        }
+  
+        //	Suppression de l'utilisateur "Tout le monde"
+        if (!$GLOBALS['config']['toutlemonde']) {
+            unset($result[2]);
+        }
+
+        $this->elements=$result;
+    }
+
+
+    /**
+     * @function fetchById
+     * @param mixed int, array $id : id de l'agent ou tableau d'ID
+     * @result array : si $id est un chiffre : $this->elements[0] contient les informations de l'agent
+     * @result array : si $id est un tableau : $this->elements contient les informations des agents avec l'id des agents comme clé
+     */
+    public function fetchById($id): void
+    {
+        if (is_numeric($id)) {
+            $db=new db();
+            $db->select("personnel", null, "id='$id'");
+            $this->elements=$db->result;
+            if ($db->result) {
+                $sites = json_decode(html_entity_decode($db->result[0]['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+                $this->elements[0]['sites'] = $sites ? $sites : array();
+                $this->elements[0]['mails_responsables']=explode(";", html_entity_decode($db->result[0]['mails_responsables'], ENT_QUOTES|ENT_IGNORE, "UTF-8"));
+                $this->elements[0]['conges_annuel'] = floatval($db->result[0]['conges_annuel']);
+                $this->elements[0]['conges_credit'] = floatval($db->result[0]['conges_credit']);
+                $this->elements[0]['conges_reliquat'] = floatval($db->result[0]['conges_reliquat']);
+                $this->elements[0]['conges_anticipation'] = floatval($db->result[0]['conges_anticipation']);
+                $this->elements[0]['comp_time'] = floatval($db->result[0]['comp_time']);
+            }
+        } elseif (is_array($id)) {
+            $ids=implode(",", $id);
+            $db=new db();
+            $db->select2("personnel", null, array("id"=>"IN $ids"));
+            if ($db->result) {
+                foreach ($db->result as $elem) {
+                    $this->elements[$elem['id']]=$elem;
+                    $sites = json_decode(html_entity_decode($elem['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+                    $this->elements[$elem['id']]['sites'] = $sites ? $sites : array();
+                    $this->elements[$elem['id']]['mails_responsables']=explode(";", html_entity_decode($elem['mails_responsables'], ENT_QUOTES|ENT_IGNORE, "UTF-8"));
+                    $this->elements[$elem['id']]['conges_annuel'] = floatval($elem['conges_annuel']);
+                    $this->elements[$elem['id']]['conges_credit'] = floatval($elem['conges_credit']);
+                    $this->elements[$elem['id']]['conges_reliquat'] = floatval($elem['conges_reliquat']);
+                    $this->elements[$elem['id']]['conges_anticipation'] = floatval($elem['conges_anticipation']);
+                    $this->elements[$elem['id']]['comp_time'] = floatval($elem['comp_time']);
+                }
+            }
+        }
+    }
+
+
+    /** fetchEDTSamedi
+     * @desc : recherche le numéro de tableau d'emploi du temps associé à chaque semaine pour l'agent $perso_id entre les date $debut et $fin
+     * @param int $perso_id : ID de l'agent
+     * @param string $debut : date de début au format YYYY-MM-DD
+     * @param string $fin : date de fin au format YYYY-MM-DD
+     * @return array $this->elements : tableau contenant les semaines et les tableaux associés
+     * @return int $this->offset : calcul l'offset à appliquer pour la recherche, dans l'emploi du temps adéquat, des heures d'un jour donné
+     * (Attention, l'offset est valide pour la dernière valeur retournée. Ce qui est suffisant pour l'utilisation de cette fonction dans l'agenda et le menudiv car dans les 2 cas, une seule semaine est recherchée et donc une seule valeur est retournée)
+     */
+    public function fetchEDTSamedi($perso_id, $debut, $fin)
+    {
+        if (!$GLOBALS['config']['EDTSamedi'] or $GLOBALS['config']['PlanningHebdo']) {
+            return false;
+        }
+
+        $db=new db();
+        $db->select("edt_samedi", "*", "semaine>='$debut' AND semaine<='$fin' AND perso_id='$perso_id'");
+        if ($db->result) {
+            foreach ($db->result as $elem) {
+
+        // Si config['EDTSamedi'] == 1 (Emploi du temps différent les semaines avec samedi travaillé), le champ tableau n'est pas nécessairement rempli car n'existait pas au départ.
+                // Dans ce cas, on le force à 2 par sécurité (si EDT Samedi est cochée, on passe au tableau 2
+                if (! $elem['tableau']) {
+                    $elem['tableau'] = 2;
+                }
+
+                $this->elements[$elem['semaine']] = array('semaine' => $elem['semaine'], 'tableau' => $elem['tableau']);
+                $this->offset = (intval($elem['tableau']) - 1) * 7 ;
+            }
+        }
+    }
+
+    public function update_time()
+    {
+        $db=new db();
+        $db->query("SHOW TABLE STATUS FROM `{$GLOBALS['config']['dbname']}` LIKE '{$GLOBALS['config']['dbprefix']}personnel';");
+        $result = isset($db->result[0]['Update_time']) ? $db->result[0]['Update_time'] : null;
+        return $result;
+    }
+}

@@ -1,0 +1,392 @@
+msgid "New request"
+msgstr "New request"
+
+msgid "New request for overtime"
+msgstr "New request for overtime"
+
+msgid "Please select the date for which your request applies and the number of overtime hours, followed by a comment."
+msgstr "Please select the date for which your request applies and the number of overtime hours, followed by a comment."
+
+msgid "Date"
+msgstr "Date"
+
+msgid "Date (1st Saturday)"
+msgstr "Date (1st Saturday)"
+
+msgid "Date (2nd Saturday) (optional)"
+msgstr "Date (2nd Saturday) (optional)"
+
+msgid "Error while saving the overtime request"
+msgstr "Error while saving the overtime request"
+
+msgid "Agent"
+msgstr "Agent"
+
+msgid "Hours"
+msgstr "Hours"
+
+msgid "Comment"
+msgstr "Comment"
+
+msgid "Save"
+msgstr "Save"
+
+msgid "Cancel"
+msgstr "Cancel"
+
+msgid "mm/dd/yyyy"
+msgstr "mm/dd/yyyy"
+
+msgid "MM/DD/YYYY"
+msgstr "MM/DD/YYYY"
+
+msgid "Start date"
+msgstr "Start date"
+
+msgid "End date"
+msgstr "End date"
+
+msgid "Text"
+msgstr "Text"
+
+msgid "Delete"
+msgstr "Delete"
+
+msgid "Confirm"
+msgstr "Confirm"
+
+msgid "Start"
+msgstr "Start"
+
+msgid "End"
+msgstr "End"
+
+msgid "Search"
+msgstr "Search"
+
+msgid "Clear"
+msgstr "Clear"
+
+msgid "Add"
+msgstr "Add"
+
+msgid "Import"
+msgstr "Import"
+
+msgid "Everyone"
+msgstr "Everyone"
+
+msgid "Deleted agents"
+msgstr "Deleted agents"
+
+msgid "Cycle management"
+msgstr "Cycle management"
+
+msgid "Enter new schedules"
+msgstr "Enter new schedules"
+
+msgid "Starting date"
+msgstr "Starting date"
+
+msgid "Ending date"
+msgstr "Ending date"
+
+msgid "From %start% to %end%"
+msgstr "From %start% to %end%"
+
+msgid "Display hours by job category"
+msgstr "Display hours by job category"
+
+msgid "Sites"
+msgstr "Sites"
+
+msgid "Save changes"
+msgstr "Save changes"
+
+msgid "Please enter a valid start date"
+msgstr "Please enter a valid start date"
+
+msgid "Please enter a valid end date"
+msgstr "Please enter a valid end date"
+
+msgid "Please select an agent"
+msgstr "Please select an agent"
+
+msgid "Search results are limited to a period of one year"
+msgstr "Search results are limited to a period of one year"
+
+msgid "Copy"
+msgstr "Copy"
+
+msgid "Copy of the selected table"
+msgstr "Copy of the selected table"
+
+msgid "Name of the new table"
+msgstr "Name of the new table"
+
+msgid "Please enter a valid model name"
+msgstr "Please enter a valid model name"
+
+msgid "Call for volunteers"
+msgstr "Call for volunteers"
+
+msgid "Send an email to the available agents to ask if they would like to volunteer for the selected position."
+msgstr "Send an email to the available agents to ask if they would like to volunteer for the selected position."
+
+msgid "Send"
+msgstr "Send"
+
+msgid "Message"
+msgstr "Message"
+
+msgid "Subject"
+msgstr "Subject"
+
+msgid "An error occurred while sending the email"
+msgstr "An error occurred while sending the email"
+
+msgid "Editing selected agents"
+msgstr "Editing selected agents"
+
+msgid "General information"
+msgstr "General information"
+
+msgid "Activities"
+msgstr "Activities"
+
+msgid "Available activities"
+msgstr "Available activities"
+
+msgid "Assigned activities"
+msgstr "Assigned activities"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Contract"
+msgstr "Contract"
+
+msgid "Home department"
+msgstr "Home department"
+
+msgid "Public service hours"
+msgstr "Public service hours"
+
+msgid "Hours worked per week"
+msgstr "Hours worked per week"
+
+msgid "Public service"
+msgstr "Public service"
+
+msgid "Administrative"
+msgstr "Administrative"
+
+msgid "Do not change"
+msgstr "Do not change"
+
+msgid "None"
+msgstr "None"
+
+msgid "The agents were successfully modified"
+msgstr "The agents were successfully modified"
+
+msgid "An error occurred while modifying the agents"
+msgstr "An error occurred while modifying the agents"
+
+msgid "Please select an action to perform."
+msgstr "Please select an action to perform."
+
+msgid "Please select one or more agents."
+msgstr "Please select one or more agents."
+
+msgid "The selected date needs to be a Saturday"
+msgstr "The selected date needs to be a Saturday"
+
+msgid "A request has already been submitted for %date%"
+msgstr "A request has already been submitted for %date%"
+
+msgid "An error occurred while verifying the saved entries"
+msgstr "An error occurred while verifying the saved entries"
+
+msgid "The second date must be posterior to the first one or empty"
+msgstr "The second date must be posterior to the first one or empty"
+
+msgid "The selected time period is invalid"
+msgstr "The selected time period is invalid"
+
+msgid "A request for overtime must be submitted within %limit% days"
+msgstr "A request for overtime must be submitted within %limit% days"
+
+msgid "Warning: Requests for overtime must be filed within %limit% days.\nAs an administrator, you can override this rule.\nDo you want to continue ?"
+msgstr "Warning: Requests for overtime must be filed within %limit% days.\nAs an administrator, you can override this rule.\nDo you want to continue ?"
+
+msgid "The request must be submitted within %limit% days"
+msgstr "The request must be submitted within %limit% days"
+
+msgid "Model name"
+msgstr "Model name"
+
+msgid "Save all week"
+msgstr "Save all week"
+
+msgid "Change to holiday policy"
+msgstr "Change to holiday policy"
+
+msgid "To calculate leave in days, you need to change the Conges-Recuperations setting to Dissocier."
+msgstr "To calculate leave in days, you need to change the \"Conges-Recuperations\" setting to \"Dissocier\"."
+
+msgid "Accept"
+msgstr "Accept"
+
+msgid "Cancel my change"
+msgstr "Cancel my change"
+
+msgid "Modification of the number of weeks"
+msgstr "Modification of the number of weeks"
+
+msgid "Selecting more than three weeks requires checking the PlanningHebdo option."
+msgstr "Selecting more than three weeks requires checking the \"PlanningHebdo\" option."
+
+msgid "Modification of the minimum password length"
+msgstr "Modification of the minimum password length"
+
+msgid "The minimum value of characters for password change must be a number greater than or equal to 8."
+msgstr "The minimum value of characters for password change must be a number greater than or equal to 8."
+
+msgid "Login"
+msgstr "Login"
+
+msgid "The new login is identical to the previous one."
+msgstr "The new login is identical to the previous one."
+
+msgid "An error occurred while updating the login information."
+msgstr "An error occurred while updating the login information."
+
+msgid "This login already exists."
+msgstr "This login already exists."
+
+msgid "The login cannot be empty."
+msgstr "The login cannot be empty."
+
+msgid "The login is invalid."
+msgstr "The login is invalid."
+
+msgid "Working hours"
+msgstr "Working hours"
+
+msgid "Calendars and Synchronization"
+msgstr "Calendars and Synchronization"
+
+msgid "Days off"
+msgstr "Days off"
+
+msgid "Access rights"
+msgstr "Access rights"
+
+msgid "Yes"
+msgstr "Yes"
+
+msgid "No"
+msgstr "No"
+
+msgid "Saving a template (%date%)"
+msgstr "Saving a template (%date%)"
+
+msgid "Importing a template"
+msgstr "Importing a template"
+
+msgid "Import the "%name%" model"
+msgstr "Import the "%name%" model"
+
+msgid "A model with that name already exists"
+msgstr "A model with that name already exists"
+
+msgid "Would you like to replace it"
+msgstr "Would you like to replace it"
+
+msgid "Import absent agents"
+msgstr "Import absent agents"
+
+msgid "week"
+msgstr "week"
+
+msgid "Please note that the current schedule will be replaced by the new model"
+msgstr "Please note that the current schedule will be replaced by the new model"
+
+msgid "No models saved"
+msgstr "No models saved"
+
+msgid "Select the template to import"
+msgstr "Select the template to import"
+
+msgid "Delete the schedule"
+msgstr "Delete the schedule"
+
+msgid "Week"
+msgstr "Week"
+
+msgid "Day"
+msgstr "Day"
+
+msgid "Close"
+msgstr "Close"
+
+msgid "Validations"
+msgstr "Validations"
+
+msgid "Notifications"
+msgstr "Notifications"
+
+msgid "Select the managers who are authorized to approve absences and leave requests for the selected employees.<br/>Check the box if they should be notified when a new absence or leave request is submitted."
+msgstr "Select the managers who are authorized to approve absences and leave requests for the selected employees.<br/>Check the box if they should be notified when a new absence or leave request is submitted."
+
+msgid "Level 1 Validation"
+msgstr "Level 1 Validation"
+
+msgid "Level 2 Validation"
+msgstr "Level 2 Validation"
+
+msgid "Manager"
+msgstr "Manager"
+
+msgid "Notify"
+msgstr "Notify"
+
+msgid "My office hours"
+msgstr "My office hours"
+
+msgid "My credits"
+msgstr "My credits"
+
+msgid "ICS Calendars"
+msgstr "ICS Calendars"
+
+msgid "My password"
+msgstr "My password"
+
+msgid "Do you want to delete the schedule for the day %day% or for the week (from %first_day_week% to %last_day_week%)"
+msgstr "Do you want to delete the schedule for the day %day% or for the week (from %first_day_week% to %last_day_week%)"
+
+msgid "Are you sure you want to delete the schedule for %day%"
+msgstr "Are you sure you want to delete the schedule for %day%"
+
+msgid "Are you sure you want to delete the schedule for the week (%start% to %end%)"
+msgstr "Are you sure you want to delete the schedule for the week (%start% to %end%)"
+
+msgid "This event only"
+msgstr "This event only"
+
+msgid "This event and the following ones"
+msgstr "This event and the following ones"
+
+msgid "All events"
+msgstr "All events"
+
+msgid "Schedule"
+msgstr "Schedule"
+
+msgid "Lines"
+msgstr "Lines"
+
+msgid "Back"
+msgstr "Back"

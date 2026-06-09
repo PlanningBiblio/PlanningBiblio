@@ -8,30 +8,56 @@
     <!--	Menu	-->
     <h3>Mon Compte</h3>
 
-    <div class='ui-tabs'>
-      <ul>
+    <div class="container-tabs">
+      <ul class="nav nav-tabs" role="tablist">
+
         {% if config('PlanningHebdo') %}
-          <li><a href='#working_hours'>Mes heures de présence</a></li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="working_hours-tab" data-bs-toggle="tab" data-bs-target="#working_hours" type="button" role="tab" aria-controls="working_hours" aria-selected="true">
+              {% trans %}My office hours{% endtrans %}
+            </button>
+          </li>
         {% endif %}
+
         {% if config('Conges-Enable') %}
-          <li><a href='#credits'>Mes crédits</a></li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="credits-tab" data-bs-toggle="tab" data-bs-target="#credits" type="button" role="tab" aria-controls="credits" aria-selected="false">
+              {% trans %}My credits{% endtrans %}
+            </button>
+          </li>
         {% endif %}
-        {% if ics %}
-          <li><a href='#ics'>Agendas ICS</a></li>
+
+         {% if ics %}
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="ics-tab" data-bs-toggle="tab" data-bs-target="#ics" type="button" role="tab" aria-controls="ics" aria-selected="false">
+              {% trans %}ICS Calendars{% endtrans %}
+            </button>
+          </li>
         {% endif %}
-        <li><a href='#motDePasse'>Mon mot de passe</a></li>
+
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="motDePasse-tab" data-bs-toggle="tab" data-bs-target="#motDePasse" type="button" role="tab" aria-controls="motDePasse" aria-selected="false">
+            {% trans %}My password{% endtrans %}
+          </button>
+        </li>
       </ul>
+
+      <div class="tab-content">
+
       {% if config('PlanningHebdo') %}
         <!-- Working hours -->
-        <div id='working_hours'>
-          <div style='display: inline-block; width:300px;'>
-            <h3>Heures de présence</h3>
-          </div>
-          {% if config('PlanningHebdo-Agents') %}
-            <div style='display: inline-block; width:300px; position: absolute; right: 22px; text-align: right; margin-top:22px;'>
-              <a href="{{ asset ('workinghour/add') }}?retour=/myaccount" class='ui-button ui-button-type1' style="color:#29495C;">Entrer de nouveaux horaires</a>
+        <div class="tab-pane fade show active m-4" id="working_hours" role="tabpanel" aria-labelledby="working_hours-tab" tabindex="0">
+          <div class="row">
+            <div class="col">
+              <h3>Heures de présence</h3>
             </div>
-          {% endif %}
+            {% if config('PlanningHebdo-Agents') %}
+              <div class="col" style="text-align: end;">
+                <a role="button" href="{{ asset ('workinghour/add') }}?retour=/myaccount" class="btn btn-primary">Entrer de nouveaux horaires</a>
+              </div>
+            {% endif %}
+          </div>
+
           <!-- Working hours history -->
           <div id='historique'>
             <br/>
@@ -68,9 +94,10 @@
           </div> <!-- Historique' -->
         </div> <!-- working_hours -->
       {% endif %}
+      
       {% if config('Conges-Enable') %}
         <!-- Crédits -->
-        <div id='credits' style='margin-left:80px;display:none;'>
+        <div class="tab-pane fade m-4" id="credits" role="tabpanel" aria-labelledby="credits-tab" tabindex="0">
           <h3>Crédits</h3>
           <table class='tableauFiches'>
             <tr>
@@ -83,9 +110,11 @@
                   {{ credits.annuel }}
                 </td>
               {% endif %}
+              {% if config('Conges-Mode') == 'jours' or show_hours_to_days %}
               <td style='text-align:right;'>
-                {{ credits.joursAnnuel }} jours
+                {{ credits.joursAnnuel }}
               </td>
+              {% endif %}
             </tr>
             <tr>
               <td>Crédit restant</td>
@@ -94,9 +123,12 @@
                   {{ credits.conges }}
                 </td>
               {% endif %}
-              <td style='text-align:right;'>
-                {{ credits.joursConges }} jours
-              </td>
+
+              {% if config('Conges-Mode') == 'jours' or show_hours_to_days %}
+                <td style='text-align:right;'>
+                  {{ credits.joursConges }}
+                </td>
+              {% endif %}
             </tr>
             <tr>
               <td>Reliquat</td>
@@ -105,9 +137,11 @@
                   {{ credits.reliquat }}
                 </td>
               {% endif %}
-              <td style='text-align:right;'>
-                {{ credits.joursReliquat}} jours
-              </td>
+              {% if config('Conges-Mode') == 'jours' or show_hours_to_days %}
+                <td style='text-align:right;'>
+                  {{ credits.joursReliquat}}
+                </td>
+              {% endif %}
             </tr>
             <tr>
               <td>Solde débiteur</td>
@@ -116,9 +150,11 @@
                   {{ credits.anticipation }}
                 </td>
                {% endif %}
-               <td style='text-align:right;'>
-                 {{ credits.joursAnticipation }} jours
-               </td>
+               {% if config('Conges-Mode') == 'jours' or show_hours_to_days %}
+                 <td style='text-align:right;'>
+                   {{ credits.joursAnticipation }}
+                 </td>
+               {% endif %}
             </tr>
             <tr>
               <td style='font-weight:bold;padding-top:20px;' colspan='2'>Récupérations</td>
@@ -130,31 +166,37 @@
               </td>
             </tr>
           </table>
-          <p style='font-style:italic;margin:30px 0 0 10px;'>Le nombre de jours est calculé sur la base de 7 heures par jour.</p>
+          {% if show_hours_to_days %}
+            <p style='font-style:italic;margin:30px 0 0 10px;'>Le nombre de jours est calculé sur la base de {{ hours_per_day }} heures par jour.</p>
+          {% endif %}
         </div>
       <!-- Crédits-->
       {% endif %}
+
       <!-- Mot de Passe -->
-      <div id='motDePasse' style='margin-left:80px;display:none;'>
+      <div class="tab-pane fade m-4" id="motDePasse" role="tabpanel" aria-labelledby="motDePasse-tab" tabindex="0">
         <h3>Changement de mot de passe</h3>
         {% include 'agents/elements/change_password_div.html.twig' %}
       </div> <!-- motDePasse -->
+
       <!-- Agendas ICS -->
-      <div id='ics' style='margin-left:80px;display:none;'>
+      <div class="tab-pane fade m-4" id="ics" role="tabpanel" aria-labelledby="ics-tab" tabindex="0">
         <h3>Agendas ICS</h3>
         <p>
           <ul>
             <li>Agenda des plages de service public : 
-              <span id='urlIcs'><a style="color:#29495C;" href='{{ config('URL') }}{{ ics | raw }}'>{{ config('URL') }}{{ ics | raw }}</a></span>
+              <span id='urlIcs'><a style="color:#29495C;" href='{{ config('URL') }}{{ ics }}'>{{ config('URL') }}{{ ics }}</a></span>
             </li>
             <li>Agenda des plages de service public et des absences : 
-              <span id='urlIcsWithAbsences'><a style="color:#29495C;" href='{{ config('URL') }}{{ ics | raw }}&absences=1'>{{ config('URL') }}{{ ics | raw }}&absences=1</a></span>
+              <span id='urlIcsWithAbsences'><a style="color:#29495C;" href='{{ config('URL') }}{{ ics }}&absences=1'>{{ config('URL') }}{{ ics }}&absences=1</a></span>
             </li>
           </ul>
           {% if config('ICS-Code') %}
-          <br/><a style="font-size: 15px;margin-top: 30px; color:#29495C;" href="javascript:resetICSURL({{ login.id }}, '{{ CSRFSession }}' );"> Réinitialiser les URL</a>
+          <br/><a style="font-size: 15px;margin-top: 30px; color:#29495C;" href="javascript:resetICSURL({{ login.id }});"> Réinitialiser les URL</a>
           {% endif %}
         </p>
       </div> <!-- Agendas ICS -->
-    </div> <!-- ui-tabs -->
+
+      </div> <!-- tab-content -->
+    </div> <!-- nav-tabs -->
 {% endblock %}

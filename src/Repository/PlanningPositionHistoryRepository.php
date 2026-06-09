@@ -4,7 +4,7 @@ namespace App\Repository;
 
 use Doctrine\ORM\EntityRepository;
 
-use App\Model\PlanningPositionHistory;
+use App\Entity\PlanningPositionHistory;
 
 class PlanningPositionHistoryRepository extends EntityRepository
 {
@@ -23,7 +23,7 @@ class PlanningPositionHistoryRepository extends EntityRepository
             ->findBy($filter);
 
         foreach ($history as $action) {
-            $action->archive(1);
+            $action->setArchive(true);
             $entityManager->persist($action);
         }
 

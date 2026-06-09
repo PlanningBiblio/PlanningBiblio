@@ -71,6 +71,8 @@
 -- UPDATE config SET type='boolean' WHERE nom='ICS-Export';
 -- -- Autoriser l’ajout de serveur LDAP
 -- UPDATE config SET type='text' WHERE nom='LDAP-Host';
+-- -- Autoriser l’import LDIF
+-- UPDATE config SET type='text' WHERE nom='LDIF-File';
 -- -- Autoriser les modification de paramètres de messagerie
 -- UPDATE config SET type='boolean' WHERE nom='Mail-IsEnabled';
 -- UPDATE config SET type='enum' WHERE nom='Mail-IsMail-IsSMTP';
@@ -91,7 +93,8 @@
 -- UPDATE config SET type='boolean' WHERE nom='hres4semaines';
 -- UPDATE config SET type='boolean' WHERE nom='ClasseParService';
 -- UPDATE config SET type='boolean' WHERE nom='Planning-Absences-Heures-Hebdo';
--- UPDATE config SET type='boolean' WHERE nom='Planning-Notifications';
+-- UPDATE config SET type='enum2', valeur='-2' WHERE nom='Planning-InitialNotification';
+-- UPDATE config SET type='enum2', valeur='-2' WHERE nom='Planning-ChangeNotification';
 -- UPDATE config SET type='boolean' WHERE nom='Planning-TableauxMasques';
 -- UPDATE config SET type='boolean' WHERE nom='Planning-AppelDispo';
 -- UPDATE config SET type='boolean' WHERE nom='Planning-agents-volants';

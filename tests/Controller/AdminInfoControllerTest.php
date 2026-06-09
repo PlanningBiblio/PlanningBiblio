@@ -1,53 +1,41 @@
 <?php
 
-use App\Model\Agent;
-use App\Model\AdminInfo;
-
+use App\Entity\Agent;
+use App\Entity\AdminInfo;
 use Symfony\Component\DomCrawler\Crawler;
-
 use Tests\PLBWebTestCase;
 use Tests\FixtureBuilder;
 
-
-
 class AdminInfoControllerTest extends PLBWebTestCase
 {
-    public function testAdd()
+    public function testAdd(): void
     {
-        $entityManager = $this->entityManager;
-
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
         $builder->delete(AdminInfo::class);
-        
 
         $this->logInAgent($agent, array(23));
 
-        $token = $this->client->getContainer()->get('security.csrf.token_manager')->getToken('');
+        $crawler = $this->client->request('GET', '/admin/info/add');
+        $extract_result = $crawler->filter('#form input[name="_token"]')->extract(array('value'));
+        $token = $extract_result[0];
 
         $this->client->request('POST', '/admin/info', array('start' => '05/10/2021', 'end' => '10/10/2021', 'text' => 'salut', '_token' => $token));
-        
 
-        $info = $entityManager->getRepository(AdminInfo::class)->findOneBy(array('debut' => '20211005', 'fin' => '20211010'));
+        $info = $this->entityManager->getRepository(AdminInfo::class)->findOneBy(array('debut' => '20211005', 'fin' => '20211010'));
 
+        $this->assertEquals('salut', $info->getComment(), 'info texte is salut');
 
-        $this->assertEquals('salut', $info->texte(), 'info texte is salut');
-        
-        $this->assertEquals('20211005', $info->debut(), 'debut is 20211005');
-        $this->assertEquals('20211010', $info->fin(), 'fin is 20211010');
-    
-
+        $this->assertEquals('20211005', $info->getStart(), 'debut is 20211005');
+        $this->assertEquals('20211010', $info->getEnd(), 'fin is 20211010');
     }
 
-    public function testNewForm()
+    public function testNewForm(): void
     {
-        $entityManager = $this->entityManager;
-
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
-        
 
         $this->logInAgent($agent, array(23));
 
@@ -56,8 +44,7 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $this->assertSelectorTextContains('h3', 'Messages d\'information');
 
         $this->assertSelectorTextContains('h4', 'Ajout d\'une information');
- 
-        
+
         $crawler = new Crawler();
         $crawler = $this->client->request('GET', '/admin/info/add');
 
@@ -70,53 +57,49 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $result = $crawler->filter('label')->eq(2);
         $this->assertEquals($result->text('Node does not exist', false), 'Texte','label 3 is Texte');
 
-        $class = $crawler->filterXPath('//a[@class="ui-button ui-button-type2"]');
-        $this->assertEquals($class->attr('href'),'/admin/info','href a>span>Annuler is admin/info');
+        $class = $crawler->filterXPath('//a[@class="btn btn-secondary"]');
+        $this->assertEquals($class->attr('href'),'/admin/info','button href a>span>Annuler is admin/info');
 
-        $class = $crawler->filterXPath('//input[@class="ui-button ui-button-type1"]');
-        $this->assertEquals($class->attr('value'),'Valider','input submit value is Valider');
+        $class = $crawler->filterXPath('//input[@class="btn btn-primary"]');
+        $this->assertEquals($class->attr('value'),'Valider','input submit button value is Valider');
 
-        $result = $crawler->filterXPath('//input[@class="datepicker"]')->eq(0);
+        $result = $crawler->filterXPath('//input[contains(@class, "start-date")]');
         $this->assertEquals($result->attr('name'),'start','input datepicker name is start');
 
-        $result = $crawler->filterXPath('//input[@class="datepicker"]')->eq(1);
+        $result = $crawler->filterXPath('//input[contains(@class, "end-date")]');
         $this->assertEquals($result->attr('name'),'end','input datepicker name is end');
 
         $result = $crawler->filterXPath('//textarea');
         $this->assertEquals($result->attr('name'),'text','textarea name is texte');
     }
 
-    public function testFormEdit()
+    public function testFormEdit(): void
     {
-        $entityManager = $this->entityManager;
-
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
         $builder->delete(AdminInfo::class);
-        
 
         $this->logInAgent($agent, array(23));
 
         $info = new AdminInfo();
-        $info->debut('20221005');
-        $info->fin('20221010');
-        $info->texte('salut');
+        $info->setStart('20221005');
+        $info->setEnd('20221010');
+        $info->setComment('salut');
 
-        $entityManager->persist($info);
-        $entityManager->flush();
+        $this->entityManager->persist($info);
+        $this->entityManager->flush();
 
-        $id = $info->id();
-        
+        $id = $info->getId();
+
         $crawler = $this->client->request('GET', "/admin/info/$id");
 
         $this->assertSelectorTextContains('h3', 'Messages d\'information');
 
-
         $this->assertSelectorTextContains('h4', 'Modifications des messages d\'informations');
 
         $this->assertSelectorTextContains('textarea', 'salut');
- 
+
         $result=$crawler->filter('label')->eq(0);
         $this->assertEquals($result->text('Node does not exist', false), 'Date de début','label 1 is Date de début');
 
@@ -126,8 +109,8 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $result = $crawler->filter('label')->eq(2);
         $this->assertEquals($result->text('Node does not exist', false), 'Texte','label 3 is Texte');
 
-        $class = $crawler->filterXPath('//input[@class="ui-button ui-button-type1"]');
-        $this->assertEquals($class->attr('value'),'Valider','input submit value is Valider');
+        $class = $crawler->filterXPath('//input[@class="btn btn-primary"]');
+        $this->assertEquals($class->attr('value'),'Valider','input submit button value is Valider');
 
         $class = $crawler->filterXPath('//input[@name="start"]');
         $this->assertEquals($class->attr('value'),'05/10/2022','input submit start is 05/10/2022');
@@ -135,8 +118,11 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $class = $crawler->filterXPath('//input[@name="end"]');
         $this->assertEquals($class->attr('value'),'10/10/2022','input submit end is 10/10/2022');
 
-        $class = $crawler->filterXPath('//a[@class="ui-button ui-button-type3"]');
-        $this->assertEquals($class->attr('href'),"javascript:deleteAdminInfo($id);",'href a>span>Annuler is admin/info');
+        $class = $crawler->filterXPath('//a[@class="btn btn-danger"]');
+        $this->assertEquals($class->attr('href'),"javascript:deleteAdminInfo($id);",'button value is Supprimer');
+
+        $class = $crawler->filterXPath('//a[@class="btn btn-secondary"]');
+        $this->assertEquals($class->attr('href'),'/admin/info','button href a>span>Annuler is admin/info');
 
     }
 }

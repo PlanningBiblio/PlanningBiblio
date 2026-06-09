@@ -1,13 +1,13 @@
 <?php
 
-use App\Model\Agent;
+use App\Entity\Agent;
 
 use Tests\PLBWebTestCase;
 use Tests\FixtureBuilder;
 
 class AuthorizationsControllerLoginFailedWait extends PLBWebTestCase
 {
-    public function testLoginFailedWait()
+    public function testLoginFailedWait(): void
     {
         $GLOBALS['config']['IPBlocker-Attempts'] = 3;
         $_SERVER['REMOTE_ADDR'] = '11.11.11.11';

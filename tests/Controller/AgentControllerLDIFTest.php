@@ -1,42 +1,24 @@
 <?php
 
-use App\Model\Agent;
-use App\Model\Manager;
-use App\Model\ConfigParam;
-
-use Tests\PLBWebTestCase;
+use App\Entity\Agent;
 use Tests\FixtureBuilder;
+use Tests\PLBWebTestCase;
 
 class AgentControllerLDIFTest extends PLBWebTestCase
 {
     protected function setUp(): void
     {
         parent::setUp();
-
         $this->builder->delete(Agent::class);
     }
 
-    protected function setParam($name, $value)
+    public function testLDIFImport(): void
     {
-        $GLOBALS['config'][$name] = $value;
-        $param = $this->entityManager
-            ->getRepository(ConfigParam::class)
-            ->findOneBy(['nom' => $name]);
-
-        $param->valeur($value);
-        $this->entityManager->persist($param);
-        $this->entityManager->flush();
-    }
-
-    public function testLDIFImport()
-    {
-        $this->setParam('LDIF-File', __DIR__ . '/../../data/ldif_sample.ldif');
-        $this->setParam('LDIF-ID-Attribute', 'uid');
-        $this->setParam('LDIF-Matricule', 'supannempid');
-        $this->setParam('Multisites-nombre', '1');
+        $this->config->setParam('LDIF-File', __DIR__ . '/../../data/ldif_sample.ldif');
+        $this->config->setParam('LDIF-ID-Attribute', 'uid');
+        $this->config->setParam('LDIF-Matricule', 'supannempid');
+        $this->config->setParam('Multisites-nombre', '1');
         $this->setUpPantherClient();
-
-        $this->builder->delete(Agent::class);
 
         $agent = $this->builder->build(Agent::class, array(
             'login' => 'kboivin', 'nom' => 'Boivin', 'prenom' => 'Karel',
@@ -58,6 +40,7 @@ class AgentControllerLDIFTest extends PLBWebTestCase
         $crawler->filter('input[name=searchTerm]')->sendKeys('@');
         $button = $crawler->selectButton('Rechercher');
         $button->click();
+        $this->client->waitFor('#tableAgentImport');
         $crawler = $this->client->refreshCrawler();
 
         // Check the table header
@@ -101,6 +84,7 @@ class AgentControllerLDIFTest extends PLBWebTestCase
         $result->eq(1)->click();
         $result->eq(2)->click();
         $crawler->selectButton('Importer')->click();
+        $this->client->waitFor('#tableAgentImport');
         $crawler = $this->client->refreshCrawler();
 
         // Check if there is only one person left in the table
@@ -153,7 +137,7 @@ class AgentControllerLDIFTest extends PLBWebTestCase
         );
         $this->assertEquals('sbrown20',
             $crawler->filter('#login')
-                ->text()
+                ->extract(array('value'))[0]
         );
 
         // Edit John's record
@@ -185,7 +169,7 @@ class AgentControllerLDIFTest extends PLBWebTestCase
         );
         $this->assertEquals('jdoe',
             $crawler->filter('#login')
-                ->text()
+                ->extract(array('value'))[0]
         );
 
     }

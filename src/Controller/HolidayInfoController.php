@@ -8,13 +8,11 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
-require_once(__DIR__ . '/../../public/conges/class.conges.php');
+require_once(__DIR__ . '/../../legacy/Class/class.conges.php');
 
 class HolidayInfoController extends BaseController
 {
-    /**
-     * @Route("/holiday-info", name="holiday_info.index", methods={"GET"})
-     */
+    #[Route(path: '/holiday-info', name: 'holiday_info.index', methods: ['GET'])]
     public function index(Request $request, Session $session)
     {
         $CSRFSession = $GLOBALS['CSRFSession'];
@@ -44,9 +42,7 @@ class HolidayInfoController extends BaseController
         return $this->output('holidayInfo/index.html.twig');
     }
 
-    /**
-     * @Route("/holiday-info/add", name="holiday_info.add", methods={"GET"})
-     */
+    #[Route(path: '/holiday-info/add', name: 'holiday_info.add', methods: ['GET'])]
     public function add(Request $request)
     {
         if(!$this->isAdmin()){
@@ -65,9 +61,7 @@ class HolidayInfoController extends BaseController
         return $this->output('holidayInfo/edit.html.twig');
     }
 
-    /**
-     * @Route("/holiday-info/{id}", name="holiday_info.edit", methods={"GET"})
-     */
+    #[Route(path: '/holiday-info/{id}', name: 'holiday_info.edit', methods: ['GET'])]
     public function edit(Request $request)
     {
         if(!$this->isAdmin()){
@@ -94,10 +88,8 @@ class HolidayInfoController extends BaseController
         return $this->output('holidayInfo/edit.html.twig');
     }
 
-    /**
-     * @Route("/holiday-info", name="holiday_info.update", methods={"POST"})
-     */
-    public function save(Request $request, Session $session)
+    #[Route(path: '/holiday-info', name: 'holiday_info.update', methods: ['POST'])]
+    public function save(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         if(!$this->isAdmin()){
             return $this->redirectToRoute('access-denied');
@@ -131,10 +123,8 @@ class HolidayInfoController extends BaseController
         return $this->redirectToRoute('holiday_info.index');
     }
 
-    /**
-     * @Route("/holiday-info", name="holiday_info.delete", methods={"DELETE"})
-     */
-    public function delete(Request $request, Session $session)
+    #[Route(path: '/holiday-info', name: 'holiday_info.delete', methods: ['DELETE'])]
+    public function delete(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         if(!$this->isAdmin()){
             return $this->redirectToRoute('access-denied');
@@ -152,7 +142,7 @@ class HolidayInfoController extends BaseController
         return $this->redirectToRoute('holiday_info.index');
     }
 
-    private function isAdmin()
+    private function isAdmin(): bool
     {
         $droits = $GLOBALS['droits'];
 

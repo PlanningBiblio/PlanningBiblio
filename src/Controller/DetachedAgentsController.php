@@ -8,14 +8,12 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
 
-require_once(__DIR__ . '/../../public/planning/volants/class.volants.php');
-require_once(__DIR__ . '/../../public/include/function.php');
+require_once(__DIR__ . '/../../legacy/Class/class.volants.php');
+require_once(__DIR__ . '/../../legacy/Common/function.php');
 
 class DetachedAgentsController extends BaseController
 {
-    /**
-     * @Route("/detached", name="detached.index", methods={"GET"})
-     */
+    #[Route(path: '/detached', name: 'detached.index', methods: ['GET'])]
     public function index(Request $request)
     {
         $date = $request->get('date');
@@ -61,10 +59,8 @@ class DetachedAgentsController extends BaseController
         return $this->output('detached/index.html.twig');
     }
 
-    /**
-     * @Route("/detached/add", name="detached.add", methods={"POST"})
-     */
-    public function add(Request $request)
+    #[Route(path: '/detached/add', name: 'detached.add', methods: ['POST'])]
+    public function add(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
     {
         $CSRFToken = $request->get('CSRFToken');
         $date = $request->get('date');

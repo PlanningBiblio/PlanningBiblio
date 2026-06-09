@@ -2,7 +2,7 @@
 // Remove HTML entities from absences and select_abs tables
 
 require_once(__DIR__ . '/../init/init.php');
-require_once(__DIR__ . '/../public/include/db.php');
+require_once(__DIR__ . '/../legacy/Common/db.php');
 
 
 $tables = array(

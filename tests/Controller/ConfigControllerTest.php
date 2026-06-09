@@ -1,13 +1,13 @@
 <?php
 
-use App\Model\Agent;
+use App\Entity\Agent;
 
 use Tests\PLBWebTestCase;
 use Tests\FixtureBuilder;
 
 class ConfigControllerTest extends PLBWebTestCase
 {
-    public function testAccessWithNonLoggedIn() {
+    public function testAccessWithNonLoggedIn(): void {
         $this->client->request('GET', '/config');
 
         $response = $this->client->getResponse()->getContent();
@@ -21,7 +21,7 @@ class ConfigControllerTest extends PLBWebTestCase
 
     }
 
-    public function testAccessWithAuthorizedUser() {
+    public function testAccessWithAuthorizedUser(): void {
 
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
@@ -33,12 +33,12 @@ class ConfigControllerTest extends PLBWebTestCase
 
         $response = $this->client->getResponse()->getContent();
         $this->assertMatchesRegularExpression(
-            '/<h3>Configuration<\/h3>/',
+            '/<h3>Configuration fonctionnelle<\/h3>/',
             $response
         );
 
         $this->assertMatchesRegularExpression(
-            '/<span> Divers<\/span>/',
+            '/<button class="accordion-button collapsed".*>\n *Divers\n *<\/button>/',
             $response
         );
     }

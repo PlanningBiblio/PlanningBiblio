@@ -1,123 +1,66 @@
 <?php
+// TODO: Voir les fonctions créées pas Xinying dans AgentRepository
 
 namespace App\Controller;
 
 use App\Controller\BaseController;
-use App\PlanningBiblio\Event\OnTransformLeaveDays;
-use App\PlanningBiblio\Event\OnTransformLeaveHours;
-use App\PlanningBiblio\Helper\HolidayHelper;
-use App\PlanningBiblio\Helper\HourHelper;
-use App\PlanningBiblio\Ldif2Array;
 
-use App\Model\Agent;
+use App\Entity\Access;
+use App\Entity\Agent;
+use App\Entity\Holiday;
+use App\Entity\Manager;
+use App\Entity\PlanningPosition;
+use App\Entity\SaturdayWorkingHours;
+use App\Entity\SelectCategories;
+use App\Entity\SelectStatus;
+use App\Entity\SelectServices;
+use App\Entity\Skill;
+use App\Entity\WorkingHour;
 
+use App\Planno\Event\OnTransformLeaveDays;
+use App\Planno\Event\OnTransformLeaveHours;
+use App\Planno\Helper\HolidayHelper;
+use App\Planno\Helper\HourHelper;
+use App\Planno\Ldif2Array;
+
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
 
-require_once(__DIR__ . "/../../public/personnel/class.personnel.php");
-require_once(__DIR__ . "/../../public/activites/class.activites.php");
-require_once(__DIR__ . "/../../public/planningHebdo/class.planningHebdo.php");
-require_once(__DIR__ . "/../../public/conges/class.conges.php");
-require_once(__DIR__ . "/../../public/ldap/class.ldap.php");
+require_once(__DIR__ . '/../../legacy/Class/class.personnel.php');
+require_once(__DIR__ . '/../../legacy/Class/class.activites.php');
+require_once(__DIR__ . '/../../legacy/Class/class.planningHebdo.php');
+require_once(__DIR__ . '/../../legacy/Class/class.conges.php');
+require_once(__DIR__ . '/../../legacy/Class/class.ldap.php');
 
 class AgentController extends BaseController
 {
 
-    /**
-     * @Route("/agent", name="agent.index", methods={"GET"})
-     */
-    public function index(Request $request){
-
-        $actif = $request->get('actif');
+    #[Route(path: '/agent', name: 'agent.index', methods: ['GET'])]
+    public function index(Request $request, Session $session)
+    {
+        $active = $request->get('actif');
         $lang = $GLOBALS['lang'];
         $droits = $GLOBALS['droits'];
-        $login_id = $_SESSION['login_id'];
 
         $ldapBouton = ($this->config('LDAP-Host') and $this->config('LDAP-Suffix'));
         $ldifBouton = ($this->config('LDIF-File'));
 
-        if (!$actif) {
-            $actif = isset($_SESSION['perso_actif']) ? $_SESSION['perso_actif'] : 'Actif';
-        }
+        $active = $active ? $active : $session->get('AgentActive', 'Actif');
+        $session->set('AgentActive', $active);
 
-        $_SESSION['perso_actif'] = $actif;
+        // Mark agents as deleted when their depart date is past today
+        $this->entityManager->getRepository(Agent::class)->updateAsDeletedByDepartDate();
 
-        //        Suppression des agents dont la date de départ est passée        //
-        $tab = array(0);
-        $db = new \db();
-        $db->CSRFToken = $GLOBALS['CSRFSession'];
-        $db->update('personnel', array('supprime'=>'1', 'actif'=>'Supprim&eacute;'), "`depart`<CURDATE() AND `depart`<>'0000-00-00' and `actif` NOT LIKE 'Supprim%'");
+        // List of activities, contracts, services and status for bulk modification
+        $activites = $this->entityManager->getRepository(Skill::class)->findAll();
+        $contrats = ['Titulaire', 'Contractuel'];
+        $services = $this->entityManager->getRepository(SelectServices::class)->findAll();
+        $statuts = $this->entityManager->getRepository(SelectStatus::class)->findAll();
 
-
-        $p = new \personnel();
-        $p->supprime = strstr($actif, "Supprim") ? array(1) : array(0);
-        $p->fetch("nom,prenom", $actif);
-        $agentsTab = $p->elements;
-
-        $nbSites = $this->config('Multisites-nombre');
-
-        $agents = array();
-        foreach ($agentsTab as $agent) {
-            $elem = [];
-            $id = $agent['id'];
-
-            $arrivee = dateFr($agent['arrivee']);
-            $depart = dateFr($agent['depart']);
-            $last_login = date_time($agent['last_login']);
-            $heures = $agent['heures_hebdo'] ? $agent['heures_hebdo'] : null;
-            $heures = heure4($heures);
-            if (is_numeric($heures)) {
-                $heures.= "h00";
-            }
-            $agent['service'] = str_replace("`", "'", $agent['service']);
-
-            $sites = $agent['sites'];
-
-            if ($nbSites > 1) {
-                $tmp = array();
-                if (!empty($agent['sites'])) {
-                    foreach ($agent['sites'] as $site) {
-                        if ($site) {
-                            $tmp[] = $this->config("Multisites-site{$site}");
-                        }
-                    }
-                }
-                $sites = !empty($tmp)?implode(", ", $tmp):null;
-            }
-
-            $elem = array(
-                'id' => $id,
-                'name' => $agent['nom'],
-                'surname' => $agent['prenom'],
-                'departure' => $depart,
-                'arrival' => $arrivee,
-                'status' => $agent['statut'],
-                'service' => $agent['service'],
-                'hours' => $heures,
-                'last_login' => $last_login,
-                'sites' => $sites,
-            );
-            $agents[]= $elem;
-        }
-
-        $db = new \db();
-        $db->select2("select_statuts", null, null, "order by rang");
-        $statuts = $db->result;
-
-        $contrats = array("Titulaire","Contractuel");
-
-        // Liste des services
-        $services = array();
-        $db = new \db();
-        $db->select2("select_services", null, null, "ORDER BY `rang`");
-        if ($db->result) {
-            foreach ($db->result as $elem) {
-                $services[]=$elem;
-            }
-        }
-
+        // Hours for bulk modification
         $hours = array();
         for ($i = 1 ; $i < 40; $i++) {
             if ($this->config('Granularite') == 5) {
@@ -146,380 +89,115 @@ class AgentController extends BaseController
             }
         }
 
-        // Toutes les activités
-        $a = new \activites();
-        $a->fetch();
-        $activites = $a->elements;
-
-        $postes_completNoms = array();
+        // Skills for bulk modification
+        $skillsAllWithName = [];
         foreach ($activites as $elem) {
-            $postes_completNoms[] = array($elem['nom'],$elem['id']);
+            $skillsAllWithName[] = [$elem->getName(), $elem->getId()];
         }
-        $postes_completNoms_json = json_encode($postes_completNoms);
 
-        $this->templateParams(array(
-            "agents"                 => $agents,
-            "actif"                  => $actif,
-            "contracts"              => $contrats,
-            "hours"                  => $hours,
-            "lang"                   => $lang,
-            "ldapBouton"             => $ldapBouton,
-            "ldifBouton"             => $ldifBouton,
-            "login_id"               => $login_id,
-            "nbSites"                => $nbSites,
-            "positionsCompleteNames" => $postes_completNoms_json,
-            "rights21"               => in_array(21, $droits),
-            "services"               => $services,
-            "skills"                 => $activites,
-            "status"                 => $statuts
+        // Get all agents
+        $agents = $this->entityManager->getRepository(Agent::class)->get($active);
 
-        ));
+        $this->templateParams([
+            'active'            => $active,
+            'agents'            => $agents,
+            'contracts'         => $contrats,
+            'hours'             => $hours,
+            'lang'              => $lang,
+            'ldapBouton'        => $ldapBouton,
+            'ldifBouton'        => $ldifBouton,
+            'loginId'           => $session->get('loginId'),
+            'rights21'          => in_array(21, $droits),
+            'services'          => $services,
+            'skills'            => $activites,
+            'skillsAllWithName' => json_encode($skillsAllWithName),
+            'status'            => $statuts
+        ]);
+
         return $this->output('/agents/index.html.twig');
     }
 
-    /**
-     * @Route("/agent/password", name="agent.password", methods={"GET"})
-     */
+    #[Route(path: '/agent/password', name: 'agent.password', methods: ['GET'])]
     public function password(Request $request)
     {
+        $canChangePassword = true;
+
+        if ($_SESSION['oups']['Auth-Mode'] == 'CAS'
+            or ($this->config('Auth-Mode') == 'LDAP' and $perso_id != 1))
+        {
+            $canChangePassword = false;
+        }
+
+        $this->templateParams([
+            'canChangePassword' => $canChangePassword,
+        ]);
+
         return $this->output('/agents/password.html.twig');
     }
 
-    /**
-     * @Route("/agent/add", name="agent.add", methods={"GET"})
-     * @Route("/agent/{id<\d+>}", name="agent.edit", methods={"GET"})
-     */
-    public function add(Request $request)
+    #[Route(path: '/agent/add', name: 'agent.add', methods: ['GET'])]
+    #[Route(path: '/agent/{id<\d+>}', name: 'agent.edit', methods: ['GET'])]
+    public function edit(Request $request, Session $session)
     {
-        $id = $request->get('id');
+        /**
+         * Global information
+         */
         $CSRFSession = $GLOBALS['CSRFSession'];
         $lang = $GLOBALS['lang'];
-        $currentTab = '';
-        global $temps;
-        global $breaktimes;
-
-        $actif = null;
         $droits = $GLOBALS['droits'];
-        $admin = in_array(21, $droits) ? true : false;
 
-        $db_groupes = new \db();
-        $db_groupes->select2("acces", array("groupe_id", "groupe", "categorie", "ordre"), "groupe_id not in (99,100)", "group by groupe");
-
-        // Tous les droits d'accés
-        $groupes = array();
-        if ($db_groupes->result) {
-            foreach ($db_groupes->result as $elem) {
-                if (empty($elem['categorie'])) {
-                    $elem['categorie'] = 'Divers';
-                    $elem['ordre'] = '200';
-                }
-                $groupes[$elem['groupe_id']] = $elem;
-            }
-        }
-
-        uasort($groupes, 'cmp_ordre');
-
-        // PlanningHebdo et EDTSamedi étant incompatibles, EDTSamedi est désactivé
-        // si PlanningHebdo est activé
+        // PlanningHebdo et EDTSamedi étant incompatibles, EDTSamedi est désactivé si PlanningHebdo est activé
         if ($this->config('PlanningHebdo')) {
             $this->config('EDTSamedi', 0);
         }
 
-        // Si multisites, les droits de gestion des absences,
-        // congés et modification planning dépendent des sites :
-        // on les places dans un autre tableau pour simplifier l'affichage
-        $groupes_sites = array();
-
-        if ($this->config('Multisites-nombre') > 1) {
-            for ($i = 2; $i <= 10; $i++) {
-
-                // Exception, groupe 701 = pas de gestion multisites (pour le moment)
-                if ($i == 7) {
-                    continue;
-                }
-
-                $groupe = ($i * 100) + 1 ;
-                if (array_key_exists($groupe, $groupes)) {
-                    $groupes_sites[] = $groupes[$groupe];
-                    unset($groupes[$groupe]);
-                }
-            }
-        }
-
-        uasort($groupes_sites, 'cmp_ordre');
-
-
-        $db = new \db();
-        $db->select2("select_statuts", null, null, "order by rang");
-        $statuts = $db->result;
-        $db = new \db();
-        $db->select2("select_categories", null, null, "order by rang");
-        $categories = $db->result;
-        $db = new \db();
-        $db->select2("personnel", "statut", null, "group by statut");
-        $statuts_utilises = array();
-        if ($db->result) {
-            foreach ($db->result as $elem) {
-                $statuts_utilises[] = $elem['statut'];
-            }
-        }
-
-        // Liste des services
-        $services = array();
-        $db = new \db();
-        $db->select2("select_services", null, null, "ORDER BY `rang`");
-        if ($db->result) {
-            foreach ($db->result as $elem) {
-                $services[] = $elem;
-            }
-        }
-
-        // Liste des services utilisés
-        $services_utilises = array();
-        $db = new \db();
-        $db->select2('personnel', 'service', null, "GROUP BY `service`");
-        if ($db->result) {
-            foreach ($db->result as $elem) {
-                $services_utilises[] = $elem['service'];
-            }
-        }
-
-        $acces = array();
-        $postes_attribues = array();
-        $recupAgents = array("Prime","Temps");
-
-        // récupération des infos de l'agent en cas de modif
-        $ics = null;
-        if ($id) {
-            $db = new \db();
-            $db->select2("personnel", "*", array("id"=>$id));
-            $actif = $db->result[0]['actif'];
-            $nom = $db->result[0]['nom'];
-            $prenom = $db->result[0]['prenom'];
-            $mail = $db->result[0]['mail'];
-            $statut = $db->result[0]['statut'];
-            $categorie = $db->result[0]['categorie'];
-            $check_hamac = $db->result[0]['check_hamac'];
-            $mSGraphCheck = $db->result[0]['check_ms_graph'];
-            $check_ics = json_decode($db->result[0]['check_ics'], true);
-            $service = $db->result[0]['service'];
-            $heuresHebdo = $db->result[0]['heures_hebdo'];
-            $heuresTravail = $db->result[0]['heures_travail'];
-            $arrivee = dateFr($db->result[0]['arrivee']);
-            $depart = dateFr($db->result[0]['depart']);
-            $login = $db->result[0]['login'];
-            $breaktimes = array();
-            if ($this->config('PlanningHebdo')) {
-                $p = new \planningHebdo();
-                $p->perso_id = $id;
-                $p->debut = date("Y-m-d");
-                $p->fin = date("Y-m-d");
-                $p->valide = true;
-                $p->fetch();
-                if (!empty($p->elements)) {
-                    $temps = $p->elements[0]['temps'];
-                    $breaktimes = $p->elements[0]['breaktime'] ?? array();
-                } else {
-                    $temps = array();
-                }
-            } else {
-                $temps = json_decode(html_entity_decode($db->result[0]['temps'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
-                if (!is_array($temps)) {
-                    $temps = array();
-                }
-            }
-            // Decimal breaktime to time (H:i).
-            foreach ($breaktimes as $index => $time) {
-                $breaktimes[$index] = $breaktimes[$index]
-                    ? gmdate('H:i', floor($breaktimes[$index] * 3600)) : '';
-            }
-
-            $postes_attribues = json_decode(html_entity_decode($db->result[0]['postes'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
-            if (is_array($postes_attribues)) {
-                sort($postes_attribues);
-            }
-            $acces = json_decode(html_entity_decode($db->result[0]['droits'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
-            $matricule = $db->result[0]['matricule'];
-            $url_ics = $db->result[0]['url_ics'];
-            $mailsResponsables = explode(";", html_entity_decode($db->result[0]['mails_responsables'], ENT_QUOTES|ENT_IGNORE, "UTF-8"));
-            // $mailsResponsables : html_entity_decode necéssaire sinon ajoute des espaces après les accents ($mailsResponsables=implode("; ",$mailsResponsables);)
-            $informations = stripslashes($db->result[0]['informations']);
-            $recup = stripslashes($db->result[0]['recup']);
-            $sites = html_entity_decode($db->result[0]['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
-            $sites = $sites?json_decode($sites, true):array();
-            $action = "modif";
-            $titre = $nom." ".$prenom;
-
-            // URL ICS
-            if ($this->config('ICS-Export')) {
-                $p = new \personnel();
-                $p->CSRFToken = $CSRFSession;
-                $ics = $p->getICSURL($id);
-            }
-        } else {// pas d'id, donc ajout d'un agent
-            $id = null;
-            $nom = null;
-            $prenom = null;
-            $mail = null;
-            $statut = null;
-            $categorie = null;
-            $check_hamac = 0;
-            $mSGraphCheck = 0;
-            $check_ics = array(0,0,0);
-            $service = null;
-            $heuresHebdo = null;
-            $heuresTravail = null;
-            $arrivee = null;
-            $depart = null;
-            $login = null;
-            $temps = null;
-            $postes_attribues = array();
-            $access = array();
-            $matricule = null;
-            $url_ics = null;
-            $mailsResponsables = array();
-            $informations = null;
-            $recup = null;
-            $sites = array();
-            $titre = "Ajout d'un agent";
-            $action = "ajout";
-            if ($_SESSION['perso_actif'] and $_SESSION['perso_actif']!="Supprim&eacute;") {
-                $actif = $_SESSION['perso_actif'];
-            }// vérifie dans quel tableau on se trouve pour la valeur par défaut
-        }
-
-        $jours = array("Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche");
-        $contrats = array("Titulaire","Contractuel");
-
-        //        --------------        Début listes des activités        ---------------------//
-        // Toutes les activités
-        $a = new \activites();
-        $a->fetch();
-        $activites = $a->elements;
-
-        $postes_complet = array();
-        $postes_completNoms = array();
-
-        foreach ($activites as $elem) {
-            $postes_completNoms[] = array($elem['nom'],$elem['id']);
-            $postes_complet[] = $elem['id'];
-        }
-
-        // les activités non attribuées (disponibles)
-        $postes_dispo = array();
-        if ($postes_attribues) {
-            $postes = implode(",", $postes_attribues);    //    activités attribuées séparées par des virgules (valeur transmise à valid.php)
-            foreach ($postes_complet as $elem) {
-                if (!in_array($elem, $postes_attribues)) {
-                    $postes_dispo[] = $elem;
-                }
-            }
-        } else {
-            //activités attribuées séparées par des virgules (valeur transmise à valid.php)
-            $postes = "";
-            $postes_dispo = $postes_complet;
-        }
-
-        // traduction en JavaScript du tableau postes_completNoms
-        // pour les fonctions seltect_add* et select_drop
-        $postes_completNoms_json = json_encode($postes_completNoms);
-        $this->templateParams(array(
-            'postes_completNoms_json' => $postes_completNoms_json
-        ));
-
-        // Ajout des noms dans les tableaux postes attribués et dispo
-        function postesNoms($postes, $tab_noms)
-        {
-            $tmp = array();
-            if (is_array($postes)) {
-                foreach ($postes as $elem) {
-                    if (is_array($tab_noms)) {
-                        foreach ($tab_noms as $noms) {
-                            if ($elem==$noms[1]) {
-                                $tmp[] = array($elem,$noms[0]);
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-            usort($tmp, "cmp_1");
-            return $tmp;
-        }
-        $postes_attribues = postesNoms($postes_attribues, $postes_completNoms);
-        $postes_dispo = postesNoms($postes_dispo, $postes_completNoms);
-
-        $this->templateParams(array(
-            'demo'              => empty($this->config('demo')) ? 0 : 1,
-            'can_manage_agent'  => in_array(21, $droits) ? 1 : 0,
-            'titre'             => $titre,
-            'conges_enabled'    => $this->config('Conges-Enable'),
-            'conges_mode'       => $this->config('Conges-Mode'),
-            'multi_site'        => $this->config('Multisites-nombre') > 1 ? 1 : 0,
-            'nb_sites'          => $this->config('Multisites-nombre'),
-            'recup_agent'       => $this->config('Recup-Agent'),
-            'Hamac_csv'         => $this->config('Hamac-csv'),
-            'ICS_Server1'       => $this->config('ICS-Server1'),
-            'ICS_Server2'       => $this->config('ICS-Server2'),
-            'ICS_Server3'       => $this->config('ICS-Server3'),
-            'ICS_Code'          => $this->config('ICS-Code'),
-            'MSGraphConfig'     => !empty($_ENV['MS_GRAPH_CLIENT_ID']),
-            'MSGraphCheck'      => $mSGraphCheck,
-            'ics'               => $ics,
-            'CSRFSession'       => $CSRFSession,
-            'action'            => $action,
-            'id'                => $id,
-            'nom'               => $nom,
-            'prenom'            => $prenom,
-            'mail'              => $mail,
-            'statuts'           => $statuts,
-            'statut'            => $statut,
-            'statuts_utilises'  => $statuts_utilises,
-            'categories'        => $categories,
-            'login'             => $login,
-            'contrats'          => $contrats,
-            'categorie'         => $categorie,
-            'services'          => $services,
-            'services_utilises' => $services_utilises,
-            'service'           => $service,
-            'heures_hebdo'      => $heuresHebdo,
-            'heures_travail'    => $heuresTravail,
-            'actif'             => $actif,
-            'arrivee'           => $arrivee,
-            'depart'            => $depart,
-            'matricule'         => $matricule,
-            'mailsResponsables' => $mailsResponsables,
-            'mailsResp_joined'  => implode("; ", $mailsResponsables),
-            'informations'      => $informations,
-            'informations_str'  => str_replace("\n", "<br/>", strval($informations)),
-            'recup'             => $recup,
-            'recup_str'         => str_replace("\n", "<br/>", strval($recup)),
-            'recupAgents'       => $recupAgents,
-            'postes'            => $postes,
-            'postes_dispo'      => $postes_dispo,
-            'postes_attribues'  => $postes_attribues,
-        ));
-
-        $this->templateParams(array(
-            'lang_send_ics_url_subject' => $lang['send_ics_url_subject'],
-            'lang_send_ics_url_message' => $lang['send_ics_url_message'],
-        ));
+        $showAgendasAndSync = false;
         if ($this->config('ICS-Server1') or $this->config('ICS-Server2')
             or $this->config('ICS-Server3') or $this->config('ICS-Export')
             or $this->config('Hamac-csv')
-            or !empty($_ENV['MS_GRAPH_CLIENT_ID'])) {
-            $this->templateParams(array( 'agendas_and_sync' => 1 ));
+            or !empty($this->config('MSGraph-ClientID'))) {
+            $showAgendasAndSync = true;
         }
 
+        // Contract and comp'time fields
+        $contrats = ['Titulaire', 'Contractuel'];
+        $recupAgents = ['Prime', 'Temps'];
+
+        // Find access filtered by group id and dispatch groups by sites ("groupe_id" value doesn't equal 99 or 100).
+        $accessAll = $this->entityManager->getRepository(Access::class)->getAccessGroups(
+            $this->config['Multisites-nombre'],
+        );
+        extract($accessAll);
+
+        // Get all skills
+        $skillsAll = [];
+        $skillsAllWithName = [];
+
+        $skills = $this->entityManager->getRepository(Skill::class)->findAll();
+
+        foreach ($skills as $elem) {
+            $skillsAllWithName[] = [$elem->getName(), $elem->getId()];
+            $skillsAll[] = $elem->getId();
+        }
+
+        // Get all categories, services and statuses
+        $categories = $this->entityManager->getRepository(SelectCategories::class)->findAll();
+        $services = $this->entityManager->getRepository(SelectServices::class)->findAll();
+        $statuts = $this->entityManager->getRepository(SelectStatus::class)->findAll();
+
+        // Find the lists of distinct agent services and statuses.
+        $services_utilises = $this->entityManager->getRepository(Agent::class)->findDistinctServices();
+        $statuts_utilises = $this->entityManager->getRepository(Agent::class)->findDistinctStatuts();
+
+        // Table of times for hours dropdown menus
+        $times = [];
         if (in_array(21, $droits)) {
-            $granularite = $this->config('Granularite') == 1
-                ? 5 : $this->config('Granularite');
+            $granularite = $this->config('Granularite') == 1 ? 5 : $this->config('Granularite');
 
             $nb_interval = 60 / $granularite;
             $end = 40;
-            $times = array();
             for ($i = 1; $i < $end; $i++) {
-                $times[] = array($i + 0, $i . 'h00');
+                $times[] = array($i, $i . 'h00');
                 $minute = 0;
                 for ($y = 1; $y < $nb_interval; $y++) {
                     $minute = sprintf("%02d", $minute + $granularite);
@@ -528,85 +206,90 @@ class AgentController extends BaseController
                 }
             }
             $times[] = array($end, $end . "h00");
-            $this->templateParams(array( 'times' => $times ));
-
-        } else {
-            $heuresHebdo_label = $heuresHebdo;
-            if (!stripos($heuresHebdo, "%")) {
-                $heuresHebdo_label .= " heures";
-            }
-            $this->templateParams(array(
-                'heuresHebdo_label'   => $heuresHebdo_label,
-                'heuresTravail_label' => $heuresTravail . " heures",
-            ));
         }
+
+        /**
+         * Agent's information
+         */
+        // The followings globals are used in legacy/Agent/hours_tables.php
+        global $temps;
+        global $breaktimes;
+
+        $id = $request->get('id');
+        $agent = $id ? $this->entityManager->getRepository(Agent::class)->find($id) : new Agent();
+
+        $access = $agent->getACL();
+        $active = $agent->getActive();
+        $breaktimes = [];
+        $exportIcsUrl = null;
+        $managersMails = $agent->getManagersMails() ? explode(';', $agent->getManagersMails()) : [];
+        $managersMails = array_map('trim', $managersMails);
+        $sites = $agent->getSites();
 
         // Multi-sites
-        if ($this->config('Multisites-nombre') > 1) {
-            $sites_select = array();
-            for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
-                $site_select = array(
+        if ($this->config['Multisites-nombre'] > 1) {
+            $sitesSelect = [];
+            for ($i = 1; $i <= $this->config['Multisites-nombre']; $i++) {
+                $sitesSelect[] = [
                     'id' => $i,
                     'name' => $this->config("Multisites-site$i"),
-                    'checked' => 0
-                );
-                if ( in_array($i, $sites) ) {
-                    $site_select['checked'] = 1;
+                    'checked' => in_array($i, $sites) ? 1 : 0,
+                ];
+            }
+        }
+
+        // Skills assigned and available 
+        $skillsAssigned = $agent->getSkills();
+        $skillsAvailable = array_diff($skillsAll, $skillsAssigned);
+
+        $skillsAssigned = $this->postesNoms($skillsAssigned, $skillsAllWithName);
+        $skillsAvailable = $this->postesNoms($skillsAvailable, $skillsAllWithName);
+
+        // Extra information available for existing agents
+        if ($id) {
+            $action = 'update';
+
+            // Working Hours
+            if ($this->config('PlanningHebdo')) {
+                $workingHours = $this->entityManager->getRepository(WorkingHour::class)->get(date('Y-m-d'), date('Y-m-d'), true, $id);
+                $temps = $workingHours ? $workingHours[0]->getWorkingHours() : [];
+                $breaktimes = $workingHours ? $workingHours[0]->getBreaktime() : [];
+
+                // Decimal breaktime to time (H:i).
+                foreach ($breaktimes as $key => $value) {
+                    $breaktimes[$key] = $value
+                        ? str_replace('h', ':', HourHelper::decimalToHoursMinutes($value)['as_string'])
+                        : '';
                 }
-                $sites_select[] = $site_select;
+            } else {
+                $temps = $agent->getWorkingHours();
             }
-            $this->templateParams(array( 'sites_select' => $sites_select ));
-        }
 
-        include(__DIR__ . "/../../public/personnel/hours_tables.php");
-        $this->templateParams(array( 'hours_tab' => $hours_tab ));
+            // URL ICS
+            if ($this->config('ICS-Export')) {
+                $exportIcsUrl = $this->entityManager->getRepository(Agent::class)->getExportIcsURL($id);
+            }
+        // Default information for new agents
+        } else {
+            $id = null;
+            $action = 'add';
 
-        if ($this->config('Hamac-csv')) {
-            $hamac_pattern = !empty($this->config('Hamac-motif')) ? $this->config('Hamac-motif') : 'Hamac';
-            $this->templateParams(array(
-                'hamac_pattern'     => $hamac_pattern,
-                'check_hamac'       => !empty($check_hamac) ? 1 : 0,
-            ));
-        }
-
-        if ($this->config('ICS-Server1')) {
-            $ics_pattern = !empty($this->config('ICS-Pattern1')) ? $this->config('ICS-Pattern1') : 'Serveur ICS N°1';
-            $this->templateParams(array(
-                'ics_pattern'     => $ics_pattern,
-                'check_ics'       => !empty($check_ics[0]) ? 1 : 0,
-            ));
-        }
-
-        if ($this->config('ICS-Server2')) {
-            $ics_pattern = !empty($this->config('ICS-Pattern2')) ? $this->config('ICS-Pattern2') : 'Serveur ICS N°2';
-            $this->templateParams(array(
-                'ics_pattern2'     => $ics_pattern,
-                'check_ics2'       => !empty($check_ics[1]) ? 1 : 0,
-            ));
-        }
-
-        // URL du flux ICS à importer
-        if ($this->config('ICS-Server3')) {
-            $ics_pattern = !empty($this->config('ICS-Pattern3')) ? $this->config('ICS-Pattern3') : 'Serveur ICS N°3';
-            $this->templateParams(array(
-                'ics_pattern3'     => $ics_pattern,
-                'check_ics3'       => !empty($check_ics[2]) ? 1 : 0,
-                'url_ics'          => $url_ics,
-            ));
-        }
-
-        // URL du fichier ICS Planno
-        if ($id and isset($ics)) {
-            if ($this->config('ICS-Code')) {
+            // Set active value based on the displayed table (Service public vs Administratif)
+            if (!empty($session->get('AgentActive')) and $session->get('AgentActive') != 'Supprimé') {
+                $active = $session->get('AgentActive');
             }
         }
 
+        // hours_tab is generated by legacy/Agent/hours_tables.php
+        include(__DIR__ . '/../../legacy/Agent/hours_tables.php');
+
+
+        // ACL / Access / Rights
         // List of excluded rights with Planook configuration
         $planook_excluded_rights = array(6, 9, 701, 3, 17, 1301, 23, 1001, 901, 801);
 
-        $rights = array();
-
-        foreach ($groupes as $elem) {
+        $rights = [];
+        foreach ($accessGroups as $elem) {
             // N'affiche pas les droits d'accès à la configuration (réservée au compte admin)
             if ($elem['groupe_id'] == 20) {
                 continue;
@@ -628,18 +311,20 @@ class AgentController extends BaseController
                 continue;
             }
 
+            // N'affiche pas le droit d'importation des absences si la config AbsImport-CSV est désactivé
+            if (!$this->config['AbsImport-CSV'] and $elem['groupe_id'] == 1401 ) {
+                continue;
+            }
+
             // With Planook configuration, some rights are not displayed
             if ($this->config('Planook') and in_array($elem['groupe_id'], $planook_excluded_rights)) {
                 continue;
             }
 
-            if ( is_array($acces) ) {
-                $elem['checked'] = in_array($elem['groupe_id'], $acces) ? true : false;
-            }
+            $elem['checked'] = in_array($elem['groupe_id'], $access);
 
             $rights[ $elem['categorie'] ]['rights'][] = $elem;
         }
-        $this->templateParams(array('rights' => $rights));
 
         // Affichage des droits d'accès dépendant des sites (si plusieurs sites)
         if ($this->config('Multisites-nombre') > 1) {
@@ -651,7 +336,7 @@ class AgentController extends BaseController
             $this->templateParams(array('sites_for_rights' => $sites_for_rights));
 
             $rights_sites = array();
-            foreach ($groupes_sites as $elem) {
+            foreach ($accessgroupsBySite as $elem) {
                 // N'affiche pas les droits de gérer les congés si le module n'est pas activé
                 if (!$this->config('Conges-Enable') and in_array($elem['groupe_id'], array(25, 401, 601))) {
                     continue;
@@ -672,10 +357,7 @@ class AgentController extends BaseController
                 for ($i = 1; $i < $this->config('Multisites-nombre') +1; $i++) {
                     $groupe_id = $elem['groupe_id'] - 1 + $i;
 
-                    $checked = false;
-                    if (is_array($acces)) {
-                        $checked = in_array($groupe_id, $acces) ? true : false;
-                    }
+                    $checked = in_array($groupe_id, $access);
 
                     $elem['sites'][] = array(
                         'groupe_id' => $groupe_id,
@@ -685,30 +367,58 @@ class AgentController extends BaseController
 
                 $rights_sites[ $elem['categorie'] ]['rights'][] = $elem;
             }
-            $this->templateParams(array('rights_sites' => $rights_sites));
         }
 
+        $this->templateParams([
+            'agent'                     => $agent,
+            'can_manage_agent'          => in_array(21, $droits),
+            'exportIcsUrl'              => $exportIcsUrl,
+            'action'                    => $action,
+            'id'                        => $id,
+            'statuts'                   => $statuts,
+            'statuts_utilises'          => $statuts_utilises,
+            'categories'                => $categories,
+            'contrats'                  => $contrats,
+            'services'                  => $services,
+            'services_utilises'         => $services_utilises,
+            'actif'                     => $active,
+            'mailsResponsables'         => $managersMails,
+            'recupAgents'               => $recupAgents,
+            'postes_dispo'              => $skillsAvailable,
+            'postes_attribues'          => $skillsAssigned,
+            'postes_completNoms_json'   => json_encode($skillsAllWithName),
+            'hours_tab'                 => $hours_tab,
+            'lang_send_ics_url_subject' => $lang['send_ics_url_subject'],
+            'lang_send_ics_url_message' => $lang['send_ics_url_message'],
+            'rights'                    => $rights,
+            'rights_sites'              => $rights_sites,
+            'sitesSelect'               => $sitesSelect,
+            'showAgendasAndSync'        => $showAgendasAndSync,
+            'times'                     => $times,
+        ]);
+
         if ($this->config('Conges-Enable')) {
-            $c = new \conges();
-            $c->perso_id = $id;
-            $c->fetchCredit();
-            $conges = $c->elements;
+            $conges = $this->entityManager->getRepository(Agent::class)->fetchCredits($id);
             $holiday_helper = new HolidayHelper();
 
-            $annuelHeures = $conges['annuelHeures'] ? $conges['annuelHeures'] : 0;
-            $annuelString = heure4($conges['annuel']);
+            $annuelHeures  = $conges['annuelHeures'];
+            $annuelMinutes = $conges['annuelMinutes'];
+            $annuelString  = '';
 
-            $creditHeures = $conges['creditHeures'] ? $conges['creditHeures'] : 0;
-            $creditString = heure4($conges['credit']);
+            $creditHeures  = $conges['creditHeures'];
+            $creditMinutes = $conges['creditMinutes'];
+            $creditString  = '';
 
-            $reliquatHeures = $conges['reliquatHeures'] ? $conges['reliquatHeures'] : 0;
-            $reliquatString = heure4($conges['reliquat']);
+            $reliquatHeures  = $conges['reliquatHeures'];
+            $reliquatMinutes = $conges['reliquatMinutes'];
+            $reliquatString  = '';
 
-            $anticipationHeures = $conges['anticipationHeures'] ? $conges['anticipationHeures'] : 0;
-            $anticipationString = heure4($conges['anticipation']);
+            $anticipationHeures  = $conges['anticipationHeures'];
+            $anticipationMinutes = $conges['anticipationMinutes'];
+            $anticipationString  = '';
 
-            $recupHeures = $conges['recupHeures'] ? $conges['recupHeures'] : 0;
-            $recupString = heure4($conges['recup']);
+            $recupHeures  = $conges['recupHeures'];
+            $recupMinutes = $conges['recupMinutes'];
 
             if ($this->config('Conges-Mode') == 'jours' ) {
                 $event = new OnTransformLeaveHours($conges);
@@ -740,83 +450,81 @@ class AgentController extends BaseController
                 }
             }
 
-            $templateParams = array(
+            $templateParams = [
                 'annuel_heures'         => $annuelHeures,
-                'annuel_min'            => $conges['annuelCents'],
+                'annuel_min'            => $annuelMinutes,
                 'annuel_string'         => $annuelString,
                 'credit_heures'         => $creditHeures,
-                'credit_min'            => $conges['creditCents'],
+                'credit_min'            => $creditMinutes,
                 'credit_string'         => $creditString,
                 'reliquat_heures'       => $reliquatHeures,
-                'reliquat_min'          => $conges['reliquatCents'],
+                'reliquat_min'          => $reliquatMinutes,
                 'reliquat_string'       => $reliquatString,
                 'anticipation_heures'   => $anticipationHeures,
-                'anticipation_min'      => $conges['anticipationCents'],
+                'anticipation_min'      => $anticipationMinutes,
                 'anticipation_string'   => $anticipationString,
                 'recup_heures'          => $recupHeures,
-                'recup_min'             => $conges['recupCents'],
-                'recup_string'          => $recupString,
+                'recup_min'             => $recupMinutes,
                 'lang_comp_time'        => $lang['comp_time'],
                 'show_hours_to_days'    => $holiday_helper->showHoursToDays(),
-            );
-            if ($holiday_helper->showHoursToDays()) {
-                $templateParams['annuel_jours'] = $id ? $holiday_helper->hoursToDays(heure4($annuelString), $id) : '';
-                $templateParams['credit_jours'] = $id ? $holiday_helper->hoursToDays(heure4($creditString), $id) : '';
-                $templateParams['reliquat_jours'] = $id ? $holiday_helper->hoursToDays(heure4($reliquatString), $id) : '';
-                $templateParams['anticipation_jours'] = $id ? $holiday_helper->hoursToDays(heure4($anticipationString), $id) : '';
-                $templateParams['hours_per_day'] = $id ? $holiday_helper->hoursPerDay($id) : '';
+            ];
 
+            if ($holiday_helper->showHoursToDays()) {
+
+                $hours_per_day = $id ? HourHelper::decimalToHoursMinutes($holiday_helper->hoursPerDay($id))['as_string'] : '';
+
+                $templateParams['annuel_jours']       = $id ? $holiday_helper->hoursToDays($conges['annuel'], $id, null, true)       : '';
+                $templateParams['credit_jours']       = $id ? $holiday_helper->hoursToDays($conges['credit'], $id, null, true)       : '';
+                $templateParams['reliquat_jours']     = $id ? $holiday_helper->hoursToDays($conges['reliquat'], $id, null, true)     : '';
+                $templateParams['anticipation_jours'] = $id ? $holiday_helper->hoursToDays($conges['anticipation'], $id, null, true) : '';
+                $templateParams['hours_per_day']      = $hours_per_day;
             }
+
             $this->templateParams($templateParams);
         }
-
-        $this->templateParams(array(
-            'edt_samedi'    => $this->config('EDTSamedi'),
-            'current_tab'   => $currentTab,
-            'nb_semaine'    => $this->config('nb_semaine'),
-        ));
 
         return $this->output('agents/edit.html.twig');
     }
 
-    /**
-     * @Route("/agent", name="agent.save", methods={"POST"})
-     */
-    public function save(Request $request)
+    #[Route(path: '/agent', name: 'agent.save', methods: ['POST'])]
+    public function save(Request $request): \Symfony\Component\HttpFoundation\RedirectResponse
     {
+        if (!$this->csrf_protection($request)) {
+            return $this->redirectToRoute('access-denied');
+        }
 
         $params = $request->request->all();
+        $arrivee = $request->request->get('arrivee') ? \DateTime::createFromFormat('d/m/Y', $request->get('arrivee')) : null;
+        $depart = $request->request->get('depart') ? \DateTime::createFromFormat('d/m/Y', $request->get('depart')) : null;
+        $heuresHebdo = $request->request->get('heuresHebdo', '');
+        $heuresTravail = $request->request->get('heuresTravail', 0);
+        $id = $request->request->get('id');
+        $mail = $request->request->get('mail');
+        $login = $request->request->get('login');
 
-        $arrivee = $request->get('arrivee');
-        $depart = $request->get('depart');
-        $CSRFToken = $request->get('CSRFToken');
-        $heuresHebdo = $request->get('heuresHebdo');
-        $heuresTravail = $request->get('heuresTravail');
-        $id = $request->get('id');
-        $mail = $request->get('mail');
-
-        $actif = htmlentities($params['actif'], ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+        $actif = $params['actif'];
         $action = $params['action'];
         $check_hamac = !empty($params['check_hamac']) ? 1 : 0;
         $mSGraphCheck = !empty($request->get('MSGraph')) ? 1 : 0;
         $check_ics1 = !empty($params['check_ics1']) ? 1 : 0;
         $check_ics2 = !empty($params['check_ics2']) ? 1 : 0;
         $check_ics3 = !empty($params['check_ics3']) ? 1 : 0;
-        $check_ics = "[$check_ics1,$check_ics2,$check_ics3]";
-        $droits = array_key_exists("droits", $params) ? $params['droits'] : null;
+        $check_ics = [$check_ics1,$check_ics2,$check_ics3];
+        $droits = array_key_exists("droits", $params) ? $params['droits'] : [];
         $categorie = isset($params['categorie']) ? trim($params['categorie']) : null;
         $informations = isset($params['informations']) ? trim($params['informations']) : null;
-        $mailsResponsables = isset($params['mailsResponsables']) ? trim(str_replace(array("\n", " "), '', $params['mailsResponsables'])) : null;
+        $managersMails = isset($params['mailsResponsables']) ? trim(str_replace(array("\n", " "), '', $params['mailsResponsables'])) : null;
         $matricule = isset($params['matricule']) ? trim($params['matricule']) : null;
         $url_ics = isset($params['url_ics']) ? trim($params['url_ics']) : null;
         $nom = trim($params['nom']);
-        $postes = $params['postes'] ?? null;
         $prenom = trim($params['prenom']);
-        $recup = isset($params['recup']) ? trim($params['recup']) : null;
+        $recup = isset($params['recup']) ? trim($params['recup']) : '';
         $service = $params['service'] ?? null;
-        $sites = array_key_exists("sites", $params) ? $params['sites'] : null;
+        $sites = array_key_exists("sites", $params) ? $params['sites'] : [];
         $statut = $params['statut'] ?? null;
-        $temps = array_key_exists("temps", $params) ? $params['temps'] : null;
+
+        $postes = json_decode($params['postes']);
+        $temps = !empty($params['temps']) ? $params['temps'] : [];
 
         // Modification du choix des emplois du temps avec l'option EDTSamedi == 1 (EDT différent les semaines avec samedi travaillé)
         $eDTSamedi = array_key_exists("EDTSamedi", $params) ? $params['EDTSamedi'] : null;
@@ -831,8 +539,8 @@ class AgentController extends BaseController
             }
         }
 
-        $premierLundi = array_key_exists("premierLundi", $params) ? $params['premierLundi'] : null;
-        $dernierLundi = array_key_exists("dernierLundi", $params) ? $params['dernierLundi'] : null;
+        $firstMonday = array_key_exists("premierLundi", $params) ? $params['premierLundi'] : null;
+        $lastMonday = array_key_exists("dernierLundi", $params) ? $params['dernierLundi'] : null;
 
         if (is_array($temps)) {
             foreach ($temps as $day => $hours) {
@@ -841,14 +549,6 @@ class AgentController extends BaseController
                 }
             }
         }
-
-        $droits = $droits ? $droits : array();
-        $postes = $postes ? json_encode(explode(",", $postes)) : '[]';
-        $sites = $sites ? json_encode($sites) : null;
-        $temps = $temps ? json_encode($temps) : null;
-
-        $arrivee = dateSQL($arrivee);
-        $depart = dateSQL($depart);
 
         for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
             // Modification des plannings Niveau 2 donne les droits Modification des plannings Niveau 1
@@ -870,22 +570,23 @@ class AgentController extends BaseController
         if ($id == 1) {        // Ajoute config. avancée à l'utilisateur admin.
             $droits[] = 20;
         }
-        $droits = json_encode($droits);
+
+        // Get agent's information or create a new one
+        $agent = $id ? $this->entityManager->getRepository(Agent::class)->find($id) : new Agent();
 
         switch ($action) {
-          case "ajout":
-            $db = new \db();
-            $db->select2("personnel", array(array("name"=>"MAX(`id`)", "as"=>"id")));
-            $id = $db->result[0]['id']+1;
-
+          case 'add':
             $login = $this->login($prenom, $nom, $mail);
+
+            $msg = 'L\'agent a été créé avec succés';
+            $msgType = 'notice';
 
             // Demo mode
             if (!empty($this->config('demo'))) {
                 $mdp_crypt = password_hash("password", PASSWORD_BCRYPT);
                 $msg = "Vous utilisez une version de démonstration : l'agent a été créé avec les identifiants $login / password";
                 $msg .= "#BR#Sur une version standard, les identifiants de l'agent lui auraient été envoyés par e-mail.";
-                $msgType = "success";
+                $msgType = 'notice';
             } else {
                 $mdp = gen_trivial_password();
                 $mdp_crypt = password_hash($mdp, PASSWORD_BCRYPT);
@@ -900,177 +601,157 @@ class AgentController extends BaseController
                 $notifier->send();
 
                 // Si erreur d'envoi de mail, affichage de l'erreur
-                $msg = null;
-                $msgType = null;
                 if ($notifier->getError()) {
+                    // TODO: FIXME: Ce message ne passe en en flash bag
                     $msg = $notifier->getError();
-                    $msgType = "error";
+                    $msgType = 'error';
                 }
             }
 
             // Enregistrement des infos dans la base de données
-            $insert = array(
-                "nom"=>$nom,
-                "prenom"=>$prenom,
-                "mail"=>$mail,
-                "statut"=>$statut,
-                "categorie"=>$categorie,
-                "service"=>$service,
-                "heures_hebdo"=>$heuresHebdo,
-                "heures_travail"=>$heuresTravail,
-                "arrivee"=>$arrivee,
-                "depart"=>$depart,
-                "login"=>$login,
-                "password"=>$mdp_crypt,
-                "actif"=>$actif,
-                "droits"=>$droits,
-                "postes"=>$postes,
-                "temps"=>$temps,
-                "informations"=>$informations,
-                "recup"=>$recup,
-                "sites"=>$sites,
-                "mails_responsables"=>$mailsResponsables,
-                "matricule"=>$matricule,
-                "url_ics"=>$url_ics,
-                "check_ics"=>$check_ics,
-                "check_hamac"=>$check_hamac,
-                'check_ms_graph' => $mSGraphCheck,
-            );
-            $holidays = $this->save_holidays($params);
-            $insert = array_merge($insert, $holidays);
-
-            $db = new \db();
-            $db->CSRFToken = $CSRFToken;
-            $db->insert("personnel", $insert);
+            $agent->setLogin($login);
+            $agent->setPassword($mdp_crypt);
 
             // Modification du choix des emplois du temps avec l'option EDTSamedi (EDT différent les semaines avec samedi travaillé)
-            $p = new \personnel();
-            $p->CSRFToken = $CSRFToken;
-            $p->updateEDTSamedi($eDTSamedi, $premierLundi, $dernierLundi, $id);
-
-            return $this->redirectToRoute('agent.index', array('msg' => $msg, 'msgType' => $msgType));
+            if ($this->config['EDTSamedi'] and !$this->config['PlanningHebdo']) {
+                $this->entityManager->persist($agent);
+                $this->entityManager->flush();
+                $id = $agent->getId();
+                $repo = $this->entityManager->getRepository(SaturdayWorkingHours::class);
+                $repo->update($eDTSamedi, $firstMonday, $lastMonday, $id);
+            }
 
             break;
 
-          case "mdp":
+          case 'update':
 
-            // Demo mode
-            if (!empty($this->config('demo'))) {
-                $msg = "Le mot de passe n'a pas été modifié car vous utilisez une version de démonstration";
-                return $this->redirectToRoute('agent.index', array('msg' => $msg, 'msgType' => 'success'));
-                break;
-            }
+            $msg = 'L\'agent a été modifié avec succés';
+            $msgType = 'notice';
 
-            $mdp=gen_trivial_password();
-            $mdp_crypt = password_hash($mdp, PASSWORD_BCRYPT);
-            $db = new \db();
-            $db->select2("personnel", "login", array("id"=>$id));
-            $login = $db->result[0]['login'];
-
-            // Envoi du mail
-            $message = "Votre mot de passe Planno a été modifié";
-            $message.= "<ul><li>Login : $login</li><li>Mot de passe : $mdp</li></ul>";
-
-            $m = new \CJMail();
-            $m->subject = "Modification du mot de passe";
-            $m->message = $message;
-            $m->to = $mail;
-            $m->send();
-
-            // Si erreur d'envoi de mail, affichage de l'erreur
-            $msg = null;
-            $msgType = null;
-            if ($m->error) {
-                $msg = $m->error_CJInfo;
-                $msgType = "error";
-            } else {
-                $msg = "Le mot de passe a été modifié et envoyé par e-mail à l'agent";
-                $msgType = "success";
-            }
-
-            $db = new \db();
-            $db->CSRFToken = $CSRFToken;
-            $db->update("personnel", array("password"=>$mdp_crypt), array("id"=>$id));
-            return $this->redirectToRoute('agent.index', array('msg' => $msg, 'msgType' => $msgType));
-
-            break;
-
-          case "modif":
-            $update = array(
-                "nom"=>$nom,
-                "prenom"=>$prenom,
-                "mail"=>$mail,
-                "statut"=>$statut,
-                "categorie"=>$categorie,
-                "service"=>$service,
-                "heures_hebdo"=>$heuresHebdo,
-                "heures_travail"=>$heuresTravail,
-                "actif"=>$actif,
-                "droits"=>$droits,
-                "arrivee"=>$arrivee,
-                "depart"=>$depart,
-                "postes"=>$postes,
-                "informations"=>$informations,
-                "recup"=>$recup,
-                "sites"=>$sites,
-                "mails_responsables"=>$mailsResponsables,
-                "matricule"=>$matricule,
-                "url_ics"=>$url_ics,
-                "check_ics"=>$check_ics,
-                "check_hamac"=>$check_hamac,
-                'check_ms_graph' => $mSGraphCheck,
-            );
             // Si le champ "actif" passe de "supprimé" à "service public" ou "administratif", on réinitialise les champs "supprime" et départ
-            if (!strstr($actif, "Supprim")) {
-                $update["supprime"]="0";
+            if ($actif != 'Supprimé') {
+                $agent->setDeletion(0);
                 // Si l'agent était supprimé et qu'on le réintégre, on change sa date de départ
                 // pour qu'il ne soit pas supprimé de la liste des agents actifs
-                $db = new \db();
-                $db->select2("personnel", "*", array("id" => $id));
-                if (strstr($db->result[0]['actif'], "Supprim") and $db->result[0]['depart'] <= date("Y-m-d")) {
-                    $update["depart"] = "0000-00-00";
+                if ($agent->getActive() == 'Supprimé' and $agent->getDeparture()) {
+                    if ($agent->getDeparture()->format('Y-m-d') <= date('Y-m-d')) {
+                        $depart = null;
+                    }
                 }
             } else {
-                $update["actif"] = "Supprim&eacute;";
+                $agent->setActive('Supprimé');
             }
-
-            // Mise à jour de l'emploi du temps si modifié à partir de la fiche de l'agent
-            if ($temps) {
-                $update["temps"] = $temps;
-            }
-
-            $holidays = $this->save_holidays($params);
-            $update = array_merge($update, $holidays);
-
-            $db = new \db();
-            $db->CSRFToken = $CSRFToken;
-            $db->update("personnel", $update, array("id" => $id));
 
             // Mise à jour de la table pl_poste en cas de modification de la date de départ
-            $db = new \db();        // On met supprime=0 partout pour cet agent
-            $db->CSRFToken = $CSRFToken;
-            $db->update("pl_poste", array("supprime" => "0"), array("perso_id" => $id));
-            if ($depart != "0000-00-00" and $depart != "") {
-                // Si une date de départ est précisée, on met supprime=1 au dela de cette date
-                $db = new \db();
-                $id = $db->escapeString($id);
-                $depart = $db->escapeString($depart);
-                $dbprefix = $this->config('dbprefix');
-                $db->query("UPDATE `{$dbprefix}pl_poste` SET `supprime`='1' WHERE `perso_id`='$id' AND `date`>'$depart';");
-            }
-
+            // Updates users as deleted for a given user and after a given date.
+            $this->entityManager->getRepository(PlanningPosition::class)->updateAsDeleteByUserIdAndAfterDate([$id], $depart);
             // Modification du choix des emplois du temps avec l'option EDTSamedi (EDT différent les semaines avec samedi travaillé)
-            $p = new \personnel();
-            $p->CSRFToken = $CSRFToken;
-            $p->updateEDTSamedi($eDTSamedi, $premierLundi, $dernierLundi, $id);
-
-            return $this->redirectToRoute('agent.index');
+            if ($this->config['EDTSamedi'] and !$this->config['PlanningHebdo']) {
+                $repo = $this->entityManager->getRepository(SaturdayWorkingHours::class);
+                $repo->update($eDTSamedi, $firstMonday, $lastMonday, $id);
+            }
 
             break;
         }
+
+        $holidays = $this->save_holidays($params);
+
+        $agent->setLastname($nom);
+        $agent->setFirstname($prenom);
+        $agent->setMail($mail);
+        $agent->setStatus($statut);
+        $agent->setCategory($categorie);
+        $agent->setService($service);
+        $agent->setWeeklyServiceHours($heuresHebdo);
+        $agent->setWeeklyWorkingHours($heuresTravail);
+        $agent->setArrival($arrivee);
+        $agent->setDeparture($depart);
+        $agent->setActive($actif);
+        $agent->setACL($droits);
+        $agent->setSkills($postes);
+        $agent->setWorkingHours($temps);
+        $agent->setInformation($informations);
+        $agent->setRecoveryMenu($recup);
+        $agent->setSites($sites);
+        $agent->setManagersMails($managersMails);
+        $agent->setEmployeeNumber($matricule);
+        $agent->setIcsUrl($url_ics);
+        $agent->setIcsCheck($check_ics);
+        $agent->setHamacCheck($check_hamac);
+        $agent->setMsGraphCheck($mSGraphCheck);
+        $agent->setHolidayCompTime($holidays['comp_time']);
+        $agent->setHolidayAnnualCredit($holidays['conges_annuel']);
+        $agent->setHolidayAnticipation($holidays['conges_anticipation']);
+        $agent->setHolidayCredit($holidays['conges_credit']);
+        $agent->setHolidayRemainder($holidays['conges_reliquat']);
+
+        if ($login) {
+            $agent->setLogin($login);
+        }
+
+        $this->entityManager->persist($agent);
+        $this->entityManager->flush();
+
+        if (!empty($msg)) {
+            $this->addFlash($msgType, $msg);
+        }
+
+        return $this->redirectToRoute('agent.index');
     }
 
-    private function changeAgentPassword(Request $request, $agent_id, $password) {
+    #[Route(path: '/agent/send-password', name: 'agent.send_password', methods: ['POST'])]
+    public function sendPassword(Request $request): \Symfony\Component\HttpFoundation\Response
+    {
+        // CSRF Protection
+        if (!$this->csrf_protection($request)) {
+            $return = ['CSRF token error', 'error'];
+            $response = new Response();
+            $response->setContent(json_encode($return));
+            $response->setStatusCode(200);
+            return $response;
+        }
+
+        // Demo mode
+        if (!empty($this->config('demo'))) {
+            $return = ['Le mot de passe n\'a pas été modifié car vous utilisez une version de démonstration', 'error'];
+            $response = new Response();
+            $response->setContent(json_encode($return));
+            $response->setStatusCode(200);
+            return $response;
+        }
+
+        // Change and send the new password
+        $id = $request->get('id');
+        $password = gen_trivial_password();
+        $cryptedPassword = password_hash($password, PASSWORD_BCRYPT);
+
+        $agent = $this->entityManager->getRepository(Agent::class)->find($id);
+        $agent->setPassword($cryptedPassword);
+        $this->entityManager->flush();
+
+        // Send the e-mail
+        $message = "Votre mot de passe Planno a été modifié";
+        $message.= "<ul><li>Login : {$agent->getLogin()}</li><li>Mot de passe : $password</li></ul>";
+
+        $m = new \CJMail();
+        $m->subject = "Modification du mot de passe";
+        $m->message = $message;
+        $m->to = $agent->getMail();;
+        $m->send();
+
+        if ($m->error) {
+            $return = [$m->error_CJInfo, 'error'];
+        } else {
+            $return = ['Le mot de passe a été modifié et envoyé par e-mail à l\'agent', 'success'];
+        }
+
+        $response = new Response();
+        $response->setContent(json_encode($return));
+        $response->setStatusCode(200);
+        return $response;
+    }
+
+    private function changeAgentPassword(Request $request, $agent_id, $password): \Symfony\Component\HttpFoundation\Response {
 
         $agent = $this->entityManager->find(Agent::class, $agent_id);
 
@@ -1097,7 +778,7 @@ class AgentController extends BaseController
         }
 
         $password = password_hash($password, PASSWORD_BCRYPT);
-        $agent->password($password);
+        $agent->setPassword($password);
         $this->entityManager->persist($agent);
         $this->entityManager->flush();
 
@@ -1107,10 +788,8 @@ class AgentController extends BaseController
         return $response;
     }
 
-    /**
-     * @Route("/ajax/change-own-password", name="ajax.changeownpassword", methods={"POST"})
-     */
-    public function changeOwnPassword(Request $request)
+    #[Route(path: '/ajax/change-own-password', name: 'ajax.changeownpassword', methods: ['POST'])]
+    public function changeOwnPassword(Request $request): \Symfony\Component\HttpFoundation\Response
     {
         if (!$this->csrf_protection($request)) {
             $response = new Response();
@@ -1119,7 +798,9 @@ class AgentController extends BaseController
             return $response;
         }
 
-        $agent_id = $_SESSION['login_id'];
+        $session = $request->getSession();
+
+        $agent_id = $session->get('loginId');
         $password = $request->get('password');
         $current_password = $request->get('current_password');
 
@@ -1133,10 +814,8 @@ class AgentController extends BaseController
         }
     }
 
-    /**
-     * @Route("/ajax/check-password", name="ajax.checkpassword", methods={"GET"})
-     */
-    public function check_password(Request $request)
+    #[Route(path: '/ajax/check-password', name: 'ajax.checkpassword', methods: ['GET'])]
+    public function check_password(Request $request): \Symfony\Component\HttpFoundation\Response
     {
         $password = $request->get('password');
         $response = new Response();
@@ -1148,7 +827,7 @@ class AgentController extends BaseController
     }
 
     // Returns true if the password is complex enough, and false otherwise
-    private function check_password_complexity($password)
+    private function check_password_complexity($password): bool
     {
         $minimum_password_length = $this->config('Auth-PasswordLength') ?? 8;
         if (strlen($password) < $minimum_password_length) {
@@ -1173,12 +852,12 @@ class AgentController extends BaseController
         return false;
     }
 
-    /**
-     * @Route("/ajax/is-current-password", name="ajax.iscurrentpassword", methods={"GET"})
-     */
-    public function isCurrentPassword(Request $request)
+    #[Route(path: '/ajax/is-current-password', name: 'ajax.iscurrentpassword', methods: ['GET'])]
+    public function isCurrentPassword(Request $request): \Symfony\Component\HttpFoundation\Response
     {
-        $agent_id = $_SESSION['login_id'];
+        $session = $request->getSession();
+
+        $agent_id = $session->get('loginId');
         $password = $request->get('password');
         $response = new Response();
 
@@ -1194,7 +873,7 @@ class AgentController extends BaseController
     {
         $isCurrentPassword = false;
         $agent = $this->entityManager->find(Agent::class, $agent_id);
-        $hashedPassword = $agent->password();
+        $hashedPassword = $agent->getPassword();
 	
         if (password_verify($password, $hashedPassword)) {
             $isCurrentPassword = true;
@@ -1203,17 +882,11 @@ class AgentController extends BaseController
         return $isCurrentPassword;
     }
 
-    /**
-     * @Route("/ajax/update_agent_login", name="ajax.update_agent_login", methods={"POST"})
-     */
-    public function update_login(Request $request)
+    #[Route(path: '/agent/check_login', name: 'agent.check_login', methods: ['GET'])]
+    public function check_login(Request $request): Response
     {
-        if (!$this->csrf_protection($request)) {
-            return $this->redirectToRoute('access-denied');
-        }
-
-        $login = $request->get('login');
-        $agent_id = $request->get('id');
+        $login = $request->query->get('login');
+        $agent_id = $request->query->getInt('id');
         $response = new Response();
 
         $login = filter_var($login, FILTER_SANITIZE_EMAIL);
@@ -1224,34 +897,23 @@ class AgentController extends BaseController
             ->getRepository(Agent::class)
             ->findOneBy(array('login' => $login));
 
-        if ($login == $agent->login()) {
-            $response->setContent('identic');
+        if (!$login) {
+            $response->setContent('invalid');
             $response->setStatusCode(400);
-
             return $response;
         }
 
-        if ($duplicate && $login != $agent->login()) {
+        if ($duplicate && $login != $agent->getLogin()) {
             $response->setContent('duplicate');
             $response->setStatusCode(400);
-
             return $response;
         }
 
-        $agent = $this->entityManager->find(Agent::class, $agent_id);
-        $agent->login($login);
-        $this->entityManager->persist($agent);
-        $this->entityManager->flush();
-
-        $response->setContent($login);
         $response->setStatusCode(200);
-
         return $response;
     }
 
-    /**
-     * @Route("/agent/ldap", name="agent.ldap", methods={"GET"})
-     */
+    #[Route(path: '/agent/ldap', name: 'agent.ldap', methods: ['GET'])]
     public function ldap_index(Request $request)
     {
         $searchTerm = $request->get('searchTerm');
@@ -1308,12 +970,10 @@ class AgentController extends BaseController
 
             // Search existing agents.
             $agents_existants = array();
-            $db = new \db();
-            $db->query("SELECT `login` FROM `{$GLOBALS['dbprefix']}personnel` WHERE `supprime`<>'2' ORDER BY `login`;");
-            if ($db->result) {
-                foreach ($db->result as $elem) {
-                    $agents_existants[] = $elem['login'];
-                }
+            // Finds all agent logins that are not deleted.
+            $login = $this->entityManager->getRepository(Agent::class)->findAllLoginsNotDeleted();
+            foreach ($login as $elem) {
+                $agents_existants[] = $elem['login'];
             }
 
             // Remove existing agents from LDAP results.
@@ -1372,18 +1032,16 @@ class AgentController extends BaseController
         return $this->output('agents/import-form.html.twig');
     }
 
-    /**
-     * @Route("/agent/ldap", name="agent.ldap.import", methods={"POST"})
-     */
-    public function ldap_import(Request $request, Session $session)
+    #[Route(path: '/agent/ldap', name: 'agent.ldap.import', methods: ['POST'])]
+    public function ldap_import(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         $CSRFToken = $request->get('CSRFToken');
         $actif = 'Actif';
-        $date = date("Y-m-d H:i:s");
-        $commentaires = "Importation LDAP $date";
-        $droits = json_encode(array(99, 100));
+        $date = new \DateTime();
+        $commentaires = 'Importation LDAP ' . $date->format('Y-m-d H:i:s');
+        $droits =array(99, 100);
         $password = "password_bidon_pas_importé_depuis_ldap";
-        $postes = json_encode(array());
+        $postes = [];
         $erreurs = false;
 
         $post = $request->request->all();
@@ -1425,13 +1083,6 @@ class AgentController extends BaseController
             $ldapbind=ldap_bind($ldapconn, $this->config('LDAP-RDN'), decrypt($this->config('LDAP-Password')));
         }
 
-        // Préparation de la requête pour insérer les données dans la base de données
-        $req = "INSERT INTO `{$GLOBALS['dbprefix']}personnel` (`login`,`nom`,`prenom`,`mail`,`matricule`,`password`,`droits`,`arrivee`,`postes`,`actif`,`commentaires`) ";
-        $req .= "VALUES (:login, :nom, :prenom, :mail, :matricule, :password, :droits, :arrivee, :postes, :actif, :commentaires);";
-        $db = new \dbh();
-        $db->CSRFToken = $CSRFToken;
-        $db->prepare($req);
-
         // Recuperation des infos LDAP et insertion dans la base de données
         if ($ldapbind) {
             foreach ($uids as $uid) {
@@ -1458,27 +1109,24 @@ class AgentController extends BaseController
                             : strval($infos[0][$this->config('LDAP-Matricule')]);
                     }
 
-                    $values = array(
-                        ':login'        => $login,
-                        ':nom'          => $nom,
-                        ':prenom'       => $prenom,
-                        ':mail'         => $mail,
-                        ':matricule'    => $matricule,
-                        ':password'     => $password,
-                        ':droits'       => $droits,
-                        ':arrivee'      => $date,
-                        ':postes'       => $postes,
-                        ':actif'        => $actif,
-                        ':commentaires' => $commentaires
-                    );
-
-                    // Execution de la requête (insertion dans la base de données)
-                    $db->execute($values);
-                    if ($db->error) {
-                        $erreurs=true;
-                    }
+                    $agent = new Agent();
+                    $agent->setLogin($login);
+                    $agent->setLastname($nom);
+                    $agent->setFirstname($prenom);
+                    $agent->setMail($mail);
+                    $agent->setEmployeeNumber($matricule);
+                    $agent->setPassword($password);
+                    $agent->setACL($droits);
+                    $agent->setArrival($date);
+                    $agent->setSkills($postes);
+                    $agent->setActive($actif);
+                    $agent->setInformation($commentaires);
+                    $this->entityManager->persist($agent);
                 }
             }
+
+            $this->entityManager->flush();
+
         }
 
         if ($erreurs) {
@@ -1496,9 +1144,7 @@ class AgentController extends BaseController
     }
 
 
-    /**
-     * @Route("/agent/ldif", name="agent.ldif", methods={"GET"})
-     */
+    #[Route(path: '/agent/ldif', name: 'agent.ldif', methods: ['GET'])]
     public function ldif_index(Request $request)
     {
         $searchTerm = $request->get('searchTerm');
@@ -1510,7 +1156,7 @@ class AgentController extends BaseController
 
         foreach ($results as $key => $value) {
             foreach ($agents as $agent) {
-                if ($agent->login() == $key) {
+                if ($agent->getLogin() == $key) {
                     unset($results[$key]);
                 }
             }
@@ -1529,10 +1175,8 @@ class AgentController extends BaseController
     }
 
 
-    /**
-     * @Route("/agent/ldif", name="agent.ldif.import", methods={"POST"})
-     */
-    public function ldif_import(Request $request, Session $session)
+    #[Route(path: '/agent/ldif', name: 'agent.ldif.import', methods: ['POST'])]
+    public function ldif_import(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         $CSRFToken = $request->get('CSRFToken');
         $erreurs = false;
@@ -1556,36 +1200,25 @@ class AgentController extends BaseController
             );
         }
 
-        // Préparation de la requête pour insérer les données dans la base de données
-        $req = "INSERT INTO `{$GLOBALS['dbprefix']}personnel` (`login`,`nom`,`prenom`,`mail`,`matricule`,`password`,`droits`,`arrivee`,`postes`,`actif`,`commentaires`) ";
-        $req .= "VALUES (:login, :nom, :prenom, :mail, :matricule, :password, :droits, :arrivee, :postes, :actif, :commentaires);";
-        $db = new \dbh();
-        $db->CSRFToken = $CSRFToken;
-        $db->prepare($req);
-
         $results = $this->ldif_search($uids);
 
         foreach ($results as $elem) {
-            $values = array(
-                ':login'        => $elem['login'],
-                ':nom'          => $elem['sn'],
-                ':prenom'       => $elem['givenname'],
-                ':mail'         => $elem['mail'],
-                ':matricule'    => $elem['matricule'],
-                ':arrivee'      => date('Y-m-d H:i:s'),
-                ':password'     => 'LDIF import, the password is not stored',
-                ':droits'       => '[99,100]',
-                ':postes'       => '[]',
-                ':actif'        => 'Actif',
-                ':commentaires' => 'Importation LDIF ' . date('Y-m-d H:i:s'),
-            );
-
-            // Execution de la requête (insertion dans la base de données)
-            $db->execute($values);
-            if ($db->error) {
-                $erreurs=true;
-            }
+            $agent = new Agent();
+            $agent->setLogin($elem['login']);
+            $agent->setLastname($elem['sn']);
+            $agent->setFirstname($elem['givenname']);
+            $agent->setMail($elem['mail']);
+            $agent->setEmployeeNumber($elem['matricule']);
+            $agent->setPassword('LDIF import, the password is not stored');
+            $agent->setACL([99,100]);
+            $agent->setArrival(new \DateTime());
+            $agent->setSkills([]);
+            $agent->setActive('Actif');
+            $agent->setInformation('Importation LDIF ' . date('Y-m-d H:i:s'));
+            $this->entityManager->persist($agent);
         }
+
+        $this->entityManager->flush();
 
         if ($erreurs) {
             $session->getFlashBag()->add('error', "Il y a eu des erreurs pendant l'importation.#BR#Veuillez vérifier la liste des agents");
@@ -1602,7 +1235,10 @@ class AgentController extends BaseController
     }
 
 
-    private function ldif_search($searchTerms) {
+    /**
+     * @return mixed[]|non-empty-array[]
+     */
+    private function ldif_search($searchTerms): array {
 
         // Return an empty list if $searchTerms is empty (as for an LDAP search)
         if (empty($searchTerms)) {
@@ -1638,8 +1274,10 @@ class AgentController extends BaseController
         // Parse the LDIF file
         $ld = new Ldif2Array($this->config('LDIF-File'), true, $this->config('LDIF-Encoding'));
 
-        foreach ($ld->entries as $elem) {
+        foreach ($ld->entries as $entry) {
             $keep = false;
+
+            $elem = array_change_key_case($entry, CASE_LOWER);
 
             foreach ($searchTerms as $searchTerm) {
 
@@ -1675,8 +1313,8 @@ class AgentController extends BaseController
                     }
                     $id = $result[$this->config('LDIF-ID-Attribute')];
                     $result['id'] = $id;
-                    $result['login'] = $result[$this->config('LDIF-ID-Attribute')];
-                    $result['matricule'] = $result[$this->config('LDIF-Matricule')] ?? null;
+                    $result['login'] = $result[strtolower($this->config('LDIF-ID-Attribute'))];
+                    $result['matricule'] = $result[strtolower($this->config('LDIF-Matricule'))] ?? null;
 
                     $results[$id] = $result;
                 }
@@ -1686,70 +1324,300 @@ class AgentController extends BaseController
         return $results;
     }
 
-    /**
-     * @Route("/agent", name="agent.delete", methods={"DELETE"})
-     */
-    public function deleteAgent(Request $request, Session $session)
+    #[Route(path: '/agent/delete', name: 'agent.delete', methods: ['POST'])]
+    public function deleteAgent(Request $request, Session $session): RedirectResponse
     {
+        if (!$this->csrf_protection($request)) {
+            return $this->redirectToRoute('agent.index');
+        }
+
         // Initialisation des variables
-        $id = $request->get('id');
-        $CSRFToken = $request->get('CSRFToken');
-        $date = $request->get('date');
+        $id = $request->request->getInt('id');
+        $date = $request->request->get('date');
 
         // Disallow admin deletion
         if ($id == 1) {
-            return $this->json("error");
+            $this->addFlash('error', 'L\'agent 1 ne peut être supprimé.');
+            return $this->redirectToRoute('agent.index');
+        }
 
         // If the date parameter is given, even if empty : deletion level 1
-        } elseif ($date !== null) {
+        if ($date !== null) {
             $date = dateSQL($date);
             // Mise à jour de la table personnel
-            $db = new \db();
-            $db->CSRFToken = $CSRFToken;
-            $db->update("personnel", array("supprime"=>"1","actif"=>"Supprim&eacute;","depart"=>$date), array("id"=>$id));
+            $agent = $this->entityManager->getRepository(Agent::class)->find($id);
+            $agent->setDeletion(1);
+            $agent->setActive('Supprimé');
+            $agent->setDeparture(new \DateTime($date));
+
+            $this->entityManager->flush();
 
             // Mise à jour de la table pl_poste
-            $db = new \db();
-            $db->CSRFToken = $CSRFToken;
-            $db->update('pl_poste', array('supprime'=>1), array('perso_id' => "$id", 'date' =>">$date"));
+            // Updates the deletion flag for a user on a given date.
+            $this->entityManager->getRepository(PlanningPosition::class)->updateAsDeleteByUserIdAndAfterDate([$id], $date);
 
             // Mise à jour de la table responsables
-            $db = new \db();
-            $db->CSRFToken = $CSRFToken;
-            $db->delete("responsables", array('responsable' => $id));
+            // Deletes manager links by agent or responsible IDs.
+            $this->entityManager->getRepository(Manager::class)->deleteByPersoOrResponsable([$id]);
 
-            $db = new \db();
-            $db->CSRFToken = $CSRFToken;
-            $db->delete("responsables", array('perso_id' => $id));
-
-            return $this->json("level 1 delete OK");
+            $this->addFlash('notice', 'L\'agent a bien été supprimé.');
+            return $this->redirectToRoute('agent.index');
 
         // If the date parameter is not given : deletion level 2
         } else {
-            $p = new \personnel();
-            $p->CSRFToken = $CSRFToken;
-            $p->delete($id);
-            return $this->json("permanent delete OK");
+            $this->entityManager->getRepository(Agent::class)->delete($id);
+
+            $this->addFlash('notice', 'L\'agent a été supprimé définitivement.');
+            return $this->redirectToRoute('agent.index');
         }
+    }
+
+    /*
+     * Supprime les agents sélectionnés à partir de la liste des agents.
+     * Les agents ne sont pas supprimés définitivement, ils sont marqués comme supprimés dans la table personnel (champ supprime=1)
+     * Appelé par la fonction JS public/js/agent.js : agent_list
+    */
+    #[Route(path: '/agent/bulk/delete', name: 'agent.bulk.delete', methods: ['DELETE'])]
+    public function bulkDelete(Request $request, Session $session)
+    {
+        if (!$this->csrf_protection($request)) {
+            return $this->redirectToRoute('access-denied');
+        }
+
+        $list = $request->get('list');
+        $CSRFToken = $request->get('CSRFToken');
+
+        $list = html_entity_decode($list, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+
+        // prohibits removal of admin and "tout le monde"
+        $tab = array();
+        $tmp = json_decode($list);
+        foreach ($tmp as $elem) {
+            if ($elem > 2) {
+                $tab[] = $elem;
+            }
+        }
+
+        if ($session->get('AgentActive') == 'Supprimé') {
+            $this->entityManager->getRepository(Agent::class)->delete($tab);
+        } else {
+            // TODO : demander la date de suppression en popup
+            // Date de suppression
+            $date = date('Y-m-d');
+
+            // Mise à jour de la table personnel
+            // Marks the given agents as deleted and sets their departure date to today.
+            $this->entityManager->getRepository(Agent::class)->updateAsDeletedAndDepartTodayById($tab);
+
+            // Mise à jour de la table pl_poste
+            // Updates users as deleted for a given user and after a given date.
+            $this->entityManager->getRepository(PlanningPosition::class)->updateAsDeleteByUserIdAndAfterDate($tab, $date);
+
+            // Mise à jour de la table responsables
+            // Deletes manager links by agent or responsible IDs.
+            $this->entityManager->getRepository(Manager::class)->deleteByPersoOrResponsable($tab);
+        }
+
+        $return = ["ok"];
+        return new Response(json_encode($return));
+    }
+
+    /*
+     * Met à jour les fiches des agents sélectionnés à partir de la liste des agents.
+     * Appelé par la fonction JS public/js/agent.js : agent_list
+     */
+    #[Route(path: '/agent/bulk/update', name: 'agent.bulk.update', methods: ['POST'])]
+    public function bulkUpdate(Request $request, Session $session)
+    {
+        // CSFR Protection
+        if (!$this->csrf_protection($request)) {
+            return $this->redirectToRoute('access-denied');
+        }
+
+        if (!in_array(21, $_SESSION['droits'])) {
+            $return = ['Accès refusé'];
+            return new Response(json_encode($return));
+        }
+
+        // Selected agents
+        $list = $request->get('list');
+        $list = html_entity_decode($list, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
+        $list = json_decode($list);
+
+        // Main tab
+        $actif = $request->get('actif');
+        $contrat = $request->get('contrat');
+        $heures_hebdo = $request->get('heures_hebdo');
+        $heures_travail = $request->get('heures_travail');
+        $service = $request->get('service');
+        $statut = $request->get('statut');
+
+        // Skills tab
+        $skills = $request->get('postes');
+        $skills = $skills == '-1' ? '-1' : json_decode($skills);
+
+        // Update DB
+        $agents = $this->entityManager->getRepository(Agent::class)->findById($list);
+
+        foreach ($agents as $agent) {
+            // Main Tab
+            if ($actif != '-1') {
+                $agent->setActive($actif);
+            }
+
+            if ($contrat != '-1') {
+                $agent->setCategory($contrat);
+            }
+
+            if ($heures_hebdo != '-1') {
+                $agent->setWeeklyServiceHours($heures_hebdo);
+            }
+
+            if ($heures_travail != '-1') {
+                $agent->setWeeklyWorkingHours($heures_travail);
+            }
+
+            if ($service != '-1') {
+                $agent->setService($service);
+            }
+
+            if ($statut != '-1') {
+                $agent->setStatus($statut);
+            }
+
+            // Skills tab
+            if ($skills != '-1') {
+                $agent->setSkills($skills);
+            }
+
+            $this->entityManager->persist($agent);
+
+        }
+        $this->entityManager->flush();
+
+        $return = ['ok'];
+
+        return new Response(json_encode($return));
+    }
+
+    /*
+     * Envoi par mail à l'agent sélectionné les URL de ses agendas Planno
+     * Lors de la validation du formulaire "Envoi de l'URL de l'agenda Planning Biblio" accessible depuis l'onglet Agenda des fiches "agent"
+     * Appelé par $( "#ics-url-form" ).dialog({ Envoyer ]), public/js/agent.js
+     */
+    #[Route(path: '/agent/ics/send-url', name: 'agent.ics.send_url', methods: ['POST'])]
+    public function sendIcsUrl(Request $request)
+    {
+        if (!$this->csrf_protection($request)) {
+            return $this->redirectToRoute('access-denied');
+        }
+
+        $message = $request->get('message');
+        $recipient = $request->get('recipient');
+        $subject = $request->get('subject');
+
+        $message = trim($message);
+        $message = preg_replace("/(http:\/\/.*[^ \n])/", "<a href='$1' target='_blank'>$1</a>", $message);
+        $message = str_replace(array("\n","\r"), "<br/>", $message);
+
+        $recipient = filter_var($recipient, FILTER_SANITIZE_EMAIL);
+
+        // Envoi du mail
+        $m = new \CJMail();
+        $m->subject = $subject;
+        $m->message = $message;
+        $m->to = $recipient;
+        $isSent = $m->send();
+
+        // retour vers la fonction JS
+        if ($m->error) {
+            $return = array('error' => $m->error);
+        } elseif (!$isSent) {
+            $return = array('error' => 'Une erreur est survenue lors de l\'envoi du mail');
+        } else {
+            $return = ['ok'];
+        }
+
+        return new Response(json_encode($return));
+    }
+
+    #[Route('/agent/ics/reset-url', name: 'agent.ics.reset_url', methods: ['POST'])]
+    public function resetIcsUrl(Request $request): \Symfony\Component\HttpFoundation\Response
+    {
+        if (!$this->csrf_protection($request)) {
+            $response = new Response();
+            $response->setContent('CSRF token error');
+            $response->setStatusCode(400);
+            return $response;
+        }
+
+        $id = $request->get('id');
+        $newCode = md5(time().rand(100, 999));
+
+        $agent = $this->entityManager->getRepository(Agent::class)->find($id);
+        $agent->setICSCode($newCode);
+
+        $this->entityManager->persist($agent);
+        $this->entityManager->flush();
+
+        $url = $this->config['URL'] . '/ical?id=' . $id . '&code=' . $newCode;
+
+        return new Response(json_encode(['url' => $url]));
+    }
+
+    /*
+     * Met à jour la liste des agents dans les select des pages /absence et conges/voir.php
+     * Affiche dans cette liste les agents supprimés ou non en fonction de la variable $_GET['deleted']
+     * Appelé en Ajax via la fonction JS updateAgentsList à partir de la page voir.php
+     */
+    #[Route(path: '/agent/update-list', name: 'agent.update_list', methods: ['GET'])]
+    public function updateAgentList(Request $request): \Symfony\Component\HttpFoundation\Response
+    {
+        if ($request->get('deleted') == 'yes') {
+            $agents = $this->entityManager->getRepository(Agent::class)->getByDeletionStatus([0,1]);
+        } else {
+            $agents = $this->entityManager->getRepository(Agent::class)->get();
+        }
+
+        // TODO: voir si nous pouvons retourner directement $agents (ou json_encode($agents))
+        $tab =[];
+        foreach ($agents as $agent) {
+            $tab[] = ['id' => $agent->getId(), 'nom' => $agent->getLastname(), 'prenom' => $agent->getFirstname()];
+        }
+
+        return new Response(json_encode($tab));
     }
 
     private function save_holidays($params)
     {
         if (!$this->config('Conges-Enable')) {
-            return array();
+            return array(
+                'conges_annuel'       => 0,
+                'conges_anticipation' => 0,
+                'conges_credit'       => 0,
+                'conges_reliquat'     => 0,
+                'comp_time'           => 0,
+            );;
         }
 
-        $available_keys = array(
-            'conges_credit',
-            'conges_reliquat',
-            'conges_anticipation',
-            'comp_time',
-            'conges_annuel');
+        $available_keys = ['comp_time'];
+
+        if ($this->config('Conges-Mode') == 'heures') {
+            $available_keys = [
+                'comp_time',
+                'conges_credit',
+                'conges_reliquat',
+                'conges_anticipation',
+                'conges_annuel'
+            ];
+        }
 
         foreach ($available_keys as $key) {
-            $params[$key . '_min'] = isset($params[$key . '_min']) ? $params[$key . '_min'] : 0;
-            $params[$key] = !empty($params[$key]) ? $params[$key] : 0;
+            $params[$key . '_hours'] = !empty(trim($params[$key . '_hours'])) ? trim($params[$key . '_hours']) : 0;
+            $params[$key . '_min'] = !empty(trim($params[$key . '_min'])) ? trim($params[$key . '_min']) : 0;
         }
+
+        $comp_time = HourHelper::hoursMinutesToDecimal(trim($params['comp_time_hours']), trim($params['comp_time_min']));
 
         if ($this->config('Conges-Mode') == 'jours' ) {
             $event = new OnTransformLeaveDays($params);
@@ -1758,43 +1626,36 @@ class AgentController extends BaseController
             if ($event->hasResponse()) {
                 $credits = $event->response();
             } else {
-
-                $comptime_hours = $params['comp_time'];
-                $negative = false;
-                if ($params['comp_time'] < 0 || $params['comp_time'] == -0) {
-                    $negative = true;
-                    $comptime_hours = abs($params['comp_time']);
-                }
-
-                $comp_time = $comptime_hours + $params['comp_time_min'];
-
                 $credits = array(
-                    'conges_credit' => $params['conges_credit'] *= 7,
-                    'conges_reliquat' => $params['conges_reliquat'] *= 7,
+                    'conges_credit'       => $params['conges_credit'] *= 7,
+                    'conges_reliquat'     => $params['conges_reliquat'] *= 7,
                     'conges_anticipation' => $params['conges_anticipation'] *= 7,
-                    'comp_time' => $negative ? 0 - $comp_time : $comp_time,
-                    'conges_annuel' => $params['conges_annuel'] *= 7,
+                    'comp_time'           => $comp_time,
+                    'conges_annuel'       => $params['conges_annuel'] *= 7,
                 );
             }
         } else {
+
+            $conges_annuel       = HourHelper::hoursMinutesToDecimal(trim($params['conges_annuel_hours']),       trim($params['conges_annuel_min']));
+            $conges_anticipation = HourHelper::hoursMinutesToDecimal(trim($params['conges_anticipation_hours']), trim($params['conges_anticipation_min']));
+            $conges_credit       = HourHelper::hoursMinutesToDecimal(trim($params['conges_credit_hours']),       trim($params['conges_credit_min']));
+            $conges_reliquat     = HourHelper::hoursMinutesToDecimal(trim($params['conges_reliquat_hours']),     trim($params['conges_reliquat_min']));
+
             $credits = array(
-                'conges_credit' => $params['conges_credit'] + $params['conges_credit_min'],
-                'conges_reliquat' => $params['conges_reliquat'] + $params['conges_reliquat_min'],
-                'conges_anticipation' => $params['conges_anticipation'] + $params['conges_anticipation_min'],
-                'comp_time' => $params['comp_time'] + $params['comp_time_min'],
-                'conges_annuel' => $params['conges_annuel'] + $params['conges_annuel_min'],
+                'conges_annuel'       => $conges_annuel,
+                'conges_anticipation' => $conges_anticipation,
+                'conges_credit'       => $conges_credit,
+                'conges_reliquat'     => $conges_reliquat,
+                'comp_time'           => $comp_time,
             );
         }
 
-        $c = new \conges();
-        $c->perso_id = $params['id'];
-        $c->CSRFToken = $params['CSRFToken'];
-        $c->maj($credits, $params['action']);
+        $this->entityManager->getRepository(Holiday::class)->insert($params['id'], $credits, $params['action']);
 
         return $credits;
     }
 
-    private function login($firstname = '', $lastname = '', $mail = '')
+    private function login($firstname = '', $lastname = '', $mail = ''): string
     {
 
         $firstname = trim($firstname);
@@ -1805,10 +1666,10 @@ class AgentController extends BaseController
 
         switch ($this->config('Auth-LoginLayout')) {
             case 'lastname.firstname' :
-                if ($lastname) {
+                if ($lastname !== '' && $lastname !== '0') {
                     $tmp[] = $lastname;
                 }
-                if ($firstname) {
+                if ($firstname !== '' && $firstname !== '0') {
                     $tmp[] = $firstname;
                 }
                 break;
@@ -1822,10 +1683,10 @@ class AgentController extends BaseController
                 break;
 
             default :
-                if ($firstname) {
+                if ($firstname !== '' && $firstname !== '0') {
                     $tmp[] = $firstname;
                 }
-                if ($lastname) {
+                if ($lastname !== '' && $lastname !== '0') {
                     $tmp[] = $lastname;
                 }
                 break;
@@ -1857,4 +1718,28 @@ class AgentController extends BaseController
 
         return $login;
     }
+
+    // Ajout des noms dans les tableaux postes attribués et dispo
+    /**
+     * @return array{mixed, mixed}[]
+     */
+    private function postesNoms($postes, $tab_noms): array
+    {
+        $tmp = array();
+        if (is_array($postes)) {
+            foreach ($postes as $elem) {
+                if (is_array($tab_noms)) {
+                    foreach ($tab_noms as $noms) {
+                        if ($elem==$noms[1]) {
+                            $tmp[] = array($elem,$noms[0]);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        usort($tmp, "cmp_1");
+        return $tmp;
+    }
+ 
 }

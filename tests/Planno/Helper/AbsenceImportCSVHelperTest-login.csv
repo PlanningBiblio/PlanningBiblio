@@ -1,0 +1,3 @@
+Login;Nom;Prénom;Structures / services;Adresse Email;Date de début;Date de fin
+alogin;Doe;John;Library;john.doe@example.com;11/04/2025 après-midi;14/04/2025 matin
+notalogin;Non;Existent;Library;does.not.exist@example.com;11/04/2025 après-midi;14/04/2025 matin

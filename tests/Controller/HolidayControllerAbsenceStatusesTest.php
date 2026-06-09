@@ -1,12 +1,10 @@
 <?php
 
-use App\Model\Agent;
-use App\Model\ConfigParam;
-
-use Tests\PLBWebTestCase;
+use App\Entity\Agent;
 use Tests\FixtureBuilder;
+use Tests\PLBWebTestCase;
 
-require_once(__DIR__ . '/../../public/conges/class.conges.php');
+require_once(__DIR__ . '/../../legacy/Class/class.conges.php');
 
 class HolidayControllerAbsenceStatusesTest extends PLBWebTestCase
 {
@@ -19,21 +17,9 @@ class HolidayControllerAbsenceStatusesTest extends PLBWebTestCase
         $GLOBALS['config']['Conges-validation'] = 1;
     }
 
-    protected function setParam($name, $value)
+    public function testEditN2AbsenceRightN1AndN2(): void
     {
-        $GLOBALS['config'][$name] = $value;
-        $param = $this->entityManager
-            ->getRepository(ConfigParam::class)
-            ->findOneBy(['nom' => $name]);
-
-        $param->valeur($value);
-        $this->entityManager->persist($param);
-        $this->entityManager->flush();
-    }
-
-    public function testEditN2AbsenceRightN1AndN2()
-    {
-        $this->setParam('Conges-Validation-N2', 0);
+        $this->config->setParam('Conges-Validation-N2', 0);
 
         $client = static::createClient();
 
@@ -45,12 +31,12 @@ class HolidayControllerAbsenceStatusesTest extends PLBWebTestCase
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
             'droits' => array(99,100)
         ));
-        $agent_id = $jdevoe->id();
+        $agent_id = $jdevoe->getId();
 
         $absence_id = $this->createHolidayFor($jdevoe);
 
         // request /absence-statuses
-        $this->logInAgent($loggedin, $loggedin->droits());
+        $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $client->request('GET', "/absence-statuses?ids[]=$agent_id&module=holiday&id=$absence_id");
 
         $statuses_element = $crawler->filter('span');
@@ -73,7 +59,7 @@ class HolidayControllerAbsenceStatusesTest extends PLBWebTestCase
             'minutes'       => '0',
             'rest'          => 0,
             'debit'         => 'credit',
-            'perso_id'      => $agent->id(),
+            'perso_id'      => $agent->getId(),
             'saisie_par'    => 1,
             'valide'        => 1,
             'valide_n1'     => 0,

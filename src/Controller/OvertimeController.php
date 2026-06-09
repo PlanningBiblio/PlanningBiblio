@@ -3,36 +3,33 @@
 namespace App\Controller;
 
 use App\Controller\BaseController;
-use App\PlanningBiblio\Helper\HolidayHelper;
-
-use App\Model\Agent;
-use App\Model\OverTime;
-
-use Symfony\Component\HttpFoundation\Session\Session;
+use App\Entity\Agent;
+use App\Entity\OverTime;
+use App\Planno\Helper\HolidayHelper;
+use App\Planno\Helper\HourHelper;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
-
-include_once(__DIR__ . '/../../public/conges/class.conges.php');
-include_once(__DIR__ . '/../../public/personnel/class.personnel.php');
+include_once(__DIR__ . '/../../legacy/Class/class.conges.php');
+include_once(__DIR__ . '/../../legacy/Class/class.personnel.php');
+include_once(__DIR__ . '/../../legacy/Common/sanitize.php');
 
 class OvertimeController extends BaseController
 {
-    use \App\Controller\Traits\EntityValidationStatuses;
+    use \App\Traits\EntityValidationStatuses;
 
     private Array $droits;
 
-    /**
-     * @Route("/overtime", name="overtime.index", methods={"GET"})
-     */
-    public function index(Request $request)
+    #[Route(path: '/overtime', name: 'overtime.index', methods: ['GET'])]
+    public function index(Request $request, Session $session)
     {
+        $start = $this->initDate('start', 'overtimeStart', 'today');
+        $end = $this->initDate('end', 'overtimeEnd', '+1 year');
 
-        $holiday_helper = new HolidayHelper();
-
-        $annee = $request->get('annee');
-        $reset = $request->get('reset');
-        $perso_id = $request->get('perso_id');
+        $reset = $request->query->get('reset');
+        $perso_id = $request->query->get('perso_id');
 
         $this->droits = $GLOBALS['droits'];
         $lang = $GLOBALS['lang'];
@@ -40,39 +37,31 @@ class OvertimeController extends BaseController
         list($admin, $adminN2) = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('holiday')
-            ->getValidationLevelFor($_SESSION['login_id']);
+            ->getValidationLevelFor($session->get('loginId'));
 
         if (($admin or $adminN2) and $perso_id === null) {
             $perso_id = isset($_SESSION['oups']['recup_perso_id'])
                 ? $_SESSION['oups']['recup_perso_id']
-                : $_SESSION['login_id'];
+                : $session->get('loginId');
         } elseif ($perso_id === null) {
-            $perso_id = $_SESSION['login_id'];
-        }
-
-        if (!$annee) {
-            $annee = isset($_SESSION['oups']['recup_annee'])
-                ? $_SESSION['oups']['recup_annee']
-                : (date("m")<9?date("Y")-1:date("Y"));
+            $perso_id = $session->get('loginId');
         }
 
         if ($reset) {
-            $annee = date("m") < 9 ? date("Y") - 1 : date("Y");
-            $perso_id = $_SESSION['login_id'];
+            $start = new \DateTime();
+            $end = new \DateTime('+1 year');
+            $perso_id = $session->get('loginId');
         }
 
-        $_SESSION['oups']['recup_annee'] = $annee;
         $_SESSION['oups']['recup_perso_id'] = $perso_id;
 
-        $debut = $annee . '-09-01';
-        $fin = ($annee + 1) . '-08-31';
         $message = null;
 
         // Search for existing overtimes
         $c = new \conges();
         $c->admin = ($admin or $adminN2);
-        $c->debut = $debut;
-        $c->fin = $fin;
+        $c->debut = $start->format('Y-m-d');
+        $c->fin = $end->format('Y-m-d');
         if ($perso_id != 0) {
             $c->perso_id = $perso_id;
         }
@@ -83,24 +72,19 @@ class OvertimeController extends BaseController
         $managed = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('holiday')
-            ->getManagedFor($_SESSION['login_id']);
+            ->getManagedFor($session->get('loginId'));
 
-        $perso_ids = array_map(function($a) { return $a->id(); }, $managed);
-
-        // School year
-        $annees = array();
-        for ($d = date("Y") + 2; $d > date("Y") - 11; $d--) {
-            $annees[]= array($d, $d . '-' . ($d + 1));
-        }
+        $perso_ids = array_map(function($a) { return $a->getId(); }, $managed);
 
         $this->templateParams(array(
-            'years'     => $annees,
-            'year_from' => $annee,
-            'year_to'   => $annee + 1,
+            'start'     => $start,
+            'end'       => $end,
             'admin'     => ($admin or $adminN2),
         ));
 
+        $holiday_helper = new HolidayHelper();
         $overtimes = array();
+
         foreach ($recup as $elem) {
 
           // Filtre les agents non-gérés (notamment avec l'option Absences-notifications-agent-par-agent)
@@ -123,7 +107,7 @@ class OvertimeController extends BaseController
                 if ($elem['solde_prec']!=null and $elem['solde_actuel']!=null) {
                     $credits=heure4($elem['solde_prec'])." → ".heure4($elem['solde_actuel']);
                     if ($holiday_helper->showHoursToDays()) {
-                        $credits .= "<br />" . $holiday_helper->hoursToDays($elem['solde_prec'], $elem['perso_id']) . "j &rarr; " . $holiday_helper->hoursToDays($elem['solde_actuel'], $elem['perso_id']) . "j";
+                        $credits .= "\n" . $holiday_helper->hoursToDays($elem['solde_prec'], $elem['perso_id']) . "j → " . $holiday_helper->hoursToDays($elem['solde_actuel'], $elem['perso_id']) . "j";
                     }
                 }
             } elseif ($elem['valide']<0) {
@@ -141,13 +125,14 @@ class OvertimeController extends BaseController
             }
 
             $date2 = ($elem['date2'] and $elem['date2']!="0000-00-00") ? " & ".dateFr($elem['date2']) : null;
+            $hours = HourHelper::decimalToHoursMinutes($elem['heures'])['as_string'];
 
             $overtime = array(
                 'id'                => $elem['id'],
                 'date'              => dateFr($elem['date']),
                 'date2'             => $date2,
                 'name'              => nom($elem['perso_id']),
-                'hours'             => heure4($elem['heures']),
+                'hours'             => $hours,
                 'validation_style'  => $validationStyle,
                 'validation'        => $validation,
                 'validation_date'   => $validation_date,
@@ -168,8 +153,8 @@ class OvertimeController extends BaseController
         ));
 
         $categories = array();
-        foreach ($managed as $index => $m) {
-            $categories[$m->id()] = $m->categorie();
+        foreach ($managed as $m) {
+            $categories[$m->getId()] = $m->getCategory();
         }
 
         $this->templateParams(array(
@@ -184,20 +169,16 @@ class OvertimeController extends BaseController
             'perso_id'                  => $perso_id,
             'perso_name'                => nom($perso_id, 'prenom nom'),
             'managed'                   => $managed,
-            'categories'                => json_encode($categories, JSON_HEX_APOS),
-            'label'                     => ($this->config('Recup-DeuxSamedis')) ? "Date (1<sup>er</sup> samedi)" : "Date",
-            'saturday'                  => "Date (2<sup>ème</sup> samedi) (optionel)",
+            'categories'                => $categories,
         ));
 
         return $this->output('overtime/index.html.twig');
     }
 
-    /**
-     * @Route("/overtime/{id}", name="overtime.edit", methods={"GET"})
-     */
+    #[Route(path: '/overtime/{id<\d+>}', name: 'overtime.edit', methods: ['GET'])]
     public function edit(Request $request)
     {
-
+        $session = $request->getSession();
         $id = $request->get('id');
 
         $c = new \conges();
@@ -211,21 +192,22 @@ class OvertimeController extends BaseController
             ->getRepository(Agent::class)
             ->setModule('holiday')
             ->forAgent($perso_id)
-            ->getValidationLevelFor($_SESSION['login_id']);
+            ->getValidationLevelFor($session->get('loginId'));
 
         // Prevent non manager to access other agents request.
-        if (!$adminN1 and !$adminN2 and $perso_id != $_SESSION['login_id']) {
+        if (!$adminN1 and !$adminN2 and $perso_id != $session->get('loginId')) {
             return $this->output('access-denied.html.twig');
         }
 
-        $this->setStatusesParams(array($perso_id), 'overtime', $id);
+        $this->templateParams($this->getStatusesParams(array($perso_id), 'overtime', $id));
 
 
         // Initialisation des variables (suite)
         $agent = nom($recup['perso_id'], "prenom nom");
         $recup['saisie'] = dateFr($recup['saisie'], true);
         $recup['saisie_par_nom'] = nom($recup['saisie_par']);
-        $recup['time'] = gmdate('H:i', floor($recup['heures'] * 3600));
+        $result = HourHelper::decimalToHoursMinutes($recup['heures']);
+        $recup['time'] = $result['hours'] . ':' . $result['minutes'];
         $recup['editable'] = $recup['valide'] <= 0 ? 1 : 0;
         $recup['save'] = (
             ($adminN2 and $recup['valide'] <= 0 )  // Level 2 off or refused
@@ -243,10 +225,8 @@ class OvertimeController extends BaseController
         return $this->output('overtime/edit.html.twig');
     }
 
-    /**
-     * @Route("/overtime", name="overtime.save", methods={"POST"})
-     */
-    public function save(Request $request, Session $session)
+    #[Route(path: '/overtime', name: 'overtime.save', methods: ['POST'])]
+    public function save(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         $CSRFToken = $request->get('CSRFToken');
         $id = $request->get('id');
@@ -257,7 +237,7 @@ class OvertimeController extends BaseController
         $lang = $GLOBALS['lang'];
 
         list($hours, $minutes) = explode(':', $heures);
-        $heures = intVal($hours) + intVal($minutes) / 60;
+        $heures = HourHelper::hoursMinutesToDecimal($hours, $minutes);
 
         $result = array(
             'type' => 'notice',
@@ -276,14 +256,14 @@ class OvertimeController extends BaseController
             ->getRepository(Agent::class)
             ->setModule('holiday')
             ->forAgent($perso_id)
-            ->getValidationLevelFor($_SESSION['login_id']);
+            ->getValidationLevelFor($session->get('loginId'));
 
 
         // Update hours.
         $update = array(
             'heures' => $heures,
             'commentaires' => $commentaires,
-            'modif' => $_SESSION['login_id'],
+            'modif' => $session->get('loginId'),
             'modification' => date('Y-m-d H:i:s')
         );
 
@@ -291,13 +271,13 @@ class OvertimeController extends BaseController
         if ($validation !== null and ($adminN1 or $adminN2)) {
             // Validation level 1
             if ($validation == 2 or $validation == -2) {
-                $update['valide_n1'] = $validation / 2 * $_SESSION['login_id'] ;
+                $update['valide_n1'] = $validation / 2 * $session->get('loginId') ;
                 $update['validation_n1'] = date("Y-m-d H:i:s");
             }
 
             // Validation level 2
             if ($validation == 1 or $validation == -1) {
-                $update['valide'] = $validation * $_SESSION['login_id'] ;
+                $update['valide'] = $validation * $session->get('loginId') ;
                 $update['validation'] = date("Y-m-d H:i:s");
             }
 
@@ -340,8 +320,8 @@ class OvertimeController extends BaseController
 
                 // Notifiy agent and managers.
                 $agent = $this->entityManager->find(Agent::class, $perso_id);
-                $nom = $agent->nom();
-                $prenom = $agent->prenom();
+                $nom = $agent->getLastname();
+                $prenom = $agent->getFirstname();
 
                 if (isset($update['valide']) and $update['valide'] > 0) {
                     $sujet = $lang['overtime_subject_accepted'];
@@ -367,10 +347,10 @@ class OvertimeController extends BaseController
                 $message .= "Date : ".dateFr($recup['date']);
                 $message .= "<br/>\n";
                 $message .= "Nombre d'heures : ".heure4($update['heures']);
-                if ($update['commentaires']) {
+                if ($update['commentaires'] !== '' && $update['commentaires'] !== '0') {
                     $message.="<br/><br/><u>Commentaires</u> :<br/>".str_replace("\n", "<br/>", $update['commentaires']);
                 }
-                if ($update['refus']) {
+                if ($update['refus'] !== '' && $update['refus'] !== '0') {
                     $message.="<br/><br/><u>Motif du refus</u> :<br/>".str_replace("\n", "<br/>", $update['refus']);
                 }
 
@@ -411,4 +391,113 @@ class OvertimeController extends BaseController
         return $this->redirectToRoute('overtime.index');
     }
 
+    #[Route('/overtime/add', name: 'overtime.add', methods: ['POST'])]
+    public function add(Request $request, Session $session): \Symfony\Component\HttpFoundation\Response
+    {
+        // Initialisation des variables
+        $commentaires = $request->get('commentaires');
+        $CSRFToken = $request->get('CSRFToken');
+        $heures = $request->get('heures');
+        $date = $request->get('date');
+        $date2 = $request->get('date2');
+        $perso_id = $request->get('perso_id');
+
+        $date = filter_var($date, FILTER_CALLBACK, array('options' => 'sanitize_dateFr'));
+        $date2 = filter_var($date2, FILTER_CALLBACK, array('options' => 'sanitize_dateFr'));
+        $perso_id = filter_var($perso_id, FILTER_SANITIZE_NUMBER_INT);
+
+        list($hours, $minutes) = explode(':', $heures);
+        $heures = intVal($hours) + intVal($minutes) / 60;
+
+        // Les dates sont au format DD/MM/YYYY et converti en YYYY-MM-DD
+        $date = dateSQL($date);
+        $date2 = dateSQL($date2);
+
+        $loginId = $session->get('loginId');
+
+        if (empty($perso_id)) {
+            $perso_id = $loginId;
+        }
+
+        $insert=array("perso_id"=>$perso_id,"date"=>$date,"date2"=>$date2,"heures"=>$heures,"commentaires"=>$commentaires,
+                      "saisie_par"=>$loginId);
+
+        $db = new \db();
+        $db->CSRFToken = $CSRFToken;
+        $db->insert('recuperations', $insert);
+        if ($db->error) {
+            $return = ['Demande-Erreur'];
+            return new Response(json_encode($return));
+        }
+
+        $return = ['Demande-OK'];
+
+        $agent = $this->entityManager->find(Agent::class, $perso_id);
+        $nom = $agent->getLastname();
+        $prenom = $agent->getFirstname();
+
+        if ($this->config['Absences-notifications-agent-par-agent']) {
+            $a = new \absences();
+            $a->getRecipients2(null, $perso_id, 1);
+            $destinataires = $a->recipients;
+        } else {
+            $c = new \conges();
+            $c->getResponsables($date, $date, $perso_id);
+            $responsables = $c->responsables;
+
+            $a = new \absences();
+            $a->getRecipients(1, $responsables, $agent, 'Recup');
+            $destinataires = $a->recipients;
+        }
+
+        if (!empty($destinataires)) {
+            $sujet = 'Nouvelle demande d\'heures supplémentaires';
+            $message = "Demande d'heures supplémentaires du ".dateFr($date)." enregistrée pour $prenom $nom<br/><br/>";
+
+            if ($commentaires) {
+                $message .= 'Commentaires : ' . str_replace("\n", '<br/>', $commentaires);
+            }
+
+            // ajout d'un lien permettant de rebondir sur la demande
+            $overtime = $this->entityManager->getRepository(OverTime::class)->findOneBy(
+                array(
+                    'perso_id' => $perso_id,
+                    'date' => \DateTime::createFromFormat('Y-m-d', $date),
+                    'saisie_par' => $loginId,
+                ),
+                array(
+                    'id' => 'desc'
+                ),
+            );
+
+            $url = $this->config('URL') . '/overtime/' . $overtime->getId();
+            $message .= "<p>Lien vers la demande d'heures supplémentaires :<br/><a href='$url'>$url</a></p>";
+
+            $m = new \CJMail();
+            $m->subject = $sujet;
+            $m->message = $message;
+            $m->to = $destinataires;
+            $m->send();
+
+            $return[] = $m->error_CJInfo;
+        }
+
+        return new Response(json_encode($return));
+    }
+
+    #[Route('/overtime/check', name: 'overtime.check', methods: ['GET'])]
+    public function check(Request $request, Session $session): \Symfony\Component\HttpFoundation\Response
+    {
+        $date = $request->query->get('date');
+        $perso_id = $request->query->getInt('perso_id');
+
+        $date = dateFr($date);
+        $perso_id = is_numeric($perso_id) ? $perso_id : $session->get('loginId');
+
+        $db=new \db();
+        $date = $db->escapeString($date);
+        $db->select("recuperations", null, "`perso_id`='$perso_id' AND (`date`='$date' OR `date2`='$date')");
+        $output = $db->result ? "Demande" : "";
+        return new Response($output);
+    }
 }

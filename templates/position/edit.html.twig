@@ -3,11 +3,11 @@
 {% extends 'base.html.twig' %}
 
 {% block specificjs %}
-  <script type='text/JavaScript' src='{{ asset("js/plb/position.js") }}?version={{ version }}'></script>
+  <script type="text/JavaScript" src="{{ asset('js/position.js') }}?version={{ version }}"></script>
 {% endblock %}
 {% block page %}
   <div id="content-form">
-    {% if id is defined %}
+    {% if id is defined and id is not null %}
       <h3>Modification du poste</h3>
     {% else %}
       <h3>Ajout d'un poste</h3>
@@ -50,14 +50,12 @@
                     <select name='etage' id='etage' style='width:255px' class='ui-widget-content ui-corner-all'>
                       <option value=''>&nbsp;</option>
                       {% for floor in floors %}
-                        {% if etage == floor.id %}
-                          <option value='{{floor.id}}' selected=selected>{{ floor.valeur }}</option>
-                        {% else %}
-                          <option value='{{floor.id}}' >{{ floor.valeur }}</option>
-                        {% endif %}
+                        <option value="{{floor.id}}" {% if etage == floor.id %} selected {% endif %}>{{ floor.value }}</option>                        
                       {% endfor %}
                     </select>
-                    <span class='pl-icon pl-icon-add' title='Ajouter' id='add-etage-button' style='cursor:pointer; margin-left:4px;'></span>
+                    <button type="button" class="btn btn-icon" data-bs-toggle="modal" data-bs-target="#add-floor-modal">
+                      <span class="pl-icon pl-icon-add ps-3" title="Ajouter un étage"></span>
+                    </button>
                   </td>
                 </tr>
                 {% if not config('Planook') %}
@@ -67,14 +65,13 @@
                       <select name='groupe' id='groupe' style='width:255px' class='ui-widget-content ui-corner-all'>
                         <option value=''>&nbsp;</option>
                         {% for group in groups %}
-                          {% if groupe == group.id %}
-                            <option value='{{ group.id }}' selected=selected  >{{ group.valeur }}</option>
-                          {% else %}
-                            <option value='{{ group.id }}'>{{ group.valeur }}</option>
-                          {% endif %}
+                          <option value="{{ group.id }}" {% if groupe == group.id %} selected {% endif %} >{{ group.value }}</option>
                         {% endfor %}
                       </select>
-                      <span class='pl-icon pl-icon-add' title='Ajouter' id='add-group-button' style='cursor:pointer; margin-left:4px;'></span>
+                      <button type="button" class="btn btn-icon" data-bs-toggle="modal" data-bs-target="#add-group-modal">
+                        <span class="pl-icon pl-icon-add ps-3" title="Ajouter un groupe"></span>
+                      </button>
+    
                     </td>
                   </tr>
                   <tr>
@@ -89,6 +86,13 @@
                     <td>
                       <input type='radio' name='bloquant' value='1' {{ bloq1 }}/> Oui
                       <input type='radio' name='bloquant' value='0' {{ bloq2 }}/> Non
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><span title='Compter les heures dans le quota de service public'>Quota de SP :</span></td>
+                    <td>
+                      <input type='radio' name='quota_sp' value='1' {{ quota_sp1 }}/> Oui
+                      <input type='radio' name='quota_sp' value='0' {{ quota_sp2 }}/> Non
                     </td>
                   </tr>
                   <tr>
@@ -124,9 +128,9 @@
                     <td>
                       {% for s in skillList %}
                         {% if s.id in activites %}
-                          <input type='checkbox' name='activites[]' value='{{ s.id }}' checked=checked /> {{ s.nom | raw }}<br/>
+                          <input type="checkbox" name="activites[]" value="{{ s.id }}" checked="checked" /> {{ s.name }}<br/>
                         {% else %}
-                          <input type='checkbox' name='activites[]' value='{{ s.id }}' /> {{ s.nom | raw }}<br/>
+                          <input type="checkbox" name="activites[]" value="{{ s.id }}" /> {{ s.name }}<br/>
                         {% endif %}
                       {% endfor %}
                     </td>
@@ -137,9 +141,9 @@
                       <td style='padding-top:26px;'>
                         {% for c in categoriesList %}
                           {% if c.id in categories %}
-                            <input type='checkbox' name='categories[]' value='{{ c.id }}' checked=checked /> {{ c.valeur | raw }}<br/>
+                            <input type="checkbox" name="categories[]" value="{{ c.id }}" checked="checked" /> {{ c.valeur }}<br/>
                           {% else %}
-                            <input type='checkbox' name='categories[]' value='{{ c.id }}' /> {{ c.valeur | raw }}<br/>
+                            <input type="checkbox" name="categories[]" value="{{ c.id }}" /> {{ c.valeur }}<br/>
                           {% endif %}
                         {% endfor %}
                       </td>
@@ -152,9 +156,9 @@
           <tr>
             <td colspan='2' style='text-align:center;'><br/><br/>
               <input type='hidden' value={{id}} name='id'/>
-              <a href='{{ asset("position") }}'class='ui-button ui-button-type2'>Annuler</a>
+              <a href="{{ asset('position') }}" role="button" class="btn btn-secondary">Annuler</a>
                   &nbsp;&nbsp;&nbsp;
-              <input type='submit' value='Valider' class='ui-button'/>
+              <input type="submit" role="button"  value="Valider" class="btn btn-primary"/>
             </td>
           </tr>
           <tr>
@@ -164,56 +168,122 @@
         </table>
       </form>
 
-      <!--  Modification de la liste des étages (Dialog Box) -->
-      <div id="add-etage-form" title="Liste des étages" class='noprint' style='display:none;' >
-        <p class="validateTips">Ajoutez, supprimez et modifiez l'ordre des étages dans le menu déroulant.</p>
-        <form>
-          <p>
-            <input type='text' id='add-etage-text' style='width:300px;'/>
-            <input type='button' id='add-etage-button2' class='ui-button ui-button-type2' value='Ajouter' style='margin-left:15px;'/>
-          </p>
-          <fieldset>
-            <ul id="etages-sortable">
-              {% if floors is iterable %}
-                {% for f in floors %}
-                  <li class='ui-state-default' id='li_{{ f.id }}'>
-                    <span class='pl-icon pl-icon-arrowupdown'></span>
-                    <font id='valeur_{{ f.id }}'>{{ f.valeur }}</font>
-                    {% if f.id in usedFloors == false %}
-                      <span class='pl-icon pl-icon-trash' style='position:absolute;left:480px;cursor:pointer;' onclick='$(this).closest("li").hide();'></span>
+      <!--  Modification de la liste des étages (Modale) -->
+      <div class="modal modal-lg" id="add-floor-modal" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1" aria-labelledby="add-floor-modal-title" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+
+            <div class="modal-header">
+              <h5 class="modal-title" id="add-floor-modal-title">Liste des étages</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans %}Close{% endtrans %}"></button>
+            </div>
+
+            <div class="modal-body">
+              <p class="validateTips">Ajoutez, supprimez et modifiez l'ordre des étages dans le menu déroulant.</p>
+              <form id="add-floor" novalidate>
+                <div class="row my-3">
+                  <div class="col-5">
+                    <input type="text" id="add-floor-text" class="form-control" required>
+                    <div class="invalid-feedback">Etage invalide</div>
+                  </div>
+                  <div class="col-1">
+                    <button type="submit" class="btn btn-primary">{% trans %}Add{% endtrans %}</button>
+                  </div>
+                </div>
+              </form>
+
+              <div class="row row-header rounded-top-1 m-0 mt-2">
+                <i class="col-auto p-2 bi bi-arrow-down-up" aria-hidden="true"></i>
+                <span class="col-10 ps-0">Nom</span>
+              </div>
+
+              <form id="arrange-floors">
+                <fieldset class="container-fluid">
+                  <ul id="floors_sortable">
+                    {% if floors is iterable %}
+                      {% for f in floors %}
+                        <li class="row row-sortable" id="li_{{ f.id }}">
+                          <i class="col-auto p-0 ps-2 bi bi-arrow-down-up"></i>
+                          <span class="col-10 p-2" id="valeur_{{ f.id }}">{{ f.value }}</span>
+                           {% if f.id not in usedFloors %}
+                            <span class="col-1 ps-5" onclick="$(this).closest('li').hide();">
+                              <i class="bi bi-trash3-fill"></i>
+                            </span>
+                          {% endif %}
+                        </li>
+                      {% endfor %}
                     {% endif %}
-                  </li>
-                {% endfor %}
-              {% endif %}
-            </ul>
-          </fieldset>
-        </form>
+                  </ul>
+                </fieldset>
+              </form>
+
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans %}Cancel{% endtrans %}</button>
+              <button type="submit" class="btn btn-primary" form="arrange-floors">{% trans %}Save{% endtrans %}</button>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <!--  Modification de la liste des groupes (Dialog Box) -->
-      <div id="add-group-form" title="Liste des groupes de postes" class='noprint' style='display:none;' >
-        <p class="validateTips">Ajoutez, supprimez et modifiez l'ordre des groupes dans le menu déroulant.</p>
-        <form>
-          <p>
-            <input type='text' id='add-group-text' style='width:300px;'/>
-            <input type='button' id='add-group-button2' class='ui-button ui-button-type2' value='Ajouter' style='margin-left:15px;'/>
-          </p>
-          <fieldset>
-            <ul id="groups-sortable">
-              {% if groups is iterable %}
-                {% for g in groups %}
-                  <li class='ui-state-default' id='li_{{ g.id }}'><span class='pl-icon pl-icon-arrowupdown'></span>
-                    <font id='valeur_{{ g.id }}'>{{ g.valeur }}</font>
-                    {% if g.id in usedGroups == false %}
-                      <span class='pl-icon pl-icon-trash' style='position:absolute;left:480px;cursor:pointer;' onclick='$(this).closest("li").hide();'></span>
+      <!--  Modification de la liste des groupes (Modal) -->
+      <div class="modal modal-lg" id="add-group-modal" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1" aria-labelledby="add-group-modal-title" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+
+            <div class="modal-header">
+              <h5 class="modal-title" id="add-group-modal-title">Liste des groupes de postes</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans %}Close{% endtrans %}"></button>
+            </div>
+
+            <div class="modal-body">
+              <p class="validateTips">Ajoutez, supprimez et modifiez l'ordre des groupes dans le menu déroulant.</p>
+              <form id="add-group" novalidate>
+                <div class="row my-3">
+                  <div class="col-5">
+                    <input type="text" id="add-group-text" class="form-control" required>
+                    <div class="invalid-feedback">Groupe invalide</div>
+                  </div>
+                  <div class="col-1">
+                    <button type="submit" class="btn btn-primary">{% trans %}Add{% endtrans %}</button>
+                  </div>
+                </div>
+              </form>
+
+              <div class="row row-header rounded-top-1 m-0 mt-2">
+                <i class="col-auto p-2 bi bi-arrow-down-up" aria-hidden="true"></i>
+                <span class="col-10 ps-0">Nom</span>
+              </div>
+
+              <form id="arrange-groups">
+                <fieldset class="container-fluid">
+                  <ul id="groups_sortable">
+                    {% if groups is iterable %}
+                      {% for g in groups %}
+                        <li class="row row-sortable" id="li_{{ g.id }}">
+                          <i class="col-auto p-0 ps-2 bi bi-arrow-down-up"></i>
+                          <span class="col-10 p-2" id="valeur_{{ g.id}}">{{ g.value }}</span>
+                          {% if g.id not in usedGroups %}
+                            <span class="col-1 ps-5" onclick="$(this).closest('li').hide();">
+                              <i class="bi bi-trash3-fill"></i>
+                            </span>
+                          {% endif %}
+                        </li>
+                      {% endfor %}
                     {% endif %}
-                  </li>
-                {% endfor %}
-              {% endif %}
-            </ul>
-          </fieldset>
-        </form>
+                  </ul>
+                </fieldset>
+              </form>
+
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans %}Cancel{% endtrans %}</button>
+              <button type="submit" class="btn btn-primary" form="arrange-groups">{% trans %}Save{% endtrans %}</button>
+            </div>
+          </div>
+        </div>
       </div>
+
     </div>
   </div>
 {% endblock %}

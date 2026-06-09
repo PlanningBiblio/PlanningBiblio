@@ -1,11 +1,8 @@
 <?php
 
-use App\Model\Agent;
-use App\Model\Manager;
-use App\Model\ConfigParam;
-
-use Tests\PLBWebTestCase;
+use App\Entity\Agent;
 use Tests\FixtureBuilder;
+use Tests\PLBWebTestCase;
 
 class OvertimeControllerAddTest extends PLBWebTestCase
 {
@@ -16,19 +13,7 @@ class OvertimeControllerAddTest extends PLBWebTestCase
         $this->builder->delete(Agent::class);
     }
 
-    protected function setParam($name, $value)
-    {
-        $GLOBALS['config'][$name] = $value;
-        $param = $this->entityManager
-            ->getRepository(ConfigParam::class)
-            ->findOneBy(['nom' => $name]);
-
-        $param->valeur($value);
-        $this->entityManager->persist($param);
-        $this->entityManager->flush();
-    }
-
-    public function testAdd()
+    public function testAdd(): void
     {
         $this->setUpPantherClient();
 
@@ -47,28 +32,28 @@ class OvertimeControllerAddTest extends PLBWebTestCase
 
         $this->assertSelectorTextContains('h4', 'Liste des demandes d\'heures supplémentaires');
 
-        $result = $crawler->filterXPath('//body/div[@class="popup-background ui-dialog ui-widget ui-corner-all ui-front ui-dialog-buttons ui-draggable ui-resizable"]');
-        $this->assertStringContainsString('display: none',$result->attr('style'),'check display: none');
+        $result = $crawler->filterXPath('//div[@id="add-overtime-modal"]');
+        $this->assertEquals('true', $result->attr('aria-hidden'), 'check aria-hidden');
 
-        $button = $crawler->filterXPath('//button[@id="dialog-button"]');
+        $button = $crawler->filterXPath('//button[@id="add-overtime-button"]');
         $button->click();
 
-        $result = $crawler->filterXPath('//body/div[@class="popup-background ui-dialog ui-widget ui-corner-all ui-front ui-dialog-buttons ui-draggable ui-resizable"]');
-        $this->assertStringContainsString('display: block',$result->attr('style'),'check display: block');
+        $result = $crawler->filterXPath('//div[@id="add-overtime-modal"]');
+        $this->assertEquals('true', $result->attr('aria-modal'), 'check aria-modal');
 
-        $result = $crawler->filterXPath('//p[@class="validateTips"]');
-        $this->assertEquals('Veuillez sélectionner le jour concerné par votre demande et le nombre d\'heures supplémentaires et un saisir un commentaire.', $result->text());
+        $result = $crawler->filterXPath('//p');
+        $this->assertEquals('Veuillez sélectionner le jour concerné par votre demande et le nombre d\'heures supplémentaires, puis saisir un commentaire.', $result->text());
 
-        $result = $crawler->filterXPath('//table[@class="tableauFiches"]/tbody/tr/td/label');
-        $this->assertEquals('Date', $result->text(),'Date is a form label');
+        $result = $crawler->filter('#add-overtime-form label');
+        $this->assertEquals('Date', $result->eq(0)->text(),'Date is a form label');
         $this->assertEquals('Heures', $result->eq(1)->text(),'Heures is a form label');
         $this->assertEquals('Commentaire', $result->eq(2)->text(),'Commentaire is form label');
 
-        $button = $crawler->selectButton('Enregistrer');
+        $button = $crawler->selectButton('Annuler');
         $button->click();
 
-        $result = $crawler->filterXPath('//body/div[@class="popup-background ui-dialog ui-widget ui-corner-all ui-front ui-dialog-buttons ui-draggable ui-resizable"]');
-        $this->assertStringContainsString('display: block', $result->attr('style'),'check display: none');
+        $result = $crawler->filterXPath('//div[@id="add-overtime-modal"]');
+        $this->assertEquals('true', $result->attr('aria-hidden'), 'check aria-hidden');
 
     }
 }

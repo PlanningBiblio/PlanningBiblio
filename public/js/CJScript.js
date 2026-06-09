@@ -1,10 +1,12 @@
 /**
 Divers scripts JS
-Licence GNU/GPL (version 2 et au dela)
+Licence AGPL (version 3 et au dela)
 
 Fichier : CJScript.js
 @author Jérôme Combes <jerome@planningbiblio.fr>
 */
+
+ DataTable.type('date', 'className', 'dt-left');
 
 function CJDataTableHideRow(selector){
   // (.hide mieux que .remove car si .remove, la ligne réapparait lors de l'utilisation des tris
@@ -76,7 +78,7 @@ function CJInfo(message,type,top,time,myClass){
   if(top==undefined){
     top=82;
   }
-  
+
   if(time==undefined){
     time=8000;
   }
@@ -85,7 +87,7 @@ function CJInfo(message,type,top,time,myClass){
     myClass=null;
   }
 
-  if(typeof(timeoutJSInfo)!== "undefined" && time != 'permanent'){
+  if(typeof(timeoutCJInfo)!== 'undefined' && time != 'permanent'){
     window.clearTimeout(timeoutCJInfo);
   }
 
@@ -94,7 +96,7 @@ function CJInfo(message,type,top,time,myClass){
     id=$(this).attr("data-id")>=id?($(this).attr("data-id")+1):id;
     top=$(this).position().top+$(this).height()+5;
   });
-  
+
   message=message.replace(/#BR#/g,"<br/>");
   message=message.replace(/\n/g,"<br/>");
 
@@ -266,7 +268,7 @@ $(function(){
       "buttons": true,
       "language" : { "url" : jsFileLocation+"/dataTables.french.lang.json" },
       "initComplete": function () {
-        $('.fg-toolbar:last').after(CJDataTable.buttons().container());
+        $('.dt-layout-row:last').after(CJDataTable.buttons().container());
       },
 
       // On refait le zebra, à chaque fois que le tableau est redessiné.

@@ -9,9 +9,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class AdminController extends BaseController
 {
-    /**
-     * @Route("/admin", name="admin.index", methods={"GET"})
-     */
+    #[Route(path: '/admin', name: 'admin.index', methods: ['GET'])]
     public function index(Request $request)
     {
         $droits = $GLOBALS['droits'];

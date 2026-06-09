@@ -4,17 +4,20 @@ namespace App\Repository;
 
 use Doctrine\ORM\EntityRepository;
 
-use App\Model\Position;
-use App\Model\PlanningPositionLines;
+use App\Entity\Position;
+use App\Entity\PlanningPositionLines;
 
 class PositionRepository extends EntityRepository
 {
-    public function getAllSkills() {
+    /**
+     * @return mixed[]
+     */
+    public function getAllSkills(): array {
         $entityManager = $this->getEntityManager();
         $positions = $entityManager->getRepository(Position::class)->findAll();
         $all_skills = array();
         foreach ($positions as $position) {
-            $activites = $position->activites();
+            $activites = $position->getActivities();
             if (is_array($activites)) {
                 foreach ($activites as $activite) {
                     array_push($all_skills, $activite);
@@ -25,7 +28,7 @@ class PositionRepository extends EntityRepository
         return $all_skills;
     }
 
-    public function purgeAll($limit_date) {
+    public function purgeAll($limit_date): int {
         $entityManager = $this->getEntityManager();
         $builder = $entityManager->createQueryBuilder();
         $builder->select('a')
@@ -41,9 +44,9 @@ class PositionRepository extends EntityRepository
                     ->from(PlanningPositionLines::class, 'a')
                     ->andWhere("a.type = 'poste'")
                     ->andWhere('a.poste = :id')
-                    ->setParameter('id', $result->id());
+                    ->setParameter('id', $result->getId());
             $lines = $builder->getQuery()->getResult();
-            if (sizeof($lines) == 0) {
+            if (count($lines) == 0) {
                 $entityManager->remove($result);
                 $deleted_position++;
             }

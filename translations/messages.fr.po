@@ -1,0 +1,392 @@
+msgid "New request"
+msgstr "Nouvelle demande"
+
+msgid "New request for overtime"
+msgstr "Nouvelle demande d'heures supplémentaires"
+
+msgid "Please select the date for which your request applies and the number of overtime hours, followed by a comment."
+msgstr "Veuillez sélectionner le jour concerné par votre demande et le nombre d'heures supplémentaires, puis saisir un commentaire."
+
+msgid "Date"
+msgstr "Date"
+
+msgid "Date (1st Saturday)"
+msgstr "Date (1er samedi)"
+
+msgid "Date (2nd Saturday) (optional)"
+msgstr "Date (2ème samedi) (optionel)"
+
+msgid "Error while saving the overtime request"
+msgstr "Erreur lors de l'enregistrement de la demande d'heures supplémentaires"
+
+msgid "Agent"
+msgstr "Agent"
+
+msgid "Hours"
+msgstr "Heures"
+
+msgid "Comment"
+msgstr "Commentaire"
+
+msgid "Save"
+msgstr "Enregistrer"
+
+msgid "Cancel"
+msgstr "Annuler"
+
+msgid "mm/dd/yyyy"
+msgstr "jj/mm/aaaa"
+
+msgid "MM/DD/YYYY"
+msgstr "DD/MM/YYYY"
+
+msgid "Start date"
+msgstr "Date de début"
+
+msgid "End date"
+msgstr "Date de fin" 
+
+msgid "Text"
+msgstr "Texte"
+
+msgid "Delete"
+msgstr "Supprimer"
+
+msgid "Confirm"
+msgstr "Valider"
+
+msgid "Start"
+msgstr "Début"
+
+msgid "End"
+msgstr "Fin"
+
+msgid "Search"
+msgstr "Rechercher"
+
+msgid "Clear"
+msgstr "Réinitialiser"
+
+msgid "Add"
+msgstr "Ajouter"
+
+msgid "Import"
+msgstr "Importer"
+
+msgid "Everyone"
+msgstr "Tous"
+
+msgid "Deleted agents"
+msgstr "Agents supprimés"
+
+msgid "Cycle management"
+msgstr "Gestion des cycles"
+
+msgid "Enter new schedules"
+msgstr "Entrer de nouveaux horaires"
+
+msgid "Starting date"
+msgstr "Début d'utilisation"
+
+msgid "Ending date"
+msgstr "Fin d'utilisation"
+
+msgid "From %start% to %end%"
+msgstr "Du %start% au %end%"
+
+msgid "Display hours by job category"
+msgstr "Afficher les heures par groupe de postes"
+
+msgid "Sites"
+msgstr "Sites"
+
+msgid "Save changes"
+msgstr "Enregistrer les modifications"
+
+msgid "Please enter a valid start date"
+msgstr "Veillez saisir une date de début valide"
+
+msgid "Please enter a valid end date"
+msgstr "Veillez saisir une date de fin valide"
+
+msgid "Please select an agent"
+msgstr "Veillez choisir un agent"
+
+msgid "Search results are limited to a period of one year"
+msgstr "Les résultats de la recherche sont limités à une période d'un an"
+
+msgid "Copy"
+msgstr "Copier"
+
+msgid "Copy of the selected table"
+msgstr "Copie du tableau sélectionné"
+
+msgid "Name of the new table"
+msgstr "Nom du nouveau tableau"
+
+msgid "Please enter a valid model name"
+msgstr "Veuillez saisir un nom de modèle valide"
+
+msgid "Call for volunteers"
+msgstr "Appel à disponibilité"
+
+msgid "Send an email to the available agents to ask if they would like to volunteer for the selected position."
+msgstr "Envoyez un e-mail aux agents disponibles pour leur demander s'ils sont volontaires pour occuper le poste choisi."
+
+msgid "Send"
+msgstr "Envoyer"
+
+msgid "Message"
+msgstr "Message"
+
+msgid "Subject"
+msgstr "Sujet"
+
+msgid "An error occurred while sending the email"
+msgstr "Une erreur est survenue lors de l'envoi de l'e-mail"
+
+msgid "Editing selected agents"
+msgstr "Modification des agents sélectionnés"
+
+msgid "General information"
+msgstr "Infos générales"
+
+msgid "Activities"
+msgstr "Activités"
+
+msgid "Available activities"
+msgstr "Activités disponibles"
+
+msgid "Assigned activities"
+msgstr "Activités attribuées"
+
+msgid "Status"
+msgstr "Statut"
+
+msgid "Contract"
+msgstr "Contrat"
+
+msgid "Home department"
+msgstr "Service de rattachement"
+
+msgid "Public service hours"
+msgstr "Heures de service public"
+
+msgid "Hours worked per week"
+msgstr "Heures de travail par semaine"
+
+msgid "Public service"
+msgstr "Service public"
+
+msgid "Administrative"
+msgstr "Administratif"
+
+msgid "Do not change"
+msgstr "Ne pas modifier"
+
+msgid "None"
+msgstr "Aucun"
+
+msgid "The agents were successfully modified"
+msgstr "Les agents ont été modifés avec succès"
+
+msgid "An error occurred while modifying the agents"
+msgstr "Une erreur est survenue lors de la modification des agents"
+
+msgid "Please select an action to perform."
+msgstr "Veuillez sélectionner une action à effectuer."
+
+msgid "Please select one or more agents."
+msgstr "Veuillez sélectionner un ou plusieurs agents."
+
+msgid "The selected date needs to be a Saturday"
+msgstr "La date choisie doit être un samedi"
+
+msgid "A request has already been submitted for %date%"
+msgstr "Une demande a déjà été enregistrée pour le %date%"
+
+msgid "An error occurred while verifying the saved entries"
+msgstr "Une erreur s'est produite lors de la vérification des récupérations enregistrées"
+
+msgid "The second date must be posterior to the first one or empty"
+msgstr "La deuxième date doit être postérieure à la première ou vide"
+
+msgid "The selected time period is invalid"
+msgstr "La durée sélectionnée n'est pas valide"
+
+msgid "A request for overtime must be submitted within %limit% days"
+msgstr "La demande d'heures supplémentaires doit être effectuée dans les %limit% jours"
+
+msgid "Warning: Requests for overtime must be filed within %limit% days.\nAs an administrator, you can override this rule.\nDo you want to continue ?"
+msgstr "Attention, la demande d'heures supplémentaires doit être effectuée dans les %limit% jours.\nEn tant qu'administrateur, vous pouvez outrepasser cette règle.\nVoulez-vous continuer ?"
+
+msgid "The request must be submitted within %limit% days"
+msgstr "La demande doit être soumise dans un délai de %limit% jours"
+
+msgid "Model name"
+msgstr "Nom du modèle"
+
+msgid "Save all week"
+msgstr "Enregistrer toute la semaine"
+
+msgid "Change to holiday policy"
+msgstr "Modification du mode de congés"
+
+msgid "To calculate leave in days, you need to change the Conges-Recuperations setting to Dissocier."
+msgstr "Le mode de décompte des congés en jour implique de modifier le paramètre \"Conges-Recuperations\" en \"Dissocier\"."
+
+msgid "Accept"
+msgstr "Accepter"
+
+msgid "Cancel my change"
+msgstr "Annuler ma modification"
+
+msgid "Modification of the number of weeks"
+msgstr "Modification du nombre de semaines"
+
+msgid "Selecting more than three weeks requires checking the PlanningHebdo option."
+msgstr "Sélectionner un nombre de semaines supérieur à trois implique de cocher le paramètre \"PlanningHebdo\"."
+
+msgid "Modification of the minimum password length"
+msgstr "Modification de la longeur minimum du mot de passe"
+
+msgid "The minimum value of characters for password change must be a number greater than or equal to 8."
+msgstr "La valeur minimale de caractères pour le changement de mot de passe doit être un nombre supérieur ou égal à 8."
+
+msgid "Login"
+msgstr "Identifiant"
+
+msgid "The new login is identical to the previous one."
+msgstr "Le nouveau identifiant est identique au précédent."
+
+msgid "An error occurred while updating the login information."
+msgstr "Une erreur s'est produite lors de la mise à jour des identifiants de connexion."
+
+msgid "This login already exists."
+msgstr "Cet identifiant existe déjà."
+
+msgid "The login cannot be empty."
+msgstr "L'identifiant ne peut pas être vide."
+
+msgid "The login is invalid."
+msgstr "L'identifiant est invalide."
+
+msgid "Working hours"
+msgstr "Heures de présence"
+
+msgid "Calendars and Synchronization"
+msgstr "Agendas et Synchronisation"
+
+msgid "Days off"
+msgstr "Congés"
+
+msgid "Access rights"
+msgstr "Droits d'accès"
+
+msgid "Yes"
+msgstr "Oui"
+
+msgid "No"
+msgstr "Non"
+
+msgid "Saving a template (%date%)"
+msgstr "Enregistrement d'un modèle (%date%)"
+
+msgid "Importing a template"
+msgstr "Importation d'un modèle"
+
+msgid "Import the "%name%" model"
+msgstr "Importer le modèle "%name%""
+
+msgid "A model with that name already exists"
+msgstr "Un modèle avec ce nom existe déjà"
+
+msgid "Would you like to replace it"
+msgstr "Voulez-vous le remplacer"
+
+msgid "Import absent agents"
+msgstr "Importes les agents absents"
+
+msgid "week"
+msgstr "semaine"
+
+msgid "Please note that the current schedule will be replaced by the new model"
+msgstr "Attention, le planning actuel sera remplacé par le modèle"
+
+msgid "No models saved"
+msgstr "Aucun modèle enregistré"
+
+msgid "Select the template to import"
+msgstr "Sélectionnez le modèle à importer"
+
+msgid "Delete the schedule"
+msgstr "Supression du planning"
+
+msgid "Week"
+msgstr "Semaine"
+
+msgid "Day"
+msgstr "Jour"
+
+msgid "Close"
+msgstr "Fermer"
+
+msgid "Validations"
+msgstr "Validations"
+
+msgid "Notifications"
+msgstr "Notifications"
+
+msgid "Select the managers who are authorized to approve absences and leave requests for the selected employees.<br/>Check the box if they should be notified when a new absence or leave request is submitted."
+msgstr "Choisissez les responsables qui ont le droit de valider les absences et congés des agents sélectionnés.<br/>Cochez la case s'ils doivent être notifiés lors de l'enregistrement d'une nouvelle absence ou demande de congés."
+
+msgid "Level 1 Validation"
+msgstr "Validation niveau 1"
+
+msgid "Level 2 Validation"
+msgstr "Validation niveau 2"
+
+msgid "Manager"
+msgstr "Responsable"
+
+msgid "Notify"
+msgstr "Notifier"
+
+msgid "My office hours"
+msgstr "Mes heures de présence"
+
+msgid "My credits"
+msgstr "Mes crédits"
+
+msgid "ICS Calendars"
+msgstr "Agendas ICS"
+
+msgid "My password"
+msgstr "Mon mot de passe"
+
+msgid "Do you want to delete the schedule for the day %day% or for the week (from %first_day_week% to %last_day_week%)"
+msgstr "Voulez-vous supprimer le planning du jour %day% ou de la semaine (du %first_day_week% au %last_day_week%)"
+
+msgid "Are you sure you want to delete the schedule for %day%"
+msgstr "Êtes vous sûr de vouloir supprimer le planning du %day%"
+
+msgid "Are you sure you want to delete the schedule for the week (%start% to %end%)"
+msgstr "Êtes vous sûr de vouloir supprimer le planning de la semaine (%start% au %end%)"
+
+msgid "This event only"
+msgstr "Uniquement cet événement"
+
+msgid "This event and the following ones"
+msgstr "Cet événement et les suivants"
+
+msgid "All events"
+msgstr "Tous les événements"
+
+msgid "Schedule"
+msgstr "Horaires"
+
+msgid "Lines"
+msgstr "Lignes"
+
+msgid "Back"
+msgstr "Retour"

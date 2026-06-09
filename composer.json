@@ -19,17 +19,15 @@
             "email": "sarah.deborde@biblibre.com"
         }
     ],
-    "license": "GPL-2.0-or-later",
+    "license": "AGPL-3.0-or-later",
     "require": {
-        "php": "^8.1 || ^8.2",
+        "php": "^8.2 || ^8.3",
         "apereo/phpcas": "^1.3",
         "composer/composer": "^2.6",
         "composer/package-versions-deprecated": "1.11.99.4",
-        "doctrine/annotations": "^1.0",
         "doctrine/doctrine-bundle": "^2.7",
         "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "^2.14",
-        "ezyang/htmlpurifier": "^4.16",
         "johngrogg/ics-parser": "^3",
         "jumbojett/openid-connect-php": "^0.9.10",
         "league/commonmark": "^2.3",
@@ -38,46 +36,53 @@
         "phpdocumentor/reflection-docblock": "^5.3",
         "phpmailer/phpmailer": "^6.8.0",
         "phpstan/phpdoc-parser": "^1.2",
-        "symfony/asset": "^5.4",
-        "symfony/config": "^5.4",
-        "symfony/console": "^5.4",
-        "symfony/dotenv": "^5.4",
-        "symfony/expression-language": "^5.4",
+        "symfony/asset": "*",
+        "symfony/config": "*",
+        "symfony/console": "*",
+        "symfony/dotenv": "*",
+        "symfony/expression-language": "*",
         "symfony/flex": "*",
-        "symfony/form": "^5.4",
-        "symfony/framework-bundle": "^5.4",
-        "symfony/http-foundation": "^5.4",
-        "symfony/lock": "^5.4",
-        "symfony/mime": "^5.4",
+        "symfony/form": "*",
+        "symfony/framework-bundle": "*",
+        "symfony/html-sanitizer": "*",
+        "symfony/http-foundation": "*",
+        "symfony/lock": "*",
+        "symfony/mime": "*",
         "symfony/monolog-bundle": "*",
         "symfony/panther": "^2.1",
-        "symfony/process": "^5.4",
-        "symfony/property-access": "^5.4",
-        "symfony/property-info": "^5.4",
-        "symfony/proxy-manager-bridge": "^5.4",
-        "symfony/security-bundle": "^5.4",
-        "symfony/security-csrf": "^5.4",
-        "symfony/serializer": "^5.4",
-        "symfony/translation": "^5.4",
-        "symfony/twig-bundle": "^5.4",
-        "symfony/validator": "^5.4",
-        "symfony/web-link": "^5.4",
-        "symfony/yaml": "^5.4",
+        "symfony/process": "*",
+        "symfony/property-access": "*",
+        "symfony/property-info": "*",
+        "symfony/proxy-manager-bridge": "*",
+        "symfony/security-bundle": "*",
+        "symfony/security-csrf": "*",
+        "symfony/serializer": "*",
+        "symfony/translation": "*",
+        "symfony/twig-bundle": "*",
+        "symfony/validator": "*",
+        "symfony/web-link": "*",
+        "symfony/yaml": "*",
         "twig/extra-bundle": "^3.4",
-        "twig/markdown-extra": "^3.4"
+        "twig/markdown-extra": "^3.4",
+        "willdurand/js-translation-bundle": "^8.0"
     },
     "require-dev": {
-        "dbrekelmans/bdi": "^1.0",
+        "dbrekelmans/bdi": "^1.4",
+        "phpstan/phpstan": "^2.1",
         "phpunit/phpunit": "^9.5",
-        "symfony/browser-kit": "^5.4",
-        "symfony/css-selector": "^5.4",
-        "symfony/debug-bundle": "^5.4",
+        "rector/rector": "^2.2",
+        "symfony/browser-kit": "*",
+        "symfony/css-selector": "*",
+        "symfony/debug-bundle": "*",
         "symfony/maker-bundle": "*",
-        "symfony/phpunit-bridge": "^5.4",
-        "symfony/stopwatch": "^5.4",
-        "symfony/web-profiler-bundle": "^5.4"
+        "symfony/phpunit-bridge": "^8.0",
+        "symfony/stopwatch": "*",
+        "symfony/web-profiler-bundle": "*"
     },
     "config": {
+        "platform": {
+            "php": "8.2"
+        },
         "preferred-install": {
             "*": "dist"
         },
@@ -90,8 +95,8 @@
         "psr-4": {
             "App\\": "src/",
             "Tests\\": "tests",
-            "PlanningBiblio\\": "src/PlanningBiblio",
-            "Model\\": "src/Model"
+            "Planno\\": "src/Planno",
+            "Model\\": "src/Entity"
         }
     },
     "autoload-dev": {
@@ -110,7 +115,8 @@
         "auto-scripts": {
             "cache:clear": "symfony-cmd",
             "assets:install %PUBLIC_DIR%": "symfony-cmd",
-            "app:update-db" : "symfony-cmd"
+            "app:update-db" : "symfony-cmd",
+            "bazinga:js-translation:dump --format=js --merge-domains": "symfony-cmd"
         },
         "post-install-cmd": [
             "@auto-scripts"
@@ -125,7 +131,7 @@
     "extra": {
         "symfony": {
             "allow-contrib": false,
-            "require": "^5.4"
+            "require": "7.4.*"
         }
     }
 }

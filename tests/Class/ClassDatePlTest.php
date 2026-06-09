@@ -1,11 +1,11 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-use App\PlanningBiblio\Menu;
+use App\Planno\Menu;
 
 class ClassDatePlTest extends TestCase
 {
-    public function testDatePl()
+    public function testDatePl(): void
     {
         // Setup
         $savDateDebutPlHebdo = $GLOBALS['config']['dateDebutPlHebdo'];
@@ -33,6 +33,7 @@ class ClassDatePlTest extends TestCase
 
         // cycles with 5, 6, 7, 8, 9 and 10 weeks are implemented equally by weekId function
         // so a test with only one of them should be ok
+        $GLOBALS['config']['dateDebutPlHebdo'] = '18/06/2018';
         $GLOBALS['config']['nb_semaine'] = 6;
         $datePl = new DatePl('2023-12-25');
         $this->assertEquals(1, $datePl->semaine3, 'nb_semaine=6 : Week 1 in the cycle');

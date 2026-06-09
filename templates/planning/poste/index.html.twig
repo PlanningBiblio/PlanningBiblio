@@ -3,13 +3,16 @@
 {% extends 'base.html.twig' %}
 
 {% block specificjs %}
-  <script type="text/JavaScript" src="{{ asset('planning/poste/js/planning.js') }}"></script>
+  <script type="text/JavaScript" src="{{ asset('js/planning.js') }}"></script>
   <script type='text/JavaScript'>
     $(document).ready(function(){
       locked = $('#locked').val();
       if (locked == 1) {
         refresh_poste();
       }
+    });
+    window.addEventListener('load', () => {
+      showInformationMessages({{ informationMessages|json_encode|raw }});
     });
   </script>
 {% endblock %}
@@ -28,7 +31,9 @@
     {% endif %}
 
     {% if not_ready %}
-      <div class='decalage-gauche'><p>Le planning n'est pas prêt.</p></div>
+      <div class='decalage-gauche'>
+        <p>Le planning du {{ date | datefr }} n'est pas prêt.</p>
+      </div>
 
       {% if config('Planning-CommentairesToujoursActifs') %}
         {% include 'planning/poste/comments.html.twig' %}
@@ -37,9 +42,7 @@
 
     {% if tab and not locked and not autorisationN1 %}
       <div class='decalage-gauche'>
-        <br/><br/>
-        <font color='red'>Le planning du {{ dateFr }} n'est pas validé !</font>
-        <br/>
+        <p class="important">Le planning du {{ date | datefr }} n'est pas validé !</p>
       </div>
 
       {% if config('Planning-CommentairesToujoursActifs') %}
@@ -47,81 +50,54 @@
       {% endif %}
     {% endif %}
 
-    {% if tabs is defined and tabs %}
+    {% if schedules is defined and schedules %}
       <div id="planning-data" data-verrou="{{ locked }}" data-autorisation="{{ autorisationN1 }}"
-           data-validation="{{ validation2 }}" data-lignesVides="{{ lignesVides }}"
+           data-validation="{{ lockDate }}" data-lignesVides="{{ config('Planning-lignesVides') }}"
            data-sr-debut="{{ config('Planning-SR-debut') }}"
            data-sr-fin="{{ config('Planning-SR-fin') }}"
-           data-CSRFToken='{{ CSRFSession }}' style='display:none;'>&nbsp;
+           style='display:none;'>&nbsp;
       </div>
 
-      <div id='tableau' data-tableId="{{ tab }}">
-        <table id='tabsemaine1' cellspacing='0' cellpadding='0' class='text tabsemaine1'>
-
-          {% for t in tabs %}
-            <tr class='tr_horaires tableau{{ t.j }} {{ t.classe }} {{ t.hiddenTable }}'>
-              <td class='td_postes sticky td_sep' data-id='{{ t.j }}' data-title='{{ t.titre2 }}'>
-                {{ t.titre }} {{ t.masqueTableaux | raw }}
-              </td>
-              {% for h in t.horaires %}
-              <td class='sticky-line' colspan="{{ h.start_nb30 }}">
-                {{ h.start_h3 }} - {{ h.end_h3 }}
-                </td>
-              {% endfor %}
-            </tr>
-
-            {% for l in t.lignes %}
-              <!-- Position lines -->
-              {% if l.is_position %}
-                <tr class='pl-line tableau{{ t.j }} {{ l.class_tr }} {{ t.classe }} {{ t.hiddenTable }} {{ l.emptyLine }}'>
-                  <td class='td_postes sticky-col {{ l.class_td }}'>
-                    {{ l.position_name }}
-                    {% if l.floor %}
-                      ({{ l.floor }})
-                    {% endif %}
-                  </td>
-
-                  {% for h in l.horaires %}
-                    {% if h.cell_off %}
-                      <td colspan="{{ h.colspan }}" class='cellule_grise'>&nbsp;</td>
-                    {% else %}
-                      {{ h.cell_html | raw }}
-                    {% endif %}
-                  {% endfor %}
-                </tr>
-              {% endif %}
-
-              <!-- Separation lines -->
-              {% if l.separation %}
-                <tr class="tr_separation tableau{{ t.j }} {{ t.classe }} {{ t.hiddenTable }}">
-                  <td class='sticky-col td_sep'>{{ l.separation }}</td>
-                  <td colspan="{{ t.colspan }}">&nbsp;</td>
-                </tr>
-              {% endif %}
-            {% endfor %}
-
-            <tr class="tr_espace tableau{{ t.j }} {{ t.classe }} {{ t.hiddenTable }}">
-              <td>&nbsp;</td>
-            </tr>
-          {% endfor %}
-
-        </table>
-      </div>
-
-      {% include 'planning/poste/comments.html.twig' %}
+      {% include 'planning/poste/schedule.element.html.twig' %}
 
       {% if config('Planning-AppelDispo') %}
-        <div id="pl-appelDispo-form" title="Appel à disponibilité" class='noprint' style='display:none;'>
-          <p class="validateTips" id='pl-appelDispo-tips'>
-            Envoyez un e-mail aux agents disponibles pour leur demander s'ils sont volontaires pour occuper le poste choisi.
-          </p>
+        <div class="modal" id="pl-appelDispo-modal" tabindex="-1" data-bs-backdrop="static" role="dialog" aria-labelledby="pl-appelDispo-modal-title" aria-hidden="true">
+          <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
 
-          <form>
-            <label for='pl-appelDispo-sujet'>Sujet</label><br/>
-            <input type='text' id='pl-appelDispo-sujet' name='pl-appelDispo-sujet' /><br/><br/>
-            <label for='pl-appelDispo-text'>Message</label><br/>
-            <textarea id='pl-appelDispo-text' name='pl-appelDispo-text'>&nbsp;</textarea>
-          </form>
+              <div class="modal-header">
+                <h5 class="modal-title" id="pl-appelDispo-modal-title">{% trans %}Call for volunteers{% endtrans %}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans %}Close{% endtrans %}"></button>
+              </div>
+
+                <div class="modal-body">
+                  <p>{% trans %}Send an email to the available agents to ask if they would like to volunteer for the selected position.{% endtrans %}</p>
+                
+                  <form id="pl-appelDispo-form">
+                    <div class="mb-3">
+                      <label for="pl-appelDispo-sujet" class="form-label"><strong>{% trans %}Subject{% endtrans %}</strong></label>
+                      <input type="text" id="pl-appelDispo-sujet" class="form-control" name="pl-appelDispo-sujet"/>
+                    </div>
+                    <div class="mb-3">
+                      <label for="pl-appelDispo-text" class="form-label"><strong>{% trans %}Message{% endtrans %}</strong></label>
+                      <textarea id="pl-appelDispo-text" name="pl-appelDispo-text" class="form-control" rows="8"></textarea>
+                    </div>
+
+                  </form>
+
+                </div>
+
+              <div class="modal-footer">
+                <div id="alert" class="alert alert-danger me-auto d-flex d-none" role="alert">
+                  <i class="bi bi-exclamation-triangle-fill me-2 bi-danger"></i>
+                  <div id="alert-text"></div>
+                </div>
+
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans %}Cancel{% endtrans %}</button>
+                <button type="submit" class="btn btn-primary" form="pl-appelDispo-form">{% trans %}Send{% endtrans %}</button>
+              </div>
+            </div>
+          </div>
         </div>
       {% endif %}
 
@@ -171,7 +147,7 @@
         {% if config('Absences-planning') in [3,4] %}
           <h3 style='text-align:left;margin:40px auto 0 auto; width: 90%;'>Liste des présents et absents</h3>
 
-          <table id='tablePlanningAbsences' class='CJDataTable' data-sort='[[0, "asc"],[1, "asc"]]' data-stateSave="0">
+          <table id='tablePlanningAbsences' class='CJDataTable' data-sort='[[0, "asc"],[1, "asc"]]' >
             <thead>
               <tr>
                 <th>Agent</th>

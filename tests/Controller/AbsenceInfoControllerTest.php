@@ -1,7 +1,7 @@
 <?php
 
-use App\Model\Agent;
-use App\Model\AbsenceInfo;
+use App\Entity\Agent;
+use App\Entity\AbsenceInfo;
 
 use Symfony\Component\DomCrawler\Crawler;
 
@@ -13,7 +13,7 @@ use Tests\FixtureBuilder;
 class AbsenceInfoControllerTest extends PLBWebTestCase
 {
 
-    public function testAdd()
+    public function testAdd(): void
     {
         $entityManager = $this->entityManager;
 
@@ -24,18 +24,21 @@ class AbsenceInfoControllerTest extends PLBWebTestCase
 
         $this->logInAgent($agent, array(201));
 
-        $token = $this->client->getContainer()->get('security.csrf.token_manager')->getToken('');
+        $crawler = $this->client->request('GET', '/absences/info/add');
+        $extract_result = $crawler->filter('#form input[name="_token"]')->extract(array('value'));
+        $token = $extract_result[0];
 
         $this->client->request('POST', '/absences/info', array('start' => '05/10/2022', 'end' => '10/10/2022', 'text' => 'salut', '_token' => $token));
 
         $info = $entityManager->getRepository(AbsenceInfo::class)->findOneBy(array('texte' => 'salut'));
-        $this->assertEquals('05/10/2022', $info->debut()->format('d/m/Y'), 'debut is ok');
-        $this->assertEquals('10/10/2022', $info->fin()->format('d/m/Y'), 'fin is ok');
-        $this->assertEquals('salut', $info->texte(), 'info texte is salut');
+        $this->assertEquals('05/10/2022', $info->getStart()->format('d/m/Y'), 'debut is ok');
+        $this->assertEquals('10/10/2022', $info->getEnd()->format('d/m/Y'), 'fin is ok');
+
+        $this->assertEquals('salut', $info->getComment(), 'info texte is salut');
 
     }
 
-    public function testNewForm()
+    public function testNewForm(): void
     {
         $entityManager = $this->entityManager;
 
@@ -60,21 +63,23 @@ class AbsenceInfoControllerTest extends PLBWebTestCase
         $result = $crawler->filter('label')->eq(2);
         $this->assertEquals($result->text('Node does not exist', false), 'Texte','label 3 is Texte');
 
-        $result = $crawler->filterXPath('//input[@class="datepicker"]');
-        $this->assertEquals($result->eq(0)->attr('name'),'start','input datepicker name is start');
-        $this->assertEquals($result->eq(1)->attr('name'),'end','input datepicker name is end');
+        $result = $crawler->filterXPath('//input[contains(@class, "start-date")]');
+        $this->assertEquals($result->attr('name'),'start','input datepicker name is start');
+
+        $result = $crawler->filterXPath('//input[contains(@class, "end-date")]');
+        $this->assertEquals($result->attr('name'),'end','input datepicker name is end');
 
         $result = $crawler->filterXPath('//textarea');
         $this->assertEquals($result->attr('name'),'text','textarea name is texte');
 
-        $class = $crawler->filterXPath('//input[@class="ui-button"]');
-        $this->assertEquals($class->attr('value'),'Valider','input submit value is Valider');
+        $class = $crawler->filterXPath('//input[contains(@class, "btn-primary")]');
+        $this->assertEquals($class->attr('value'),'Valider','input submit button value is Valider');
 
-        $class = $crawler->filterXPath('//a[@class="ui-button ui-button-type2"]');
+        $class = $crawler->filterXPath('//a[contains(@class, "btn-secondary")]');
         $this->assertEquals($class->text('Node does not exist', false), 'Annuler','a button is Annuler');
     }
 
-    public function testFormEdit()
+    public function testFormEdit(): void
     {
         $entityManager = $this->entityManager;
 
@@ -89,14 +94,14 @@ class AbsenceInfoControllerTest extends PLBWebTestCase
         $end = \DateTime::createFromFormat("d/m/Y", '10/10/2022');
 
         $info = new AbsenceInfo();
-        $info->debut($start);
-        $info->fin($end);
-        $info->texte('salut');
+        $info->setStart($start);
+        $info->setEnd($end);
+        $info->setComment('salut');
 
         $entityManager->persist($info);
         $entityManager->flush();
 
-        $id = $info->id();
+        $id = $info->getId();
 
         $crawler = $this->client->request('GET', "/absences/info/$id");
 
@@ -118,17 +123,17 @@ class AbsenceInfoControllerTest extends PLBWebTestCase
         $class = $crawler->filterXPath('//textarea');
         $this->assertEquals($class->text('Node does not exist', false), 'salut','input submit text is salut');
 
-        $class = $crawler->filterXPath('//input[@class="ui-button"]');
-        $this->assertEquals($class->attr('value'),'Valider','input submit value is Valider');
+        $class = $crawler->filterXPath('//input[contains(@class, "btn-primary")]');
+        $this->assertEquals($class->attr('value'),'Valider','input submit button value is Valider');
 
-        $class = $crawler->filterXPath('//a[@class="ui-button ui-button-type2"]');
+        $class = $crawler->filterXPath('//a[contains(@class, "btn-secondary")]');
         $this->assertEquals($class->text('Node does not exist', false), 'Annuler','a button is Annuler');
 
-        $class = $crawler->filterXPath('//a[@class="ui-button ui-button-type3"]');
+        $class = $crawler->filterXPath('//a[contains(@class, "btn-danger")]');
         $this->assertEquals($class->text('Node does not exist', false), 'Supprimer','a button is Supprimer');
     }
 
-    public function testAbsenceInfoList()
+    public function testAbsenceInfoList(): void
     {
         $entityManager = $this->entityManager;
         date_default_timezone_set('UTC');
@@ -143,8 +148,8 @@ class AbsenceInfoControllerTest extends PLBWebTestCase
 
         $this->assertSelectorTextContains('h3', 'Informations sur les absences');
 
-        $result = $crawler->filterXPath('//a[@class="ui-button"]');
-        $this->assertEquals('Ajouter', $result->text('Node does not exist', false), 'a is Ajouter');
+        $result = $crawler->filterXPath('//a[@class="btn btn-primary"]');
+        $this->assertEquals('Ajouter', $result->text('Node does not exist', false), 'a button is Ajouter');
 
         $this->assertSelectorTextContains('p', 'Aucune information enregistrée');
 
@@ -152,20 +157,19 @@ class AbsenceInfoControllerTest extends PLBWebTestCase
         $end = new DateTime('+1 month +1 day');
 
         $info = new AbsenceInfo();
-        $info->debut($start);
-        $info->fin($end);
-        $info->texte('hello');
+        $info->setStart($start);
+        $info->setEnd($end);
+        $info->setComment('hello');
 
         $entityManager->persist($info);
         $entityManager->flush();
-
 
         $crawler = $this->client->request('GET', "/absences/info");
 
         $this->assertSelectorTextContains('h3', 'Informations sur les absences');
 
-        $result = $crawler->filterXPath('//a[@class="ui-button"]');
-        $this->assertEquals('Ajouter', $result->text('Node does not exist', false), 'a is Ajouter');
+        $result = $crawler->filterXPath('//a[@class="btn btn-primary"]');
+        $this->assertEquals('Ajouter', $result->text('Node does not exist', false), 'a button is Ajouter');
 
         $result = $crawler->filterXPath('//table[@id="AbsenceInfoTable"]');
         $this->assertStringContainsString('Début',$result->text('Node does not exist', false), 'table title id Début');

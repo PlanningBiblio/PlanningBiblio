@@ -2,41 +2,58 @@
 
 namespace App\Controller;
 
-use App\Model\ConfigParam;
-use App\PlanningBiblio\Notifier;
-
+use App\Entity\Config;
+use App\Planno\Notifier;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Psr\Log\LoggerInterface;
 
 class BaseController extends AbstractController
 {
     protected $entityManager;
-
-    private $templateParams = array();
-
+    private $templateParams = [];
     protected $dispatcher;
-
-    private $config = array();
-
+    protected $config = [];
     protected $logger;
-
     protected $notifier;
-
     protected $permissions;
+    protected $request;
+    protected $translator;
 
-    public function __construct(RequestStack $requestStack, LoggerInterface $logger)
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        LoggerInterface $logger,
+        RequestStack $requestStack,
+        TranslatorInterface $translator
+    )
     {
-        if (!empty($_ENV['MEMORY_LIMIT'])) {
-            ini_set('memory_limit', $_ENV['MEMORY_LIMIT']);
-        }
+        $this->request = $requestStack->getCurrentRequest();
 
-        $request = $requestStack->getCurrentRequest();
-
+        /*
+         * TODO FIXME
+         * In some unit tests, we do not get the same result depending on whether we use $this->entityManager = $GLOBALS['entityManager']; or $this->entityManager = $entityManager;
+         * E.g.: in tests/Controller/AdminInfoControllerTest.php:30
+         * AdminInfoControllerTest::testAdd is successful with $GLOBALS['entityManager'], but fails with $entityManager.
+         * With $GLOBALS['entityManager'], dates are returned with the format YYYYMMDD, with $entityMananger, the dates are returned with the format YYYY-MM-DD
+         *
+         * 1) AdminInfoControllerTest::testAdd is successful with $GLOBALS['entityManager'], but fails with $entityManager.
+         * debut is 20211005
+         * Failed asserting that two strings are equal.
+         * --- Expected
+         * +++ Actual
+         * @@ @@
+         * -'20211005'
+         * +'2021-10-05'
+         *
+         * NB: It is possible that the tests are poorly written.
+         */
+        // $this->entityManager = $entityManager;
         $this->entityManager = $GLOBALS['entityManager'];
 
         $this->templateParams = $GLOBALS['templates_params'];
@@ -47,41 +64,24 @@ class BaseController extends AbstractController
 
         $this->permissions = $GLOBALS['droits'];
 
-        $url = $this->entityManager->getRepository(ConfigParam::class)->findOneBy(
-            array('nom' => 'URL')
-        );
+        /*
+         * TODO FIXME
+         * Some unit tests fail if we do not use  $url and $GLOBLAS['config']
+         * The result return by Config::getAll may be incomplete
+         */
+        // $this->config = $entityManager->getRepository(Config::class)->getAll();
+        $url = $this->entityManager->getRepository(Config::class)
+            ->findOneBy(['nom' => 'URL'])
+            ->getValue();
 
-        $GLOBALS['config']['URL'] = $url->valeur();
+        $GLOBALS['config']['URL'] = $url;
         $this->config = $GLOBALS['config'];
+
+        $this->translator = $translator;
     }
 
-    public function setNotifier(Notifier $notifier) {
+    public function setNotifier(Notifier $notifier): void {
         $this->notifier = $notifier;
-    }
-
-    public function setSite($site)
-    {
-        // setSite is used by IndexController::index and WeekController::week
-
-        // Multisites: default site is 1.
-        // Site is $_GET['site'] if it is set, else we take
-        // SESSION ['site'] or agent's site.
-
-        if (!$site and !empty($_SESSION['site'])) {
-            $site = $_SESSION['site'];
-        }
-
-        if (!$site) {
-            $p = new \personnel();
-            $p->fetchById($_SESSION['login_id']);
-            $site = isset($p->elements[0]['sites'][0]) ? $p->elements[0]['sites'][0] : null;
-        }
-
-        $site = $site ? $site : 1;
-
-        $_SESSION['site'] = $site;
-
-        return $site;
     }
 
     protected function templateParams( array $params = array() )
@@ -120,19 +120,35 @@ class BaseController extends AbstractController
         return $this->config[$key];
     }
 
-    protected function csrf_protection(Request $request)
+    protected function initDate(string $queryName, string $sessionName, string $when = 'today', string $format = 'd/m/Y'): ?\DateTime
+    {
+        $dateSession = $this->request->getSession()->get($sessionName, date($format, strtotime($when)));
+
+        $date = $this->request->query->get($queryName, $dateSession);
+
+        $this->request->getSession()->set($sessionName, $date);
+
+        return \DateTime::createFromFormat($format, $date);
+    }
+
+    protected function csrf_protection(Request $request): bool
     {
         $submittedToken = $request->request->get('_token');
 
         if (!$this->isCsrfTokenValid('', $submittedToken)) {
-            $session = $request->getSession();
-            $session->getFlashBag()->add('error', 'CSRF Token Error');
+            $error = $this->translator->trans(
+                'The CSRF token is invalid. Please try to resubmit the form.',
+                [],
+                'validators'
+            );
+
+            $this->addFlash('error', $error);
             return false;
         }
         return true;
     }
 
-    protected function returnError($error, $module = 'Planno', $status = 200)
+    protected function returnError($error, $module = 'Planno', $status = 200): \Symfony\Component\HttpFoundation\Response
     {
         $this->logger->error($module . ':' . $error);
         $response = new Response();
