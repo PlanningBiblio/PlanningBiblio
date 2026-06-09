@@ -2785,7 +2785,7 @@ class StatisticController extends BaseController
                 $lignes[]=implode($separateur, array("Poste","Etage","Obligatoire/renfort","Heures","Moyenne jour","Moyenne hebdo","Nom de l'agent","Prénom de l'agent","Heures par agent"));
                 foreach ($tab as $elem) {
                     $jour = ($nbJours > 0) ? $elem[2] / $nbJours : 0;
-                    $hebdo = statistiques::average($elem[2], $debut, $fin);
+                    $hebdo = \statistiques::average($elem[2], $debut, $fin);
                     foreach ($elem[1] as $agent) {
                         $cellules=array();
                         $cellules[]=$elem[0][1];			// nom du poste
@@ -2804,7 +2804,7 @@ class StatisticController extends BaseController
                 $lignes[]="Les services";
                 foreach ($tab as $elem) {
                     $jour = ($nbJours > 0) ? $elem[2] / $nbJours : 0;
-                    $hebdo = statistiques::average($elem[2], $debut, $fin);
+                    $hebdo = \statistiques::average($elem[2], $debut, $fin);
                     foreach ($elem["services"] as $service) {
                         $cellules=array();
                         $cellules[]=$elem[0][1];				// nom du poste
@@ -2822,7 +2822,7 @@ class StatisticController extends BaseController
                 $lignes[]="Les statuts";
                 foreach ($tab as $elem) {
                     $jour = ($nbJours > 0) ? $elem[2] / $nbJours : 0;
-                    $hebdo = statistiques::average($elem[2], $debut, $fin);
+                    $hebdo = \statistiques::average($elem[2], $debut, $fin);
                     foreach ($elem["statuts"] as $statut) {
                         $cellules=array();
                         $cellules[]=$elem[0][1];				// nom du poste
@@ -2841,9 +2841,12 @@ class StatisticController extends BaseController
             case "postes_synthese": 							// Postes (synthèse)
                 $lignes=array("Statistiques par poste (synthèse) du $debutAlpha au $finAlpha",null);
                 $lignes[]=implode($separateur, array("Poste","Etage","Obligatoire/renfort","Heures","Moyenne jour","Moyenne hebdo"));
+                $total_heures = 0;
+                $total_jour = 0;
+                $total_hebdo = 0;
                 foreach ($tab as $elem) {
                     $jour = ($nbJours > 0) ? $elem[2] / $nbJours : 0;
-                    $hebdo = statistiques::average($elem[2], $debut, $fin);
+                    $hebdo = \statistiques::average($elem[2], $debut, $fin);
                     $total_heures+=$elem[2];
                     $total_jour+=$jour;
                     $total_hebdo+=$hebdo;
@@ -2864,7 +2867,7 @@ class StatisticController extends BaseController
                 $lignes[]=implode($separateur, array("Poste","Etage","Heures","Moyenne jour","Moyenne hebdo","Jours","Heures par jour","Début","Fin","Heures"));
                 foreach ($tab as $elem) {
                     $jour = ($nbJours > 0) ? $elem[2] / $nbJours : 0;
-                    $hebdo = statistiques::average($elem[2], $debut, $fin);
+                    $hebdo = \statistiques::average($elem[2], $debut, $fin);
                     foreach ($elem[1] as $date) {
                         foreach ($date[1] as $horaires) {
                             $cellules=array();
@@ -2908,8 +2911,10 @@ class StatisticController extends BaseController
                     $cellules[]=$elem['total'];								// Total
                     $cellules[]=$elem['totalHeures'];							// Total d'heures
                     foreach ($motifs as $m) {
-                        $cellules[]=$elem[$m]['total'];							// Nombre d'absences par motif
-                        $cellules[]=$elem[$m]['heures'];							// Heures d'absences par motif
+                        if(isset($elem[$m])){
+                            $cellules[]=$elem[$m]['total'];							// Nombre d'absences par motif
+                            $cellules[]=$elem[$m]['heures'];						// Heures d'absences par motif
+                        }
                     }
                     $lignes[]=implode($separateur, $cellules);
                 }
