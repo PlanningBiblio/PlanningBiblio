@@ -235,6 +235,10 @@ h4{
   white-space: normal;
 }
 
+.perso_ul li:first-of-type {
+  margin-top: 6px;
+}
+
 /* .perso-drop : suppression des agents sélectionés dans les pages absences/* */
 .perso-drop{
   float: right;
@@ -1949,14 +1953,16 @@ hr {
   justify-content: center;
 }
 
-.form-control, .form-control:focus, .form-control-plaintext {
+.form-control, .form-control:focus, 
+.row.row-search .form-control-plaintext {
   color: #29495C;
   font-size: inherit;
   border-radius: var(--bs-border-radius-sm);
   border: 1px solid #456578;
+  background-color: white;
 }
 
-div.form-control, div.form-control:focus {
+div.form-control, div.form-control:focus, .form-control-plaintext {
   color: #29495C;
 }
 

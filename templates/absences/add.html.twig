@@ -18,7 +18,7 @@
     <h3>Ajouter une absence</h3>
     <div class="admin-div">
       
-      <form id="form" name="form" action="/absence" method="post" enctype="multipart/form-data">
+      <form id="form" name="form" action="/absence" method="post" enctype="multipart/form-data" novalidate>
         <input type="hidden" name="_token" value="{{ csrf_token('') }}" />
         <input type="hidden" name="CSRFToken" value="{{ CSRFToken }}" />
         <input type="hidden" id="admin" value="{{ admin }}" />
@@ -33,14 +33,14 @@
                 <input type='hidden' name='perso_ids[]' value='{{ loggedin_id }}' id='hidden{{ loggedin_id }}' class='perso_ids_hidden'/>
               {% endif %}
 
-              <ul id='perso_ul1' class='perso_ul'>
+              <ul id="perso_ul1" class="perso_ul">
               {% if agent_preselection %}
-                <li id='li{{ loggedin_id }}' class='perso_ids_li'>
+                <li id="li{{ loggedin_id }}" class="perso_ids_li">
                   {{ loggedin_name }} {{ loggedin_firstname }}
                   {% if admin %}
-                    <span class='perso-drop' onclick="supprimeAgent({ loggedin_id });">
-                      <span class='pl-icon pl-icon-dropblack'></span>
-                    </span>
+                    <button type="button" class="perso-drop btn btn-icon p-0" onclick="supprimeAgent({ loggedin_id });" title="{% trans %}Delete{% endtrans %}">
+                      <span class="pl-icon pl-icon-dropblack"></span>
+                    </button>
                   {% endif %}
                 </li>
               {% endif %}
@@ -52,7 +52,7 @@
             <ul id='perso_ul5' class='perso_ul'></ul>
 
             <select name="perso_id" id="perso_ids" class="form-select form-select-sm my-3">
-              <option value='0' selected='selected'>-- Ajoutez un agent --</option>
+              <option value="0" selected="selected">-- Ajoutez un agent --</option>
               {% if config('Absences-tous') %}
                 <option value='tous'>Tous les agents</option>
               {% endif %}
@@ -86,7 +86,7 @@
         <div class="row gx-5 mb-2">
           <label class="col-2 col-form-label aRight" for="absence-start">Date de début :</label>
           <div class="col-3">
-            <input type="text" name="debut" value="" class="datepicker start-date form-control" id="absence-start"/>
+            <input type="text" name="debut" value="" class="datepicker start-date form-control" id="absence-start" required/>
           </div>             
         </div>
 
@@ -112,7 +112,7 @@
         </div>
 
         <div class="row mb-2">
-          <div class="invalid-feedback offset-4">{% trans from 'validators' %}Please choose a valid date interval.{% endtrans %}</div>
+          <div class="invalid-feedback offset-2">{% trans from 'validators' %}Please choose a valid date interval.{% endtrans %}</div>
         </div>
 
         <div class="row mb-2 gx-5 form-check-prepend">
@@ -130,7 +130,7 @@
         <div class="row gx-5 mb-2">
           <label class="col-2 col-form-label aRight" for="motif">Motif :</label>
           <div class="col-3">
-            <select name="motif" id="motif" class="form-select form-select-sm">
+            <select name="motif" id="motif" class="form-select form-select-sm" required>
               <option hidden disabled selected value=""></option>
               {% for r in reasons %}
                 {% if r.type == 2 %}
@@ -204,8 +204,8 @@
 
         {% if config('Absences-validation') %}
           <div class="row gx-5 mb-2" id="validation-line">
-            <label class="col-2 col-form-label aRight" for="documentFile">État :</label>
-            <div class="col-3" style="align-items: center;display: flex;" >
+            <label class="col-2 col-form-label aRight" for="validation-state">État :</label>
+            <div class="col-3">
               <div id="validation-statuses"></div>
             </div>             
           </div> 

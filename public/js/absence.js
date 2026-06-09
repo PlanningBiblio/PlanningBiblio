@@ -203,9 +203,13 @@ $(function() {
 
   // Affiche ou masque le champ motif_autre en fonction de la valeur du select motif
   $("select[name=motif]").change(function(){
-    if($(this).val().toLowerCase()=="autre" || $(this).val().toLowerCase()=="other"){
+    if ($(this).val().toLowerCase()=="autre" || $(this).val().toLowerCase()=="other") {
       $("#motif_autre").show();
-    }else{
+      $("#motif2").attr('required', 'required');
+
+    }
+    else {
+      $("#motif2").removeAttr('required');
       $("#motif_autre").hide();
       $("input[name=motif_autre]").val("");
     }
@@ -560,10 +564,11 @@ function affiche_perso_ul(){
   }
 
   for(i in tab){
-    var li="<li id='li"+tab[i][1]+"' class='perso_ids_li' data-id='"+tab[i][1]+"'>"+tab[i][0];
+    var li="<li id='li"+tab[i][1]+"' class='perso_ids_li mb-1' data-id='"+tab[i][1]+"'>"+tab[i][0];
 
     if( $('#admin').val() == 1 || tab[i][1] != $('#login_id').val() ){
-      li+="<span class='perso-drop' onclick='supprimeAgent("+tab[i][1]+");' ><span class='pl-icon pl-icon-dropblack'></span></span>";
+      title = Translator.trans('Delete');
+      li+="<button type='button' class='perso-drop btn btn-icon p-0' onclick='supprimeAgent("+tab[i][1]+");' title='"+ title +"'><span class='pl-icon pl-icon-dropblack'></span></button>";
     }
 
     li+="</li>\n";
