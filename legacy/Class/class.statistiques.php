@@ -46,9 +46,9 @@ function statistiques1($nom, $tab, $debutAlpha, $finAlpha, $separateur, $nbJours
 
     $neverSelected = array();
     if ($nom == 'agent' and !empty ($tab['neverSelected'])) {
-        $neverSelected = $tab['neverSelected'];
-        unset($tab['neverSelected']);
+        $neverSelected = $tab['neverSelected'];        
     }
+    unset($tab['neverSelected']);
 
     foreach ($tab as $elem) {
         $jour = ($nbJours > 0) ? $elem[2] / $nbJours : 0;
