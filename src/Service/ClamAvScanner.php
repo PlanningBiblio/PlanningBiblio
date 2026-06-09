@@ -18,7 +18,7 @@ class ClamAvScanner
         $this->logger = $logger;
         $clamavSocket ??= '';
         $this->clamavSocket = $clamavSocket;
-        if ($clamavSocket) {
+        if ($clamavSocket !== '' && $clamavSocket !== '0') {
             $this->logger->info("Connecting to ClamAV with CLAMAV_SOCKET=$clamavSocket");
             $this->client = ClamAV::fromDSN($clamavSocket);
         } else {
@@ -26,7 +26,7 @@ class ClamAvScanner
         }
     }
 
-    public function isEnabled()
+    public function isEnabled(): bool
     {
         return !empty($this->clamavSocket);
     }
