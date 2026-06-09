@@ -24,57 +24,70 @@
         <input type="hidden" id="admin" value="{{ admin }}" />
         <input type="hidden" id="login_id" value="{{ loggedin_id }}" />
 
-        <fieldset class="row my-2 gx-5">
-          <legend class="col-2 col-form-label aRight" for="perso_ul1">{% trans %}Agent{% endtrans %}{% if agents_multiples %}(s){% endif %} :</legend>
-          <div class="col-3">
+      
+        {% if agents_multiples %}
+          <fieldset class="row my-2 gx-5">
+            <legend class="col-2 col-form-label aRight" for="perso_ul1">{% trans %}Agent{% endtrans %}(s) :</legend>
+            <div class="col-auto">
 
-            {% if agents_multiples %}
               {% if agent_preselection %}
                 <input type='hidden' name='perso_ids[]' value='{{ loggedin_id }}' id='hidden{{ loggedin_id }}' class='perso_ids_hidden'/>
               {% endif %}
 
               <ul id="perso_ul1" class="perso_ul">
-              {% if agent_preselection %}
-                <li id="li{{ loggedin_id }}" class="perso_ids_li">
-                  {{ loggedin_name }} {{ loggedin_firstname }}
-                  {% if admin %}
-                    <button type="button" class="perso-drop btn btn-icon p-0" onclick="supprimeAgent({ loggedin_id });" title="{% trans %}Delete{% endtrans %}">
-                      <span class="pl-icon pl-icon-dropblack"></span>
-                    </button>
-                  {% endif %}
-                </li>
-              {% endif %}
-            </ul>
-
-            <ul id='perso_ul2' class='perso_ul'></ul>
-            <ul id='perso_ul3' class='perso_ul'></ul>
-            <ul id='perso_ul4' class='perso_ul'></ul>
-            <ul id='perso_ul5' class='perso_ul'></ul>
-
-            <select name="perso_id" id="perso_ids" class="form-select form-select-sm my-3">
-              <option value="0" selected="selected">-- Ajoutez un agent --</option>
-              {% if config('Absences-tous') %}
-                <option value='tous'>Tous les agents</option>
-              {% endif %}
-
-              {% for a in agents %}
-                {% if a.id == loggedin_id and agent_preselection %}
-                  <option value='{{ a.id }}' id='option{{ a.id }}' style="display:none;">
-                    {{ a.lastname }} {{ a.firstname }}
-                  </option>
-                {% else %}
-                  <option value='{{ a.id }}' id='option{{ a.id }}'>
-                    {{ a.lastname }} {{ a.firstname }}
-                  </option>
+                {% if agent_preselection %}
+                  <li id="li{{ loggedin_id }}" class="perso_ids_li">
+                    {{ loggedin_name }} {{ loggedin_firstname }}
+                    {% if admin %}
+                      <button type="button" class="perso-drop btn btn-icon p-0" onclick="supprimeAgent({ loggedin_id });" title="{% trans %}Delete{% endtrans %}">
+                        <span class="pl-icon pl-icon-dropblack"></span>
+                      </button>
+                    {% endif %}
+                  </li>
                 {% endif %}
-              {% endfor %}
-            </select>
+              </ul>
+            </div>
 
-            {% else %}
-              <input type='hidden' name='perso_id' value='{{ loggedin_id }}' class='perso_ids_hidden' />{{ loggedin_name }} {{ loggedin_firstname }}
-            {% endif %}
+            <div class="col-auto"><ul id='perso_ul2' class='perso_ul'></ul></div>
+            <div class="col-auto"><ul id='perso_ul3' class='perso_ul'></ul></div>
+            <div class="col-auto"><ul id='perso_ul4' class='perso_ul'></ul></div>
+            <div class="col-auto"><ul id='perso_ul5' class='perso_ul'></ul></div>
+          </fieldset>
+          
+          <div class="row mb-2 gx-5">
+            <div class="col-3 offset-2">
+              <select name="perso_id" id="perso_ids" class="form-select form-select-sm my-3">
+                <option value="0" selected="selected">-- Ajoutez un agent --</option>
+                {% if config('Absences-tous') %}
+                  <option value='tous'>Tous les agents</option>
+                {% endif %}
+
+                {% for a in agents %}
+                  {% if a.id == loggedin_id and agent_preselection %}
+                    <option value='{{ a.id }}' id='option{{ a.id }}' style="display:none;">
+                      {{ a.lastname }} {{ a.firstname }}
+                    </option>
+                  {% else %}
+                    <option value='{{ a.id }}' id='option{{ a.id }}'>
+                      {{ a.lastname }} {{ a.firstname }}
+                    </option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+            </div>
           </div>
-        </fieldset>
+
+        {% else %}
+
+          <div class="row my-2 gx-5">
+            <label class="col-2 col-form-label aRight" for="perso_ul1">{% trans %}Agent{% endtrans %} :</label>
+            <div class="col-3">
+              <input type='hidden' name='perso_id' value='{{ loggedin_id }}' class='perso_ids_hidden' />
+              <input type="text" id="perso_ul1" readonly class="form-control-plaintext" value="{{ loggedin_name }} {{ loggedin_firstname }}">
+            </div>             
+          </div>
+
+        {% endif %}
 
         <div class="row mb-2 gx-5 form-check-prepend">
           <label class="col-2 col-form-label aRight form-check-label" for="allday-check" >Journée(s) entière(s) :</label>
