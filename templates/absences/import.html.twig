@@ -32,7 +32,7 @@
               <tr>
                 <td>{{ log.line }}</td>
                 <td>{{ log.type }}</td>
-                <td>
+                <td data-sort="{{ log.type }}">
                   {% if log.type == 1 %}<div class="red">Erreur</div>
                   {% elseif log.type == 2 %}<div class="orange">Avertissement</div>
                   {% elseif log.type == 3 %}<div class="green">Information</div>
