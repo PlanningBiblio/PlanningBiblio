@@ -155,28 +155,6 @@ function supprime_tab(nom,id){
 }
 //    --------------------------------    FIN Tableaux - Lignes    -------------------------    //
 
-function ctrl_nom(me){
-  exist=false;
-  valeur=me.value.toLowerCase();
-  valeur=valeur.trim();
-  for(i=0;i<grp_nom.length;i++){
-    if(valeur==grp_nom[i]){
-      exist=true;
-    }
-  }
-  document.getElementById("submit").disabled=false;
-  document.getElementById("nom_utilise").style.display="none";
-  me.style.border=null;
-  me.style.background="#FFFFFF";
-
-  if(exist){
-    me.style.border="solid 3px red";
-    me.style.background="#FFCCCC";
-    document.getElementById("submit").disabled=true;
-    document.getElementById("nom_utilise").style.display="";
-  }
-}
-
 //    Suppression des élements sélectionnés (page de suppression)
 function supprime_select(classe,page){
   ids=new Array();
@@ -227,6 +205,25 @@ function tableauxInfos(){
 }
 
 $(function(){
+
+  $('#Nom').on('keyup', function(e){
+    exist = false;
+    name_value = $(this).val().toLowerCase().trim();
+    for (i = 0; i < grp_nom.length ; i++) {
+      if (name_value == grp_nom[i]) {
+        exist = true;
+      }
+    }
+    $('#name-feedback').text(Translator.trans('This value should not be blank.', 'validators'));
+    $(this).removeClass('is-invalid');
+
+    if (exist) {
+      e.stopImmediatePropagation();
+      $('#name-feedback').text(Translator.trans('That name is already taken'));
+      $(this).addClass('is-invalid');
+    }
+ });
+
   used = $('#used').val();
 
   $('.tab-validation').on('click', function(e) {
