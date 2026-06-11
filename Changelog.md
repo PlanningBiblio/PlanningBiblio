@@ -1,5 +1,15 @@
 # Changelog Planno
 
+## Version 26.04.01 (2026-06-11)
+
+### Fixes
+
+* Bug fix: wrong property names on models edition #1395
+* Bug fix: wrong invalidity messages #1397
+* Bug fix: duplicate textarea on .is-invalid (pl-notes-modal) #1399
+* MT53517: Use CJDataTable class for absences CSV import #1401
+* Fix errors during statistics export #1405
+
 ## Version 26.04.00 (2026-05-29)
 ## Version 25.11.26 (2026-05-29)
 
