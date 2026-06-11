@@ -1,5 +1,11 @@
 # Changelog Planno
 
+## Version 25.10.20 (2026-06-11)
+
+### Fixes
+
+* Bug fix: wrong property names on models edition 25.10.xx #1404
+
 ## Version 25.10.19 (2026-05-27)
 
 ### Fixes
