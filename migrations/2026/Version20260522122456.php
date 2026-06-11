@@ -30,34 +30,23 @@ final class Version20260522122456 extends AbstractMigration
             site_id int(20) NOT NULL,
             mail varchar(255) NOT NULL DEFAULT '',
             PRIMARY KEY (`id`),
-             KEY `site_id` (`site_id`)
+            KEY `site_id` (`site_id`)
         ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;");
 
-        $this->addSql("
-        INSERT IGNORE INTO `{$dbprefix}menu` (`niveau1`, `niveau2`, `titre`, `url`, `condition`)
-        VALUES ('50', '73', 'Configuration des sites', '/site', NULL);
-        ");
+        $this->addSql("INSERT IGNORE INTO `{$dbprefix}menu` (`niveau1`, `niveau2`, `titre`, `url`, `condition`) VALUES ('50', '73', 'Configuration des sites', '/site', NULL);");
 
-        $this->addSql("
-        INSERT IGNORE INTO `{$dbprefix}site` (`id`, `name`, `deletedDate`)
+        $this->addSql("INSERT IGNORE INTO `{$dbprefix}site` (`id`, `name`, `deletedDate`)
         SELECT 
             CAST(SUBSTRING(nom, LENGTH('Multisites-site') + 1) AS UNSIGNED), valeur, NULL FROM `{$dbprefix}config`
         WHERE nom LIKE 'Multisites-site%'
         AND nom NOT LIKE '%-mail'
         AND valeur IS NOT NULL
-        AND TRIM(valeur) <> ''
-        ");
+        AND TRIM(valeur) <> ''");
 
         //Ajout d'un site par défaut si aucun site de renseiné
-        $this->addSql("
-        INSERT INTO `{$dbprefix}site` (`name`, `deletedDate`)
-        SELECT 'Site par défaut', NULL
-        FROM DUAL
-        WHERE NOT EXISTS (SELECT 1 FROM `{$dbprefix}site`)
-        ");
+        $this->addSql("INSERT INTO `{$dbprefix}site` (`name`, `deletedDate`) SELECT 'Site par défaut', NULL FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM `{$dbprefix}site`)");
 
-        $this->addSql("
-        INSERT INTO `{$dbprefix}site_mail` (`site_id`, `mail`)
+        $this->addSql("INSERT INTO `{$dbprefix}site_mail` (`site_id`, `mail`)
         SELECT 
             CAST(SUBSTRING(nom, LENGTH('Multisites-site') + 1, 
                 LENGTH(nom) - LENGTH('Multisites-site') - LENGTH('-mail')) AS UNSIGNED),
@@ -71,8 +60,7 @@ final class Version20260522122456 extends AbstractMigration
         WHERE nom LIKE 'Multisites-site%-mail'
         AND NOT EXISTS (
             SELECT 1 FROM (SELECT 1 FROM `{$dbprefix}site_mail` LIMIT 1) AS _existing
-        )
-        ");
+        )");
 
         $this->addSql("UPDATE `{$dbprefix}postes` SET site=1 WHERE site=0");
         $this->addSql("DELETE FROM `{$dbprefix}config` WHERE nom LIKE 'Multisites-site%'");
@@ -83,8 +71,7 @@ final class Version20260522122456 extends AbstractMigration
     {
         $dbprefix = $_ENV['DATABASE_PREFIX'];
 
-        $this->addSql("
-            INSERT INTO `{$dbprefix}config` (nom, valeur)
+        $this->addSql("INSERT INTO `{$dbprefix}config` (nom, valeur)
             SELECT
                 CONCAT('Multisites-site', id),
                 name
@@ -92,8 +79,7 @@ final class Version20260522122456 extends AbstractMigration
             WHERE deletedDate IS NULL
         ");
 
-        $this->addSql("
-        INSERT INTO `{$dbprefix}config` (nom, valeur)
+        $this->addSql("INSERT INTO `{$dbprefix}config` (nom, valeur)
         SELECT
             CONCAT('Multisites-site', site_id, '-mail'),
             GROUP_CONCAT(mail SEPARATOR ';')
@@ -101,8 +87,7 @@ final class Version20260522122456 extends AbstractMigration
         GROUP BY site_id
         ");
 
-        $this->addSql("
-        INSERT INTO `{$dbprefix}config` (nom, valeur)
+        $this->addSql("INSERT INTO `{$dbprefix}config` (nom, valeur)
         SELECT
             'Multisites-nombre',
             COUNT(*)
@@ -110,7 +95,6 @@ final class Version20260522122456 extends AbstractMigration
         WHERE deletedDate IS NULL
         ");
 
-        $this->addSql("UPDATE `{$dbprefix}postes` SET site = 0 WHERE site = 1");
         $this->addSql("DELETE FROM `{$dbprefix}menu` WHERE url = '/site'");
         $this->addSql("DROP TABLE IF EXISTS `{$dbprefix}site_mail`");
         $this->addSql("DROP TABLE IF EXISTS `{$dbprefix}site`");

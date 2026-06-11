@@ -555,14 +555,19 @@ class planning
         }
 
         $sujet=$notificationType=="nouveauPlanning"?"Validation du planning du ".dateFr($date):"Modification du planning du ".dateFr($date);
-        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(['deletedDate' => NULL]);
+        $sites_entities = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(['deletedDate' => NULL]);
 
         // Tous les agents qui doivent être notifiés.
         foreach ($perso_ids as $elem) {
             // Création du message avec date et nom de l'agent
             $agent = isset($tab[$elem]) ? $tab[$elem]['prenom'].' '.$tab[$elem]['nom'] : $oldData[$elem]['prenom'].' '.$oldData[$elem]['nom'];
-            $siteName = $entityManager->getRepository(Site::class)->find($site)->getName();
-            $location = count($sites_array) > 1 ? '<br/>Site : <strong>' . $siteName . '</strong>' : null;
+            $siteName = '';
+            foreach ($sites_entities as $s) {
+                if ($s->getId() == $site) {
+                    $siteName = $s->getName();
+                }
+            }
+            $location = count($sites_entities) > 1 ? '<br/>Site : <strong>' . $siteName . '</strong>' : null;
 
             $message=$notificationType=="nouveauPlanning"?"Validation du planning":"Modification du planning";
             $message .= "<br/><br/>Agent : <strong>$agent</strong>";

@@ -17,20 +17,20 @@ function statistiques1($nom, $tab, $debutAlpha, $finAlpha, $separateur, $nbJours
     $titre="Statistiques par $nom du $debutAlpha au $finAlpha";
 
     $lignes=array($titre,null,"Postes");
-    $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(['deletedDate' => NULL]);
+    $sites_entities = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(['deletedDate' => NULL]);
     if ($nom=="agent") {
         $cellules=array("Nom","Prénom","Heures","Moyenne hebdo");
     } else {
         $cellules=array(ucfirst($nom),"Heures","Moyenne hebdo");
     }
-    if (count($sites_array)>1) {
-        foreach ($sites_array as $site) {
+    if (count($sites_entities)>1) {
+        foreach ($sites_entities as $site) {
             $cellules[]="Heures ".$site->getName();
             $cellules[]="Moyenne ".$site->getName();
         }
     }
     $cellules[]="Poste";
-    if (count($sites_array)>1) {
+    if (count($sites_entities)>1) {
         $cellules[]="Site";
     }
     $cellules=array_merge($cellules, array("Etage","Heures par poste"));
@@ -55,8 +55,8 @@ function statistiques1($nom, $tab, $debutAlpha, $finAlpha, $separateur, $nbJours
             }
             $cellules[]=number_format($elem[2], 2, ',', ' ');	// Nombre d'heures
             $cellules[]=number_format($hebdo, 2, ',', ' ');	// moyenne hebdo
-            if (count($sites_array)>1) {
-                for ($i=1;$i<=count($sites_array);$i++) {
+            if (count($sites_entities)>1) {
+                for ($i=1;$i<=count($sites_entities);$i++) {
                     $jour = ($nbJours > 0) ? $elem['sites'][$i] / $nbJours : 0;
                     $site_hebdo = statistiques::average($elem['sites'][$i], $debut, $fin);
                     $cellules[]=number_format($elem["sites"][$i], 2, ',', ' ');
@@ -65,11 +65,16 @@ function statistiques1($nom, $tab, $debutAlpha, $finAlpha, $separateur, $nbJours
             }
             $cellules[]=$poste[1];				// Nom du poste
             $site=null;
-            if ($poste["site"]>0 and count($sites_array)>1) {
-                $siteName = $GLOBALS['entityManager']->getRepository(Site::class)->find($poste['site']);
+            if ($poste["site"]>0 and count($sites_entities)>1) {
+                $siteName = '';
+                foreach ($sites_entities as $s) {
+                    if ($s->getId() == $site) {
+                        $siteName = $s->getName();
+                    }
+                }
                 $site=$siteName." ";
             }
-            if (count($sites_array)>1) {
+            if (count($sites_entities)>1) {
                 $cellules[]=$site;
             }
             $cellules[]=$poste[2];				// Etage
@@ -341,14 +346,14 @@ class statistiques
         $totalJours=array();
         $totalSemaines=array();
 
-        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(['deletedDate' => NULL]);
-        if (count($sites_array)>1 and is_array($selectedSites)) {
+        $sites_entities = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(['deletedDate' => NULL]);
+        if (count($sites_entities)>1 and is_array($selectedSites)) {
             $reqSites="AND `site` IN (0,".implode(",", $selectedSites).")";
         } else {
             $reqSites=null;
         }
 
-        for ($i=1;$i<=count($sites_array);$i++) {
+        for ($i=1;$i<=count($sites_entities);$i++) {
             // Nombre d'heures
             $totalHeures[$i]=0;
             $db=new db();
@@ -378,10 +383,10 @@ class statistiques
         }
 
         $echo="<p style='margin-top:0px;'>";
-        for ($i=0;$i<=count($sites_array)-1;$i++) {
-            if (count($sites_array)>1) {
+        for ($i=0;$i<=count($sites_entities)-1;$i++) {
+            if (count($sites_entities)>1) {
                 if (in_array($i, $selectedSites)) {
-                    $echo.="<br/>" . $sites_array[$i]->getName() . ", ouverture au public : ";
+                    $echo.="<br/>" . $sites_entities[$i]->getName() . ", ouverture au public : ";
                 }
             } else {
                 $echo.="<br/>Ouverture au public : ";

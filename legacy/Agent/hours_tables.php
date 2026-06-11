@@ -52,6 +52,8 @@ if ($EDTSamedi == 1) {
     $table_name = array('Emploi du temps standard', 'Emploi du temps des semaines avec samedi travaillé', 'Emploi du temps en ouverture restreinte');
 }
 
+$sites_entities = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(['deletedDate' => NULL]);
+
 for ($j = 0; $j < $nb_semaine; $j++) {
     if ($EDTSamedi) {
         $hours_tab .= "<br/><b>{$table_name[$j]}</b>";
@@ -72,7 +74,6 @@ for ($j = 0; $j < $nb_semaine; $j++) {
         $hours_tab .= "<th>Temps de pause</th>";
     }
 
-    $sites_entities = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(['deletedDate' => NULL]);
     if (count($sites_entities)>1) {
         $hours_tab .= "<th>Site</th>";
     }
@@ -171,8 +172,13 @@ for ($j = 0; $j < $nb_semaine; $j++) {
                     if ($temps[$i-1][4] == -1) {
                         $site = 'Tout site';
                     } else {
-                        $s = $GLOBALS['entityManager']->getRepository(Site::class)->find($temps[$i - 1][4]);
-                        $site = $s ? $s->getName() : '';
+                        $s = '';
+                        foreach ($sites_entities as $se) {
+                            if ($temps[$i-1][4] == $se->getId()) {
+                                $s = $se->getName();
+                                break;
+                            }
+                        }
                     }
                 }
                 $hours_tab .= "<td>$site</td>";
