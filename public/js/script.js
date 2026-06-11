@@ -961,6 +961,15 @@ $(function(){
     })
   });
 
-  // Infobulles
-  $(document).tooltip();
+  // Tooltips
+
+  $('[title]').each(function() {
+    $(this).attr('data-bs-toggle', 'tooltip');
+    $(this).attr('data-bs-custom-class', 'custom-tooltip');
+    $(this).attr('data-bs-placement', 'bottom');
+  });
+
+  const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+  const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+
 });
