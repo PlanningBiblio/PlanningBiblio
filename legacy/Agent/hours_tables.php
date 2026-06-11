@@ -52,8 +52,6 @@ if ($EDTSamedi == 1) {
     $table_name = array('Emploi du temps standard', 'Emploi du temps des semaines avec samedi travaillé', 'Emploi du temps en ouverture restreinte');
 }
 
-$sites_entities = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(['deletedDate' => NULL]);
-
 for ($j = 0; $j < $nb_semaine; $j++) {
     if ($EDTSamedi) {
         $hours_tab .= "<br/><b>{$table_name[$j]}</b>";
@@ -74,7 +72,7 @@ for ($j = 0; $j < $nb_semaine; $j++) {
         $hours_tab .= "<th>Temps de pause</th>";
     }
 
-    if (count($sites_entities)>1) {
+    if (count($sites_array)>1) {
         $hours_tab .= "<th>Site</th>";
     }
   
@@ -165,7 +163,7 @@ for ($j = 0; $j < $nb_semaine; $j++) {
             $hours_tab .= '</td>';
         }
 
-        if (count($sites_entities)>1) {
+        if (count($sites_array)>1) {
             if ($disabled !== '' && $disabled !== '0') {
                 $site = '';
                 if (isset($temps[$i-1][4])) {
@@ -173,9 +171,9 @@ for ($j = 0; $j < $nb_semaine; $j++) {
                         $site = 'Tout site';
                     } else {
                         $s = '';
-                        foreach ($sites_entities as $se) {
-                            if ($temps[$i-1][4] == $se->getId()) {
-                                $s = $se->getName();
+                        foreach ($sites_array as $elem) {
+                            if ($temps[$i-1][4] == $elem['id']) {
+                                $s = $elem['name'];
                                 break;
                             }
                         }
@@ -185,9 +183,9 @@ for ($j = 0; $j < $nb_semaine; $j++) {
             } else {
                 $hours_tab .= "<td><select name='temps[".($i-1)."][4]' class='edt-site'>\n";
                 $hours_tab .= "<option value='' class='edt-site-0'>&nbsp;</option>\n";
-                foreach ($sites_entities as $site) {
-                    $selected = (isset($temps[$i-1][4]) and $temps[$i-1][4]==$site->getId()) ? "selected='selected'" : null;
-                    $hours_tab .= "<option value='". $site->getId() ."' $selected class='edt-site-". $site->getId() ."'>" . $site->getName() . "</option>\n";
+                foreach ($sites_array as $site) {
+                    $selected = (isset($temps[$i-1][4]) and $temps[$i-1][4]==$site['id']) ? "selected='selected'" : null;
+                    $hours_tab .= "<option value='". $site['id'] ."' $selected class='edt-site-". $site['id'] ."'>" . $site['name'] . "</option>\n";
                 }
                 $selected = (isset($temps[$i-1][4]) and $temps[$i-1][4] == -1) ? "selected='selected'" : null;
                 $hours_tab .= "<option value='-1' $selected class='edt-site--1'>Tout site</option>\n";
