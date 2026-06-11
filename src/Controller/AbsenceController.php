@@ -295,7 +295,7 @@ class AbsenceController extends BaseController
             'right701'              => in_array(701, $this->droits) ? 1 : 0,
         ));
 
-        return $this->output('absences/add.html.twig');
+        return $this->output('absences/edit.html.twig');
     }
 
     #[Route(path: '/absence', name: 'absence.save', methods: ['POST'])]
@@ -522,7 +522,7 @@ class AbsenceController extends BaseController
         ));
 
         $this->templateParams(array('documents' => $this->getDocuments($a)));
-        return $this->output('absences/add.html.twig');
+        return $this->output('absences/edit.html.twig');
     }
 
     #[Route(path: '/absence', name: 'absence.delete', methods: ['DELETE'])]
