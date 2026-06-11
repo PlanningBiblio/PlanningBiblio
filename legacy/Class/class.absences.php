@@ -735,13 +735,13 @@ class absences
 
         $all=array();
         $groupes=array();
+        $sites_entities = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(['deletedDate' => NULL]);
         if ($db->result) {
             foreach ($db->result as $elem) {
 
         // Multisites, n'affiche que les agents des sites choisis
-                if (!empty($sites)) {
-                    $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(['deletedDate' => NULL]);
-                    if (count($sites) > 1) {
+                if (!empty($sites_entities)) {
+                    if (count($sites_entities) > 1) {
                         $sitesAgent = json_decode(html_entity_decode($elem['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
                     } else {
                         $sitesAgent = array(1);
