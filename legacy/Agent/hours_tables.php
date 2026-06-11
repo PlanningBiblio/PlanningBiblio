@@ -72,8 +72,8 @@ for ($j = 0; $j < $nb_semaine; $j++) {
         $hours_tab .= "<th>Temps de pause</th>";
     }
 
-    $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(['deletedDate' => NULL]);
-    if (count($sites_array)>1) {
+    $sites_entities = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(['deletedDate' => NULL]);
+    if (count($sites_entities)>1) {
         $hours_tab .= "<th>Site</th>";
     }
   
@@ -164,21 +164,22 @@ for ($j = 0; $j < $nb_semaine; $j++) {
             $hours_tab .= '</td>';
         }
 
-        if (count($sites_array)>1) {
+        if (count($sites_entities)>1) {
             if ($disabled !== '' && $disabled !== '0') {
-                $site=null;
+                $site = '';
                 if (isset($temps[$i-1][4])) {
-                    $s = $GLOBALS['entityManager']->getRepository(Site::class)->find($temps[$i-1][4]);
-                    $site = $s->getName();
-                    $site = $config[$site] ?? null;
-
-                    $site = $temps[$i-1][4] == -1 ? 'Tout site' : $site;
+                    if ($temps[$i-1][4] == -1) {
+                        $site = 'Tout site';
+                    } else {
+                        $s = $GLOBALS['entityManager']->getRepository(Site::class)->find($temps[$i - 1][4]);
+                        $site = $s ? $s->getName() : '';
+                    }
                 }
                 $hours_tab .= "<td>$site</td>";
             } else {
                 $hours_tab .= "<td><select name='temps[".($i-1)."][4]' class='edt-site'>\n";
                 $hours_tab .= "<option value='' class='edt-site-0'>&nbsp;</option>\n";
-                foreach ($sites_array as $site) {
+                foreach ($sites_entities as $site) {
                     $selected = (isset($temps[$i-1][4]) and $temps[$i-1][4]==$site->getId()) ? "selected='selected'" : null;
                     $hours_tab .= "<option value='". $site->getId() ."' $selected class='edt-site-". $site->getId() ."'>" . $site->getName() . "</option>\n";
                 }
