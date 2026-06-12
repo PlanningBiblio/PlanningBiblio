@@ -593,13 +593,13 @@ class Agent
         return true;
     }
 
-    public function can_access(array $accesses): bool {
+    public function can_access(array $accesses, array $sites_array = []): bool {
         if (empty($accesses)) {
             return false;
         }
 
         $droits = $this->droits;
-        $multisites = $GLOBALS['config']['Multisites-nombre'];
+        $multisites = count($sites_array);
 
         // Right 21 (Edit personnel) gives right 4 (Show personnel)
         if (in_array(21, $droits)) {
@@ -645,11 +645,15 @@ class Agent
         $sites = $this->sites;
         if (is_array($sites)) {
             foreach ($sites as $site) {
-                $site_mail_config = "Multisites-site$site-mail";
-                if ($config[$site_mail_config]) {
-                    $site_mails = explode(';', $config[$site_mail_config]);
-                    $site_mails = array_map('trim', $site_mails);
-                    $unit_mails = array_merge($unit_mails, $site_mails);
+                $db = new \db();
+                $db->select2("site_mail", "*", array("site_id" => $site));
+                if ($db->result) {
+                    foreach ($db->result as $m) {
+                        $mail = trim($m['mail']);
+                        if ($mail !== '') {
+                            $unit_mails[] = $mail;
+                        }
+                    }
                 }
             }
         }
@@ -744,9 +748,9 @@ class Agent
     /**
      * @return int[]
      */
-    public function managedSites($needed_l1, $needed_l2): array
+    public function managedSites($needed_l1, $needed_l2, $sites_array = []): array
     {
-        $sites_number = $GLOBALS['config']['Multisites-nombre'];
+        $sites_number = count($sites_array);
 
         // Module workinghour, no multisites.
         if ($needed_l1 == 1100) {

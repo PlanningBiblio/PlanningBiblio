@@ -132,7 +132,11 @@ class AgentControllerTest extends PLBWebTestCase
         $this->assertEmpty($result);
 
         //test multisites
-        $GLOBALS['config']['Multisites-nombre'] = 4;
+        $conn = $this->entityManager->getConnection();
+        $conn->executeStatement('DELETE FROM site');
+        $conn->executeStatement("INSERT INTO site (id, name, deletedDate) VALUES (1,'Site N°1',NULL),(2,'Site N°2',NULL),(3,'Site N°3',NULL),(4,'Site N°4',NULL)");
+        $this->logInAgent($kboivin, $kboivin->getACL());
+
         $GLOBALS['config']['Grannularite'] = 1;
         $GLOBALS['config']['LDAP-Host'] = '';
         $GLOBALS['config']['LDAP-Suffix'] = '';
@@ -205,6 +209,10 @@ class AgentControllerTest extends PLBWebTestCase
         $id = $jdupont->getId();
 
         //$this->login($kboivin);
+
+        $conn = $this->entityManager->getConnection();
+        $conn->executeStatement('DELETE FROM site');
+        $conn->executeStatement("INSERT INTO site (id, name, deletedDate) VALUES (1,'Site N°1',NULL),(2,'Site N°2',NULL)");
 
         $this->logInAgent($kboivin, $kboivin->getACL());
         $crawler = $this->client->request('GET', "/agent/$id");

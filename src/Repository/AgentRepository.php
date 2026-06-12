@@ -18,6 +18,7 @@ use App\Entity\PlanningPositionLock;
 use App\Entity\PlanningPositionModel;
 use App\Entity\RecurringAbsence;
 use App\Entity\SaturdayWorkingHours;
+use App\Entity\Site;
 use App\Entity\WorkingHour;
 use App\Entity\Config;
 use App\Planno\Helper\HourHelper;
@@ -35,6 +36,20 @@ class AgentRepository extends EntityRepository
     private $agent_id;
 
     private $check_by_site = true;
+
+    /**
+     * Liste des sites actifs, utilisée comme valeur par défaut lorsque l'appelant
+     * ne fournit pas de sites (ex. : session « sites » non renseignée, contexte hors
+     * multisite, tests). Équivaut au contenu de $session->get('sites').
+     *
+     * @return Site[]
+     */
+    private function activeSites(): array
+    {
+        return $this->getEntityManager()
+            ->getRepository(Site::class)
+            ->findBy(['deletedDate' => null]);
+    }
 
     /**
      * @return mixed[]
@@ -167,21 +182,20 @@ class AgentRepository extends EntityRepository
     /**
      * @return array{id: int<1, max>, name: mixed}[]
      */
-    public function getManagedSitesFor($loggedin_id): array
+    public function getManagedSitesFor($loggedin_id, $sites_array = null): array
     {
+        $sites_array = $sites_array ?? $this->activeSites();
+
         $entityManager = $this->getEntityManager();
         $loggedin = $entityManager->find(Agent::class, $loggedin_id);
         $by_agent_param = $entityManager->getRepository(Config::class)
             ->findOneBy(['nom' => $this->by_agent_param]);
 
-        $sites_number = $entityManager->getRepository(Config::class)
-            ->findOneBy(['nom' => 'Multisites-nombre'])->getValue();
-
         // Param Absences-notifications-agent-par-agent
         // or PlanningHebdo-notifications-agent-par-agent
         // is enabled.
+        $managed_sites = array();
         if ($by_agent_param->getValue()) {
-            $managed_sites = array();
 
             foreach ($loggedin->getManaged() as $m) {
                 $sites = $m->getUser()->getSites();
@@ -195,36 +209,35 @@ class AgentRepository extends EntityRepository
         $rights = $loggedin->getACL();
 
         $sites_select = array();
-        for ($i = 1; $i <= $sites_number; $i++) {
-            $name = $entityManager->getRepository(Config::class)
-                ->findOneBy(['nom' => "Multisites-site$i"])->getValue();
+
+        foreach ($sites_array as $site) {
+            $siteId = $site['id'];
+            $name = $site['name'];
 
             if ($by_agent_param->getValue()) {
-                if (in_array($i, $managed_sites)) {
-                    $sites_select[] = array('id' => $i, 'name' => $name);
+                if (in_array($siteId, $managed_sites)) {
+                    $sites_select[] = ['id' => $siteId, 'name' => $name];
                 }
                 continue;
             }
+            if (in_array(($this->needed_level1 + $siteId), $rights)
+                or in_array(($this->needed_level2 + $siteId), $rights)) {
 
-            if (in_array(($this->needed_level1 + $i), $rights)
-                or in_array(($this->needed_level2 + $i), $rights)) {
-
-                $sites_select[] = array('id' => $i, 'name' => $name);
+                $sites_select[] = ['id' => $siteId, 'name' => $name];
             }
         }
 
         return $sites_select;
     }
 
-    public function getManagedFor($loggedin_id, $deleted = 0)
+    public function getManagedFor($loggedin_id, $deleted, $sites_array = null)
     {
+        $sites_array = $sites_array ?? $this->activeSites();
+
         $entityManager = $this->getEntityManager();
         $loggedin = $entityManager->find(Agent::class, $loggedin_id);
         $by_agent_param = $entityManager->getRepository(Config::class)
             ->findOneBy(['nom' => $this->by_agent_param]);
-
-        $sites_number = $entityManager->getRepository(Config::class)
-            ->findOneBy(['nom' => 'Multisites-nombre'])->getValue();
 
         // Param Absences-notifications-agent-par-agent
         // or PlanningHebdo-notifications-agent-par-agent
@@ -245,7 +258,7 @@ class AgentRepository extends EntityRepository
         }
 
         $rights = $loggedin->getACL();
-        $managed_sites = $loggedin->managedSites($this->needed_level1, $this->needed_level2);
+        $managed_sites = $loggedin->managedSites($this->needed_level1, $this->needed_level2, $sites_array);
 
         if (!empty($managed_sites)) {
             $agents = $entityManager->getRepository(Agent::class)
@@ -256,7 +269,7 @@ class AgentRepository extends EntityRepository
                 // Only for absence and holidays.
                 // There is no rights by sites
                 // for working hours.
-                if ($this->check_by_site && $sites_number > 1) {
+                if ($this->check_by_site && count($sites_array) > 1) {
                     // Always keep logged in agent.
                     if ($agent->getId() == $loggedin->getId()) {
                         continue;
@@ -274,23 +287,21 @@ class AgentRepository extends EntityRepository
         return array($loggedin);
     }
 
-    public function getValidationLevelFor($loggedin_id, String $workflow = 'A'): array
+    public function getValidationLevelFor($loggedin_id, String $workflow, ?array $sites_array = null): array
     {
+        $sites_array = $sites_array ?? $this->activeSites();
 
         $entityManager = $this->getEntityManager();
         $loggedin = $entityManager->find(Agent::class, $loggedin_id);
         $by_agent_param = $entityManager->getRepository(Config::class)
             ->findOneBy(['nom' => $this->by_agent_param]);
 
-        $sites_number = $entityManager->getRepository(Config::class)
-            ->findOneBy(['nom' => 'Multisites-nombre'])->getValue();
-
         $sites = array(1);
-        if ($this->check_by_site && $sites_number > 1) {
+        if ($this->check_by_site && count($sites_array) > 1) {
             $sites = array();
 
-            for ($i = 1; $i <= $sites_number; $i++) {
-                $sites[] = $i;
+            foreach ($sites_array as $site) {
+                $sites[] = $site['id'];
             }
 
             // will only check for agent sites
@@ -327,7 +338,7 @@ class AgentRepository extends EntityRepository
         // is enabled but no agent is specified.
         // So look for max admin level on managed agents.
         if ($by_agent_param->getValue()) {
-            $managed = $this->getManagedFor($loggedin_id);
+            $managed = $this->getManagedFor($loggedin_id, 0, $sites_array);
             foreach ($managed as $m) {
                 if ($loggedin->isManagerOf(array($m->getId()), 'level1')) {
                     $l1 = true;
@@ -395,13 +406,15 @@ class AgentRepository extends EntityRepository
     /**
      * @return mixed[]
      */
-    public function getSitesForAgents($agent_ids = array()): array
+    public function getSitesForAgents($agent_ids, $sites_array = null): array
     {
-        if ($GLOBALS['config']['Multisites-nombre'] == 1) {
+        $sites_array = $sites_array ?? $this->activeSites();
+
+        $entityManager = $this->getEntityManager();
+        if (count($sites_array) <= 1) {
             return array("1");
         }
 
-        $entityManager = $this->getEntityManager();
         $agents = $entityManager->getRepository(Agent::class)->findBy(array('id' => $agent_ids));
         $sites_array = array();
         foreach ($agents as $agent) {

@@ -269,14 +269,23 @@ class AgentTest extends KernelTestCase
 
         //Multi sites :
 
-        $GLOBALS['config']['Multisites-nombre'] = 4;
         $GLOBALS['config']['Mail-Planning'] = '';
 
         $agent2 = $builder->build(Agent::class, array('login' => 'jmarc', 'sites' => ["1", "2", "3","4"]));
-        $GLOBALS['config']['Multisites-site1-mail'] ='jmarc@mail.fr;jcharles@mail.fr;jdevoe@mail.com';
-        $GLOBALS['config']['Multisites-site2-mail'] ='jcharles@mail.fr;jmarc@mail.fr;j.paul@mail.com';
-        $GLOBALS['config']['Multisites-site3-mail'] ='j.claude@mail.com;jmarc@mail.fr;jcharles@mail.fr';
-        $GLOBALS['config']['Multisites-site4-mail'] ='j.paul@mail.com;j.claude@mail.com';
+
+        $conn = $this->entityManager->getConnection();
+        $conn->executeStatement('DELETE FROM site_mail');
+        $siteMails = array(
+            1 => array('jmarc@mail.fr', 'jcharles@mail.fr', 'jdevoe@mail.com'),
+            2 => array('jcharles@mail.fr', 'jmarc@mail.fr', 'j.paul@mail.com'),
+            3 => array('j.claude@mail.com', 'jmarc@mail.fr', 'jcharles@mail.fr'),
+            4 => array('j.paul@mail.com', 'j.claude@mail.com'),
+        );
+        foreach ($siteMails as $siteId => $mails) {
+            foreach ($mails as $mail) {
+                $conn->executeStatement('INSERT INTO site_mail (site_id, mail) VALUES (?, ?)', array($siteId, $mail));
+            }
+        }
 
         $this->assertEquals(
             $agent2->get_planning_unit_mails(),

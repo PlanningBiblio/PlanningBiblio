@@ -7,8 +7,10 @@ use App\Entity\Manager;
 use App\Entity\Agent;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Entity\Site;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
 require_once(__DIR__ . '/../../legacy/Class/class.personnel.php');
@@ -16,10 +18,10 @@ require_once(__DIR__ . '/../../legacy/Class/class.personnel.php');
 class NotificationController extends BaseController {
 
     #[Route(path: '/notification', name: 'notification.index', methods: ['GET'])]
-    public function index(Request $request): Response
-    {
+    public function index(Request $request, Session $session): Response {
         // Initialisation des variables
-        $nbSites = $this->config("Multisites-nombre");
+        $sites_array = $session->get('sites', []);
+        $nbSites = count($sites_array);
         $actif = $request->get("actif");
         $agents_liste = array();
 
@@ -71,8 +73,9 @@ class NotificationController extends BaseController {
                 $tmp = array();
                 if (!empty($agent['sites'])) {
                     foreach ($agent['sites'] as $site) {
-                        if ($site) {
-                            $tmp[] = $this->config("Multisites-site{$site}");
+                        $s = $GLOBALS['entityManager']->getRepository(Site::class)->find($site);
+                        if ($s !== null) {
+                            $tmp[] = $s->getName();
                         }
                     }
                 }

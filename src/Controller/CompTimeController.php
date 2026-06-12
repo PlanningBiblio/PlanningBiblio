@@ -31,7 +31,7 @@ class CompTimeController extends BaseController
             ->getRepository(Agent::class)
             ->setModule('holiday')
             ->forAgent($perso_id)
-            ->getValidationLevelFor($session->get('loginId'));
+            ->getValidationLevelFor($session->get('loginId'), 'A', $session->get('sites'));
 
         if (!$admin and !$adminN2) {
             $perso_id = $session->get('loginId');
@@ -67,7 +67,7 @@ class CompTimeController extends BaseController
         $managed = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('holiday')
-            ->getManagedFor($session->get('loginId'));
+            ->getManagedFor($session->get('loginId'), 0, $session->get('sites'));
 
         $information = array();
         $date = date("Y-m-d");

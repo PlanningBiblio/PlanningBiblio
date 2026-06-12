@@ -3,6 +3,7 @@
 namespace Tests;
 
 use App\Entity\Config;
+use App\Entity\Site;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
@@ -92,6 +93,11 @@ class PLBWebTestCase extends PantherTestCase
         $this->entityManager = $entityManager;
         $this->config = $entityManager->getRepository(Config::class);
 
+        $conn = $entityManager->getConnection();
+        $conn->executeStatement('TRUNCATE TABLE site_mail');
+        $conn->executeStatement('TRUNCATE TABLE site');
+        $conn->executeStatement("INSERT INTO site (id, name, deletedDate) VALUES (1, 'Site par défaut', NULL)");
+
         $_SESSION['oups']['Auth-Mode'] = 'SQL';
         $_SESSION['login_id'] = 1;
         $_SESSION['oups']['CSRFToken'] = $CSRFToken;
@@ -111,6 +117,11 @@ class PLBWebTestCase extends PantherTestCase
         $crawler = $this->client->request('GET', '/login');
         $session = $this->client->getRequest()->getSession();
         $session->set('loginId', $agent->getId());
+        $siteEntities = $this->entityManager->getRepository(Site::class)->findBy(["deletedDate" => null]);
+        $sitesData = array_map(function ($site) {
+            return ['id' => $site->getId(), 'name' => $site->getName()];
+        }, $siteEntities);
+        $session->set('sites', $sitesData);
         $session->save();
     
         $cookie = new Cookie($session->getName(), $session->getId());

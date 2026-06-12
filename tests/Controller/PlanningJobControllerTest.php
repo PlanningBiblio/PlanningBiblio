@@ -485,6 +485,10 @@ class PlanningJobControllerTest extends PLBWebTestCase
             'droits' => array("6","9","701","3","4","21","1101","1201","22","5","17","1301","25","23","201","202","203","204","401","402","403","404","601","602","603","604","301","302","303","304","1001","1002","1003","1004","901","902","903","904","801","802","803","804",6,99,100,20)
         ));
 
+        $conn = $this->entityManager->getConnection();
+        $conn->executeStatement('DELETE FROM site');
+        $conn->executeStatement("INSERT INTO site (id, name, deletedDate) VALUES (1, 'site', NULL), (2, 'site2', NULL)");
+
         $this->logInAgent($kboivin, $kboivin->getACL());
 
         // Create WeekPlanning

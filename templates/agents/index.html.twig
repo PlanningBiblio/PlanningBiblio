@@ -23,7 +23,7 @@
         <td style="width:80px;"></td>
         <td>
           {% if rights21 %}
-          <input type="button" value="Ajouter" onclick="location.href='{{ asset('agent/add') }}';" class="btn btn-primary"/>
+            <input type="button" value="Ajouter" onclick="location.href='{{ asset('agent/add') }}';" class="btn btn-primary"/>
             {% if ldapBouton %}
               <input type="button" value="Import LDAP" onclick="location.href='{{ asset('agent/ldap') }}';" class="btn btn-secondary" style="margin-left:21px;"/>
             {% endif %}
@@ -37,61 +37,61 @@
   </form>
   <table id="tableAgents" class="CJDataTable" data-sort='[[1,"asc"],[2,"asc"]]'>
     <thead>
-      <tr>
-        <th class="dataTableNoSort aLeft">
-          <div class="icon-div">
-            {% if rights21 %}
-              <input type="checkbox" class="CJCheckAll"/>
-            {% endif %}
-          </div>
-        </th>
-        <th class="clear-string">Nom</th>
-        <th class="clear-string">Prénom</th>
-        <th class="dataTableHeureFR">Heures</th>
-        {% if not config('Planook') %}
-          <th>Statut</th>
-          <th>Service</th>
-        {% endif %}
-        {% if config('Multisites-nombre') > 1 %}
-          <th>Sites</th>
-        {% endif %}
-        <th class="dataTableDateFR">Arrivée</th>
-        <th class="dataTableDateFR">Départ</th>
-        <th class="dataTableDateFR">Accès</th>
+    <tr>
+      <th class="dataTableNoSort aLeft">
+        <div class="icon-div">
+          {% if rights21 %}
+            <input type="checkbox" class="CJCheckAll"/>
+          {% endif %}
+        </div>
+      </th>
+      <th class="clear-string">Nom</th>
+      <th class="clear-string">Prénom</th>
+      <th class="dataTableHeureFR">Heures</th>
+      {% if not config('Planook') %}
+        <th>Statut</th>
+        <th>Service</th>
+      {% endif %}
+      {% if multisites %}
+        <th>Sites</th>
+      {% endif %}
+      <th class="dataTableDateFR">Arrivée</th>
+      <th class="dataTableDateFR">Départ</th>
+      <th class="dataTableDateFR">Accès</th>
     </thead>
     <tbody>
-      {% for a in agents %}
-        <tr>
-          <td style="white-space:nowrap;">
-            <div class="icon-div">
-              {% if rights21 %}
+    {% for a in agents %}
+      <tr>
+        <td style="white-space:nowrap;">
+          <div class="icon-div">
+            {% if rights21 %}
               <input type="checkbox" name="chk{{ loop.index0 }}" value="{{ a.id }}" class="checkbox" />
-              {% endif %}
-              <a href="{{ asset ('agent/')}}{{ a.id }}">
-                <span class="pl-icon pl-icon-edit" title="Modifier"></span>
+            {% endif %}
+            <a href="{{ asset ('agent/')}}{{ a.id }}">
+              <span class="pl-icon pl-icon-edit" title="Modifier"></span>
+            </a>
+            {% if rights21 and a.id != loginId and a.id > 1 %}
+              <a href="#" >
+                <span class="pl-icon pl-icon-dropblack delete-agent" title="Supprimer" data-id="{{ a.id }}" data-name="{{ a.firstname }} {{ a.lastname }}"></span>
               </a>
-              {% if rights21 and a.id != loginId and a.id > 1 %}
-                <a href="#" >
-                  <span class="pl-icon pl-icon-dropblack delete-agent" title="Supprimer" data-id="{{ a.id }}" data-name="{{ a.firstname }} {{ a.lastname }}"></span>
-                </a>
-              {% endif %}
-            </div>
-          </td>
-          <td>{{ a.lastname }}</td>
-          <td>{{ a.firstname }} </td>
-          <td>{{ a.weeklyServiceHours | time }}</td>
-          {% if not config('Planook') %}
-            <td>{{ a.status }}</td>
-            <td>{{ a.service }}</td>
-          {% endif %}
-          {% if config('Multisites-nombre') > 1 %}
-            <td>{{ a.sites | sites }}</td>
-          {% endif %}
-          <td>{{ a.arrival | dateOrNull('d/m/Y') }}</td>
-          <td>{{ a.departure | dateOrNull('d/m/Y') }}</td>
-          <td>{{ a.lastLogin | dateOrTime('d/m/Y H:i') }}</td>
-        </tr>
-      {% endfor %}
+            {% endif %}
+          </div>
+        </td>
+        <td>{{ a.lastname }}</td>
+        <td>{{ a.firstname }} </td>
+        <td>{{ a.weeklyServiceHours | time }}</td>
+        {% if not config('Planook') %}
+          <td>{{ a.status }}</td>
+          <td>{{ a.service }}</td>
+        {% endif %}
+        {% if multisites %}
+          <td>{{ a.sites | sites }}</td>
+        {% endif %}
+        <td>{{ a.arrival | dateOrNull('d/m/Y') }}</td>
+        <td>{{ a.departure | dateOrNull('d/m/Y') }}</td>
+        <td>{{ a.lastLogin | dateOrTime('d/m/Y H:i') }}</td>
+      </tr>
+    {% endfor %}
     </tbody>
   </table>
 
@@ -107,161 +107,161 @@
   {% endif %}
 
   <div class="modal" id="modif-agent-modal" tabindex="-1" data-bs-backdrop="static" role="dialog" aria-labelledby="modif-agent-modal-title" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-centered">
-    <div class="modal-content">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
 
-      <div class="modal-header">
-        <h5 class="modal-title" id="modif-agent-modal-title">{% trans %}Editing selected agents{% endtrans %}</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans %}Close{% endtrans %}"></button>
-      </div>
+        <div class="modal-header">
+          <h5 class="modal-title" id="modif-agent-modal-title">{% trans %}Editing selected agents{% endtrans %}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans %}Close{% endtrans %}"></button>
+        </div>
 
-      <form id="modif-agent-form">
-        <div class="modal-body">
-          <div class="container-tabs">
-            <ul class="nav nav-tabs" role="tablist">
-              <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info-tab-pane" type="button" role="tab" aria-controls="info-tab-pane" aria-selected="true">{% trans %}General information{% endtrans %}</button>
-              </li>
-              <li class="nav-item" role="presentation">
-                <button class="nav-link" id="activities-tab" data-bs-toggle="tab" data-bs-target="#activities-tab-pane" type="button" role="tab" aria-controls="activities-tab-pane" aria-selected="false">{% trans %}Activities{% endtrans %}</button>
-              </li>
-            </ul>
+        <form id="modif-agent-form">
+          <div class="modal-body">
+            <div class="container-tabs">
+              <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info-tab-pane" type="button" role="tab" aria-controls="info-tab-pane" aria-selected="true">{% trans %}General information{% endtrans %}</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="activities-tab" data-bs-toggle="tab" data-bs-target="#activities-tab-pane" type="button" role="tab" aria-controls="activities-tab-pane" aria-selected="false">{% trans %}Activities{% endtrans %}</button>
+                </li>
+              </ul>
 
-            <div class="tab-content p-3">
-              <div class="tab-pane fade show active" id="info-tab-pane" role="tabpanel" aria-labelledby="info-tab" tabindex="0">
-                  
-                <div class="row my-2">
-                  <label for="statut" class="col-4 col-form-label">{% trans %}Status{% endtrans %}</label>
-                  <div class="col-3">
-                    <select name="statut" class="form-select form-select-sm form-control" id="statut" style="text-align:center;">
-                      <option value="-1">{% trans %}Do not change{% endtrans %}</option>
-                      <option value="">{% trans %}None{% endtrans %}</option>
+              <div class="tab-content p-3">
+                <div class="tab-pane fade show active" id="info-tab-pane" role="tabpanel" aria-labelledby="info-tab" tabindex="0">
+
+                  <div class="row my-2">
+                    <label for="statut" class="col-4 col-form-label">{% trans %}Status{% endtrans %}</label>
+                    <div class="col-3">
+                      <select name="statut" class="form-select form-select-sm form-control" id="statut" style="text-align:center;">
+                        <option value="-1">{% trans %}Do not change{% endtrans %}</option>
+                        <option value="">{% trans %}None{% endtrans %}</option>
                         {% for s in status %}
                           <option value="{{ s.value }}">{{ s.value }}</option>
                         {% endfor %}
-                    </select>
+                      </select>
+                    </div>
                   </div>
-                </div>
 
-                <div class="row mb-2">
-                  <label for="contrat" class="col-4 col-form-label">{% trans %}Contract{% endtrans %}</label>
-                  <div class="col-3">
-                    <select name="contrat" class="form-select form-select-sm form-control" id="contrat" style="text-align:center;">
-                      <option value="-1">{% trans %}Do not change{% endtrans %}</option>
-                      <option value="">{% trans %}None{% endtrans %}</option>
+                  <div class="row mb-2">
+                    <label for="contrat" class="col-4 col-form-label">{% trans %}Contract{% endtrans %}</label>
+                    <div class="col-3">
+                      <select name="contrat" class="form-select form-select-sm form-control" id="contrat" style="text-align:center;">
+                        <option value="-1">{% trans %}Do not change{% endtrans %}</option>
+                        <option value="">{% trans %}None{% endtrans %}</option>
                         {% for c in contracts %}
                           <option value={{c}}>{{ c }}</option>
                         {% endfor %}
-                    </select>
+                      </select>
+                    </div>
                   </div>
-                </div>
 
-                <div class="row mb-2">
-                  <label for="service" class="col-4 col-form-label">{% trans %}Home department{% endtrans %}</label>
-                  <div class="col-3">
-                    <select name="service" class="form-select form-select-sm form-control" id="service" style="text-align:center;">
-                      <option value="-1">{% trans %}Do not change{% endtrans %}</option>
-                      <option value="">{% trans %}None{% endtrans %}</option>
+                  <div class="row mb-2">
+                    <label for="service" class="col-4 col-form-label">{% trans %}Home department{% endtrans %}</label>
+                    <div class="col-3">
+                      <select name="service" class="form-select form-select-sm form-control" id="service" style="text-align:center;">
+                        <option value="-1">{% trans %}Do not change{% endtrans %}</option>
+                        <option value="">{% trans %}None{% endtrans %}</option>
                         {% for se in services %}
                           <option value="{{ se.value }}">{{ se.value }}</option>
                         {% endfor %}
-                    </select>
+                      </select>
+                    </div>
                   </div>
-                </div>
 
-                <div class="row mb-2">
-                  <label for="heures_hebdo" class="col-4 col-form-label">{% trans %}Public service hours{% endtrans %}</label>
-                  <div class="col-3">
-                  <select id="heures_hebdo" class="form-select form-select-sm form-control" name="heures_hebdo" style="text-align:center;">
-                      <option value="-1">{% trans %}Do not change{% endtrans %}</option>
-                      <option value="0">&nbsp;</option>
+                  <div class="row mb-2">
+                    <label for="heures_hebdo" class="col-4 col-form-label">{% trans %}Public service hours{% endtrans %}</label>
+                    <div class="col-3">
+                      <select id="heures_hebdo" class="form-select form-select-sm form-control" name="heures_hebdo" style="text-align:center;">
+                        <option value="-1">{% trans %}Do not change{% endtrans %}</option>
+                        <option value="0">&nbsp;</option>
                         {% for i in 1..100 %}
                           <option value="{{ i }}%">{{ i }}%</option>
                         {% endfor %}
                         {% for h in hours %}
                           <option value="{{ h[0] }}">{{ h[1] }}</option>
                         {% endfor %}
-                    </select>
+                      </select>
+                    </div>
                   </div>
-                </div>
 
-                <div class="row mb-2">
-                  <label for="heures_travail" class="col-4 col-form-label">{% trans %}Hours worked per week{% endtrans %}</label>
-                  <div class="col-3">
-                  <select name="heures_travail" class="form-select form-select-sm form-control" id="heures_travail" style="text-align:center;">
-                      <option value="-1">{% trans %}Do not change{% endtrans %}</option>
-                      <option value="0">&nbsp;</option>
+                  <div class="row mb-2">
+                    <label for="heures_travail" class="col-4 col-form-label">{% trans %}Hours worked per week{% endtrans %}</label>
+                    <div class="col-3">
+                      <select name="heures_travail" class="form-select form-select-sm form-control" id="heures_travail" style="text-align:center;">
+                        <option value="-1">{% trans %}Do not change{% endtrans %}</option>
+                        <option value="0">&nbsp;</option>
                         {% for h in hours %}
                           <option value="{{ h[0] }}">{{ h[1] }}</option>
                         {% endfor %}
-                    </select>
-                  </div>
-                </div>
-
-                <div class="row">
-                  <label for="actif" class="col-4 col-form-label">{% trans %}Public service{% endtrans %} / {% trans %}Administrative{% endtrans %}</label>
-                  <div class="col-3">
-                    <select name="actif" class="form-select form-select-sm form-control" id="actif" style="text-align:center;">
-                      <option value="-1">{% trans %}Do not change{% endtrans %}</option>
-                      <option value="Actif">{% trans %}Public service{% endtrans %}</option>
-                      <option value="Inactif">{% trans %}Administrative{% endtrans %}</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-              <div class="tab-pane fade" id="activities-tab-pane" role="tabpanel" aria-labelledby="activities-tab" tabindex="0">
-                <input type="hidden" name="postes" id="postes" value="-1"/>
-                <div class="container text-center">
-
-                  <div class="row">
-                    <div class="col mt-3">
-                      <h5>{% trans %}Available activities{% endtrans %}</h5>
-                    </div>
-                    <div class="col-3">
-                    </div>
-                    <div class="col mt-3">
-                      <h5>{% trans %}Assigned activities{% endtrans %}</h5>
-                    </div>
-                  </div>
-
-                  <div class="row">
-                    <div class="col" id="dispo_div">
-                      <select id="postes_dispo" name="postes_dispo" size="20" class="form-select" multiple style="height:100%">
-                        {% for sk in skills %}
-                          <option value="{{ sk.id }}">{{ sk.name }}</option>
-                        {% endfor %}
                       </select>
                     </div>
+                  </div>
 
-                    <div class="col-3 assign-remove-buttons">
-                      <div style="display:grid;width:100%">
-                        <input type="button" value="Attribuer >>" onclick="select_add('postes_dispo','postes_attribues','postes');" class="btn btn-secondary mb-2"/>
-                        <input type="button" value="Attribuer Tout >>" onclick="select_add_all('postes_dispo','postes_attribues','postes');" class="btn btn-secondary mb-2"/>
-                        <input type="button" value="<< Supprimer" onclick="select_drop('postes_dispo','postes_attribues','postes');" class="btn btn-danger mb-2"/>
-                        <input type="button" value="<< Supprimer Tout" onclick="select_drop_all('postes_dispo','postes_attribues','postes');" class="btn btn-danger mb-2"/>
+                  <div class="row">
+                    <label for="actif" class="col-4 col-form-label">{% trans %}Public service{% endtrans %} / {% trans %}Administrative{% endtrans %}</label>
+                    <div class="col-3">
+                      <select name="actif" class="form-select form-select-sm form-control" id="actif" style="text-align:center;">
+                        <option value="-1">{% trans %}Do not change{% endtrans %}</option>
+                        <option value="Actif">{% trans %}Public service{% endtrans %}</option>
+                        <option value="Inactif">{% trans %}Administrative{% endtrans %}</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="tab-pane fade" id="activities-tab-pane" role="tabpanel" aria-labelledby="activities-tab" tabindex="0">
+                  <input type="hidden" name="postes" id="postes" value="-1"/>
+                  <div class="container text-center">
+
+                    <div class="row">
+                      <div class="col mt-3">
+                        <h5>{% trans %}Available activities{% endtrans %}</h5>
+                      </div>
+                      <div class="col-3">
+                      </div>
+                      <div class="col mt-3">
+                        <h5>{% trans %}Assigned activities{% endtrans %}</h5>
                       </div>
                     </div>
 
-                    <div class="col" id="attrib_div">
-                      <select id="postes_attribues" name="postes_attribues" class="form-select" size="20" multiple style="height:100%">
-                      </select>
+                    <div class="row">
+                      <div class="col" id="dispo_div">
+                        <select id="postes_dispo" name="postes_dispo" size="20" class="form-select" multiple style="height:100%">
+                          {% for sk in skills %}
+                            <option value="{{ sk.id }}">{{ sk.name }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+
+                      <div class="col-3 assign-remove-buttons">
+                        <div style="display:grid;width:100%">
+                          <input type="button" value="Attribuer >>" onclick="select_add('postes_dispo','postes_attribues','postes');" class="btn btn-secondary mb-2"/>
+                          <input type="button" value="Attribuer Tout >>" onclick="select_add_all('postes_dispo','postes_attribues','postes');" class="btn btn-secondary mb-2"/>
+                          <input type="button" value="<< Supprimer" onclick="select_drop('postes_dispo','postes_attribues','postes');" class="btn btn-danger mb-2"/>
+                          <input type="button" value="<< Supprimer Tout" onclick="select_drop_all('postes_dispo','postes_attribues','postes');" class="btn btn-danger mb-2"/>
+                        </div>
+                      </div>
+
+                      <div class="col" id="attrib_div">
+                        <select id="postes_attribues" name="postes_attribues" class="form-select" size="20" multiple style="height:100%">
+                        </select>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
+
           </div>
+        </form>
 
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans %}Cancel{% endtrans %}</button>
+          <button type="submit" class="btn btn-primary" form="modif-agent-form" >{% trans %}Save{% endtrans %}</button>
         </div>
-      </form>
-
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans %}Cancel{% endtrans %}</button>
-        <button type="submit" class="btn btn-primary" form="modif-agent-form" >{% trans %}Save{% endtrans %}</button>
       </div>
     </div>
   </div>
-</div>
 
   <div class="modal" id="delete-agent-modal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="delete-agent-modal-title" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -271,24 +271,24 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans %}Close{% endtrans %}"></button>
         </div>
         <div class="modal-body" style="text-align:center;">
-          
+
           <p id="c-text"></p>
           <form id="delete-agent-form" method="post" action="{{ path('agent.delete') }}" >
             <input type="hidden" name="_token" value="{{ csrf_token('') }}" />
             <input type="hidden" name="id" class="agentId" value="" />
           </form>
         </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans %}No{% endtrans %}</button>
-              {% if active != "Supprimé" %}
-                <button type="submit" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete-agent-validation-modal">{% trans %}Yes{% endtrans %}</button>
-              {% else %}
-                <button type="submit" class="btn btn-danger" form="delete-agent-form">{% trans %}Yes{% endtrans %}</button>
-              {% endif %}
-            </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans %}No{% endtrans %}</button>{% if active != "Supprimé" %}
+            <button type="submit" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete-agent-validation-modal">{% trans %}Yes{% endtrans %}</button>
+          {% else %}
+            <button type="submit" class="btn btn-danger" form="delete-agent-form">{% trans %}Yes{% endtrans %}</button>
+          {% endif %}
+
         </div>
       </div>
     </div>
+  </div>
   </div>
 
   {% if active != "Supprimé" %}
@@ -311,7 +311,7 @@
                   <input type="text" class="form-control datepicker checkdate mt-1" id="delete-date" name="date" value="{{ 'now' | date('d/m/Y') }}" required>
                 </div>
               </div>
-          </form>
+            </form>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans %}Cancel{% endtrans %}</button>
@@ -325,6 +325,6 @@
 {% endblock %}
 
 {% block specificjs %}
-    <script type="text/JavaScript"> var complet = JSON.parse('{{ skillsAllWithName | e('js') }}'); </script>
-    <script type="text/JavaScript" src="{{ asset('js/agent.js') }}"></script>
+  <script type="text/JavaScript"> var complet = JSON.parse('{{ skillsAllWithName | e('js') }}'); </script>
+  <script type="text/JavaScript" src="{{ asset('js/agent.js') }}"></script>
 {% endblock %}
