@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 use App\Entity\AbsenceDocument;
+use App\Service\ClamAvScanner;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -44,7 +45,7 @@ class AbsenceDocumentController extends BaseController
     }
 
    #[Route(path: '/absences/document/{id_absence}', name: 'absences.document.add', methods: ['POST'])]
-    public function add(Request $request, Session $session)
+    public function add(Request $request, Session $session, ClamAvScanner $scanner)
     {
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
@@ -61,7 +62,25 @@ class AbsenceDocumentController extends BaseController
             $this->entityManager->persist($ad);
             $this->entityManager->flush();
 
-            $file->move($ad->upload_dir() . $id . '/' . $ad->getId(), $filename);
+            $destination_dir = $ad->upload_dir() . $id . '/' . $ad->getId();
+            $file->move($destination_dir, $filename);
+            if ($scanner->isEnabled()) {
+                $scan_file = $destination_dir . '/' . $filename;
+                $clean = $scanner->scan($scan_file);
+                if ($clean == 1) {
+                    $this->logger->info("ClamAV is enabled and $scan_file is clean");
+                } else {
+                    $this->logger->critical("ClamAV is enabled and $scan_file is unsafe, deleting it");
+                    # We did not prevent the AbsenceDocument creation, so we can use ->deleteFile();
+                    $ad->deleteFile();
+                    $this->entityManager->remove($ad);
+                    $this->entityManager->flush();
+                    return new Response(
+                        'The uploaded file contains malware.',
+                        Response::HTTP_UNPROCESSABLE_ENTITY
+                    );
+                }
+            }
         }
         $response = new Response();
         return $response;
