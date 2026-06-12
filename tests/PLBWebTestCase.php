@@ -63,23 +63,6 @@ class PLBWebTestCase extends PantherTestCase
         }
     }
 
-    protected function setParam($name, $value)
-    {
-        $GLOBALS['config'][$name] = $value;
-        $param = $this->entityManager
-            ->getRepository(Config::class)
-            ->findOneBy(['nom' => $name]);
-
-        if (!$param) {
-            $this->addConfig($name, $value);
-        } else {
-            $param->setValue($value);
-            $this->entityManager->persist($param);
-        }
-
-        $this->entityManager->flush();
-    }
-
     protected function setUp(): void
     {
         global $entityManager;
