@@ -35,14 +35,28 @@ class WorkingHourExportCommandTest extends PLBWebTestCase
         }
     }
 
+    public static function tearDownAfterClass(): void
+    {
+        $files = [
+            sys_get_temp_dir() . '/plannoTestWorkingHourExport.csv',
+            sys_get_temp_dir() . '/plannoWorkingHourExport.lock',
+        ];
+
+        foreach ($files as $file) {
+            if (file_exists($file)) {
+                unlink($file);
+            }
+        }
+    }
+
     public function testWorkingHourExportCommand(): void
     {
         $file = sys_get_temp_dir() . '/plannoTestWorkingHourExport.csv';
 
-        $this->config->setParam('PlanningHebdo-ExportFile', $file);
-        $this->config->setParam('PlanningHebdo-ExportDaysBefore', 5);
-        $this->config->setParam('PlanningHebdo-ExportDaysAfter', 10);
-        $this->config->setParam('PlanningHebdo-ExportAgentId', 'matricule');
+        $this->setParam('PlanningHebdo-ExportFile', $file);
+        $this->setParam('PlanningHebdo-ExportDaysBefore', 5);
+        $this->setParam('PlanningHebdo-ExportDaysAfter', 10);
+        $this->setParam('PlanningHebdo-ExportAgentId', 'matricule');
         $this->config->setParam('EDTSamedi',1);
         $this->config->setParam('PlanningHebdo',1);
 
