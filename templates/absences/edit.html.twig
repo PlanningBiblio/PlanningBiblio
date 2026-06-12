@@ -10,7 +10,7 @@
 <div id="content-form">
     <script type="text/JavaScript">
       $( document ).ready(function() {
-        $('#form').submit(function() {
+        $('#absence-form').submit(function() {
           return verif_absences('debut=date1;fin=date2;motif');
         });
       });
@@ -28,13 +28,13 @@
           <p class="mb-1">Vous n'êtes pas autorisé(e) à modifier cette absence.</p>
         </div>
         <div class="row mb-3">
-          <a href="{{ asset('absence') }}">Retour à la liste des absences</a><br/><br/>
+          <a id="back-link" href="{{ asset('absence') }}">Retour à la liste des absences</a>
         </div>
 
       {% else %}
       
         {% if id %}
-          <form name="form" id="form" method="post" action="{{ asset('absence') }}" novalidate>
+          <form name="form" id="absence-form" method="post" action="{{ asset('absence') }}" novalidate>
             <input type="hidden" name="perso_id" value="{{ absence.perso_id }}" />
             <input type="hidden" name="groupe" id="groupe" value="{{ absence.groupe }}" />
             <input type="hidden" name="rrule" id="rrule" value="{{ absence.rrule }}" />
@@ -49,7 +49,7 @@
 
         {% else %}
 
-          <form id="form" name="form" action="/absence" method="post" enctype="multipart/form-data" novalidate>
+          <form id="absence-form" name="form" action="/absence" method="post" enctype="multipart/form-data" novalidate>
 
         {% endif %}
 

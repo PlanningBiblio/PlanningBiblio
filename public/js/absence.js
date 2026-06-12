@@ -457,19 +457,19 @@ $(function() {
   // Options de modification d'une absence récurrente
   $('#modification-current').on('click', function(e) {
     $('#recurrence-modif').val('current');
-    $('#form').submit();
+    $('#absence-form').submit();
     $('#recurrence-modification-modal' ).modal('hide');
   });
 
   $('#modification-next').on('click', function(e) {
     $('#recurrence-modif').val('next');
-    $('#form').submit();
+    $('#absence-form').submit();
     $('#recurrence-modification-modal' ).modal('hide');
   });
 
   $('#modification-all').on('click', function(e) {
     $('#recurrence-modif').val('all');
-    $('#form').submit();
+    $('#absence-form').submit();
     $('#recurrence-modification-modal' ).modal('hide');
   });
 
@@ -619,7 +619,7 @@ function update_validation_statuses() {
       $('tr#validation').effect("highlight",null,2000);
     },
     error: function(xhr, ajaxOptions, thrownError) {
-      information("Une erreur s'est produite lors de la mise à jour de la liste des statuts");
+      information("Une erreur s'est produite lors de la mise à jour de la liste des statuts", 'error');
     }
   });
 }

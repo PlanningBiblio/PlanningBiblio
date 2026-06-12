@@ -239,7 +239,7 @@ h4{
   white-space: normal;
 }
 
-.perso_ul li:first-of-type {
+#perso_ul1 li:first-of-type {
   margin-top: 6px;
 }
 
