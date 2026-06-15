@@ -81,8 +81,8 @@ class conges
             'saisie_par'    => $_SESSION['login_id'],
             'valide'        => $data['valide'] ?? 0,
             'valide_n1'     => $data['valide_n1'] ?? 0,
-            'validation'    => $data['validation'] ?? '',
-            'validation_n1' => $data['validation_n1'] ?? ''
+            'validation'    => $data['validation'] ?? null,
+            'validation_n1' => $data['validation_n1'] ?? null
         ));
 
         // Récupération de l'id du congé enregistré
@@ -322,114 +322,6 @@ class conges
         $db->select2("conges", null, $filter);
         return (bool) $db->result;
     }
-
-    public function delete(): void
-    {
-        // Marque une demande de congé comme supprimée
-        // Contrôle si le congé avait été validé.
-        // Dans ce cas :
-        // - Recredite les comptes débités
-        // - Ajoute une ligne faisant apparaître les crédits dans le tableau Congés
-
-        $id=$this->id;
-
-        // Récupération des infos à partir de la table congés
-        $db=new db();
-        $db->select("conges", null, "id='$id'");
-        if ($db->result) {
-            $result=$db->result[0];
-            $heures=$result['heures'];
-            $perso_id=$result['perso_id'];
-            $valide=$result['valide'];
-            $credit=floatval($result['solde_prec'])-floatval($result['solde_actuel']);
-            $recup=floatval($result['recup_prec'])-floatval($result['recup_actuel']);
-            $reliquat=floatval($result['reliquat_prec'])-floatval($result['reliquat_actuel']);
-            $anticipation=floatval($result['anticipation_actuel'])-floatval($result['anticipation_prec']);
-            $regul_id = $result['regul_id'] ?? 0;
-
-            if ($result['supprime'] != 0) {
-                return;
-            }
-
-            $deletionDate = date('Y-m-d H:i:s');
-            $informationDate = date('Y-m-d H:i:s', strtotime('+1 second'));
-
-            // Si le congés a été validé, mise à jour des crédits dans la table personnel
-            if ($valide>0) {
-                $db=new db();
-                $db->select("personnel", null, "id=$perso_id");
-                $perso_credit=$db->result[0]['conges_credit'];
-                $perso_reliquat=$db->result[0]['conges_reliquat'];
-                $perso_anticipation=$db->result[0]['conges_anticipation'];
-                $perso_recup=$db->result[0]['comp_time'];
-
-                $perso_credit_new=floatval($perso_credit)+floatval($credit);
-                $perso_reliquat_new=floatval($perso_reliquat)+floatval($reliquat);
-                $perso_recup_new=floatval($perso_recup)+floatval($recup);
-                $perso_anticipation_new=floatval($perso_anticipation)-floatval($anticipation);
-
-                $update=array("conges_credit"=>$perso_credit_new, "conges_reliquat"=>$perso_reliquat_new,
-      "conges_anticipation"=>$perso_anticipation_new, "comp_time"=>$perso_recup_new);
-                $db=new db();
-                $db->CSRFToken = $this->CSRFToken;
-                $db->update("personnel", $update, array("id"=>$perso_id));
-
-                // Ajout d'une ligne d'information sur les crédits
-                $insert=array();
-                $keys=array_keys($result);
-                foreach ($keys as $key) {
-                    if ($key == 'regul_id'){
-                        continue;
-                    }
-                    if ($key!="id" and !is_numeric($key)) {
-                        $insert[$key]=$result[$key];
-                    }
-                }
-
-                if (!empty($insert)) {
-                    $insert["solde_prec"]=$perso_credit;
-                    $insert["recup_prec"]=$perso_recup;
-                    $insert["reliquat_prec"]=$perso_reliquat;
-                    $insert["anticipation_prec"]=$perso_anticipation;
-                    $insert["solde_actuel"]=$perso_credit_new;
-                    $insert["recup_actuel"]=$perso_recup_new;
-                    $insert["reliquat_actuel"]=$perso_reliquat_new;
-                    $insert["anticipation_actuel"]=$perso_anticipation_new;
-                    $insert["information"]=$_SESSION['login_id'];
-                    $insert["info_date"] = $informationDate;
-                    $db=new db();
-                    $db->CSRFToken = $this->CSRFToken;
-                    $new_id = $db->insert("conges", $insert);
-
-                    // This holiday has created a regularization.
-                    // The regul should be reverted.
-                    if ($regul_id) {
-                        $r = new \conges();
-                        $r->id = $regul_id;
-                        $r->fetch();
-                        $data = $r->elements[0];
-                        $regul = $data['recup_prec'] - $data['recup_actuel'];
-                        $regul_id = $this->applyRegularization(
-                            array('id' => $new_id, 'perso_id' => $perso_id), $regul);
-
-                        // Mise à jour des compteurs dans la table conges
-                        $db=new db();
-                        $db->CSRFToken = $this->CSRFToken;
-                        $db->update('conges',
-                            array('regul_id' => $regul_id),
-                            array('id' => $new_id)
-                        );
-                    }
-                }
-            }
-        }
-
-        // Marque la demande de congé comme supprimée dans la table conges
-        $db=new db();
-        $db->CSRFToken = $this->CSRFToken;
-        $db->update('conges', array('supprime' => $_SESSION['login_id'], 'suppr_date' => $deletionDate), array('id' => $id));
-    }
-
 
     public function fetch(): void
     {
