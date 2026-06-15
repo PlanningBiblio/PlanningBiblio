@@ -204,7 +204,7 @@ class HolidayControllerEditTest extends PLBWebTestCase
         $crawler = $this->client->request('GET', '/holiday/edit/' . $holiday->getId());
         $this->client->getWebDriver()->wait()->until($this->jqueryAjaxFinished());
 
-        $this->assertSelectorTextContains('h3', 'Demande de congés');
+        $this->assertSelectorTextContains('h1', 'Demande de congés');
         $this->assertSelectorExists('#holiday-form');
 
         // Verify form values
@@ -242,7 +242,7 @@ class HolidayControllerEditTest extends PLBWebTestCase
         // Buttons
         $this->assertSelectorExists('input#cancel');
         $this->assertSelectorExists('input.btn-primary[type=submit]');
-        $this->assertSelectorExists('input.btn-danger');
+        $this->assertSelectorExists('button.btn-danger');
 
         $saveButton = $crawler->filter('input.btn-primary');
         $this->assertEquals('Enregistrer les modifications', $saveButton->attr('value'), 'The save button value is incorrect');
@@ -277,7 +277,7 @@ class HolidayControllerEditTest extends PLBWebTestCase
         // Buttons
         $this->assertSelectorExists('input#cancel');
         $this->assertSelectorNotExists('input.btn-primary[type=submit]');
-        $this->assertSelectorNotExists('input.btn-danger');
+        $this->assertSelectorNotExists('button.btn-danger');
 
     }
 
@@ -299,7 +299,7 @@ class HolidayControllerEditTest extends PLBWebTestCase
         $crawler = $this->client->request('GET', '/holiday/edit/' . $comptime->getId());
         $this->client->getWebDriver()->wait()->until($this->jqueryAjaxFinished());
 
-        $this->assertSelectorTextContains('h3', 'Demande de récupérations');
+        $this->assertSelectorTextContains('h1', 'Demande de récupérations');
         $this->assertSelectorExists('#holiday-form');
 
         // Verify form values
@@ -332,7 +332,7 @@ class HolidayControllerEditTest extends PLBWebTestCase
         // Buttons
         $this->assertSelectorExists('input.btn-secondary');
         $this->assertSelectorExists('input.btn-primary[type=submit]');
-        $this->assertSelectorExists('input.btn-danger');
+        $this->assertSelectorExists('button.btn-danger');
 
         $saveButton = $crawler->filter('input.btn-primary');
         $this->assertEquals('Enregistrer les modifications', $saveButton->attr('value'), 'The save button value is incorrect');
@@ -367,7 +367,7 @@ class HolidayControllerEditTest extends PLBWebTestCase
         // Buttons
         $this->assertSelectorExists('input.btn-secondary');
         $this->assertSelectorNotExists('input.btn-primary[type=submit]');
-        $this->assertSelectorExists('input.btn-danger');
+        $this->assertSelectorExists('button.btn-danger');
 
     }
 

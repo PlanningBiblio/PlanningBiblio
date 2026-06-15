@@ -2,11 +2,15 @@
 
 namespace App\Controller;
 
+use DateTime;
+
 use App\Controller\BaseController;
 use App\Entity\Agent;
+use App\Entity\Holiday;
 use App\Planno\Helper\HolidayHelper;
 use App\Planno\Helper\HourHelper;
 use App\Planno\Helper\WeekPlanningHelper;
+use App\Service\Mailer;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -730,6 +734,116 @@ class HolidayController extends BaseController
         $this->templateParams(array('holiday_info' => $holiday_info));
 
         return $this->output('holiday/edit.html.twig');
+    }
+
+    #[Route(path: '/holiday/{id<\d+>}/delete', name: 'holiday.delete', methods: ['POST'])]
+    public function delete(Request $request, Session $session, Mailer $mailer): Response
+    {
+        if (!$this->csrf_protection($request)) {
+            return $this->redirectToRoute('access-denied');
+        }
+
+        $id = $request->attributes->getInt('id');
+        $holiday = $this->entityManager->find(Holiday::class, $id);
+
+        if ($holiday && $holiday->getDelete() == 0) {
+            $perso_id = $holiday->getUser();
+            $credit = $holiday->getPreviousCredit() - $holiday->getActualCredit();
+            $compTime = $holiday->getPreviousCompTime() - $holiday->getActualCompTime();
+            $remainder = $holiday->getPreviousRemainder() - $holiday->getActualRemainder();
+            $anticipation = $holiday->getActualAnticipation() - $holiday->getPreviousAnticipation();
+
+            $deletionDate = new DateTime;
+            $informationDate = (new DateTime)->modify('+1 second');
+
+            $agent = $this->entityManager->find(Agent::class, $perso_id);
+
+            // Si le congés a été validé, mise à jour des crédits dans la table personnel
+            if ($holiday->getValidLevel2() > 0) {
+                $agentHolidayCredit = $agent->getHolidayCredit();
+                $agentHolidayRemainder = $agent->getHolidayRemainder();
+                $agentHolidayCompTime = $agent->getHolidayCompTime();
+                $agentHolidayAnticipation = $agent->getHolidayAnticipation();
+
+                $agent->setHolidayCredit($agentHolidayCredit + $credit);
+                $agent->setHolidayRemainder($agentHolidayRemainder + $remainder);
+                $agent->setHolidayCompTime($agentHolidayCompTime + $compTime);
+                $agent->setHolidayAnticipation($agentHolidayAnticipation - $anticipation);
+
+                $this->entityManager->flush();
+
+                // Ajout d'une ligne d'information sur les crédits
+
+                $newHoliday = new Holiday;
+                $newHoliday->setUser($holiday->getUser());
+                $newHoliday->setStart($holiday->getStart());
+                $newHoliday->setEnd($holiday->getEnd());
+                $newHoliday->setValidLevel1($holiday->getValidLevel1());
+                $newHoliday->setValidLevel1Date($holiday->getValidLevel1Date());
+                $newHoliday->setValidLevel2($holiday->getValidLevel2());
+                $newHoliday->setValidLevel2Date($holiday->getValidLevel2Date());
+                $newHoliday->setEntry($holiday->getEntry());
+                $newHoliday->setEntryDate($holiday->getEntryDate());
+                $newHoliday->setChange($holiday->getChange());
+                $newHoliday->setDelete($holiday->getDelete());
+                $newHoliday->setHalfDay($holiday->getHalfDay());
+                $newHoliday->setHalfDayStart($holiday->getHalfDayStart());
+                $newHoliday->setHalfDayEnd($holiday->getHalfDayEnd());
+                $newHoliday->setDebit($holiday->getDebit());
+                $newHoliday->setHours($holiday->getHours());
+                $newHoliday->setComment($holiday->getComment());
+                $newHoliday->setRefusal($holiday->getRefusal());
+                $newHoliday->setChangeDate($holiday->getChangeDate());
+                $newHoliday->setDeleteDate($holiday->getDeleteDate());
+                $newHoliday->setOriginId($holiday->getOriginId());
+
+                $newHoliday->setPreviousCredit($agentHolidayCredit);
+                $newHoliday->setPreviousCompTime($agentHolidayCompTime);
+                $newHoliday->setPreviousRemainder($agentHolidayRemainder);
+                $newHoliday->setPreviousAnticipation($agentHolidayAnticipation);
+                $newHoliday->setActualCredit($agent->getHolidayCredit());
+                $newHoliday->setActualCompTime($agent->getHolidayCompTime());
+                $newHoliday->setActualRemainder($agent->getHolidayRemainder());
+                $newHoliday->setActualAnticipation($agent->getHolidayAnticipation());
+                $newHoliday->setInfo($session->get('loginId'));
+                $newHoliday->setInfoDate($informationDate);
+
+                $this->entityManager->persist($newHoliday);
+                $this->entityManager->flush();
+
+                // This holiday has created a regularization.
+                // The regul should be reverted.
+                $regulationId = $holiday->getRegulationId();
+                if ($regulationId) {
+                    $regulationHoliday = $this->entityManager->find(Holiday::class, $regulationId);
+                    $regul = $regulationHoliday->getPreviousCompTime() - $regulationHoliday->getActualCompTime();
+
+                    $credits = [
+                        'conges_credit' => $agent->getHolidayCredit(),
+                        'conges_reliquat' => $agent->getHolidayRemainder(),
+                        'conges_anticipation' => $agent->getHolidayAnticipation(),
+                        'comp_time' => $agent->getHolidayCompTime() + $regul,
+                    ];
+
+                    $this->entityManager->getRepository(Holiday::class)->insert($perso_id, $credits, 'update', false, $newHoliday->getId());
+
+                    $agent->setHolidayCompTime($agent->getHolidayCompTime() + $regul);
+
+                    // Mise à jour des compteurs dans la table conges
+                    $newHoliday->setRegulationId($regulationId);
+                    $this->entityManager->flush();
+                }
+            }
+
+            // Marque la demande de congé comme supprimée dans la table conges
+            $holiday->setDelete($_SESSION['login_id']);
+            $holiday->setDeleteDate($deletionDate);
+            $this->entityManager->flush();
+
+            $mailer->sendDeletedHolidayNotification($holiday);
+        }
+
+        return $this->redirectToRoute('holiday.index', ['recup' => $request->request->get('recup')]);
     }
 
     #[Route(path: '/holiday/accounts', name: 'holiday.accounts', methods: ['GET'])]

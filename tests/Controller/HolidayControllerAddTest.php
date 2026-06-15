@@ -162,7 +162,7 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $crawler = $this->client->request('GET', '/holiday/new');
 
         $this->assertSelectorNotExists('#acces_refuse');
-        $this->assertSelectorTextContains('h3', 'Poser des congés');
+        $this->assertSelectorTextContains('h1', 'Poser des congés');
         $this->assertSelectorExists('#holiday-form');
     }
 
