@@ -176,6 +176,7 @@ class CJMail implements NotificationTransporterInterface
     public $failedAddresses=array();
     public $notReally = false;
     public $successAddresses=array();
+    public $nl2br = true;
 
     public function __construct()
     {
@@ -255,7 +256,9 @@ class CJMail implements NotificationTransporterInterface
         $message .= "<br/><br/>{$GLOBALS['config']['Mail-Signature']}<br/><br/>";
         $message .= "</body></html>";
         $message  = stripslashes($message);
-        $message  = str_replace(array("\n","\r\n\n","\r\n"), "<br/>", $message);
+        if ($this->nl2br) {
+            $message  = nl2br($message);
+        }
 
         $this->message = $message;
     }

@@ -8,8 +8,6 @@
 
 {% block page %}
   <div id="content-form">
-    <h3>{{ title | trans }}</h3>
-
     <div class="admin-div">
       <form name="form" action= "{{ asset( action_path )}}" method="post" id="holiday-form" class="googleCalendarForm" novalidate>
 
@@ -522,9 +520,9 @@
           <div class="col-auto offset-2">
 
             {% if request_type == 'holiday' %}
-              <input id="cancel" type="button" class="btn btn-secondary" value="{% trans %}Cancel{% endtrans %}" />
+              <input id="cancel" type="button" class="btn btn-secondary m-2" value="{% trans %}Cancel{% endtrans %}" />
             {% else %}
-              <input type="button" value="{% trans %}Cancel{% endtrans %}" onclick="document.location.href='{{ asset('holiday/?recup=1') }}';" class="btn btn-secondary"/>
+              <input type="button" value="{% trans %}Cancel{% endtrans %}" onclick="document.location.href='{{ asset('holiday/?recup=1') }}';" class="btn btn-secondary m-2"/>
             {% endif %}
 
             {% if not id %}
@@ -534,11 +532,7 @@
             {% endif %}
 
             {% if delete_button %}
-              {% if request_type == 'recover' %}
-                <input type="button" value="{% trans %}Delete{% endtrans %}" onclick="supprimeConges('/holiday/?recup=1')" class="btn btn-danger m-2"/>
-              {% else %}
-                <input type="button" value="{% trans %}Delete{% endtrans %}" onclick="supprimeConges('/holiday')" class="btn btn-danger m-2"/>
-              {% endif %}
+              <button form="delete-form" class="btn btn-danger m-2">{{ "Delete" | trans }}</button>
             {% endif %}
 
             <div id="google-calendar-div" class="inline"></div>
@@ -562,6 +556,15 @@
         {% endif %}
 
       </form>
+
+      {% if delete_button %}
+        <form id="delete-form" action="{{ path('holiday.delete', {id: id}) }}" method="post">
+          <input type="hidden" name="_token" value="{{ csrf_token('') }}"/>
+          {% if config('Conges-Recuperations') and debit == 'recuperation' %}
+            <input type="hidden" name="recup" value="1">
+          {% endif %}
+        </form>
+      {% endif %}
 
       {% if holiday_info %}
         <div class="row mb-2 gx-5 red align-info">
