@@ -1,0 +1,39 @@
+<b><u>{{ "Holiday deletion" | trans }}</u></b> :
+
+<br><br>
+
+{{ "Agent:" | trans }} {{ agent.firstname }} {{ agent.lastname }}
+
+<br><br>
+
+{% set startTime = holiday.start | date("H:i:s") %}
+{{ "Start:" | trans }} {{ holiday.start | date("d/m/Y") }} {% if startTime !== '00:00:00' %}{{ startTime | hour_from_his }}{% endif %}
+
+<br>
+
+{% set endTime = holiday.end | date("H:i:s") %}
+{{ "End:" | trans }} {{ holiday.end | date("d/m/Y") }} {% if endTime !== '23:59:59' %}{{ endTime | hour_from_his }}{% endif %}
+
+<br><br>
+
+{% if config('Conges-validation') %}
+    {{ "Previous validation:" | trans }}
+    <br>
+
+    {% if holiday.validLevel2 > 0 %}{{ "Approved" | trans }}
+    {% elseif holiday.validLevel2 < 0 %}{{ "Rejected" | trans }}
+    {% elseif holiday.validLevel1 > 0 %}{{ "Validated (pending approval from management)" | trans }}
+    {% elseif holiday.validLevel1 < 0 %}{{ "Rejected (pending approval from management)" | trans }}
+    {% else %}{{ "Requested" | trans }}
+    {% endif %}
+
+    <br>
+{% endif %}
+
+{% if holiday.comment %}
+    <br>
+    {{ "Comment:" | trans }}
+    <br>
+    {{ holiday.comment }}
+    <br>
+{% endif %}

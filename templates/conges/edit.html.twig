@@ -390,11 +390,7 @@
               {% endif %}
 
               {% if delete_button %}
-                {% if conges_recuperations and debit == 'recuperation' %}
-                  <input type="button" value="Supprimer" style="margin-left:20px;" onclick="supprimeConges('/holiday/?recup=1')" class="btn btn-danger"/>
-                {% else %}
-                  <input type="button" value="Supprimer" style="margin-left:20px;" onclick="supprimeConges('/holiday')" class="btn btn-danger"/>
-                {% endif %}
+                <button form="delete-form" class="btn btn-danger" style="margin-left:20px">{{ "Delete" | trans }}</button>
               {% endif %}
               <div id="google-calendar-div" class="inline"></div>
             </td>
@@ -410,6 +406,14 @@
             </tr>
           {% endif %}
         </table>
+      </form>
+
+      <form id="delete-form" action="{{ path('holiday.delete', {id: id}) }}" method="post">
+        <input type="hidden" name="_method" value="DELETE">
+        <input type="hidden" name="_token" value="{{ csrf_token('') }}"/>
+        {% if conges_recuperations and debit == 'recuperation' %}
+          <input type="hidden" name="recup" value="1">
+        {% endif %}
       </form>
     </div>
   </div>

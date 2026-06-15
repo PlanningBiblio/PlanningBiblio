@@ -563,27 +563,6 @@ function hours_to_days(hours, hours_per_day) {
   return days;
 }
 
-function supprimeConges(retour){
-  if(retour == undefined){
-    retour = '/holiday';
-  }
-
-  conf=confirm("Etes-vous sûr(e) de vouloir supprimer ce congé ?");
-  if(conf){
-    $.ajax({
-      url: url('ajax/holiday-delete'),
-      type: "get",
-      data: "id="+$("#id").val()+"&CSRFToken="+$("#CSRFSession").val(),
-      success: function(){
-        location.href = retour;
-      },
-      error: function(){
-        information("Une erreur est survenue lors de la suppresion du congé.","error");
-      }
-    });
-  }
-}
-
 function valideConges(){
   document.form.elements["valide"].value="1";
   document.form.submit();

@@ -211,6 +211,8 @@
     - 100
 "holiday.update":
     - 100
+"holiday.delete":
+    - 100
 "holiday_info.index":
     - 100
 "holiday_info.add":

@@ -44,7 +44,7 @@ msgid "Start date"
 msgstr "Date de début"
 
 msgid "End date"
-msgstr "Date de fin" 
+msgstr "Date de fin"
 
 msgid "Text"
 msgstr "Texte"
@@ -295,8 +295,8 @@ msgstr "Enregistrement d'un modèle (%date%)"
 msgid "Importing a template"
 msgstr "Importation d'un modèle"
 
-msgid "Import the "%name%" model"
-msgstr "Importer le modèle "%name%""
+msgid "Import the \"%name%\" model"
+msgstr "Importer le modèle \"%name%\""
 
 msgid "A model with that name already exists"
 msgstr "Un modèle avec ce nom existe déjà"
@@ -390,3 +390,36 @@ msgstr "Lignes"
 
 msgid "Back"
 msgstr "Retour"
+
+msgid "Holiday deletion"
+msgstr "Suppression d'un congé"
+
+msgid "Agent:"
+msgstr "Agent :"
+
+msgid "Start:"
+msgstr "Début :"
+
+msgid "End:"
+msgstr "Fin :"
+
+msgid "Previous validation:"
+msgstr "Validation précédente :"
+
+msgid "Approved"
+msgstr "Validé"
+
+msgid "Rejected"
+msgstr "Refusé"
+
+msgid "Validated (pending approval from management)"
+msgstr "Validé (en attente de validation hiérarchique)"
+
+msgid "Rejected (pending approval from management)"
+msgstr "Refusé (en attente de validation hiérarchique)"
+
+msgid "Requested"
+msgstr "Demandé"
+
+msgid "Comment:"
+msgstr "Commentaire :"

@@ -295,8 +295,8 @@ msgstr "Saving a template (%date%)"
 msgid "Importing a template"
 msgstr "Importing a template"
 
-msgid "Import the "%name%" model"
-msgstr "Import the "%name%" model"
+msgid "Import the \"%name%\" model"
+msgstr "Import the \"%name%\" model"
 
 msgid "A model with that name already exists"
 msgstr "A model with that name already exists"
@@ -390,3 +390,37 @@ msgstr "Lines"
 
 msgid "Back"
 msgstr "Back"
+
+#: /home/planno/planno/src/Service/Mailer.php:63
+msgid "Holiday deletion"
+msgstr "Holiday deletion"
+
+msgid "Agent:"
+msgstr "Agent:"
+
+msgid "Start:"
+msgstr "Start:"
+
+msgid "End:"
+msgstr "End:"
+
+msgid "Previous validation:"
+msgstr "Previous validation:"
+
+msgid "Approved"
+msgstr "Approved"
+
+msgid "Rejected"
+msgstr "Rejected"
+
+msgid "Validated (pending approval from management)"
+msgstr "Validated (pending approval from management)"
+
+msgid "Rejected (pending approval from management)"
+msgstr "Rejected (pending approval from management)"
+
+msgid "Requested"
+msgstr "Requested"
+
+msgid "Comment:"
+msgstr "Comment:"
