@@ -352,21 +352,14 @@ class AbsenceImportCSVCommand extends Command
                     $this->log('Si l\'absence a changé, on met à jour la base de données', 'AbsenceImportCSV');
                 }
 
-                $absu->setCalName('hamac');
                 $absu->setComment($comment);
                 $absu->setEnd($end);
-                $absu->setICalKey(null);
-                $absu->setOriginId(0);
-                $absu->setOtherReason('');
-                $absu->setReason('');
                 $absu->setRequestDate($requestDate);
                 $absu->setStart($start);
                 $absu->setValidLevel1($validLevel1);
                 $absu->setValidLevel1Date($validLevel1Date);
                 $absu->setValidLevel2($validLevel2);
                 $absu->setValidLevel2Date($validLevel2Date);
-                $absu->setUid(null);
-                $absu->setUserId($perso_id);
 
                 if ($debug) {
                     $this->log('Absence changée dans la base de donnée, on passe à la ligne suivante dans le CSV', 'AbsenceImportCSV');
