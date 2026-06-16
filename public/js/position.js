@@ -4,6 +4,11 @@
 
 $(function() {
 
+  $(document).ready(function() {
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+  })
+
   // Permet de rendre la liste des étages triable
   if($('#floors_sortable').length) {
     Sortable.create(floors_sortable, {ghostClass: 'bg-blue', animation: 150}); 
@@ -235,14 +240,14 @@ $(function() {
     $(this).removeClass('was-validated');
   });
 
-  $('.form-check-input').on('change', function(e){
+  $('.form-check-input').on('change', function(e) {
     other_choice = $(this).parent('.form-check').siblings().children();
-    if (other_choice.hasClass('is-invalid')){
+    if (other_choice.hasClass('is-invalid')) {
       $('.form-check-input').removeClass('is-invalid');
     }
   })
 
-  $('.form-check-input').on('change', function(e){
+  $('.form-check-input').on('change', function(e) {
     // Check that the parameters are compatible with each other and displays an error message if they are not
     if ($('#lunch1').prop('checked')) {
       if ($('#statistics1').prop('checked')) {

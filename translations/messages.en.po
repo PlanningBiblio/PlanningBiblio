@@ -263,7 +263,7 @@ msgid "categories-info"
 msgstr "If no category is selected, agents from all categories may be assigned to this position."
 
 msgid "obligatoire-info"
-msgstr "Check the "Obligatoire" box if the shift must be filled, or "Renfort" if it is a backup shift.\n1. If you receive reports on the status of your schedules (under "Rappels" in Settings), the backup shift checks may be skipped depending on your selected settings.\n2. There is a dedicated statistics page for backup shifts. This page displays the days and times when backup shifts are used.\n3. The color of the shift cell may vary in the schedules, depending on whether the shift is mandatory or a backup shift."
+msgstr "Check the "Obligatoire" box if the shift must be filled, or "Renfort" if it is a backup shift.\n1. If you receive reports on the status of your schedules (under "Rappels" in Settings), the backup shift check may be skipped depending on your selected settings.\n2. There is a dedicated statistics page for backup shifts. This page displays the days and times when backup shifts are used.\n3. The color of the shift cell may vary in the schedules, depending on whether the shift is mandatory or a backup shift."
 
 msgid "bloquant_info"
 msgstr "Check the "No" box next to "Bloquant" if you want to be able to assign an agent to this position and another one at the same time.\ nIn this case, the agent can be assigned to a blocking position and one or more non-blocking positions at the same time.\nThe check to verify whether the agent is already assigned will not be performed on all non-blocking positions.\nTo ensure consistent data, statistics and the calculation of the public service quota must be disabled for "non-blocking" positions."
@@ -303,3 +303,6 @@ msgstr "Support"
 
 msgid "Categories"
 msgstr "Categories"
+
+msgid "Lunch position"
+msgstr "Lunch position"

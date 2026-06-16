@@ -372,11 +372,11 @@ h4{
   --bs-tooltip-color: #29495C;
   --bs-tooltip-opacity: 100%;
   --bs-tooltip-bg: white ;
-  --bs-tooltip-border-radius : 4px;
+  --bs-tooltip-border-radius: 4px;
   --bs-tooltip-arrow-width: 0px;
   --bs-tooltip-arrow-height: 0px;
-  --bs-tooltip-max-width : fit-content;
-  border : 2px solid #29495C;
+  --bs-tooltip-max-width: fit-content;
+  border: 2px solid #29495C;
   border-radius: 4px;
   white-space: pre ;
 }
@@ -389,7 +389,6 @@ h4{
 .tooltip-inner {
     text-align: left;
 }
-
 
 /* Les agents */
 li .agent-acces-checked2{
@@ -2022,7 +2021,7 @@ input::placeholder {
   background-image: none;
 }
 
-.was-validated .form-check-input:valid{
+.was-validated .form-check-input:valid {
   border-color: inherit;
   padding-right: 4px !important;
 }

@@ -263,7 +263,7 @@ msgid "categories-info"
 msgstr "Si aucune catégorie n'est sélectionnée, les agents de toutes les catégories pourront être placés sur ce poste."
 
 msgid "obligatoire-info"
-msgstr "Cochez la case "Obligatoire" si le remplissage du poste est obligatoire ou "Renfort" s'il s'agit d'un poste de renfort.\n1. Si vous recevez les rapports sur l'état de vos plannings (Configuration "Rappels"), le contrôle des postes de renforts peuvent être ignorés selon la configuration choisie.\n2. Une page de statistiques est dédiée aux postes de renfort. Cette page affiche les jours et heures d'utilisation des postes de renforts.\n3. La couleur de la cellule du poste peut varier dans les plannings, selon si le poste et obligatoire ou de renfort."
+msgstr "Cochez la case "Obligatoire" si le remplissage du poste est obligatoire ou "Renfort" s'il s'agit d'un poste de renfort.\n1. Si vous recevez les rapports sur l'état de vos plannings (Configuration "Rappels"), le contrôle des postes de renforts peut être ignoré selon la configuration choisie.\n2. Une page de statistiques est dédiée aux postes de renfort. Cette page affiche les jours et heures d'utilisation des postes de renforts.\n3. La couleur de la cellule du poste peut varier dans les plannings, selon si le poste et obligatoire ou de renfort."
 
 msgid "bloquant_info"
 msgstr "Cochez la case "Non" face à "Bloquant" si vous souhaitez pouvoir placer un agent sur ce poste et sur un autre en même temps.\nDans ce cas, l'agent pourra être placé sur un poste bloquant et un ou plusieurs postes non-bloquants en même temps.\nLe contrôle vérifiant si l'agent est déjà placé ne se fera pas sur l'ensemble des postes non-bloquants.\nAfin d'obtenir des informations cohérentes, les statistiques et le calcul du quota de service public doivent être désactivés pour les postes "non-bloquants"."
@@ -303,3 +303,6 @@ msgstr "Renfort"
 
 msgid "Categories"
 msgstr "Catégories"
+
+msgid "Lunch position"
+msgstr "Poste repas"
