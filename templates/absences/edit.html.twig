@@ -216,7 +216,7 @@
           <div class="row gx-5 mb-2" id="motif_autre" {% if not display_autre %}style="display:none;"{% endif %}>
             <label class="col-2 col-form-label aRight" for="motif2">Motif (autre) :</label>
             <div class="col-3">
-              <input id="motif2" type="text" name="motif_autre" class="form-control form-control-sm" value="{{ absence.motif_autre }}"/>
+              <input id="motif2" type="text" name="motif_autre" class="form-control form-control-sm" value="{{ absence.motif_autre }}" {% if display_autre %} required {% endif %}/>
             </div>             
           </div>
 
@@ -248,13 +248,13 @@
           {% endif %}
 
           {% if id %}
-          <div class="row gx-5 mb-2">
-            <label class="col-2 col-form-label aRight" for="documentFile">Documents attachés :</label>
+          <div class="row gx-5 mb-2" id="attached-documents">
+            <label class="col-2 col-form-label aRight" for="documentsList">Documents attachés :</label>
             <div class="col-6" id="documentsList">
               {% for document in documents %}
                 <div class="row gx-5" id="document_{{ document.id}}">
                   <div class="col-6">
-                    <button type="link" class="btn btn-link" href="{{ asset('absences/document/') }}{{ document.id }}">{{ document.filename }}</button>
+                    <a type="link" class="btn btn-link" href="{{ asset('absences/document/') }}{{ document.id }}">{{ document.filename }}</a>
                   </div>
                   {% if absence.editable %}
                     <div class="col-auto ps-0">
