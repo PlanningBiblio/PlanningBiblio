@@ -1,6 +1,7 @@
 <?php
 
 use App\Entity\Agent;
+use App\Entity\Manager;
 use App\Entity\Absence;
 use Tests\FixtureBuilder;
 use Doctrine\ORM\EntityManagerInterface;
@@ -74,9 +75,13 @@ class AbsenceControllerEditTest extends PLBWebTestCase
         $jdoe = $entityManager->getRepository(Agent::class)->findOneBy(['login' => 'jdoe']);
         $bmarley = $entityManager->getRepository(Agent::class)->findOneBy(['login' => 'bmarley']);
 
-        // Add the right : Registering absences for multiple employees
         $this->setUpPantherClient();
+        
+        // Add right 9 : Registering absences for multiple employees
         $jdoe->setACL([9, 99, 100]);
+
+        // Add absence-validation param
+        $this->config->setParam('Absences-validation', 1);
         $this->login($jdoe);
 
         $jdoeId = $jdoe->getId();
@@ -108,11 +113,10 @@ class AbsenceControllerEditTest extends PLBWebTestCase
         $this->assertSelectorExists('li.perso_ids_li#li'. $bmarleyId . ' button.perso-drop', 'There should be a close icon next to the agent name');
         
         $form = $crawler->filter('#absence-form')->form();
-        $form->setValues(['debut' => '26/06/2026', 'motif' => 'Réunion' ]);
+        $form->setValues(['debut' => '26/06/2026', 'motif' => 'Formation' ]);
 
         // Validate form
-        $submitForm = $crawler->filter("input.btn-primary[type=submit]");
-        $submitForm->click();
+        $this->client->submit($form);
 
     }
 
@@ -145,7 +149,10 @@ class AbsenceControllerEditTest extends PLBWebTestCase
         $bmarleyId = $bmarley->getId();
 
         $this->setUpPantherClient();
+
+        // Add right 6 :  Editing their own absences
         $bmarley->setACL([6, 99, 100]);
+
         $this->login($bmarley);
 
         $abs1 = $entityManager->getRepository(Absence::class)->findOneBy(['perso_id' => $bmarleyId]);
@@ -160,8 +167,18 @@ class AbsenceControllerEditTest extends PLBWebTestCase
         $agentValue = $crawler->filter('ul#perso_ul1 li');
         $this->assertCount(2, $agentValue, 'There should be 2 selected agents');
 
-        // $link = $crawler->filter('a.btn-primary');
-        // $this->assertEquals('Retour', $link->text(), 'The agent should not be autorized to edit the absence');
+        // Recurrence disabled
+        $recurrenceCheckbox = $crawler->filter('#recurrence-checkbox');
+        $this->assertNotNull($recurrenceCheckbox->attr('disabled'), 'The recurrence checkbox should be disabled');
+        
+        $recurrenceLink = $crawler->filter('#recurrence-link');
+        $this->assertStringContainsString('display:none',$recurrenceLink->attr('style'),'The edition link should not be visible.');
+
+        // Buttons
+        $link = $crawler->filter('a.btn-primary');
+        $this->assertEquals('Retour', $link->text(), 'The agent should not be autorized to edit the absence');
+        $this->assertSelectorNotExists('input#absence-bouton-suppression');
+        $this->assertSelectorNotExists('input.btn-primary[type=submit]');
 
     }
 
@@ -203,10 +220,112 @@ class AbsenceControllerEditTest extends PLBWebTestCase
 
     }
 
+    public function testValidationState():void 
+    {
+        global $entityManager;
+        $admin = $entityManager->getRepository(Agent::class)->findOneBy(['login' => 'admin']);
+        $bmarley = $entityManager->getRepository(Agent::class)->findOneBy(['login' => 'bmarley']);
+        $bmarleyId = $bmarley->getId();
+        $jdoe = $entityManager->getRepository(Agent::class)->findOneBy(['login' => 'jdoe']);
+        $jdoeId = $jdoe->getId();
+
+        $this->setUpPantherClient();
+
+        // Set validation params
+        $this->config->setParam('Absences-validation', 1);
+        $this->config->setParam('Absences-notifications-agent-par-agent', 1);
+
+        // Make admin manager of bmarley
+        $manager = new Manager();
+        $manager->setUser($bmarley);
+        $manager->setLevel1(1);
+        $admin->addManaged($manager);
+
+        $this->login($admin);
+
+        $crawler = $this->client->request('GET', '/absence/add');
+
+        $stateValidation = $crawler->filter('#validation-state');
+        $this->assertEquals('input', $stateValidation->nodeName(), 'The validation state objetc is not an input');
+        $this->assertNotNull($stateValidation->attr('readonly'), 'The validation state object should be readonly');
+
+        // Select managed agent
+        $agentOption = $crawler->filterXPath(".//select[@id='perso_ids']//option[@value='" . $bmarleyId  . "']");
+        $agentOption->click();
+
+        $stateValidation = $crawler->filter('#validation-state');
+        $this->assertEquals('select', $stateValidation->nodeName(), 'The validation state objetc is not a select');
+
+        // Select non managed agent
+        $agentOption = $crawler->filterXPath(".//select[@id='perso_ids']//option[@value='" . $jdoeId  . "']");
+        $agentOption->click();
+
+        $stateValidation = $crawler->filter('#validation-state');
+        $this->assertEquals('input', $stateValidation->nodeName(), 'The validation state object is not an input');
+        $this->assertNotNull($stateValidation->attr('readonly'), 'The validation state object should be readonly');
+
+    }
+
+    public function testRecurringAbsence():void 
+    {
+
+        global $entityManager;
+        $bmarley = $entityManager->getRepository(Agent::class)->findOneBy(['login' => 'bmarley']);
+        $bmarleyId = $bmarley->getId();
+
+        $this->setUpPantherClient();
+        $this->login($bmarley);
+
+        // Create recurreing absence
+        $crawler = $this->client->request('GET', '/absence/add');
+
+        $form = $crawler->filter('#absence-form')->form();
+        $form->setValues(['debut' => '30/06/2026', 'motif' => 'Réunion' ]);
+        $form['recurrence-checkbox']->tick();
+
+        $recurrenceForm = $crawler->filter('#recurrence-form')->form();
+        $recurrenceForm['recurrence-end']->select('count');
+        $recurrenceForm->setValues(['recurrence-interval' => 3, 'recurrence-count' => 4]);
+
+        // Validate recurrence form 
+        $this->client->submit($recurrenceForm);
+        
+        // Validate form 
+        $this->client->submit($form);
+
+        $date = new DateTime('2026-06-30');
+
+        $abs2 = $entityManager->getRepository(Absence::class)->findOneBy(['perso_id' => $bmarleyId , 'debut' => $date]);
+        $abs2Id = $abs2->getId();
+        
+        $crawler = $this->client->request('GET', "/absence/$abs2Id");
+
+        // Recurrence disabled but visible
+        $recurrenceCheckbox = $crawler->filter('#recurrence-checkbox');
+        $this->assertNotNull($recurrenceCheckbox->attr('checked'), 'The recurrence checkbox should be checked');
+        $this->assertNotNull($recurrenceCheckbox->attr('disabled'), 'The recurrence checkbox should be disabled');
+        
+        $recurrenceLink = $crawler->filter('#recurrence-link');
+        $this->assertStringContainsString('display:none',$recurrenceLink->attr('style'),'The edition link should not be visible.');
+
+        $recurrenceSummary = $crawler->filter('#recurrence-summary');
+        $this->assertNull($recurrenceSummary->attr('style'), 'The recurrence summary should be visible');
+        $this->assertEquals('Toutes les 3 semaines, les mardis, 4 fois', $recurrenceSummary->text(), 'Recurrence summary incorrect');
+
+        // Buttons
+        $this->assertSelectorExists('input#absence-bouton-suppression');
+        $this->assertSelectorExists('input.btn-primary[type=submit]');
+        $this->assertSelectorExists('input.btn-secondary[type=button]');
+
+    }
+
+
     public static function setUpAfterClass(): void
     {
     
         $this->config->setParam('Absences-agent-preselection', 1);
+        $this->config->setParam('Absences-validation', 0);
+        $this->config->setParam('Absences-notifications-agent-par-agent', 0);
 
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);

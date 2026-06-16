@@ -374,7 +374,7 @@
 
               <div class="row mb-2">
                 <label  for="recurrence-interval" class="col-4 col-form-label"> Répéter <span id="recurrence-label">toutes</span> les : </label>
-                <input type="number" min="1" max="100" step="1" class="col-5 form-control form-control-sm recurrence-data" id="recurrence-interval" style="max-width: 200px;" value="1">
+                <input type="number" min="1" max="100" step="1" class="col-5 form-control form-control-sm recurrence-data" id="recurrence-interval" name="recurrence-interval" style="max-width: 200px;" value="1">
                 <span id="recurrence-label-freq" class="col-3 pt-2">semaines</span>
               </div>
               
@@ -382,31 +382,31 @@
                 <legend class="col-form-label col-4">Répéter le :</legend>
                 <div class="col-8 p-0 pt-2 pb-2">
                   <div class="form-check">
-                    <input class="form-check-input recurrence-data recurrence-by-day" type="checkbox" id="recurrence-by-day1" value="MO">
+                    <input class="form-check-input recurrence-data recurrence-by-day" type="checkbox" id="recurrence-by-day1" name="recurrence-by-day1" value="MO">
                     <label  for="recurrence-by-day1">Lundi</label>
                   </div>
                   <div class="form-check">
-                    <input class="form-check-input recurrence-data recurrence-by-day" type="checkbox" id="recurrence-by-day2" value="TU">
+                    <input class="form-check-input recurrence-data recurrence-by-day" type="checkbox" id="recurrence-by-day2" name="recurrence-by-day2" value="TU">
                     <label  for="recurrence-by-day2">Mardi</label>
                   </div>
                   <div class="form-check">
-                    <input class="form-check-input recurrence-data recurrence-by-day" type="checkbox" id="recurrence-by-day3" value="WE">
+                    <input class="form-check-input recurrence-data recurrence-by-day" type="checkbox" id="recurrence-by-day3" name="recurrence-by-day3" value="WE">
                     <label  for="recurrence-by-day3">Mercredi</label>
                   </div>
                   <div class="form-check">
-                    <input class="form-check-input recurrence-data recurrence-by-day" type="checkbox" id="recurrence-by-day4" value="TH">
+                    <input class="form-check-input recurrence-data recurrence-by-day" type="checkbox" id="recurrence-by-day4" name="recurrence-by-day4" value="TH">
                     <label  for="recurrence-by-day4">Jeudi</label>
                   </div>
                   <div class="form-check">
-                    <input class="form-check-input recurrence-data recurrence-by-day" type="checkbox" id="recurrence-by-day5" value="FR">
+                    <input class="form-check-input recurrence-data recurrence-by-day" type="checkbox" id="recurrence-by-day5" name="recurrence-by-day5" value="FR">
                     <label  for="recurrence-by-day5">Vendredi</label>
                   </div>
                   <div class="form-check">
-                    <input class="form-check-input recurrence-data recurrence-by-day" type="checkbox" id="recurrence-by-day6" value="SA">
+                    <input class="form-check-input recurrence-data recurrence-by-day" type="checkbox" id="recurrence-by-day6" name="recurrence-by-day6" value="SA">
                     <label  for="recurrence-by-day6">Samedi</label>
                   </div>
                   <div class="form-check">
-                    <input class="form-check-input recurrence-data recurrence-by-day" type="checkbox" id="recurrence-by-day0" value="SU">
+                    <input class="form-check-input recurrence-data recurrence-by-day" type="checkbox" id="recurrence-by-day0" name="recurrence-by-day0" value="SU">
                     <label  for="recurrence-by-day0">Dimanche</label>
                   </div>
                 </div>
@@ -441,13 +441,13 @@
                   <div class="form-check" style="display: flex;align-items: baseline;">
                     <input class="form-check-input recurrence-data recurrence-end" name="recurrence-end" type="radio" id="recurrence-end2" value="count">
                     <label class="form-check-label ms-2" for="recurrence-end2" style="display: block ruby;">Après
-                      <input type="number" min="1" max="100" step="1" class="col-1 form-control form-control-sm recurrence-data" id="recurrence-count" placeholder="30" style="max-width: 60px;">
+                      <input type="number" min="1" max="100" step="1" class="col-1 form-control form-control-sm recurrence-data" id="recurrence-count" name="recurrence-count" placeholder="30" style="max-width: 60px;">
                       répétitions</label>
                   </div>
                   <div class="form-check" style="display: flex;align-items: baseline;">
                     <input class="form-check-input recurrence-data recurrence-end" name="recurrence-end" type="radio" id="recurrence-end3" value="until">
                     <label class="form-check-label ms-2" for="recurrence-end3" style="display: block ruby;">Le 
-                      <input type="text" id="recurrence-until" class="datepicker recurrence-data form-control" style="width: 150px;"/>
+                      <input type="text" id="recurrence-until" name="recurrence-until" class="datepicker recurrence-data form-control" style="width: 150px;"/>
                     </label>
                   </div>
                 </div>
