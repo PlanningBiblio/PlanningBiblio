@@ -64,9 +64,9 @@
         },
         error: function(request, status, error){
           if (request.responseText == '"used"') {
-            stackAlert('Ce tableau est déjà utilisé. Vous ne pouvez pas modifier les horaires.','error');
+            stackAlert('Ce tableau est déjà utilisé. Vous ne pouvez pas modifier les horaires.', 'error');
           } else {
-            stackAlert('Une erreur est survenue lors de l\'enregistrement du tableau.','error');
+            stackAlert('Une erreur est survenue lors de l\'enregistrement du tableau.', 'error');
           }
           return false;
         }

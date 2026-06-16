@@ -85,7 +85,7 @@ $(document).ready(function(){
         }
       },
       error: function(jqXHR, textStatus, errorThrown){
-        stackAlert(result.responseText,'error');
+        stackAlert(result.responseText, 'error');
       }
     });
   };
@@ -498,7 +498,7 @@ $(function() {
       },
 
       error: function(result){
-        stackAlert('Impossible d\'afficher le menu des agents.\n' + result.responseText,'error');
+        stackAlert('Impossible d\'afficher le menu des agents.\n' + result.responseText, 'error');
       }
     });
     return false ;

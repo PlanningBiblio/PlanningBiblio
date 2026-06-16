@@ -303,7 +303,7 @@ function sendPassword() {
       id: $('input[name=id]').val(),
     },
     success: function(result) {
-      stackAlert(result[0]);
+      stackAlert(result[0], result[1]);
     },
     error: function() {
       stackAlert('Une errreur est survenue lors de l\'envoi du mot de passe', 'error');

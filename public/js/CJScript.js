@@ -49,74 +49,75 @@ function CJDataTableStripe() {
  * @param array translationOptions : message additional translation information (variables, domains ...)
  */
 
-function stackAlert(message, type='success', timeout=7000, position='top-center', translationOptions = null){
-
+function stackAlert(message, type='success', timeout=7000, position='top-center', translationOptions = null)
+{
   type = (type === 'error') ? 'danger' : type;
 
   // Translate the message
   message = Translator.trans(message, translationOptions);
   message = message.replace(/#BR#/g,"<br/>&emsp;&emsp;");
   message = message.replace(/\n/g,"<br/>&emsp;&emsp;");
-  close_msg = Translator.trans('Close');
+
+  const close_msg = Translator.trans('Close');
 
   // Map of types with associated icons (Bootstrap Icons).
-	const icons = {
-		info: 'bi-info-circle-fill bi-information',
-		success: 'bi-check-circle-fill bi-success',
+  const icons = {
+    info: 'bi-info-circle-fill bi-information',
+    success: 'bi-check-circle-fill bi-success',
     warning: 'bi-exclamation-triangle-fill bi-warning',
-		danger: 'bi-exclamation-triangle-fill bi-danger'
-	};
-	
-  //  Map of positions with associated CSS coordinates
-	const positions = {
-		'top-right': { top: '70px', right: '20px' },
-		'bottom-right': { bottom: '20px', right: '20px' },
-		'top-left':	{ top: '70px', left: '20px' },
-		'bottom-left': { bottom: '20px', left: '20px' },
-		'top-center': { top: '70px', left: '50%', transform: 'translateX(-50%)' },
-		'bottom-center': { bottom: '20px', left: '50%', transform: 'translateX(-50%)' }
-	};
+    danger: 'bi-exclamation-triangle-fill bi-danger'
+  };
+
+  // Map of positions with associated CSS coordinates
+  const positions = {
+    'top-right': { top: '70px', right: '20px' },
+    'bottom-right': { bottom: '20px', right: '20px' },
+    'top-left':	{ top: '70px', left: '20px' },
+    'bottom-left': { bottom: '20px', left: '20px' },
+    'top-center': { top: '70px', left: '50%', transform: 'translateX(-50%)' },
+    'bottom-center': { bottom: '20px', left: '50%', transform: 'translateX(-50%)' }
+  };
 
   // Unique ID for the alert (used for DOM manipulation)
-	const alertId = 'alert-' + Date.now();
+  const alertId = 'alert-' + Date.now();
 
   // ID of the container for the current position
-	const containerId = 'alert-stack-' + position;
-	let $container = $('#' + containerId);
+  const containerId = 'alert-stack-' + position;
+  let $container = $('#' + containerId);
 
   // If the container doesn't exist, it initializes it
-	if (!$container.length) {
-		$container = $('<div>', {
-			id: containerId,
-			css: $.extend({
-				position: 'fixed',
-				zIndex: 1050,
-				minWidth: '25%'
-			}, positions[position])
-		}).appendTo('body');
+  if (!$container.length) {
+    $container = $('<div>', {
+      id: containerId,
+      css: $.extend({
+        position: 'fixed',
+        zIndex: 1050,
+        minWidth: '25%'
+      }, positions[position])
+    }).appendTo('body');
 
     // Center the container if necessary
-		if (positions[position].transform) {
-			$container.css('transform', positions[position].transform);
-		}
-	}
+    if (positions[position].transform) {
+      $container.css('transform', positions[position].transform);
+    }
+  }
 
   // Builds the HTML for the alert and inserts it into the container
-	const alertHtml = `
-		<div id="${alertId}" class="alert alert-${type} alert-dismissible fade show mb-2" role="alert"">
-			<i class="bi ${icons[type]} me-2"></i> 
-			${message}
-			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="${close_msg}"></button>
-		</div>`;
+  const alertHtml = `
+  <div id="${alertId}" class="alert alert-${type} alert-dismissible fade show mb-2" role="alert"">
+    <i class="bi ${icons[type]} me-2"></i> 
+      ${message}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="${close_msg}"></button>
+    </div>`;
 
-	$container.append(alertHtml);
+  $container.append(alertHtml);
 
   // Dismiss automatically the alert after the timeout if timeout > 0
-	if (timeout > 0) {
-		setTimeout(() => {$('#' + alertId).alert('close');}, timeout);
-	}
+  if (timeout > 0) {
+    setTimeout(() => {$('#' + alertId).alert('close');}, timeout);
+  }
 
-	return this;
+  return this;
 };
 
 // Fonction JQuery

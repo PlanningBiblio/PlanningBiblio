@@ -189,7 +189,7 @@ function currentCredits() {
       $('input[name="anticipation"]').val(credits.holiday_debit_decimal);
     },
     error: function(xhr, ajaxOptions, thrownError){
-      stackAlert('Impossible de récupérer le compte de congés actuel.','error');
+      stackAlert('Impossible de récupérer le compte de congés actuel.', 'error');
     },
   });
 }
@@ -259,7 +259,7 @@ function calculCredit(){
         $("#nbHeures").effect("highlight",null,3000);
         $("#nbJours").effect("highlight",null,3000);
         $('#alert-stack-top-center').remove();
-        stackAlert('Aucun planning de présence enregistré pour cette période - calcul impossible.','error');
+        stackAlert('Aucun planning de présence enregistré pour cette période - calcul impossible.', 'error');
       } 
       else {
         $('#alert-stack-top-center').remove();
@@ -323,9 +323,9 @@ function calculCredit(){
       $('#alert-stack-top-center').remove();
 
       if (congesMode == 'heures') {
-        stackAlert('Impossible de calculer le nombre d\'heures correspondant au congé demandé.','error');
+        stackAlert('Impossible de calculer le nombre d\'heures correspondant au congé demandé.', 'error');
       } else {
-        stackAlert('Impossible de calculer le nombre de jours correspondant au congé demandé.','error');
+        stackAlert('Impossible de calculer le nombre de jours correspondant au congé demandé.', 'error');
       }
     },
   });
@@ -581,7 +581,7 @@ function supprimeConges(retour){
         location.href = retour;
       },
       error: function(){
-        stackAlert('Une erreur est survenue lors de la suppresion du congé.','error');
+        stackAlert('Une erreur est survenue lors de la suppresion du congé.', 'error');
       }
     });
   }
@@ -603,7 +603,7 @@ function verifConges()
   }
 
   if($("#erreurCalcul").val()=="true"){
-    stackAlert("Aucun planning de présence enregistré pour cette période - calcul impossible.","error");
+    stackAlert('Aucun planning de présence enregistré pour cette période - calcul impossible.', 'error');
     return false;
   }
 
@@ -647,13 +647,13 @@ function verifConges()
 
   // Vérifions si les dates sont correctement saisies
   if($("#debut").val()==""){
-    stackAlert('Veuillez choisir la date de début','error');
+    stackAlert('Veuillez choisir la date de début', 'error');
     return false;
   }
 
   // Vérifions si les dates sont cohérentes
   if (debut >= fin) {
-    stackAlert('La date de fin doit être supérieure à la date de début','error');
+    stackAlert('La date de fin doit être supérieure à la date de début', 'error');
     return false;
   }
   
@@ -758,14 +758,14 @@ function verifConges()
                 async: false,
                 success: function(data){
                   if(data){
-                    stackAlert(data, "error");
+                    stackAlert(data, 'error');
                   }
                   else {
                      return true;
                   }
                 },
                 error: function(){
-                  stackAlert('Une erreur est survenue lors de l\'enregistrement du congé','error');
+                  stackAlert('Une erreur est survenue lors de l\'enregistrement du congé', 'error');
                 },
             });
           } else {
@@ -774,7 +774,7 @@ function verifConges()
       }
     },
     error: function(){
-      stackAlert('Une erreur est survenue lors de l\'enregistrement du congé','error');
+      stackAlert('Une erreur est survenue lors de l\'enregistrement du congé', 'error');
     },
   });
   return valid;

@@ -872,13 +872,13 @@ function verif_absences(ctrl_form){
     return false;
 
   if($("select[name=motif] option:selected").attr("disabled")=="disabled"){
-    stackAlert('Le motif sélectionné n\'est pas valide.\nVeuillez le modifier s\'il vous plaît.','error');
+    stackAlert('Le motif sélectionné n\'est pas valide.\nVeuillez le modifier s\'il vous plaît.', 'error');
     return false;
   }
 
   if($("select[name=motif]").val().toLowerCase()=="autre" || $("select[name=motif]").val().toLowerCase()=="other"){
     if($("input[name=motif_autre]").val()==""){
-      stackAlert('Veuillez choisir un motif.','error');
+      stackAlert('Veuillez choisir un motif.', 'error');
       return false;
     }
   }
@@ -891,7 +891,7 @@ function verif_absences(ctrl_form){
 
   // Si aucun agent n'est sélectionné, on quitte en affichant "Veuillez sélectionner ..."
   if(perso_ids.length<1){
-    stackAlert('Veuillez sélectionner un ou plusieurs agents','error');
+    stackAlert('Veuillez sélectionner un ou plusieurs agents', 'error');
     return false;
   }
 
@@ -981,7 +981,7 @@ function verif_absences(ctrl_form){
             retour=false;
           }
         } else {
-          stackAlert('Vous ne pouvez pas enregistrer d\'absences pour les dates suivantes car les plannings sont en cours d\'élaboration :\n'+result["planning_started"], 'error');
+          stackAlert('Vous ne pouvez pas enregistrer d\'absences pour les dates suivantes car les plannings sont en cours d\'élaboration :\n' + result['planning_started'], 'error');
           retour=false;
         }
       }
@@ -1028,7 +1028,7 @@ function verif_absences(ctrl_form){
       }
     },
     error: function(result){
-      stackAlert('Une erreur est survenue.','error');
+      stackAlert('Une erreur est survenue.', 'error');
       retour=false;
     }
   });

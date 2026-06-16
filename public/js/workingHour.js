@@ -226,7 +226,7 @@ function plHebdoSupprime(id){
         stackAlert('Le planning a été supprimé');
       },
       error: function(){
-        stackAlert('Erreur lors de la suppression du planning de présence','error');
+        stackAlert('Erreur lors de la suppression du planning de présence', 'error');
       }
     });
   }

@@ -119,14 +119,14 @@
 
           {% if can_manage_sup_doc %}
             <td style='text-align:center;'>
-              <div class='absences-pj'>
-                <input type='checkbox' id="pj1-{{ abs.id }}" {% if abs.pj1 %} checked="checked" {% endif %}/>
+              <div class="absences-pj">
+                <input type="checkbox" id="pj1-{{ abs.id }}" {% if abs.pj1 %} checked {% endif %}/>
               </div>
-              <div class='absences-pj'>
-                <input type='checkbox' id="pj2-{{ abs.id }}" {% if abs.pj2 %} checked="checked" {% endif %}/>
+              <div class="absences-pj">
+                <input type="checkbox" id="pj2-{{ abs.id }}" {% if abs.pj2 %} checked {% endif %}/>
               </div>
-              <div class='absences-pj'>
-                <input type='checkbox' id="so-{{ abs.id }}" {% if abs.so %} checked="checked" {% endif %}/>
+              <div class="absences-pj">
+                <input type="checkbox" id="so-{{ abs.id }}" {% if abs.so %} checked {% endif %}/>
               </div>
             </td>
           {% endif %}

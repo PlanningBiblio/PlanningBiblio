@@ -47,7 +47,7 @@ function redo() {
       });
     },
     error: function(result){
-      stackAlert('Impossible de répéter la dernière action. Une erreur s\'est produite','error');
+      stackAlert('Impossible de répéter la dernière action. Une erreur s\'est produite', 'error');
     }
   });
 }
