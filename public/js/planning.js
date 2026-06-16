@@ -19,8 +19,8 @@ $(document).ready(function(){
 
   if ($('.cellSpan').length > 0 ) $('#planning-save').removeClass('disabled');
 
-  $('#planning-import').on('click keydown', function(e){
-    if (!event.key || event.key === "Enter") {
+  $('#planning-import').on('click keydown', function(e) {
+    if (!event.key || event.key === 'Enter') {
       date = $('input[name="date"]').val();
       site = $('input[name="site"]').val();
       CSRFSession = $('input[name="CSRFSession"]').val();

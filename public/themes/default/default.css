@@ -1085,7 +1085,7 @@ class cellule = cellule par défaut
   height: 170px;
 }
 
-#pl-title{
+#pl-title {
   color: #FFFFFF;
   font-size: 15pt;
   margin-top: 20px;
@@ -1119,11 +1119,11 @@ class cellule = cellule par défaut
   width: fit-content;
 }
 
-#undo-redo{
+#undo-redo {
   padding-top: 5px;
 }
 
-#h3-Multisites{
+#h3-Multisites {
   color: #FFF;
   font-size: 20px;
 }
@@ -1403,7 +1403,7 @@ img{
   cursor:pointer;
 }
 
-#choix_tableaux{
+#choix_tableaux {
   margin: 60px 15px;
 }
 
@@ -1416,7 +1416,7 @@ img{
   width:180px;
 }
 
-#tableau, .tableau{
+#tableau, .tableau {
   text-align:center;
   padding: 50px 0 0 0;
 }

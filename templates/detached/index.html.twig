@@ -11,15 +11,15 @@
   <!-- Show title and calendar widgets -->
   <div id="divcalendrier" class="container">
     <div id="pl-header" class="row">
-        <div id="pl-calendar" class="col-auto m-4 mt-3 datepicker"></div>
-        <div class="col-6" id="pl-title">
-          <div>Sélection des agents volants</div>
-          <div>Semaine {{ week_number }}, du {{ week }}</div>
-          <ul class="days_ul">
-            <li><a href="{{ asset('detached') }}?date={{ previous_week }}"> Semaine précédente </a> / </li>
-            <li><a href="{{ asset('detached') }}?date={{ next_week }}"> Semaine suivante </a></li>
-          </ul>
-        </div>
+      <div id="pl-calendar" class="col-auto m-4 mt-3 datepicker"></div>
+      <div class="col-6" id="pl-title">
+        <div>Sélection des agents volants</div>
+        <div>Semaine {{ week_number }}, du {{ week }}</div>
+        <ul class="days_ul">
+          <li><a href="{{ asset('detached') }}?date={{ previous_week }}"> Semaine précédente </a> / </li>
+          <li><a href="{{ asset('detached') }}?date={{ next_week }}"> Semaine suivante </a></li>
+        </ul>
+      </div>
     </div>
   </div>
 
@@ -41,14 +41,14 @@
             {% endfor %}
           </select>
         </div>
-    
+
         <div id="volants-buttons-div">
           <input type="button" class="btn btn-secondary" id="volants-add" value="Ajouter >>" /><br/><br/>
           <input type="button" class="btn btn-secondary" id="volants-add-all" value="Ajouter Tout >>" /><br/><br/>
           <input type="button" class="btn btn-danger" id="volants-remove" value="<< Supprimer" /><br/><br/>
           <input type="button" class="btn btn-danger" id="volants-remove-all" value="<< Supprimer Tout" /><br/><br/>
         </div>
-    
+
         <div id="volants-selectionnes-div">
           <h4>Agents sélectionnés</h4>
           <select id="volants-selectionnes" name="selectionnes" multiple="multiple">
@@ -61,7 +61,7 @@
             {% endfor %}
           </select>
         </div>
-    
+
         <div id="volants-validation">
           <input type="submit" role="button" class="btn btn-primary" id="submit" value="Valider" />
         </div>
