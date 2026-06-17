@@ -176,32 +176,52 @@ class AppExtension extends AbstractExtension
         // Handle Planning's menu
 
         // If URL ends with a date or /week check site 
-        if (preg_match('/(.+)(\/[0-9]{4}((-[0-9]{2}){2})|\/week)/', $requestedUrl)){
+        if (preg_match('/(.+)(\/[0-9]{4}((-[0-9]{2}){2})|\/week)/', $requestedUrl)) {
             return $url === ($config['URL'] . '/' . $site);
         }
 
         // If URL ends with site number
-            if (preg_match('/(.+)(\/[0-9]{1})/', $requestedUrl, $match) and $match[1]===$config['URL']){
+            if (preg_match('/(.+)(\/[0-9]{1})/', $requestedUrl, $match) and $match[1]===$config['URL']) {
             return $url === $requestedUrl;
         }
 
         // if URL empty
-        if ($requestedUrl===($config['URL'] . '/')){
+        if ($requestedUrl===($config['URL'] . '/')) {
             return $url === ($config['URL'] . '/' . $site);
         }
 
         // Specific case for /absence/add
-        if (preg_match('/absence\/add/', $requestedUrl)){
+        if (preg_match('/absence\/add/', $requestedUrl)) {
             return $url === $requestedUrl;
         }
 
+        // Specific case for /comptime/add
+        if (preg_match('/comptime\/add/', $requestedUrl)) {
+            return $url === $requestedUrl;
+        }
+
+        // Specific case for /holiday-info/add
+        if (preg_match('/holiday-info\/add/', $requestedUrl)) {
+            return $url === ($config['URL'] . '/holiday-info');
+        }
+
+        // Specific case for /holiday?recup=1
+        if (preg_match('/holiday\?recup=1/', $requestedUrl)) {
+            return $url === ($config['URL'] . '/holiday/?recup=1') ;
+        }
+
+        // Specific case for /holiday/edit
+        if (preg_match('/(.+?)(\/edit)?(\/[0-9]+)/', $requestedUrl, $match)) {
+            return $url === $match[1];
+        }
+
         // Find the level-up URL for all routes ending in 'add' or in any number for edit
-        if (preg_match('/(.+?)(-.+)?\/add/', $requestedUrl, $match) or preg_match('/(.+?)(-.+)?(\/[0-9]+)/', $requestedUrl, $match)){
+        if (preg_match('/(.+?)(-.+)?\/add/', $requestedUrl, $match) or preg_match('/(.+?)(-.+)?(\/[0-9]+)/', $requestedUrl, $match)) {
             return $url === $match[1];
         }
 
         // Find the origin URL without the route parameters     
-        if (preg_match('/^([^?]*)/', $requestedUrl, $match)){
+        if (preg_match('/^([^?]*)/', $requestedUrl, $match)) {
             return $url === $match[0];
         }
 
