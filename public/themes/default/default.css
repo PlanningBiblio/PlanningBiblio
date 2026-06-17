@@ -1141,16 +1141,6 @@ class cellule = cellule par défaut
   margin: 20px 0;
 }
 
-#tab_titre{	/* /index */
-  height: 145px;
-  border: none;
-  background-color: #29495C;
-}
-
-#tab_titre .row {
-  justify-content: space-around;
-}
-
 /* Calendrier affiché en haut des plannings */
 
 .datepicker-inline {
@@ -1388,10 +1378,6 @@ td.cellule_grise {
 
 img{
   border: none;
-}
-
-#tab_titre tr{
-  vertical-align:top;
 }
 
 #cal_ifram{	
