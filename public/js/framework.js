@@ -206,7 +206,7 @@ function tableauxInfos(){
 
 $(function(){
 
-  $('#Nom').on('keyup', function(e){
+  $('#Nom').on('keyup', function(e) {
     exist = false;
     name_value = $(this).val().toLowerCase().trim();
     for (i = 0; i < grp_nom.length ; i++) {
