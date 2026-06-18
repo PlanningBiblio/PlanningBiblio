@@ -55,7 +55,8 @@ class AgentController extends BaseController
         $this->entityManager->getRepository(Agent::class)->updateAsDeletedByDepartDate();
 
         // List of activities, contracts, services and status for bulk modification
-        $activites = $this->entityManager->getRepository(Skill::class)->findAll();
+        $skills = $this->entityManager->getRepository(Skill::class)->findBy(['supprime' => null]);
+
         $contrats = ['Titulaire', 'Contractuel'];
         $services = $this->entityManager->getRepository(SelectServices::class)->findAll();
         $statuts = $this->entityManager->getRepository(SelectStatus::class)->findAll();
@@ -91,7 +92,7 @@ class AgentController extends BaseController
 
         // Skills for bulk modification
         $skillsAllWithName = [];
-        foreach ($activites as $elem) {
+        foreach ($skills as $elem) {
             $skillsAllWithName[] = [$elem->getName(), $elem->getId()];
         }
 
@@ -109,7 +110,7 @@ class AgentController extends BaseController
             'loginId'           => $session->get('loginId'),
             'rights21'          => in_array(21, $droits),
             'services'          => $services,
-            'skills'            => $activites,
+            'skills'            => $skills,
             'skillsAllWithName' => json_encode($skillsAllWithName),
             'status'            => $statuts
         ]);
@@ -173,7 +174,7 @@ class AgentController extends BaseController
         $skillsAll = [];
         $skillsAllWithName = [];
 
-        $skills = $this->entityManager->getRepository(Skill::class)->findAll();
+        $skills = $this->entityManager->getRepository(Skill::class)->findBy(['supprime' => null]);
 
         foreach ($skills as $elem) {
             $skillsAllWithName[] = [$elem->getName(), $elem->getId()];
