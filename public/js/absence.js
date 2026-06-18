@@ -31,6 +31,10 @@ $(function() {
 
   });
 
+  $('#absence-form').on('submit', function() {
+    return verif_absences('debut=date1;fin=date2;motif');
+  });
+
   $('#add-reason-modal').on('hidden.bs.modal', function() {
     $('#add-reason-text').val('').removeClass('is-invalid');
     $('#add-reason').removeClass('was-validated');
@@ -186,10 +190,14 @@ $(function() {
 
   // Affiche ou masque le champ motif_autre en fonction de la valeur du select motif
   $("select[name=motif]").change(function(){
-    if($(this).val().toLowerCase()=="autre" || $(this).val().toLowerCase()=="other"){
-      $("#tr_motif_autre").show();
-    }else{
-      $("#tr_motif_autre").hide();
+    if ($(this).val().toLowerCase()=="autre" || $(this).val().toLowerCase()=="other") {
+      $("#motif_autre").show();
+      $("#motif2").attr('required', 'required');
+
+    }
+    else {
+      $("#motif2").removeAttr('required');
+      $("#motif_autre").hide();
       $("input[name=motif_autre]").val("");
     }
   });
@@ -436,19 +444,19 @@ $(function() {
   // Options de modification d'une absence récurrente
   $('#modification-current').on('click', function(e) {
     $('#recurrence-modif').val('current');
-    $('#form').submit();
+    $('#absence-form').submit();
     $('#recurrence-modification-modal' ).modal('hide');
   });
 
   $('#modification-next').on('click', function(e) {
     $('#recurrence-modif').val('next');
-    $('#form').submit();
+    $('#absence-form').submit();
     $('#recurrence-modification-modal' ).modal('hide');
   });
 
   $('#modification-all').on('click', function(e) {
     $('#recurrence-modif').val('all');
-    $('#form').submit();
+    $('#absence-form').submit();
     $('#recurrence-modification-modal' ).modal('hide');
   });
 
@@ -543,10 +551,11 @@ function affiche_perso_ul(){
   }
 
   for(i in tab){
-    var li="<li id='li"+tab[i][1]+"' class='perso_ids_li' data-id='"+tab[i][1]+"'>"+tab[i][0];
+    var li="<li id='li"+tab[i][1]+"' class='perso_ids_li mb-1' data-id='"+tab[i][1]+"'>"+tab[i][0];
 
     if( $('#admin').val() == 1 || tab[i][1] != $('#login_id').val() ){
-      li+="<span class='perso-drop' onclick='supprimeAgent("+tab[i][1]+");' ><span class='pl-icon pl-icon-dropblack'></span></span>";
+      title = Translator.trans('Delete');
+      li+="<button type='button' class='perso-drop btn btn-icon p-0' onclick='supprimeAgent("+tab[i][1]+");' title='"+ title +"'><span class='pl-icon pl-icon-dropblack'></span></button>";
     }
 
     li+="</li>\n";
@@ -597,7 +606,7 @@ function update_validation_statuses() {
       $('tr#validation').effect("highlight",null,2000);
     },
     error: function(xhr, ajaxOptions, thrownError) {
-      information("Une erreur s'est produite lors de la mise à jour de la liste des statuts");
+      information("Une erreur s'est produite lors de la mise à jour de la liste des statuts", 'error');
     }
   });
 }
@@ -832,7 +841,6 @@ function recurrenceRRuleText2(rrule){
   var byday = rrule.indexOf('BYDAY') > 0  ? rrule.replace(/.*BYDAY=([0-9A-Z-,]*).*/,"$1") : null;
   var bymonthday = rrule.indexOf('BYMONTHDAY') > 0 ? rrule.replace(/.*BYMONTHDAY=(\d*).*/,"$1") : null;
 
-  console.log(byday);
   if(until){
     until = dateICSGMTToFr(until);
     until = until.substr(0,10);
