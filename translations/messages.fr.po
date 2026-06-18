@@ -471,3 +471,9 @@ msgstr "Déverrouiller le planning"
 
 msgid "Lock the schedule"
 msgstr "Verrouiller le planning"
+
+msgid "Requesting holidays"
+msgstr "Poser des congés"
+
+msgid "Requesting compensation for overtime"
+msgstr "Poser des récupérations"

@@ -57,7 +57,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence");
 
-        $statuses_elements = $crawler->filter('select option');
+        $statuses_elements = $crawler->filter('select#validation-state option');
 
         $this->assertCount(3, $statuses_elements);
         $this->assertEquals('Demandée', $statuses_elements->eq(0)->html());
@@ -84,7 +84,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence");
 
-        $statuses_elements = $crawler->filter('select option');
+        $statuses_elements = $crawler->filter('select#validation-state option');
 
         $this->assertCount(5, $statuses_elements);
         $this->assertEquals('Demandée', $statuses_elements->eq(0)->html());
@@ -113,7 +113,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence");
 
-        $statuses_elements = $crawler->filter('select option');
+        $statuses_elements = $crawler->filter('select#validation-state option');
 
         $this->assertCount(5, $statuses_elements);
         $this->assertEquals('Demandée', $statuses_elements->eq(0)->html());
@@ -189,7 +189,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence&id=$absence_id");
 
-        $statuses_elements = $crawler->filter('select option');
+        $statuses_elements = $crawler->filter('select#validation-state option');
 
         $this->assertCount(3, $statuses_elements);
         $this->assertEquals('Demandée', $statuses_elements->eq(0)->html());
@@ -218,7 +218,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence&id=$absence_id");
 
-        $statuses_elements = $crawler->filter('select option');
+        $statuses_elements = $crawler->filter('select#validation-state option');
 
         $this->assertCount(5, $statuses_elements);
         $this->assertEquals('Demandée', $statuses_elements->eq(0)->html());
@@ -249,7 +249,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence&id=$absence_id");
 
-        $statuses_elements = $crawler->filter('select option');
+        $statuses_elements = $crawler->filter('select#validation-state option');
 
         $this->assertCount(5, $statuses_elements);
         $this->assertEquals('Demandée', $statuses_elements->eq(0)->html());
@@ -328,7 +328,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence&id=$absence_id");
 
-        $statuses_elements = $crawler->filter('select option');
+        $statuses_elements = $crawler->filter('select#validation-state option');
 
         $this->assertCount(3, $statuses_elements);
         $this->assertEquals('Demandée', $statuses_elements->eq(0)->html());
@@ -357,7 +357,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence&id=$absence_id");
 
-        $statuses_elements = $crawler->filter('select option');
+        $statuses_elements = $crawler->filter('select#validation-state option');
 
         $this->assertCount(5, $statuses_elements);
         $this->assertEquals('Demandée', $statuses_elements->eq(0)->html());
@@ -388,7 +388,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence&id=$absence_id");
 
-        $statuses_elements = $crawler->filter('select option');
+        $statuses_elements = $crawler->filter('select#validation-state option');
 
         $this->assertCount(5, $statuses_elements);
         $this->assertEquals('Demandée', $statuses_elements->eq(0)->html());
@@ -419,7 +419,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence&id=$absence_id");
 
-        $statuses_elements = $crawler->filter('select option');
+        $statuses_elements = $crawler->filter('select#validation-state option');
 
         $this->assertCount(5, $statuses_elements);
         $this->assertEquals('Demandée', $statuses_elements->eq(0)->html());
@@ -498,7 +498,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence&id=$absence_id");
 
-        $statuses_elements = $crawler->filter('select option');
+        $statuses_elements = $crawler->filter('select#validation-state option');
 
         $this->assertCount(5, $statuses_elements);
         $this->assertEquals('Demandée', $statuses_elements->eq(0)->html());
@@ -529,7 +529,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence&id=$absence_id");
 
-        $statuses_elements = $crawler->filter('select option');
+        $statuses_elements = $crawler->filter('select#validation-state option');
 
         $this->assertCount(5, $statuses_elements);
         $this->assertEquals('Demandée', $statuses_elements->eq(0)->html());
@@ -560,7 +560,7 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
         $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=absence&id=$absence_id");
 
-        $statuses_elements = $crawler->filter('select option');
+        $statuses_elements = $crawler->filter('select#validation-state option');
 
         $this->assertCount(5, $statuses_elements);
         $this->assertEquals('Demandée', $statuses_elements->eq(0)->html());

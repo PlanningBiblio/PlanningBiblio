@@ -69,30 +69,31 @@ class CompTimeController extends BaseController
             ->setModule('holiday')
             ->getManagedFor($session->get('loginId'));
 
-        $information = array();
         $date = date("Y-m-d");
         $db = new \db();
         $db->query("SELECT * FROM `{$dbprefix}conges_infos` WHERE `fin`>='$date' ORDER BY `debut`,`fin`;");
+        $holiday_info = array();
         if ($db->result) {
             foreach ($db->result as $elem) {
-                $information[] = 'Du '. dateFr($elem['debut'])
-                    . ' au ' . dateFr($elem['fin'])
-                    . " :\n" . $elem['texte']
-                    . "\n\n";
+                $elem['start'] = dateFr($elem['debut']);
+                $elem['end'] = dateFr($elem['fin']);
+                $holiday_info[] = $elem;
             }
         }
 
         $this->templateParams(array(
+            'is_holiday'            => false,
             'anticipation'          => $anticipation,
-            'balance_before'        => heure4($balance[1]),
+            'balance_before'        => heure4($balance[1], true),
             'balance_before_days'   => $balance_before_days,
             'balance_date'          => dateFr($balance[0]),
-            'balance2_before'       => heure4($balance[4]),
+            'balance2_before'       => heure4($balance[4], true),
             'balance2_before_days'  => $balance2_before_days,
             'credit'                => $credit,
             'CSRFToken'             => $GLOBALS['CSRFSession'],
             'hours_per_day'         => $hours_per_day,
-            'information'           => $information,
+            'holiday_info'          => $holiday_info,
+            'agent_name'            => $_SESSION['login_nom'] . ' ' . $_SESSION['login_prenom'],
             'loggedin_name'         => $_SESSION['login_nom'],
             'loggedin_firstname'    => $_SESSION['login_prenom'],
             'managed'               => $managed,
@@ -100,9 +101,16 @@ class CompTimeController extends BaseController
             'recuperation'          => $recuperation,
             'recuperation_prev'     => $balance[4],
             'reliquat'              => $reliquat,
+            'show_allday'           => true,
+            'conges_demi_journee'   => false,
+            'conges_recuperations'  => 1,
+            'conges_mode'           => '',
+            'title'                 => 'Requesting compensation for overtime',
+            'action_path'           => 'comptime',
+            'selected_agent_id'     => $perso_id,
         ));
 
-        return $this->output('comptime/add.html.twig');
+        return $this->output('holiday/add.html.twig');
     }
 
     #[Route(path: '/comptime', name: 'comptime.save', methods: ['POST'])]

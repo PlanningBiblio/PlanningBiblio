@@ -227,9 +227,10 @@ class AgentController extends BaseController
         $managersMails = array_map('trim', $managersMails);
         $sites = $agent->getSites();
 
+        $sitesSelect = [];
+
         // Multi-sites
         if ($this->config['Multisites-nombre'] > 1) {
-            $sitesSelect = [];
             for ($i = 1; $i <= $this->config['Multisites-nombre']; $i++) {
                 $sitesSelect[] = [
                     'id' => $i,
@@ -327,6 +328,8 @@ class AgentController extends BaseController
             $rights[ $elem['categorie'] ]['rights'][] = $elem;
         }
 
+        $rights_sites = array();
+
         // Affichage des droits d'accès dépendant des sites (si plusieurs sites)
         if ($this->config('Multisites-nombre') > 1) {
             $sites_for_rights = array();
@@ -336,7 +339,6 @@ class AgentController extends BaseController
 
             $this->templateParams(array('sites_for_rights' => $sites_for_rights));
 
-            $rights_sites = array();
             foreach ($accessgroupsBySite as $elem) {
                 // N'affiche pas les droits de gérer les congés si le module n'est pas activé
                 if (!$this->config('Conges-Enable') and in_array($elem['groupe_id'], array(25, 401, 601))) {
