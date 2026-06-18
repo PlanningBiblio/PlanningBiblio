@@ -92,10 +92,9 @@
         {% endif %}
 
         <div class="col-auto d-print-none p-0">
-          <button onclick="location.href='javascript:print()';" class="col-auto btn btn-icon">
+          <button onclick="print();" class="col-auto btn btn-icon">
             <span class="pl-icon pl-icon-printer" title="Imprimer le planning"></span>
           </button>
-
           <button onclick="location.href='{{ path('home') }}'" class="col-auto btn btn-icon">
             <span class="pl-icon pl-icon-refresh" title="Actualiser">
           </button>
@@ -104,11 +103,10 @@
 
       <div class="row justify-content-end d-print-none" id="undo-redo" style="{{ locked ? 'display:none;' }}">
         {% if (userCan('300', site) or userCan('1000', site)) and not week_view %}
-          <button id="undo-action" onclick="location.href='javascript:void(0)';" class="col-auto btn btn-icon {% if not undoable %} isDisabled {% endif %}">
+          <button id="undo-action" class="col-auto btn btn-icon {% if not undoable %} isDisabled {% endif %}" onclick="void(0);">
             <span class="pl-icon pl-icon-undo"></span>
           </butonn>
-
-          <button class="col-auto btn btn-icon {% if not redoable %} isDisabled {% endif %}" id="redo-action" onclick="location.href='javascript:void(0)';">
+          <button id="redo-action" class="col-auto btn btn-icon {% if not redoable %} isDisabled {% endif %}" onclick="void(0);">
             <span class="pl-icon pl-icon-redo"></span>
           </button>
         {% endif %}
