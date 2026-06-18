@@ -1808,6 +1808,11 @@ div.dt-buttons button.dt-button.buttons-print:hover {
 }
 
 /*	Congés	*/
+
+#perso_ul1 li:first-of-type {
+  margin-top: 6px;
+}
+
 #tableConges td{
   white-space: nowrap;
 }
@@ -1958,14 +1963,16 @@ hr {
   justify-content: center;
 }
 
-.form-control, .form-control:focus, .form-control-plaintext {
+.form-control, .form-control:focus, 
+.row.row-search .form-control-plaintext {
   color: #29495C;
   font-size: inherit;
   border-radius: var(--bs-border-radius-sm);
   border: 1px solid #456578;
+  background-color: white;
 }
 
-div.form-control, div.form-control:focus {
+div.form-control, div.form-control:focus, .form-control-plaintext {
   color: #29495C;
 }
 
@@ -1975,7 +1982,7 @@ input.form-check-input:checked {
 }
 
 input.form-check-input {
-  margin-top: 0.5em;
+  margin-top: .25rem;
   border: 1px solid;
 }
 

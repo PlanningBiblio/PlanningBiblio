@@ -83,6 +83,7 @@ class CompTimeController extends BaseController
         }
 
         $this->templateParams(array(
+            'is_holiday'            => false,
             'anticipation'          => $anticipation,
             'balance_before'        => heure4($balance[1]),
             'balance_before_days'   => $balance_before_days,
@@ -93,6 +94,7 @@ class CompTimeController extends BaseController
             'CSRFToken'             => $GLOBALS['CSRFSession'],
             'hours_per_day'         => $hours_per_day,
             'information'           => $information,
+            'agent_name'            => $_SESSION['login_nom'] . ' ' . $_SESSION['login_prenom'],
             'loggedin_name'         => $_SESSION['login_nom'],
             'loggedin_firstname'    => $_SESSION['login_prenom'],
             'managed'               => $managed,

@@ -1,0 +1,148 @@
+{#/add.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block specificjs %}
+  <script type="text/JavaScript" src="{{ asset('js/holiday.js') }}"></script>
+{% endblock %}
+
+{% block page %}
+
+  <div id="content-form">
+
+    {% if is_holiday %}
+    <h3>Poser des congés</h3>
+
+    <div class="admin-div">
+        <form name="form" action="/holiday" method="post" id="form" onsubmit="return verif_form('debut=date1;fin=date2', 'form', 'verifConges');">
+            <input type="hidden" name="confirm" value="confirm" />
+            <input type="hidden" id="agent_id" value="{{ loggedin_id }}" />
+            <input type="hidden" id="selected_agent_id" value="{{ selected_agent_id }}" />
+            <input type="hidden" id="conges-recup" value="{{ conges_recuperations }}" />
+            <input type="hidden" name="conges-mode" id="conges-mode" value="{{ conges_mode }}" />
+            <input type="hidden" name="conges-demi-journees" id="conges-demi-journees" value="{{ conges_demi_journee }}" />
+            <input type="hidden" name="multisites" id="multisites" value="{{ config('Multisites-nombre') > 1 ? 1 : 0  }}" />
+            <input type="hidden" id="agents-multiples" value="{{ agents_multiples }}" />
+
+    {% else %}
+    <h3>Poser des récupérations</h3>
+
+    <div class="admin-div">
+        <form name="form" action="{{ asset('comptime') }}" method="post" id="form" onsubmit="return verifConges();">
+            <input type="hidden" id="selected_agent_id" value="{{ perso_id }}" />
+            <input type="hidden" id="conges-recup" value="1" />
+            <input type="hidden" id="is-recover" value="1" />
+
+    {% endif %}
+            
+            <input type="hidden" name="CSRFToken" value="{{ CSRFToken }}" />
+            <input type="hidden" name="reliquat" value="{{ reliquat }}" />
+            <input type="hidden" name="recuperation" id="recuperation" value="{{ recuperation }}" />              
+            <input type="hidden" name="recuperation_prev" id="recuperation_prev" value="{{ recuperation_prev }}" />
+            <input type="hidden" name="credit" value="{{ credit }}" />
+            <input type="hidden" name="anticipation" value="{{ anticipation }}" />
+            <input type="hidden" id="agent" value="{{ agent_name }}" />
+
+
+        {% if is_holiday %}
+
+            {% if admin and config('Multisites-nombre') > 1  %}
+                <fieldset class="row my-2 gx-5">
+                    <div class="col-3 offset-2 mt-2">
+                    {% for s in sites_select %}
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" name="selected_sites" id="site_{{s.id}}" value="{{s.id}}" checked >
+                            <label for="site_{{s.id}}">{{ s.name }}</label>
+                        </div>
+                    {% endfor %}
+                    </div>
+                </fieldset>
+            {% endif %}
+
+            {% if not agents_multiples %}
+                <div class="row mb-2 gx-5">
+                    <label class="col-2 col-form-label aRight" for="perso_ids">{% trans %}Agent{% endtrans %} :</label>
+                    <div class="col-3">
+            
+            {% endif %}
+
+            {% if admin %}
+                {% if agents_multiples %}
+
+                <input type="hidden" name="perso_ids[]" value="{{ loggedin_id }}" id="hidden{{ loggedin_id }}" class="perso_ids_hidden"/>
+
+                <fieldset class="row mb-2 gx-5">
+                    <legend class="col-2 col-form-label aRight" for="perso_ul1">{% trans %}Agent(s){% endtrans %} :</legend>
+                    <div class="col-auto">
+
+                        <ul id="perso_ul1" class="perso_ul">
+                            <li id="li{{ loggedin_id }}" class="perso_ids_li"> Hello
+                                <b>{{ loggedin_name }} {{ loggedin_firstname }}</b>
+                                <span class="perso-drop" onclick="supprimeAgent({{ loggedin_id }});">
+                                    <span class="pl-icon pl-icon-drop"></span>
+                                </span>
+                            </li>
+                        </ul>
+
+                    </div>
+
+                    <div class="col-auto"><ul id="perso_ul2" class="perso_ul"></ul></div>
+                    <div class="col-auto"><ul id="perso_ul3" class="perso_ul"></ul></div>
+                    <div class="col-auto"><ul id="perso_ul4" class="perso_ul"></ul></div>
+                    <div class="col-auto"><ul id="perso_ul5" class="perso_ul"></ul></div>
+
+                </fieldset>
+
+                <div class="row mb-2 gx-5">
+                    <div class="col-3 offset-2">
+
+                {%  endif %}
+
+                    <select name="perso_id" id="perso_ids" class="{% if agents_multiples %}agents_multiples{% endif %} form-select form-select-sm">
+                        {% if agents_multiples %}
+                            <option value="0" selected="selected"> -- Ajoutez un agent --</option>
+                            {% if conges_tous %}
+                            <option value="tous">Tous les agents</option>
+                            {% endif %}
+                        {% endif %}
+                    </select>
+                </div>
+            </div>
+
+            {% else %}
+
+            <input type="hidden" name="perso_id" id="perso_id" value="{{ loggedin_id }}" />
+            <input type="text" readonly class="form-control-plaintext" value="{{ loggedin_name }} {{ loggedin_firstname }}">
+
+            {% endif %}
+
+        {% else %}
+
+            <div class="row mb-2 gx-5">
+                <label class="col-2 col-form-label aRight" for="perso_id">{% trans %}Agent{% endtrans %} :</label>
+                <div class="col-3">
+
+                    {% if managed | length > 1 %}
+                        <select name="perso_id" id="perso_id" onchange='document.location.href="/comptime/add?perso_id="+this.value;' class="form-select form-selec-sm">
+                            <option value="0"></option>
+                            {% for m in managed %}
+                                <option value="{{ m.id }}" {% if perso_id == m.id %} selected {% endif %}> {{ m.lastname }} {{ m.firstname }}</option>
+                            {% endfor %}
+                        </select>
+                    {% else %}
+
+                    <input type="hidden" name="perso_id" id="perso_id" value="{{ managed[0].id }}" />
+                    <input type="text" readonly class="form-control-plaintext" value="{{ managed[0].lastname }} {{ managed[0].firstname }}">
+
+                    {% endif %}
+
+                </div>
+            </div>
+
+        {% endif %}
+
+        </form>
+      </div>
+
+{% endblock %}
+
