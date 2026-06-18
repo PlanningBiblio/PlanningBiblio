@@ -189,8 +189,8 @@ class HolidayControllerListTest extends PLBWebTestCase
         $this->assertCount(1, $agents_selected, 'jdupont is the only default selected agent');
         $this->assertTrue(in_array('Boivin Karel', $agents_selected), 'KBoivin is selected');
 
-        $result = $crawler->filterXPath('//td[@id="validation-statuses"]');
-        $this->assertStringContainsString('Demandé', $result->text());
+        $result = $crawler->filter('#validation-state');
+        $this->assertStringContainsString('Demandée', $result->text());
 
         $agents_list = $this->getSelectValues('perso_ids');
         $this->assertCount(6, $agents_list);
@@ -205,9 +205,9 @@ class HolidayControllerListTest extends PLBWebTestCase
 
         $this->client->getWebDriver()->wait()->until($this->jqueryAjaxFinished());
 
-        $result = $crawler->filterXPath('//td[@id="validation-statuses"]');
-        $this->assertStringContainsString('Demandé', $result->text());
-        $this->assertStringContainsString('Accepté', $result->text());
-        $this->assertStringContainsString('Refusé', $result->text());
+        $statuses_list = $this->getSelectValues('validation-state');
+        $this->assertTrue(in_array(0, $statuses_list), 'Demandée');
+        $this->assertTrue(in_array(1, $statuses_list), 'Acceptée');
+        $this->assertTrue(in_array(-1, $statuses_list), 'Refusée');
     }
 }

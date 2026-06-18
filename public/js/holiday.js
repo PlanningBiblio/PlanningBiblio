@@ -4,6 +4,14 @@ Fichier regroupant les fonctions JavaScript utiles à la gestion des congés
 */
 
 $(function(){
+
+  if($('#balance2_before').is(':visible')){
+    $('.solde-info').show()
+  }
+  else {
+    $('.solde-info').hide();
+  }
+
   $('select[name="perso_id"]').on('change', function() {
 
     // Only for holiday/new
@@ -58,6 +66,11 @@ $(function(){
   $('.checkdate').on('change', function() {
     dateChange(this);
   });
+
+  $('#holiday-form').on('submit', function(){
+    return verifConges();
+  });
+
 });
 
 function dateChange(obj) {
@@ -77,36 +90,24 @@ function dateChange(obj) {
   calculCredit();
 }
 
-function ddmmyyyy_to_date(dateString) {
-  if (!dateString) {
-    return '';
-  }
-
-  var dateParts = dateString.split("/");
-  var dateObject = new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0]);
-
-  return dateObject;
-}
-
 function checkdate(priority) {
-  debut = ddmmyyyy_to_date($('input[name="debut"]').val());
-  fin = ddmmyyyy_to_date($('input[name="fin"]').val());
+  debut_date = $('#debut').bootstrapDP('getDate');
+  fin_date = $('#fin').bootstrapDP('getDate');
 
   // Return if the first date is not given
-  if (!debut) {
+  if (!debut_date) {
     return;
   }
 
   // If end date is not given, end = start
-  if (!fin) {
-    fin = debut;
-    $('#fin').val($('#debut').val());
+  if (!fin_date) {
+    $('#fin').bootstrapDP('setDate', debut_date);
   }
 
   start_half = $('select[name="start_halfday"]');
   end_half = $('select[name="end_halfday"]');
 
-  if (debut.getTime() === fin.getTime()) {
+  if (debut_date.getTime() === fin_date.getTime()) {
     resetSelect();
 
     if (priority == 'end') {
@@ -116,7 +117,7 @@ function checkdate(priority) {
     return;
   }
 
-  if (debut.getTime() < fin.getTime()) {
+  if (debut_date.getTime() < fin_date.getTime()) {
     $('select[name="start_halfday"] option[value="morning"]').remove();
     $('select[name="end_halfday"] option[value="afternoon"]').remove();
     return;
@@ -144,6 +145,37 @@ function resetSelect() {
   .append('<option value="afternoon">Après-midi</option>')
   .val(end_val);
 }
+
+function resetTerms(){
+  reliquat = $('input[name="reliquat"]').val();
+  congesRecup = $('#conges-recup').val();
+  is_recover = $('#is-recover').val();
+
+  if (is_recover){
+    return;
+  }
+
+  if (congesRecup == 0){
+    if (reliquat != 0){
+      $('#terms').text('Ces heures seront débitées sur le réliquat de l\'année précédente puis sur :');
+    }
+
+    else {
+      $('#terms').text('Ces heures seront débitées sur :');
+    }
+  }
+
+  else {
+    if (reliquat != 0){
+      $('#terms').text('Ces heures seront débitées sur le réliquat de l\'année précédente puis sur les crédits de congés de l\'année en cours.');
+    }
+
+    else {
+      $('#terms').text('Ces heures seront débitées sur les crédits de congés de l\'année en cours.');
+    }
+  }
+}
+
 
 function afficheRefus(me){
   if(me.value=="-1" || me.value=="-2"){
@@ -176,17 +208,39 @@ function currentCredits() {
     type: 'get',
     async: false,
     success: function(credits){
-      $('#holiday_balance').text(credits.holiday_balance);
+      $('#holiday_balance').val(credits.holiday_balance);
       $('#reliquat4').text(credits.holiday_balance);
       $('input[name="reliquat"]').val(credits.holiday_balance_decimal);
 
-      $('#holiday_credit').text(credits.holiday_credit);
+      $('#holiday_credit').val(credits.holiday_credit);
       $('#credit4').text(credits.holiday_credit);
       $('input[name="credit"]').val(credits.holiday_credit_decimal);
 
-      $('#holiday_debit').text(credits.holiday_debit);
+      $('#holiday_debit').val(credits.holiday_debit);
       $('#anticipation4').text(credits.holiday_debit);
       $('input[name="anticipation"]').val(credits.holiday_debit_decimal);
+ 
+      if ($('#conges-mode').val() == 'heures' && $('#hours_per_day').val()) {
+          var hours_per_day = $('#hours_per_day').val();
+
+          if (credits.holiday_balance != '0h00') {
+            days = hours_to_days(heure4(credits.holiday_balance), hours_per_day);
+            $("#holiday_balance").val(credits.holiday_balance + days);
+            $("#reliquat4").append(days);
+          }
+
+          if (credits.holiday_credit != '0h00') {
+            days= hours_to_days(heure4(credits.holiday_credit), hours_per_day);
+            $("#holiday_credit").val(credits.holiday_credit + days);
+            $("#credit4").append(days);
+          }
+
+          if (credits.holiday_debit != '0h00') {
+            days= hours_to_days(heure4(credits.holiday_debit), hours_per_day);
+            $("#holiday_dedit").val(credits.holiday_debit + days);
+            $("#anticipation4").append(days);
+          }
+        }
     },
     error: function(xhr, ajaxOptions, thrownError){
       information("Impossible de récupérer le compte de congés actuel.","error");
@@ -197,8 +251,8 @@ function currentCredits() {
 function calculCredit(){
 
   $("#erreurCalcul").val("false");
-  $("#nbJours").text('');
-  $("#nbHeures").text('');
+  $("#nbJours").val('');
+  $("#nbHeures").val('');
 
   if( ! $('input[name=debut]').length) { return; }
   if (multipleAgentsSelected()) { return; }
@@ -218,7 +272,8 @@ function calculCredit(){
   if(!fin){
     fin=debut;
   }
-  if(!debut){
+  if(!debut || !date_validation(debut)){
+    $('#erreurCalcul').val('true');
     return;
   }
 
@@ -255,7 +310,7 @@ function calculCredit(){
         $("#erreurCalcul").val("true");
         document.form.elements["heures"].value=0;
         document.form.elements["minutes"].value=0;
-        $("#nbHeures").text("0h00");
+        $('#nbHeures').val('0h00');
         $("#nbHeures").effect("highlight",null,3000);
         $("#nbJours").effect("highlight",null,3000);
         information("Aucun planning de présence enregistré pour cette période - calcul impossible.","error");
@@ -272,8 +327,8 @@ function calculCredit(){
 
         $('#recuperation').val(balance);
         $('.balance_date').text(dateFr(balance_date));
-        $('#balance_before').text(heure4(balance));
-        $('#balance2_before').text(heure4(balance_estimated));
+        $('#balance_before').val(heure4(balance));
+        $('#balance2_before').val(heure4(balance_estimated));
         $("#recuperation_prev").val(balance_estimated);
 
         if (congesRecup == 0 || result.rest != 0) {
@@ -285,30 +340,30 @@ function calculCredit(){
 
           if (balance != 0) {
             days= hours_to_days(balance, hours_per_day);
-            $("#balance_before").append(days);
+            $("#balance_before").val(heure4(balance) + days);
           }
           if (balance_estimated != 0) {
             days= hours_to_days(balance_estimated, hours_per_day);
-            $("#balance2_before").append(days);
+            $("#balance2_before").val(heure4(balance_estimated) + days);
           }
         }
 
         document.form.elements["heures"].value = result.hours;
         document.form.elements["minutes"].value = result.minutes;
 
-        $("#nbHeures").text(result.hr_hours);
-        $("#nbJours").text(result.days);
+        $('#nbHeures').val(result.hr_hours);
+        $('#nbJours').val(result.days);
         $("#nbHeures").effect("highlight",null,4000);
         $("#nbJours").effect("highlight",null,4000);
 
         $("#rest").val(0);
-        $("#hr_rest").text('');
+        $('#hr_rest').val('');
         $("#rest").parent().parent().hide();
         if (result.rest != 0) {
           if (result.rest > 0) {
-            $("#hr_rest").text(result.hr_rest + ' créditée(s)');
+            $('#hr_rest').val(result.hr_rest + ' créditée(s)');
           } else {
-            $("#hr_rest").text(result.hr_rest + ' débitée(s)');
+            $('#hr_rest').val(result.hr_rest + ' débitée(s)');
           }
           $("#rest").val(result.rest);
           $("#rest").parent().parent().show();
@@ -549,7 +604,7 @@ function googleCalendarIcon(){
   debut=debut+"T"+debut_hre;
   fin=fin+"T"+fin_hre;
 
-  var link="<a style='margin-left: 30px;' target='_blank' id='googleCalendarLink' title='Ajouter dans mon agenda Google' ";
+  var link="<a class='btn btn-icon' style='margin-left: 30px;' target='_blank' id='googleCalendarLink' title='Ajouter dans mon agenda Google' ";
   link+="href='https://www.google.com/calendar/event?action=TEMPLATE&hl=fr&text=Congés "+agent+"&dates="+debut+"/"+fin+"&location="+location+"&ctz=Europe%2FParis&amp;details='>";
   link+="<span class='pl-icon pl-icon-google-calendar'></span></a>";
   
@@ -868,10 +923,10 @@ function affiche_perso_ul(){
 
   for(i in tab){
     var style = tab[i][1] == $("#agent_id").val() ? ' style="font-weight:bolder;"' : '';
-    var li="<li" + style + " id='li"+tab[i][1]+"' class='perso_ids_li' data-id='"+tab[i][1]+"'>"+tab[i][0];
+    var li="<li" + style + " id='li"+tab[i][1]+"' class='perso_ids_li mb-1' data-id='"+tab[i][1]+"'>"+tab[i][0];
 
     if( $('#admin').val() == 1 || tab[i][1] != $('#perso_id').val() ){
-      li+="<span class='perso-drop' onclick='supprimeAgent("+tab[i][1]+");' ><span class='pl-icon pl-icon-dropblack'></span></span>";
+      li+="<button class='perso-drop btn btn-icon p-0' onclick='supprimeAgent("+tab[i][1]+");' ><span class='pl-icon pl-icon-dropblack'></span></button>";
     }
 
     li+="</li>\n";
@@ -914,10 +969,10 @@ function update_validation_statuses() {
     success: function(result){
       $("#validation-statuses").html(result);
 
-      $('tr#validation-line').effect("highlight",null,2000);
+      $('div#validation-line').effect("highlight",null,2000);
     },
     error: function(xhr, ajaxOptions, thrownError) {
-      information("Une erreur s'est produite lors de la mise à jour de la liste des statuts");
+      information("Une erreur s'est produite lors de la mise à jour de la liste des statuts", 'error');
     }
   });
 }
@@ -945,6 +1000,7 @@ function supprimeAgent(id){
 
   // Mise à jour des status disponible.
   update_validation_statuses();
+  resetTerms();
 }
 
 function getAgentsBySites(sites) {
@@ -1063,12 +1119,12 @@ $(function(){
 
     currentCredits();
     calculCredit();
+    resetTerms();
 
   });
 });
 
 $(document).ready(function() {
-    checkdate('start');
     calculCredit();
     updateAgentsListBySites();
 
@@ -1081,4 +1137,5 @@ $(document).ready(function() {
 
     // Mise à jour des status disponible.
     update_validation_statuses();
+    resetTerms();
 });

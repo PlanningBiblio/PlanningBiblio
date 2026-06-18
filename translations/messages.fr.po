@@ -390,3 +390,9 @@ msgstr "Lignes"
 
 msgid "Back"
 msgstr "Retour"
+
+msgid "Requesting holidays"
+msgstr "Poser des congés"
+
+msgid "Requesting compensation for overtime"
+msgstr "Poser des récupérations"
