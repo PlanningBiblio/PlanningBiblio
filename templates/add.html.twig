@@ -46,7 +46,7 @@
 
         {% if is_holiday %}
 
-            {% if admin and config('Multisites-nombre') > 1  %}
+            {% if admin and config('Multisites-nombre') > 1 %}
                 <fieldset class="row my-2 gx-5">
                     <div class="col-3 offset-2 mt-2">
                     {% for s in sites_select %}
@@ -76,11 +76,11 @@
                     <div class="col-auto">
 
                         <ul id="perso_ul1" class="perso_ul">
-                            <li id="li{{ loggedin_id }}" class="perso_ids_li"> Hello
+                            <li id="li{{ loggedin_id }}" class="perso_ids_li mb-1">
                                 <b>{{ loggedin_name }} {{ loggedin_firstname }}</b>
-                                <span class="perso-drop" onclick="supprimeAgent({{ loggedin_id }});">
-                                    <span class="pl-icon pl-icon-drop"></span>
-                                </span>
+                                <button class="perso-drop btn btn-icon p-0" onclick="supprimeAgent({{ loggedin_id }});">
+                                    <span class="pl-icon pl-icon-dropblack"></span>
+                                </button>
                             </li>
                         </ul>
 
@@ -96,7 +96,7 @@
                 <div class="row mb-2 gx-5">
                     <div class="col-3 offset-2">
 
-                {%  endif %}
+                {% endif %}
 
                     <select name="perso_id" id="perso_ids" class="{% if agents_multiples %}agents_multiples{% endif %} form-select form-select-sm">
                         {% if agents_multiples %}
@@ -140,6 +140,78 @@
             </div>
 
         {% endif %}
+
+        {% if show_allday %}
+
+            <div class="row mb-2 gx-5 form-check-prepend">
+                <label class="col-2 col-form-label aRight form-check-label" for="allday" >Journée(s) entière(s) :</label>
+                <div class="col-3">
+                    <input type="checkbox" name="allday" class="form-check-input checkdate" {% if is_holiday %} checked="checked" {% endif %} style="margin-top: 10px;" onclick="all_day();"/>
+                </div>
+            </div>
+
+       {% elseif conges_demi_journee %}
+
+            <div class="row mb-2 gx-5 form-check-prepend">
+                <label class="col-2 col-form-label aRight form-check-label" for="halfday" >Demi-journée(s) :</label>
+                <div class="col-3">
+                    <input type="checkbox" name="halfday" class="form-check-input checkdate" style="margin-top: 10px;"/>
+                </div>
+            </div>
+
+        {% endif %}
+
+        <div class="row gx-5 mb-2">
+                <label class="col-2 col-form-label aRight" for="debut">Date de début :</label>
+                <div class="col-3">
+                    <input type="text" name="debut" id="debut" value="" class="datepicker start-date form-control googleCalendarTrigger checkdate"/>
+                </div>
+            </div>
+
+        {% if conges_recuperations and conges_demi_journee %}
+            <div class="row gx-5 mb-2">
+                <div class="col-3 offset-2">
+                    <select name="start_halfday" style="display: none;" class="form-select form-select-sm checkdate">
+                        <option value="fullday">Journée complète</option>
+                        <option value="morning">Matin</option>
+                        <option value="afternoon">Après-midi</option>
+                    </select>
+                </div>
+            </div>
+        {% endif %}
+
+         <div class="row gx-5 mb-2" id="hre_debut" {% if is_holiday %} style="display:none;" {% endif %}>
+            <label class="col-2 col-form-label aRight" for="hre_debut_select">Heure de début :</label>
+            <div class="col-3">
+                <input name="hre_debut" id="hre_debut_select" class="planno-timepicker checkdate center form-control form-control-sm" value="{{ hre_debut is defined ? hre_debut | date('H:i') : '' }}"/>
+            </div>
+        </div>
+
+        <div class="row gx-5 mb-2">
+            <label class="col-2 col-form-label aRight" for="fin">Date de fin :</label>
+            <div class="col-3">
+                <input type="text" name="fin" id="fin" value="" class="datepicker start-date form-control googleCalendarTrigger checkdate"/>
+            </div>
+        </div>
+
+        {% if conges_recuperations and conges_demi_journee %}
+            <div class="row gx-5 mb-2">
+                <div class="col-3 offset-2">
+                    <select name="end_halfday" style="display: none;" class="form-select form-select-sm checkdate">
+                        <option value="fullday">Journée complète</option>
+                        <option value="morning">Matin</option>
+                        <option value="afternoon">Après-midi</option>
+                    </select>
+                </div>
+            </div>
+        {% endif %}
+
+         <div class="row gx-5 mb-2" id="hre_fin" {% if is_holiday %} style="display:none;" {% endif %}>
+            <label class="col-2 col-form-label aRight" for="hre_fin_select">Heure de fin :</label>
+            <div class="col-3">
+                <input name="hre_fin" id="hre_fin_select" class="planno-timepicker checkdate center form-control form-control-sm" value="{{ hre_fin is defined ? hre_fin | date('H:i') : '' }}"/>
+            </div>
+        </div>
 
         </form>
       </div>

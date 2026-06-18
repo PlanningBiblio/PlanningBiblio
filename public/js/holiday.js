@@ -868,10 +868,10 @@ function affiche_perso_ul(){
 
   for(i in tab){
     var style = tab[i][1] == $("#agent_id").val() ? ' style="font-weight:bolder;"' : '';
-    var li="<li" + style + " id='li"+tab[i][1]+"' class='perso_ids_li' data-id='"+tab[i][1]+"'>"+tab[i][0];
+    var li="<li" + style + " id='li"+tab[i][1]+"' class='perso_ids_li mb-1' data-id='"+tab[i][1]+"'>"+tab[i][0];
 
     if( $('#admin').val() == 1 || tab[i][1] != $('#perso_id').val() ){
-      li+="<span class='perso-drop' onclick='supprimeAgent("+tab[i][1]+");' ><span class='pl-icon pl-icon-dropblack'></span></span>";
+      li+="<button class='perso-drop btn btn-icon p-0' onclick='supprimeAgent("+tab[i][1]+");' ><span class='pl-icon pl-icon-dropblack'></span></button>";
     }
 
     li+="</li>\n";

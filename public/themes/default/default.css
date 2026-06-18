@@ -1157,6 +1157,7 @@ class cellule = cellule par défaut
 .datepicker {
   font-size: 12px;
   color: #29495C;
+  text-align: center;
 }
 
 .datepicker .datepicker-days table thead tr th {

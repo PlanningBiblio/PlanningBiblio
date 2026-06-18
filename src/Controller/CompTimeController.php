@@ -102,6 +102,9 @@ class CompTimeController extends BaseController
             'recuperation'          => $recuperation,
             'recuperation_prev'     => $balance[4],
             'reliquat'              => $reliquat,
+            'show_allday'           => true,
+            'conges_demi_journee'   => false,
+            'conges_recuperations'  => false,
         ));
 
         return $this->output('comptime/add.html.twig');
