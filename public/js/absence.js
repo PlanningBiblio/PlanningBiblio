@@ -50,6 +50,10 @@ $(function() {
 
   });
 
+  $('#absence-form').on('submit', function() {
+    return verif_absences('debut=date1;fin=date2;motif');
+  });
+
   $('#add-reason-modal').on('hidden.bs.modal', function() {
     $('#reasons_sortable li:hidden').each(function() {
       $(this).show();
@@ -854,7 +858,6 @@ function recurrenceRRuleText2(rrule){
   var byday = rrule.indexOf('BYDAY') > 0  ? rrule.replace(/.*BYDAY=([0-9A-Z-,]*).*/,"$1") : null;
   var bymonthday = rrule.indexOf('BYMONTHDAY') > 0 ? rrule.replace(/.*BYMONTHDAY=(\d*).*/,"$1") : null;
 
-  console.log(byday);
   if(until){
     until = dateICSGMTToFr(until);
     until = until.substr(0,10);

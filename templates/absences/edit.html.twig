@@ -7,14 +7,7 @@
 {% endblock %}
 
 {% block page %}
-<div id="content-form">
-    <script type="text/JavaScript">
-      $( document ).ready(function() {
-        $('#absence-form').submit(function() {
-          return verif_absences('debut=date1;fin=date2;motif');
-        });
-      });
-    </script>
+  <div id="content-form">
     {% if id %}
       <h3>Modification de l'absence</h3>
     {% else %}
@@ -32,7 +25,7 @@
         </div>
 
       {% else %}
-      
+
         {% if id %}
           <form name="form" id="absence-form" method="post" action="{{ asset('absence') }}" novalidate>
             <input type="hidden" name="perso_id" value="{{ absence.perso_id }}" />
@@ -48,8 +41,7 @@
             {% endfor %}
 
         {% else %}
-
-          <form id="absence-form" name="form" action="/absence" method="post" enctype="multipart/form-data" novalidate>
+          <form id="absence-form" name="form" action="{{ asset('absence') }}" method="post" enctype="multipart/form-data" novalidate>
 
         {% endif %}
 
@@ -58,7 +50,6 @@
           <input type="hidden" id="admin" value="{{ admin }}" />
           <input type="hidden" id="login_id" value="{{ loggedin_id }}" />
 
-      
           {% if agents_multiples %}
             <fieldset class="row my-2 gx-5">
               <legend class="col-2 col-form-label aRight" for="perso_ul1">{% trans %}Agent{% endtrans %}(s) :</legend>
@@ -87,7 +78,7 @@
               <div class="col-auto"><ul id="perso_ul4" class="perso_ul"></ul></div>
               <div class="col-auto"><ul id="perso_ul5" class="perso_ul"></ul></div>
             </fieldset>
-          
+
             <div class="row mb-2 gx-5">
               <div class="col-3 offset-2">
                 <select name="perso_id" id="perso_ids" class="form-select form-select-sm my-3">
@@ -101,7 +92,6 @@
                     {{ a.lastname }} {{ a.firstname }}
                   </option>
                 {% endfor %}
-                
               </select>
             </div>
           </div>
@@ -116,7 +106,7 @@
                     <li>{{ a.nom }} {{ a.prenom }}</li>
                   {% endfor %}
                 </ul>
-              </div>             
+              </div>
             </div>
 
           {% else %}
@@ -126,7 +116,7 @@
               <div class="col-3">
                 <input type="text" id="perso_ul1" readonly class="form-control-plaintext" value="{{ absence.nom }} {{ absence.prenom }}">
                 <input type="hidden" name="perso_id" value="{{ absence.perso_id }}" class="perso_ids_hidden" />
-              </div>    
+              </div>
             </div>
 
           {% endif %}
@@ -135,35 +125,35 @@
             <label class="col-2 col-form-label aRight form-check-label" for="allday-check" >Journée(s) entière(s) :</label>
             <div class="col-3">
               <input id="allday-check" type="checkbox" name="allday" {% if fullday %} checked="checked" {% endif %} onclick="all_day();" class="form-check-input" style="margin-top: 10px;"/>
-            </div>             
+            </div>
           </div>
 
           <div class="row gx-5 mb-2">
             <label class="col-2 col-form-label aRight" for="absence-start">Date de début :</label>
             <div class="col-3">
               <input type="text" name="debut" value="{{ debut }}" class="datepicker start-date form-control" id="absence-start" required/>
-            </div>             
+            </div>
           </div>
 
           <div class="row gx-5 mb-2" id="hre_debut" {% if fullday %} style="display:none;" {% endif %}>
             <label class="col-2 col-form-label aRight" for="absence-start-hour">Heure de début :</label>
             <div class="col-3">
               <input name="hre_debut" class="planno-timepicker center form-control form-control-sm" value="{% if hre_debut != '00:00:00' %}{{ hre_debut | date('H:i')}}{% endif %}" id="absence-start-hour"/>
-            </div>             
+            </div>
           </div>
 
           <div class="row gx-5 mb-2">
             <label class="col-2 col-form-label aRight" for="absence-end">Date de fin :</label>
             <div class="col-3">
                 <input type="text" name="fin" value="{{ fin }}" class="datepicker end-date form-control" id="absence-end"/>
-            </div>             
+            </div> 
           </div>
 
           <div class="row gx-5 mb-2" id="hre_fin" {% if fullday %} style="display:none;" {% endif %}>
             <label class="col-2 col-form-label aRight" for="absence-end-hour">Heure de fin :</label>
             <div class="col-3">
               <input name="hre_fin" class="planno-timepicker center form-control form-control-sm" value="{% if hre_fin != '23:59:59' %}{{ hre_fin | date('H:i')}}{% endif %}" id="absence-end-hour"/>
-            </div>             
+            </div>
           </div>
 
           <div class="row mb-2">
@@ -179,7 +169,7 @@
                 <a href="#" id="recurrence-link" {% if id %}style="display:none;"{% endif %} >Modifier</a>
               </span>
               <input type="hidden" name="recurrence-hidden" id="recurrence-hidden"/>
-            </div>             
+            </div>
           </div>
 
           <div class="row gx-5 mb-2">
@@ -203,28 +193,28 @@
                   {% endif %}
                 {% endfor %}
               </select>
-            </div>  
+            </div>
             {% if admin and not config('Planook') %}
               <div class="col-auto p-0">
                 <button type="button" class="btn btn-icon" data-bs-toggle="modal" data-bs-target="#add-reason-modal">
                   <span class="pl-icon pl-icon-add" title="Ajouter un motif"></span>
                 </button>
               </div> 
-            {% endif %}        
+            {% endif %}
           </div>
 
           <div class="row gx-5 mb-2" id="motif_autre" {% if not display_autre %}style="display:none;"{% endif %}>
             <label class="col-2 col-form-label aRight" for="motif2">Motif (autre) :</label>
             <div class="col-3">
               <input id="motif2" type="text" name="motif_autre" class="form-control form-control-sm" value="{{ absence.motif_autre }}" {% if display_autre %} required {% endif %}/>
-            </div>             
+            </div>
           </div>
 
           <div class="row gx-5 mb-2">
             <label class="col-2 col-form-label aRight" for="absence-comment">Commentaires :</label>
             <div class="col-3">
               <textarea id="absence-comment" name="commentaires" rows="5" class="form-control ">{{ absence.commentaires }}</textarea>
-            </div>             
+            </div>
           </div>
 
           {% if right701 %}
@@ -254,16 +244,16 @@
               {% for document in documents %}
                 <div class="row gx-5" id="document_{{ document.id}}">
                   <div class="col-6">
-                    <a type="link" class="btn btn-link" href="{{ asset('absences/document/') }}{{ document.id }}">{{ document.filename }}</a>
+                    <a type="link" class="btn btn-link text-start" href="{{ asset('absences/document/') }}{{ document.id }}">{{ document.filename }}</a>
                   </div>
                   {% if absence.editable %}
                     <div class="col-auto ps-0">
-                      <button type="button" class="btn btn-link" onclick="deleteAbsenceDocument({{ document.id }});">Supprimer</button>
+                      <button type="button" class="btn btn-link text-start" onclick="deleteAbsenceDocument({{ document.id }});">Supprimer</button>
                     </div>
                   {% endif %}
                 </div>
               {% endfor %}
-            </div>             
+            </div>
           </div>
           {% endif %}
 
@@ -274,9 +264,9 @@
             </div>
             {% if absence.editable %}
               <div class="col-auto ps-0">
-                <button id="add-file" type="button" class="btn btn-link" onclick="addAbsenceDocument({{ id }});">Ajouter</button>
+                <button id="add-file" type="button" class="btn btn-link text-start" onclick="addAbsenceDocument({{ id }});">Ajouter</button>
               </div>
-            {% endif %}         
+            {% endif %}
           </div>
 
           {% if config('Absences-validation') %}
@@ -284,7 +274,7 @@
               <label class="col-2 col-form-label aRight" for="validation-state">{% if id %}Validation{% else %}État{% endif %} :</label>
               <div class="col-3">
                 <div id="validation-statuses"></div>
-              </div>             
+              </div>
             </div> 
           {% endif %}
 
@@ -293,7 +283,7 @@
               <label class="col-2 col-form-label aRight" for="request-date">Demande :</label>
               <div class="col-3">
                 <input type="text" readonly class="form-control-plaintext" id="request-date" value="{{ absence.demande }}">
-              </div>             
+              </div>
             </div> 
           {% endif %}
 
@@ -350,7 +340,7 @@
           </div>
         </div>
       </div>
-      
+
       <div class="modal" id="recurrence-modal" tabindex="-1" data-bs-backdrop="static" role="dialog" aria-labelledby="recurrence-modal-title" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
           <div class="modal-content">
@@ -362,7 +352,7 @@
 
             <div class="modal-body" style="font-size: 1.10em;">
             <form id="recurrence-form">
-              
+
               <div class="row mb-2">
                 <label for="recurrence-freq" class="col-4 col-form-label">Récurrence :</label>
                 <select name="recurrence-freq" id="recurrence-freq" class="form-select form-select-sm recurrence-data" style="max-width: 200px;">
@@ -377,37 +367,37 @@
                 <input type="number" min="1" max="100" step="1" class="col-5 form-control form-control-sm recurrence-data" id="recurrence-interval" name="recurrence-interval" style="max-width: 200px;" value="1">
                 <span id="recurrence-label-freq" class="col-3 pt-2">semaines</span>
               </div>
-              
+
               <fieldset class="row mb-2" id="recurrence-week">
                 <legend class="col-form-label col-4">Répéter le :</legend>
                 <div class="col-8 p-0 pt-2 pb-2">
                   <div class="form-check">
                     <input class="form-check-input recurrence-data recurrence-by-day" type="checkbox" id="recurrence-by-day1" name="recurrence-by-day1" value="MO">
-                    <label  for="recurrence-by-day1">Lundi</label>
+                    <label for="recurrence-by-day1">Lundi</label>
                   </div>
                   <div class="form-check">
                     <input class="form-check-input recurrence-data recurrence-by-day" type="checkbox" id="recurrence-by-day2" name="recurrence-by-day2" value="TU">
-                    <label  for="recurrence-by-day2">Mardi</label>
+                    <label for="recurrence-by-day2">Mardi</label>
                   </div>
                   <div class="form-check">
                     <input class="form-check-input recurrence-data recurrence-by-day" type="checkbox" id="recurrence-by-day3" name="recurrence-by-day3" value="WE">
-                    <label  for="recurrence-by-day3">Mercredi</label>
+                    <label for="recurrence-by-day3">Mercredi</label>
                   </div>
                   <div class="form-check">
                     <input class="form-check-input recurrence-data recurrence-by-day" type="checkbox" id="recurrence-by-day4" name="recurrence-by-day4" value="TH">
-                    <label  for="recurrence-by-day4">Jeudi</label>
+                    <label for="recurrence-by-day4">Jeudi</label>
                   </div>
                   <div class="form-check">
                     <input class="form-check-input recurrence-data recurrence-by-day" type="checkbox" id="recurrence-by-day5" name="recurrence-by-day5" value="FR">
-                    <label  for="recurrence-by-day5">Vendredi</label>
+                    <label for="recurrence-by-day5">Vendredi</label>
                   </div>
                   <div class="form-check">
                     <input class="form-check-input recurrence-data recurrence-by-day" type="checkbox" id="recurrence-by-day6" name="recurrence-by-day6" value="SA">
-                    <label  for="recurrence-by-day6">Samedi</label>
+                    <label for="recurrence-by-day6">Samedi</label>
                   </div>
                   <div class="form-check">
                     <input class="form-check-input recurrence-data recurrence-by-day" type="checkbox" id="recurrence-by-day0" name="recurrence-by-day0" value="SU">
-                    <label  for="recurrence-by-day0">Dimanche</label>
+                    <label for="recurrence-by-day0">Dimanche</label>
                   </div>
                 </div>
               </fieldset>
@@ -457,12 +447,12 @@
             </div>
 
             <hr class="m-0">
-              
+
             <div class="modal-body" style="font-size: 1.10em;">
               <div class="row">
                 <label class="col-4">Résumé : </label>
                 <span class="col-8" id="recurrence-summary-form" style="padding: 0px 12px 0px 0px; min-height: 45px;"></span>
-              </div>     
+              </div>
             </div>
 
             <div class="modal-footer">

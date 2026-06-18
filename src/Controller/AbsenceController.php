@@ -240,10 +240,19 @@ class AbsenceController extends BaseController
             return $this->output('access-denied.html.twig');
         }
 
-        $default = array('perso_ids' => array(), 'nom' => $_SESSION['login_nom'], 
-                         'prenom'=> $_SESSION['login_prenom'], 'perso_id' => $session->get('loginId'), 
-                         'motif' => null, 'motif_autre' => null, 'commentaires' => null, 'pj1' => false,
-                         'pj2' => false, 'so' => false, 'editable' => false);
+        $default = [
+            'perso_ids' => [],
+            'nom' => $_SESSION['login_nom'],
+            'prenom'=> $_SESSION['login_prenom'], 
+            'perso_id' => $session->get('loginId'), 
+            'motif' => null, 
+            'motif_autre' => null,
+            'commentaires' => null,
+            'pj1' => false,
+            'pj2' => false, 
+            'so' => false, 
+            'editable' => false,
+        ];
 
         $managed = $this->entityManager
             ->getRepository(Agent::class)

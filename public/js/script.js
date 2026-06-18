@@ -285,10 +285,10 @@ function refreshAbsenceDocumentList(id) {
                 jQuery.each(result, function() {
                     listString += `<div class="row gx-5" id="document_` + this.id + `">
                                     <div class="col-6">
-                                      <a type="link" class="btn btn-link" href="/absences/document/` + this.id + `">` + this.filename + `</a>
+                                      <a type="link" class="btn btn-link text-start" href="/absences/document/` + this.id + `">` + this.filename + `</a>
                                     </div>
                                     <div class="col-auto ps-0">
-                                      <button type="button" class="btn btn-link" onclick="deleteAbsenceDocument(` + this.id + `);">Supprimer</button>
+                                      <button type="button" class="btn btn-link text-start" onclick="deleteAbsenceDocument(` + this.id + `);">Supprimer</button>
                                     </div>
                                    </div>`           
                   });
