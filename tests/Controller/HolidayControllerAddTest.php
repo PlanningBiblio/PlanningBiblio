@@ -94,10 +94,9 @@ class HolidayControllerAddTest extends PLBWebTestCase
 
         $crawler = $this->client->request('GET', '/holiday/new');
 
-        $result = $crawler->filterXPath('//table[@class="tableauFiches"]');
-
-        $this->assertStringContainsString('Journée(s) entière(s)',$result->text('Node does not exist', true),'test Conges-demi-journees');
-        $this->assertStringNotContainsString('Demi-journée(s)',$result->text('Node does not exist', true),'test Conges-demi-journees');
+        $result = $crawler->filter('label[for=allday]');
+        $this->assertStringContainsString('Journée(s) entière(s) :',$result->text('Node does not exist', true),'test Conges-demi-journees');
+        $this->assertSelectorNotExists('label[for=halfday]');
 
         //test with Conges-demi-journees
         $this->config->setParam('Conges-demi-journees', 1);
@@ -105,40 +104,39 @@ class HolidayControllerAddTest extends PLBWebTestCase
 
         $crawler = $this->client->request('GET', '/holiday/new');
 
-        $result = $crawler->filterXPath('//body');
-        $this->assertStringNotContainsString('Journée(s) entière(s)',$result->text('Node does not exist', true),'test Conges-demi-journees');
-        $this->assertStringContainsString('Demi-journée(s)',$result->text('Node does not exist', true),'test Conges-demi-journees');
+        $result = $crawler->filter('label[for=halfday]');
+        $this->assertStringContainsString('Demi-journée(s) :',$result->text('Node does not exist', true),'test Conges-demi-journees');
+        $this->assertSelectorNotExists('label[for=allday]');
 
         //test with Conges-validation
         $this->client->getWebDriver()->wait()->until($this->jqueryAjaxFinished());
-        $result = $crawler->filterXPath('//body');
-        $this->assertStringContainsString('Demandé',$result->text('Node does not exist', true),'test Conges-validation');
+        $result = $crawler->filter('select#validation-state option[selected]');
+        $this->assertStringContainsString('Demandée',$result->text(),'test Conges-validation');
 
         //test without Conges-validation
         $this->config->setParam('Conges-validation', 0);
 
         $crawler = $this->client->request('GET', '/holiday/new');
 
-        $result = $crawler->filterXPath('//body');
-        $this->assertStringNotContainsString('Demandé',$result->text('Node does not exist', true),'test Conges-validation');
+        $this->assertSelectorNotExists('#validation-state');
 
         //test Conges-Mode => heures
         $this->config->setParam('Conges-Mode', 'heures');
 
         $crawler = $this->client->request('GET', '/holiday/new');
 
-        $result = $crawler->filterXPath('//body');
-        $this->assertStringContainsString('Nombre d\'heures',$result->text('Node does not exist', true),'test Conges-Mode');
-        $this->assertStringNotContainsString('Nombre de jours',$result->text('Node does not exist', true),'test Conges-Mode');
+        $result = $crawler->filter('label[for=nbHeures]');
+        $this->assertStringContainsString('Nombre d\'heures :',$result->text('Node does not exist', true),'test Conges-Mode');
+        $this->assertSelectorNotExists('label[for=nbJours]');
 
         //test Conges-Mode => jours
         $this->config->setParam('Conges-Mode', 'jours');
 
         $crawler = $this->client->request('GET', '/holiday/new');
 
-        $result = $crawler->filterXPath('//body');
+        $result = $crawler->filter('label[for=nbJours]');
         $this->assertStringContainsString('Nombre de jours',$result->text('Node does not exist', true),'test Conges-Mode');
-        $this->assertStringNotContainsString('Nombre d\'heures',$result->text('Node does not exist', true),'test Conges-Mode');
+        $this->assertSelectorNotExists('label[for=nbHeures]');
 
         //test with Conges-Heures
         $this->config->setParam('Conges-Mode', 'heures');
@@ -147,19 +145,28 @@ class HolidayControllerAddTest extends PLBWebTestCase
 
         $crawler = $this->client->request('GET', '/holiday/new');
 
-        $button = $crawler->filterXPath('//input[@class="checkdate"]');
-        $button->click();
+        $this->assertSelectorIsNotVisible('div#hre_debut');
+        $this->assertSelectorIsNotVisible('div#hre_fin');
 
-        $result = $crawler->filterXPath('//body');
+        $form = $crawler->filter('#holiday-form')->form();
+        $form['allday']->untick();
+
+        $this->assertSelectorIsVisible('div#hre_debut');
+        $this->assertSelectorIsVisible('div#hre_fin');
+
+        $result = $crawler->filter('label[for=hre_debut_select]');
         $this->assertStringContainsString('Heure de début',$result->text('Node does not exist', true),'test Conges-Heures');
+        $result = $crawler->filter('label[for=hre_fin_select]');
         $this->assertStringContainsString('Heure de fin',$result->text('Node does not exist', true),'test Conges-Heures');
 
         //test conges anticipation, reliquat and crédit 
 
-        $result = $crawler->filterXPath('//body');
-        $this->assertStringContainsString('Reliquat : 3h48',$result->text('Node does not exist', true),'test Reliquat');
-        $this->assertStringContainsString('Crédit de congés : 3h48',$result->text('Node does not exist', true),'test crédit');
-        $this->assertStringContainsString('Solde débiteur : 0h00',$result->text('Node does not exist', true),'test solde débiteur');
+        $result = $crawler->filter('input#holiday_balance');
+        $this->assertStringContainsString('3h48',$result->attr('value'),'test Reliquat');
+        $result = $crawler->filter('input#holiday_credit');
+        $this->assertStringContainsString('3h48',$result->attr('value'),'test crédit');
+        $result = $crawler->filter('input#holiday_debit');
+        $this->assertStringContainsString('0h00',$result->attr('value'),'test solde débiteur');
 
         //test statut with all rights
 
@@ -184,12 +191,12 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $crawler = $this->client->request('GET', '/holiday/new');
 
         $this->client->getWebDriver()->wait()->until($this->jqueryAjaxFinished());
-        $result = $crawler->filterXPath('//td[@id="validation-statuses"]');
-        $this->assertStringContainsString('Demandé', $result->text('Node does not exist', true), 'test statut');
-        $this->assertStringContainsString('Acceptée (En attente de validation hiérarchique)', $result->text('Node does not exist', true), 'test statut');
-        $this->assertStringContainsString('Refusée (En attente de validation hiérarchique)', $result->text('Node does not exist', true), 'test statut');
-        $this->assertStringContainsString('Acceptée', $result->text('Node does not exist', true), 'test statut');
-        $this->assertStringContainsString('Refusée', $result->text('Node does not exist', true), 'test statut');
+        $result = $crawler->filter('select#validation-state option');
+        $this->assertStringContainsString('Demandée', $result->text(), 'test statut');
+        $this->assertStringContainsString('Acceptée (En attente de validation hiérarchique)', $result->eq(1)->text(), 'test statut');
+        $this->assertStringContainsString('Refusée (En attente de validation hiérarchique)', $result->eq(2)->text(), 'test statut');
+        $this->assertStringContainsString('Acceptée', $result->eq(3)->text(), 'test statut');
+        $this->assertStringContainsString('Refusée', $result->eq(4)->text(), 'test statut');
     }
 
     public function testAddMultisite(): void
@@ -248,7 +255,7 @@ class HolidayControllerAddTest extends PLBWebTestCase
 
         $result = $crawler->filterXPath('//body');
 
-        $this->assertStringContainsString('Sites:',$result->text('Node does not exist', true),'test sites');
+        $this->assertStringContainsString('Sites :',$result->text('Node does not exist', true),'test sites');
         $this->assertStringContainsString('Site N°1',$result->text('Node does not exist', true),'test sites');
         $this->assertStringContainsString('Site N°2',$result->text('Node does not exist', true),'test sites');
 

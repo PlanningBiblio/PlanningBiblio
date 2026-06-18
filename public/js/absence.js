@@ -597,7 +597,7 @@ function update_validation_statuses() {
       $('tr#validation').effect("highlight",null,2000);
     },
     error: function(xhr, ajaxOptions, thrownError) {
-      information("Une erreur s'est produite lors de la mise à jour de la liste des statuts");
+      information("Une erreur s'est produite lors de la mise à jour de la liste des statuts", 'error');
     }
   });
 }

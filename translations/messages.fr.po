@@ -447,3 +447,9 @@ msgstr "Ce nom est déjà utilisé"
 
 msgid "Group name"
 msgstr "Nom du groupe"
+
+msgid "Requesting holidays"
+msgstr "Poser des congés"
+
+msgid "Requesting compensation for overtime"
+msgstr "Poser des récupérations"

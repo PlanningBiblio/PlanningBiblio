@@ -447,3 +447,9 @@ msgstr "That name is already taken"
 
 msgid "Group name"
 msgstr "Group name"
+
+msgid "Requesting holidays"
+msgstr "Requesting holidays"
+
+msgid "Requesting compensation for overtime"
+msgstr "Requesting compensation for overtime"
