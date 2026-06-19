@@ -4,6 +4,16 @@ Fichier regroupant les fonctions JavaScript utiles à la gestion des congés
 */
 
 $(function(){
+
+  if($('#balance2_before').length){
+    console.log("bkjfkg");
+    $('.solde-info').show()
+  }
+  else {
+    console.log("bkjfkg");
+    $('.solde-info').hide();
+  }
+
   $('select[name="perso_id"]').on('change', function() {
 
     // Only for holiday/new
@@ -176,15 +186,15 @@ function currentCredits() {
     type: 'get',
     async: false,
     success: function(credits){
-      $('#holiday_balance').text(credits.holiday_balance);
+      $('#holiday_balance').val(credits.holiday_balance);
       $('#reliquat4').text(credits.holiday_balance);
       $('input[name="reliquat"]').val(credits.holiday_balance_decimal);
 
-      $('#holiday_credit').text(credits.holiday_credit);
+      $('#holiday_credit').val(credits.holiday_credit);
       $('#credit4').text(credits.holiday_credit);
       $('input[name="credit"]').val(credits.holiday_credit_decimal);
 
-      $('#holiday_debit').text(credits.holiday_debit);
+      $('#holiday_debit').val(credits.holiday_debit);
       $('#anticipation4').text(credits.holiday_debit);
       $('input[name="anticipation"]').val(credits.holiday_debit_decimal);
     },
@@ -197,8 +207,8 @@ function currentCredits() {
 function calculCredit(){
 
   $("#erreurCalcul").val("false");
-  $("#nbJours").text('');
-  $("#nbHeures").text('');
+  $("#nbJours").val('');
+  $("#nbHeures").val('');
 
   if( ! $('input[name=debut]').length) { return; }
   if (multipleAgentsSelected()) { return; }
@@ -255,7 +265,7 @@ function calculCredit(){
         $("#erreurCalcul").val("true");
         document.form.elements["heures"].value=0;
         document.form.elements["minutes"].value=0;
-        $("#nbHeures").text("0h00");
+        $("#nbHeures").val("0h00");
         $("#nbHeures").effect("highlight",null,3000);
         $("#nbJours").effect("highlight",null,3000);
         information("Aucun planning de présence enregistré pour cette période - calcul impossible.","error");
@@ -272,8 +282,8 @@ function calculCredit(){
 
         $('#recuperation').val(balance);
         $('.balance_date').text(dateFr(balance_date));
-        $('#balance_before').text(heure4(balance));
-        $('#balance2_before').text(heure4(balance_estimated));
+        $('#balance_before').val(heure4(balance));
+        $('#balance2_before').val(heure4(balance_estimated));
         $("#recuperation_prev").val(balance_estimated);
 
         if (congesRecup == 0 || result.rest != 0) {
@@ -296,19 +306,19 @@ function calculCredit(){
         document.form.elements["heures"].value = result.hours;
         document.form.elements["minutes"].value = result.minutes;
 
-        $("#nbHeures").text(result.hr_hours);
-        $("#nbJours").text(result.days);
+        $("#nbHeures").val(result.hr_hours);
+        $("#nbJours").val(result.days);
         $("#nbHeures").effect("highlight",null,4000);
         $("#nbJours").effect("highlight",null,4000);
 
         $("#rest").val(0);
-        $("#hr_rest").text('');
+        $("#hr_rest").val('');
         $("#rest").parent().parent().hide();
         if (result.rest != 0) {
           if (result.rest > 0) {
-            $("#hr_rest").text(result.hr_rest + ' créditée(s)');
+            $("#hr_rest").val(result.hr_rest + ' créditée(s)');
           } else {
-            $("#hr_rest").text(result.hr_rest + ' débitée(s)');
+            $("#hr_rest").val(result.hr_rest + ' débitée(s)');
           }
           $("#rest").val(result.rest);
           $("#rest").parent().parent().show();
@@ -549,7 +559,7 @@ function googleCalendarIcon(){
   debut=debut+"T"+debut_hre;
   fin=fin+"T"+fin_hre;
 
-  var link="<a style='margin-left: 30px;' target='_blank' id='googleCalendarLink' title='Ajouter dans mon agenda Google' ";
+  var link="<a class='btn btn-icon' style='margin-left: 30px;' target='_blank' id='googleCalendarLink' title='Ajouter dans mon agenda Google' ";
   link+="href='https://www.google.com/calendar/event?action=TEMPLATE&hl=fr&text=Congés "+agent+"&dates="+debut+"/"+fin+"&location="+location+"&ctz=Europe%2FParis&amp;details='>";
   link+="<span class='pl-icon pl-icon-google-calendar'></span></a>";
   
@@ -914,7 +924,7 @@ function update_validation_statuses() {
     success: function(result){
       $("#validation-statuses").html(result);
 
-      $('tr#validation-line').effect("highlight",null,2000);
+      $('div#validation-line').effect("highlight",null,2000);
     },
     error: function(xhr, ajaxOptions, thrownError) {
       information("Une erreur s'est produite lors de la mise à jour de la liste des statuts");

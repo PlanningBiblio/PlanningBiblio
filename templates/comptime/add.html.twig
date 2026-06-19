@@ -171,11 +171,11 @@
             </form>
           </td>
 
-          {% if information is not empty %}
+          {% if holiday_info %}
             <td class="red">
               <b>Informations sur les congés :</b><br/><br/>
-              {% for i in information %}
-                {{ i | nl2br }}
+              {% for i in holiday_info %}
+              Du {{ i.start }} au {{ i.end }} :<br/>{{ i.texte|nl2br }}<br/>
               {% endfor %}
             </td>
           {% endif %}

@@ -1,41 +1,18 @@
 {# common/validation-statuses.html.twig #}
 
 {% if show_select %}
-  <select name='valide' class='ui-widget-content ui-corner-all'>
-    {% if entity_state == 0 %}
-      <option value='0' selected>Demandée</option>
-    {% else %}
-      <option value='0'>Demandée</option>
-    {% endif %}
-
+  <select name="valide" class="form-select form-select-sm" id="validation-state">
+    <option value='0' {% if entity_state == 0 %}selected{% endif %}>Demandée</option>
     {% if show_n1 %}
-      {% if entity_state == 2 %}
-        <option value='2' selected>Acceptée (En attente de validation hiérarchique)</option>
-      {% else %}
-        <option value='2' >Acceptée (En attente de validation hiérarchique)</option>
-      {% endif %}
-
-      {% if entity_state == -2 %}
-        <option value='-2' selected>Refusée (En attente de validation hiérarchique)</option>
-      {% else %}
-        <option value='-2' >Refusée (En attente de validation hiérarchique)</option>
-      {% endif %}
+      <option value='2' {% if entity_state == 2 %}selected{% endif %}>Acceptée (En attente de validation hiérarchique)</option>
+      <option value='-2' {% if entity_state == -2 %}selected{% endif %}>Refusée (En attente de validation hiérarchique)</option>
     {% endif %}
 
     {% if show_n2 %}
-      {% if entity_state == 1 %}
-        <option value='1' selected>Acceptée</option>
-      {% else %}
-        <option value='1' >Acceptée</option>
-      {% endif %}
-
-      {% if entity_state == -1 %}
-        <option value='-1' selected>Refusée</option>
-      {% else %}
-        <option value='-1' >Refusée</option>
-      {% endif %}
+      <option value='1' {% if entity_state == 1 %}selected{% endif %}>Acceptée</option>
+      <option value='-1'{% if entity_state == -1 %}selected{% endif %}>Refusée</option>
     {% endif %}
   </select>
 {% else %}
-  <span>{{ entity_state_desc }}</span>
+  <input type="text" id="validation-state" readonly class="form-control-plaintext" value="{{ entity_state_desc }}">
 {% endif %}

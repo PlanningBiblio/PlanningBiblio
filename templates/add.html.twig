@@ -161,7 +161,7 @@
 
         {% endif %}
 
-        <div class="row gx-5 mb-2">
+            <div class="row gx-5 mb-2">
                 <label class="col-2 col-form-label aRight" for="debut">Date de début :</label>
                 <div class="col-3">
                     <input type="text" name="debut" id="debut" value="" class="datepicker start-date form-control googleCalendarTrigger checkdate"/>
@@ -190,7 +190,7 @@
         <div class="row gx-5 mb-2">
             <label class="col-2 col-form-label aRight" for="fin">Date de fin :</label>
             <div class="col-3">
-                <input type="text" name="fin" id="fin" value="" class="datepicker start-date form-control googleCalendarTrigger checkdate"/>
+                <input type="text" name="fin" id="fin" value="" class="datepicker end-date form-control googleCalendarTrigger checkdate"/>
             </div>
         </div>
 
@@ -206,15 +206,278 @@
             </div>
         {% endif %}
 
-         <div class="row gx-5 mb-2" id="hre_fin" {% if is_holiday %} style="display:none;" {% endif %}>
+        <div class="row gx-5 mb-2" id="hre_fin" {% if is_holiday %} style="display:none;" {% endif %}>
             <label class="col-2 col-form-label aRight" for="hre_fin_select">Heure de fin :</label>
             <div class="col-3">
                 <input name="hre_fin" id="hre_fin_select" class="planno-timepicker checkdate center form-control form-control-sm" value="{{ hre_fin is defined ? hre_fin | date('H:i') : '' }}"/>
             </div>
         </div>
 
+        <div class="row mb-2">
+            <div class="invalid-feedback offset-2">{% trans from 'validators' %}Please choose a valid date interval.{% endtrans %}</div>
+        </div>
+
+        <div class="row gx-5 mb-2 {% if is_holiday %} hideWhenMultipleAgents {% endif %}">
+            {% if conges_mode == 'heures' or not is_holiday %}
+                <label class="col-2 col-form-label aRight" for="nbHeures">Nombre d'heures :</label>
+                <div class="col-3">
+                    <input type="text" readonly class="form-control-plaintext" id="nbHeures">
+                </div>
+            {% else %}
+                <label class="col-2 col-form-label aRight" for="nbJours">Nombre de jours :</label>
+                <div class="col-3">
+                    <input type="text" readonly class="form-control-plaintext" id="nbJours">
+                </div>
+            {% endif %}
+            <input type="hidden" name="heures" value="0" />
+            <input type="hidden" name="minutes" value="0" />
+            <input type="hidden" id="erreurCalcul" value="false" />
+        </div>
+
+        <hr>
+
+        {% if conges_mode == 'jours' %}
+            <div class="row gx-5 mb-2" style="display:none;">
+                <label class="col-2 col-form-label aRight" for="hr_rest" style="padding-left: 30px;">Régularisation sur récupération :</label>
+                <div class="col-3">
+                    <input id="hr_rest" readonly class="form-control-plaintext"/>
+                    <input type="hidden" name="rest" id="rest" value=""/>
+                </div>
+            </div>
+        {% endif %}
+
+        {% if conges_mode == 'heures' and hours_per_day is not empty %}
+            <div class="row gx-5 mb-2 hideWhenMultipleAgents">
+                <label class="col-2 col-form-label aRight" for="hr_rest">Équivalence utilisée : 1 jour =  {{ hours_per_day_in_hhmm }}</label>
+                <div class="col-3">
+                    <input id="nbJours" readonly class="form-control-plaintext"/>
+                    <input type="hidden" name="hours_per_day" id="hours_per_day" value="{{ hours_per_day }}" />
+                </div>
+            </div>
+        {% elseif hours_per_day %}
+            <div class="row gx-5 mb-2">
+                <label class="col-2 col-form-label aRight" for="hr_rest">Nombre de jours ({{ hours_per_day }}h/jour) :</label>
+                <div class="col-3">
+                    <input id="nbJours" readonly class="form-control-plaintext"/>
+                    <input type="hidden" name="hours_per_day" id="hours_per_day" value="{{ hours_per_day }}" />
+                </div>
+            </div>
+        {% endif %}
+
+        {% if is_holiday %}
+            <div class="row mb-2 gx-5 hideWhenMultipleAgents">
+                <div class="col-auto offset-2">
+            {% if conges_recuperations == 0 %}
+                {% if reliquat != '0.00' %}
+                    <p>Ces heures seront débitées sur le réliquat de l'année précédente puis sur :</p>
+                {% else %}
+                    <p>Ces heures seront débitées sur : </p>
+                {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-2 gx-5 hideWhenMultipleAgents">
+                <div class="col-3 offset-2">
+
+                    <select name="debit" class="form-select form-select-sm">
+                        <option value="recuperation">Le crédit de récupérations</option>
+                        <option value="credit">Le crédit de congés de l'année en cours</option>
+                    </select>
+                </div>
+            </div>
+            {% else %}
+                 {% if reliquat != '0.00' %}
+                    <p>Ces heures seront débitées sur le réliquat de l'année précédente puis sur les crédits de congés de l'année en cours.</p>
+                {% else %}
+                    <p>Ces heures seront débitées sur les crédits de congés de l'année en cours.</p>
+                {% endif %}
+                    <input type="hidden" name="debit" value="credit" />
+                </div>
+            </div>
+            {% endif %}
+
+        {% else %}
+             <div class="row mb-2 gx-5">
+                <div class="col-auto offset-2">
+                    <p>Ces heures seront débitées sur les crédits de récupérations.</p>
+                    <input type="hidden" name="debit" value="recuperation"/>
+                </div>
+             </div>
+        {% endif %}
+
+        {% if is_holiday %}
+
+            <div class="hideWhenMultipleAgents">
+                <div class="row mb-2 gx-5">
+                    <label class="col-2 col-form-label aRight" for="holiday_balance">Reliquat :</label>
+                    <div class="col-1">
+                        <input type="text" id="holiday_balance" readonly class="form-control-plaintext" value="{{ reliquat2 }} {{ reliquat_jours }}">
+                    </div>
+                    <div class="col-2">
+                        <span class="form-control-plaintext">(après débit : <span id="reliquat4">{{ reliquat2 }}</span>)</span>
+                    </div>
+                </div>
+
+                {% if conges_recuperations == 0 %}
+
+                    <div class="row mb-2 gx-5 balance_tr">
+                        <label class="col-2 col-form-label aRight" for="balance_before">Crédit de récupérations disponible au 
+                            <span class="balance_date">{{ balance0 }}</span> : 
+                        </label>
+                        <div class="col-1">
+                            <input type="text" id="balance_before" readonly class="form-control-plaintext" value="{{ balance1 }}">
+                        </div>
+                        <div class="col-2">
+                            <span class="form-control-plaintext">(après débit : <span id="recup4">{{ balance1 }}</span>)</span>
+                        </div>
+                    </div>
+
+                    <div class="row mb-2 gx-5 balance_tr">
+                        <label class="col-2 col-form-label aRight" for="balance2_before">Crédit de récupérations prévisionnel<sup>*</sup> au 
+                            <span class="balance_date">{{ balance0 }}</span> : 
+                        </label>
+                        <div class="col-1">
+                            <input type="text" id="balance2_before" readonly class="form-control-plaintext" value="{{ balance4 }}">
+                        </div>
+                        <div class="col-2">
+                            <span class="form-control-plaintext">(après débit : <span id="balance2_after">{{ balance4 }}</span>)</span>
+                        </div>
+                    </div>
+
+                {# The comp time information is hidden.If there is rest, it will be shown.#}
+
+                {% elseif conges_mode == 'jours' and conges_recuperations == 1 %}
+
+                    <div class="row mb-2 gx-5 balance_tr" style="display: none">
+                        <label class="col-2 col-form-label aRight" for="balance_before">Crédit de récupérations disponible au 
+                            <span class="balance_date">{{ balance0 }}</span> : 
+                        </label>
+                        <div class="col-1">
+                            <input type="text" id="balance_before" readonly class="form-control-plaintext" value="{{ balance1 }}">
+                        </div>
+                        <div class="col-2">
+                            <span class="form-control-plaintext">(après débit : <span id="recup4">{{ balance1 }}</span>)</span>
+                        </div>
+                    </div>
+
+                    <div class="row mb-2 gx-5 balance_tr" style="display: none">
+                        <label class="col-2 col-form-label aRight" for="balance2_before">Crédit de récupérations prévisionnel<sup>*</sup> au 
+                            <span class="balance_date">{{ balance0 }}</span> : 
+                        </label>
+                        <div class="col-1">
+                            <input type="text" id="balance2_before" readonly class="form-control-plaintext" value="{{ balance4 }}">
+                        </div>
+                        <div class="col-2">
+                            <span class="form-control-plaintext">(après débit : <span id="balance2_after">{{ balance4 }}</span>)</span>
+                        </div>
+                    </div>
+
+                {% endif %}
+
+                    <div class="row mb-2 gx-5" >
+                        <label class="col-2 col-form-label aRight" for="holiday_credit">Crédit de congés :</label>
+                        <div class="col-1">
+                            <input type="text" id="holiday_credit" readonly class="form-control-plaintext" value="{{ credit2 }} {{ credit_jours }}">
+                        </div>
+                        <div class="col-2">
+                            <span id="credit3" class="form-control-plaintext">(après débit : <span id="credit4">{{ credit2 }}</span>)</span>
+                        </div>
+                    </div>
+
+                    <div class="row mb-2 gx-5" >
+                        <label class="col-2 col-form-label aRight" for="holiday_debit">Solde débiteur : </label>
+                        <div class="col-1">
+                            <input type="text" id="holiday_debit" readonly class="form-control-plaintext" value="{{ anticipation2 }} {{ anticipation_jours }}">
+                        </div>
+                        <div class="col-2">
+                            <span id="anticipation3" class="form-control-plaintext">(après débit : <span id="anticipation4">{{ anticipation2 }}</span>)</span>
+                        </div>
+                    </div>
+            </div>
+        
+        {% else %}
+
+            <div class="row mb-2 gx-5 balance_tr">
+                <label class="col-2 col-form-label aRight" for="balance_before">Solde disponible au 
+                    <span class="balance_date">{{ balance_date }}</span> :
+                </label>
+                <div class="col-1">
+                    <input type="text" id="balance_before" readonly class="form-control-plaintext" value="{{ balance_before }} {{ balance_before_days }}">
+                </div>
+                <div class="col-2">
+                    <span class="form-control-plaintext">(après débit : <span id="recup4">{{ balance_before }} {{ balance_before_days }}</span>)</span>
+                </div>
+            </div>
+
+            <div class="row mb-2 gx-5 balance_tr">
+                <label class="col-2 col-form-label aRight" for="balance2_before">Solde prévisionnel<sup>*</sup> au 
+                    <span class="balance_date">{{ balance_date }}</span> :
+                </label>
+                <div class="col-1">
+                    <input type="text" id="balance2_before" readonly class="form-control-plaintext" value="{{ balance2_before }} {{ balance2_before_days }}">
+                </div>
+                <div class="col-2">
+                    <span class="form-control-plaintext">(après débit : <span id="balance2_after">{{ balance2_before }} {{ balance2_before_days }}</span>)</span>
+                </div>
+            </div>            
+
+        {% endif %}
+
+        <hr class="hideWhenMultipleAgents">
+
+        <div class="row gx-5 mb-2">
+            <label class="col-2 col-form-label aRight" for="comment">Commentaires : </label>
+            <div class="col-3">
+                <textarea name="commentaires" id="comment"  class="form-control" rows="5"></textarea>
+            </div>
+        </div>
+
+        {% if config('Conges-validation') %}
+            <div class="row gx-5 mb-2" id="validation-line">
+                <label class="col-2 col-form-label aRight" for="validation-statuses">État :</label>
+                <div class="col-3">
+                    <div id="validation-statuses"></div>
+                </div>
+            </div>
+
+            <div class="row gx-5 mb-2" id="tr_refus" style="display: none;">
+                <label class="col-2 col-form-label aRight" for="refus">Motif du refus :</label>
+                <div class="col-3">
+                    <textarea name="refus" id="refus" class="form-control" rows="5"></textarea>
+                </div>
+            </div>
+        {% else %}
+            <input type="hidden" name="valide" id="validation" value="1" />
+        {% endif %}
+
+            <div class="row gx-5 mb-2">
+                <div class="col-auto offset-2">
+                    {% if is_holiday %}
+                        <input id="cancel" type="button" class="btn btn-secondary m-2" value="{% trans %}Cancel{% endtrans %}" /> 
+                    {% else %}
+                        <input type="button" value="{% trans %}Cancel{% endtrans %}" onclick="document.location.href='{{ asset('holiday/?recup=1') }}';" class="btn btn-secondary"/>
+                    {% endif %}
+                        <input type="submit" role="button" class="btn btn-primary m-2" value="{% trans %}Confirm{% endtrans %}"/>
+                    <div id="google-calendar-div" class="inline"></div>
+                </div>
+            </div>
+
+            <div class="row mb-2 solde-info">
+                <p style="font-style:italic;"><sup>*</sup> Le solde prévisionnel tient compte des demandes des récupérations non validées (crédits et utilisations).</p>
+            </div>
+
         </form>
-      </div>
+    </div>
+
+    {% if holiday_info %}
+        <div class="row mb-2 gx-5 red align-info">
+            <div class="col-3 offset-2">
+            <b>Informations sur les congés :</b><br/>
+                {% for i in holiday_info %}
+                Du {{ i.start }} au {{ i.end }} :<br/>{{ i.texte|nl2br }}<br/>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
 
 {% endblock %}
-
