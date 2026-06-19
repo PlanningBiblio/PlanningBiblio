@@ -453,8 +453,8 @@ $(function() {
 
         // Affichage des tableaux
         initContextMenu(result);
+        initTooltips();
 
-        
         // Largeur du tableau 1 (on s'adapte à la longueur des lignes)
         $("#menudiv1").css("width",250);
         var width = $('#menudiv1 > table').width() +20;
@@ -1029,6 +1029,9 @@ function contextMenuTitle(data) {
 }
 
 function emptyContextMenu() {
+  $('.show').each(function(){
+    $(this).remove();
+  });
   $("#menudiv1").remove();
   $("#menudiv2").remove();
 }
