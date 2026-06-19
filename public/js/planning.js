@@ -1328,11 +1328,12 @@ function bataille_navale(poste, date, debut, fin, perso_id, barrer, ajouter, sit
         var div = '<div id="cellule' + cellule + '_' + i + '" class="' + classes + '" ' + color + ' data-perso-id="' + perso_id + '" oncontextmenu="majPersoOrigine(' + perso_id + ');">' + span + '</div>';
         // oncontextmenu="majPersoOrigine(' + perso_id + ');" : necessaire car l'événement JQuery contextmenu sur .cellDiv ne marche pas sur les cellules modifiées
         $('#td' + cellule).append(div);
-        initTooltips();
 
         // Complète le tableau cellules initialisé au chargement de la page et contenant toutes les cellules ajoutées par la fonction bataille_navale
         cellules.push($('#cellule' + cellule + '_' + i));
       }
+
+      initTooltips();
 
       // Ajout du widget pour copier les agents dans
       // la cellule immédiatement à droite.
