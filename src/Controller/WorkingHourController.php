@@ -635,7 +635,7 @@ class WorkingHourController extends BaseController
         return $this->redirectToRoute($route);
     }
 
-    #[Route(path: '/workinghour', name: 'workinghour.delete', methods: ['DELETE'])]
+    #[Route(path: '/workinghour/delete', name: 'workinghour.delete', methods: ['POST'])]
     public function delete(Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse{
         $CSRFToken = $request->get('CSRFToken');
         $id = $request->get("id");

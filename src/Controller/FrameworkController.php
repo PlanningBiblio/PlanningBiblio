@@ -463,7 +463,7 @@ class FrameworkController extends BaseController
         return $this->json('ok');
     }
 
-     #[Route(path: '/framework', name: 'framework.delete_table', methods: ['DELETE'])]
+     #[Route(path: '/framework/delete', name: 'framework.delete_table', methods: ['POST'])]
     public function deleteTable (Request $request, Session $session): JsonResponse
     {
         $post = $request->request->all();
@@ -687,7 +687,7 @@ class FrameworkController extends BaseController
         return $this->redirectToRoute('framework.index');
     }
 
-    #[Route(path: '/framework-group', name: 'framework.delete_group', methods: ['DELETE'])]
+    #[Route(path: '/framework-group/delete', name: 'framework.delete_group', methods: ['POST'])]
     public function deleteGroup (Request $request, Session $session): JsonResponse
     {
         $CSRFToken =  $request->request->get("CSRFToken");
@@ -772,7 +772,7 @@ class FrameworkController extends BaseController
         return $this->redirectToRoute('framework.index', array("msg" => $msg, "msgType" => $msgType));
     }
 
-    #[Route(path: '/framework-line', name: 'framework.delete_line', methods: ['DELETE'])]
+    #[Route(path: '/framework-line/delete', name: 'framework.delete_line', methods: ['POST'])]
     public function deleteLine (Request $request, Session $session): JsonResponse
     {
         $post = $request->request->all();

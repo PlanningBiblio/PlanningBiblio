@@ -604,10 +604,10 @@ function update_validation_statuses() {
 
 function delete_absence(CSRFToken, id, recurrence) {
   $.ajax({
-    url: url('absence'),
+    url: url('absence/delete'),
+    type: 'post',
+    dataType: 'json',
     data: {id: id, CSRFToken: CSRFToken, rec: recurrence},
-    dataType: "json",
-    type: "delete",
     async: false,
     success: function(result){
       msg = result['msg'];
