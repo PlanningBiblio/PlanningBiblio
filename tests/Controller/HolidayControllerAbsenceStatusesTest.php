@@ -39,9 +39,9 @@ class HolidayControllerAbsenceStatusesTest extends PLBWebTestCase
         $this->logInAgent($loggedin, $loggedin->getACL());
         $crawler = $client->request('GET', "/absence-statuses?ids[]=$agent_id&module=holiday&id=$absence_id");
 
-        $statuses_element = $crawler->filter('span');
+        $statuses_element = $crawler->filter('#validation-state');
 
-        $this->assertEquals('Accepté', $statuses_element->html(), 'NewAbsenceWithoutRight show asked');
+        $this->assertEquals('Accepté', $statuses_element->attr('value'), 'NewAbsenceWithoutRight show asked');
 
     }
 

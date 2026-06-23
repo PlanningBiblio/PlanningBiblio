@@ -14,7 +14,7 @@
     <h3>Poser des congés</h3>
 
     <div class="admin-div">
-        <form name="form" action="/holiday" method="post" id="form" onsubmit="return verif_form('debut=date1;fin=date2', 'form', 'verifConges');">
+        <form name="form" action="/holiday" method="post" id="holiday-form" onsubmit="return verif_form('debut=date1;fin=date2', 'form', 'verifConges');">
             <input type="hidden" name="confirm" value="confirm" />
             <input type="hidden" id="agent_id" value="{{ loggedin_id }}" />
             <input type="hidden" id="selected_agent_id" value="{{ selected_agent_id }}" />
@@ -28,7 +28,7 @@
     <h3>Poser des récupérations</h3>
 
     <div class="admin-div">
-        <form name="form" action="{{ asset('comptime') }}" method="post" id="form" onsubmit="return verifConges();">
+        <form name="form" action="{{ asset('comptime') }}" method="post" id="holiday-form" onsubmit="return verifConges();">
             <input type="hidden" id="selected_agent_id" value="{{ perso_id }}" />
             <input type="hidden" id="conges-recup" value="1" />
             <input type="hidden" id="is-recover" value="1" />
@@ -48,9 +48,10 @@
 
             {% if admin and config('Multisites-nombre') > 1 %}
                 <fieldset class="row my-2 gx-5">
-                    <div class="col-3 offset-2 mt-2">
+                    <legend class="col-auto offset-2 col-form-label pe-0" for="sites">Sites :</legend>
+                    <div class="col-auto" style="margin-top: 6px;">
                     {% for s in sites_select %}
-                        <div class="form-check form-check-inline">
+                        <div class="form-check form-check-inline" id="sites">
                             <input class="form-check-input" type="checkbox" name="selected_sites" id="site_{{s.id}}" value="{{s.id}}" checked >
                             <label for="site_{{s.id}}">{{ s.name }}</label>
                         </div>
