@@ -482,7 +482,7 @@ class AbsenceControllerDeleteTest extends PLBWebTestCase
 
         $this->logInAgent($agents[$loggedInAgentId], $acl);
 
-        $this->client->request('DELETE', '/absence', ['CSRFToken' => $this->CSRFToken, 'id' => $absence->getId()]);
+        $this->client->request('POST', '/absence/delete', ['CSRFToken' => $this->CSRFToken, 'id' => $absence->getId()]);
 
         $test = $this->entityManager->getRepository(Absence::class)->findBy(['id' => $absence->getId()]);
 
