@@ -67,20 +67,6 @@ class AjaxController extends BaseController
         return $this->json($agents);
     }
 
-    #[Route(path: '/ajax/holiday-delete', name: 'ajax.holidaydelete', methods: ['GET'])]
-    public function deleteHoliday(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
-    {
-        $id = $request->get('id');
-        $CSRFToken = $request->get('CSRFToken');
-
-        $c = new \conges();
-        $c->id = $id;
-        $c->CSRFToken = $CSRFToken;
-        $c->delete();
-
-        return $this->json("Holiday deleted");
-    }
-
     #[Route(path: '/ajax/mail-test', name: 'ajax.mailtest', methods: ['POST'])]
     public function mailTest(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
     {
