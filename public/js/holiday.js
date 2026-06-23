@@ -6,11 +6,9 @@ Fichier regroupant les fonctions JavaScript utiles à la gestion des congés
 $(function(){
 
   if($('#balance2_before').length){
-    console.log("bkjfkg");
     $('.solde-info').show()
   }
   else {
-    console.log("bkjfkg");
     $('.solde-info').hide();
   }
 
@@ -87,20 +85,9 @@ function dateChange(obj) {
   calculCredit();
 }
 
-function ddmmyyyy_to_date(dateString) {
-  if (!dateString) {
-    return '';
-  }
-
-  var dateParts = dateString.split("/");
-  var dateObject = new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0]);
-
-  return dateObject;
-}
-
 function checkdate(priority) {
-  debut = ddmmyyyy_to_date($('input[name="debut"]').val());
-  fin = ddmmyyyy_to_date($('input[name="fin"]').val());
+  debut = $('#debut').bootstrapDP('getDate');
+  fin = $('#fin').bootstrapDP('getDate');
 
   // Return if the first date is not given
   if (!debut) {
@@ -110,7 +97,7 @@ function checkdate(priority) {
   // If end date is not given, end = start
   if (!fin) {
     fin = debut;
-    $('#fin').val($('#debut').val());
+    $('#fin').bootstrapDP('setDate', debut);
   }
 
   start_half = $('select[name="start_halfday"]');
@@ -927,7 +914,7 @@ function update_validation_statuses() {
       $('div#validation-line').effect("highlight",null,2000);
     },
     error: function(xhr, ajaxOptions, thrownError) {
-      information("Une erreur s'est produite lors de la mise à jour de la liste des statuts");
+      information("Une erreur s'est produite lors de la mise à jour de la liste des statuts", 'error');
     }
   });
 }

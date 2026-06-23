@@ -744,25 +744,25 @@ $(function(){
     $('#alert').addClass('d-none');
   })
 
+  $("#pl-calendar").bootstrapDP({
+    format: 'yyyy-mm-dd',
+    todayHighlight: true,
+    language: Translator.locale,
+    toggleActive : true,
+  });
+
+  $("input.datepicker").bootstrapDP({
+    format: 'dd/mm/yyyy',
+    language: Translator.locale,
+    todayHighlight: true,
+    autoclose: true,
+    forceParse : false
+  });
+
+  $(".datepicker").attr('autocomplete','off');
+  $(".datepicker").attr('placeholder', Translator.trans('mm/dd/yyyy'));
+
   $(document).ready(function() {
-
-    $("#pl-calendar").bootstrapDP({
-      format: 'yyyy-mm-dd',
-      todayHighlight: true,
-      language: Translator.locale,
-      toggleActive : true,
-    });
-
-    $("input.datepicker").bootstrapDP({
-      format: 'dd/mm/yyyy',
-      language: Translator.locale,
-      todayHighlight: true,
-      autoclose: true,
-      forceParse : false
-    });
-
-    $(".datepicker").attr('autocomplete','off');
-    $(".datepicker").attr('placeholder', Translator.trans('mm/dd/yyyy'));
 
     // Message display when date input is invalid
     $('.datepicker:not(.start-date):not(.end-date)').on('change',function() {
