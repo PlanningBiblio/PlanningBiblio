@@ -107,7 +107,7 @@ class CompTimeController extends BaseController
             'conges_mode'           => '',
         ));
 
-        return $this->output('comptime/add.html.twig');
+        return $this->output('holiday/add.html.twig');
     }
 
     #[Route(path: '/comptime', name: 'comptime.save', methods: ['POST'])]

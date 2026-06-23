@@ -677,7 +677,7 @@ class HolidayController extends BaseController
 
         $this->templateParams(array('holiday_info' => $holiday_info));
 
-        return $this->output('conges/add.html.twig');
+        return $this->output('holiday/add.html.twig');
     }
 
     #[Route(path: '/holiday/accounts', name: 'holiday.accounts', methods: ['GET'])]
