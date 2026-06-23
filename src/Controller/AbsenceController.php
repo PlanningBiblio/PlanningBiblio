@@ -505,7 +505,7 @@ class AbsenceController extends BaseController
         return $this->output('absences/edit.html.twig');
     }
 
-    #[Route(path: '/absence', name: 'absence.delete', methods: ['DELETE'])]
+    #[Route(path: '/absence/delete', name: 'absence.delete', methods: ['POST'])]
     public function delete_absence(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
     {
         $session = $request->getSession();

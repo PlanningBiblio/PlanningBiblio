@@ -215,10 +215,10 @@ function plHebdoSupprime(id){
     // Suppression du planning en arrière plan
 
     $.ajax({
-      url: url('workinghour'),
-      dataType: "json",
+      url: url('workinghour/delete'),
+      type: 'post',
+      dataType: 'json',
       data: {id: id, CSRFToken: CSRFToken},
-      type: "delete",
 
       success: function(){
         // On cache la ligne du planning supprimée dans le tableau
