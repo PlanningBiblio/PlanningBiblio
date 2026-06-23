@@ -11,8 +11,8 @@ function supprimeGroupe(id){
 
   if(confirm("Etes vous sûr(e) de vouloir supprimer le groupe \""+nom+"\"?")){
     $.ajax({
-      url: url('framework-group'),
-      type: "delete",
+      url: url('framework-group/delete'),
+      type: "post",
       dataType: "json",
       data: {id: id, CSRFToken: CSRFToken},
       success: function(){
@@ -50,8 +50,8 @@ function supprimeLigne(id){
 
   if(confirm("Etes-vous sûr(e) de vouloir supprimer la ligne \""+nom+"\" ?")){
     $.ajax({
-      url: url('framework-line'),
-      type: "delete",
+      url: url('framework-line/delete'),
+      type: "post",
       dataType: "json",
       data: {id: id, CSRFToken: CSRFToken},
       success: function(){
@@ -79,8 +79,8 @@ function supprimeTableau(tableau){
   if(confirm("Etes vous sûr(e) de vouloir supprimer le tableau \""+nom+"\"?\nLes groupes utilsant ce tableau seront également supprimés")){
     var CSRFToken = $('#CSRFSession').val();
     $.ajax({
-      url: url('framework'),
-      type: "delete",
+      url: url('framework/delete'),
+      type: "post",
       dataType: "json",
       data: {tableau: tableau, CSRFToken: CSRFToken, name: nom},
       success: function(){
