@@ -624,6 +624,7 @@ class HolidayController extends BaseController
             'adminN2'               => $adminN2,
             'agents_multiples'      => $agents_multiples,
             'perso_id'              => $perso_id,
+            'is_holiday'            => true,
             'conges_recuperations'  => $this->config('Conges-Recuperations'),
             'conges_mode'           => $this->config('Conges-Mode'),
             'conges_demi_journee'   => $this->config('Conges-demi-journees'),
@@ -676,7 +677,7 @@ class HolidayController extends BaseController
 
         $this->templateParams(array('holiday_info' => $holiday_info));
 
-        return $this->output('conges/add.html.twig');
+        return $this->output('holiday/add.html.twig');
     }
 
     #[Route(path: '/holiday/accounts', name: 'holiday.accounts', methods: ['GET'])]
