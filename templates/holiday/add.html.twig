@@ -37,7 +37,7 @@
         {% if is_holiday %}
 
           {% if admin and config('Multisites-nombre') > 1 %}
-            <fieldset class="row my-2 gx-5">
+            <fieldset class="row my-2 gx-5" id="sites-selection">
               <legend class="col-auto offset-2 col-form-label pe-0" for="sites">Sites :</legend>
               <div class="col-auto" style="margin-top: 6px;">
               {% for s in sites_select %}
@@ -53,10 +53,10 @@
           {% if not admin %}
 
             <div class="row mb-2 gx-5">
-              <label class="col-2 col-form-label aRight" for="perso_ids">{% trans %}Agent{% endtrans %} :</label>
+              <label class="col-2 col-form-label aRight" for="agent">{% trans %}Agent{% endtrans %} :</label>
               <div class="col-3">
                 <input type="hidden" name="perso_id" id="perso_id" value="{{ loggedin_id }}" />
-                <input type="text" readonly class="form-control-plaintext" value="{{ loggedin_name }} {{ loggedin_firstname }}">
+                <input type="text" id="agent" readonly class="form-control-plaintext" value="{{ loggedin_name }} {{ loggedin_firstname }}">
               </div>
             </div>
 
@@ -165,7 +165,7 @@
 
           <div class="row gx-5 mb-2">
             <div class="col-3 offset-2">
-              <select name="start_halfday" style="display: none;" class="form-select form-select-sm checkdate">
+              <select id="start_halfday" name="start_halfday" style="display: none;" class="form-select form-select-sm checkdate">
                 <option value="fullday">Journée complète</option>
                 <option value="morning">Matin</option>
                 <option value="afternoon">Après-midi</option>
@@ -193,7 +193,7 @@
 
           <div class="row gx-5 mb-2">
             <div class="col-3 offset-2">
-              <select name="end_halfday" style="display: none;" class="form-select form-select-sm checkdate">
+              <select id="end_halfday" name="end_halfday" style="display: none;" class="form-select form-select-sm checkdate">
                 <option value="fullday">Journée complète</option>
                 <option value="morning">Matin</option>
                 <option value="afternoon">Après-midi</option>
@@ -277,7 +277,7 @@
             <div class="row mb-3 gx-5 hideWhenMultipleAgents">
               <div class="col-3 offset-2">
 
-                <select name="debit" class="form-select form-select-sm">
+                <select id="terms-select" name="debit" class="form-select form-select-sm">
                   <option value="recuperation">Le crédit de récupérations</option>
                   <option value="credit">Le crédit de congés de l'année en cours</option>
                 </select>
@@ -297,7 +297,7 @@
 
           <div class="row mb-2 gx-5">
             <div class="col-auto offset-2">
-              <p>Ces heures seront débitées sur les crédits de récupérations.</p>
+              <p id="terms">Ces heures seront débitées sur les crédits de récupérations.</p>
               <input type="hidden" name="debit" value="recuperation"/>
             </div>
           </div>
