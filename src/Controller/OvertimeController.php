@@ -25,6 +25,10 @@ class OvertimeController extends BaseController
     #[Route(path: '/overtime', name: 'overtime.index', methods: ['GET'])]
     public function index(Request $request, Session $session)
     {
+        if ($this->config('Conges-Enable') == 0 ) {
+            return $this->redirectToRoute('access-denied');
+        }
+
         $start = $this->initDate('start', 'overtimeStart', 'today');
         $end = $this->initDate('end', 'overtimeEnd', '+1 year');
 

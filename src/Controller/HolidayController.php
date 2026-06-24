@@ -24,6 +24,10 @@ class HolidayController extends BaseController
     #[Route(path: '/holiday', name: 'holiday.index', methods: ['GET'])]
     public function index(Request $request, Session $session): Response
     {
+        if ($this->config('Conges-Enable') == 0 ) {
+            return $this->redirectToRoute('access-denied');
+        }
+
         $session = $request->getSession();
 
         $debut = $request->query->get('debut');
@@ -39,7 +43,7 @@ class HolidayController extends BaseController
             $debut = $session->get('HolidayStart');
         }
 
-         if (!$fin) {
+        if (!$fin) {
             $fin = $session->get('HolidayEnd');
         }
 
@@ -541,6 +545,10 @@ class HolidayController extends BaseController
     #[Route(path: '/holiday/new/{perso_id}', name: 'holiday.new.new', methods: ['GET', 'POST'])]
     public function add(Request $request)
     {
+        if ($this->config('Conges-Enable') == 0 ) {
+            return $this->redirectToRoute('access-denied');
+        }
+
         $session = $request->getSession();
 
         // Initialisation des variables
@@ -685,6 +693,10 @@ class HolidayController extends BaseController
     #[Route(path: '/holiday/accounts', name: 'holiday.accounts', methods: ['GET'])]
     public function account(Request $request)
     {
+        if ($this->config('Conges-Enable') == 0 ) {
+            return $this->redirectToRoute('access-denied');
+        }
+
         $session = $request->getSession();
 
         $droits = $GLOBALS['droits'];

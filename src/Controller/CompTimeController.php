@@ -18,6 +18,10 @@ class CompTimeController extends BaseController
     #[Route(path: '/comptime/add', name: 'comptime.add', methods: ['GET'])]
     public function add(Request $request)
     {
+        if ($this->config('Conges-Recuperations') == 0  || $this->config('Conges-Enable') == 0 ) {
+            return $this->redirectToRoute('access-denied');
+        }
+
         $session = $request->getSession();
 
         $dbprefix = $GLOBALS['dbprefix'];
