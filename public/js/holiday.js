@@ -86,24 +86,24 @@ function dateChange(obj) {
 }
 
 function checkdate(priority) {
-  debut = $('#debut').bootstrapDP('getDate');
-  fin = $('#fin').bootstrapDP('getDate');
+  debut_date = $('#debut').bootstrapDP('getDate');
+  fin_date = $('#fin').bootstrapDP('getDate');
 
   // Return if the first date is not given
-  if (!debut) {
+  if (!debut_date) {
     return;
   }
 
   // If end date is not given, end = start
-  if (!fin) {
-    fin = debut;
-    $('#fin').bootstrapDP('setDate', debut);
+  if (!fin_date) {
+    $('#fin').bootstrapDP('setDate', debut_date);
+    date_fin = $('#fin').bootstrapDP('getDate');
   }
 
   start_half = $('select[name="start_halfday"]');
   end_half = $('select[name="end_halfday"]');
 
-  if (debut.getTime() === fin.getTime()) {
+  if (debut_date.getTime() === fin_date.getTime()) {
     resetSelect();
 
     if (priority == 'end') {
