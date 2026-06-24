@@ -35,11 +35,15 @@ class HolidayController extends BaseController
 
         $lang = $GLOBALS['lang'];
 
+        if ($this->config('Conges-Enable') == 0 ){
+            return $this->redirectToRoute('access-denied');
+        }
+
         if (!$debut) {
             $debut = $session->get('HolidayStart');
         }
 
-         if (!$fin) {
+        if (!$fin) {
             $fin = $session->get('HolidayEnd');
         }
 
@@ -560,6 +564,10 @@ class HolidayController extends BaseController
             $perso_id = $session->get('loginId');
         }
 
+        if ($this->config('Conges-Enable') == 0 ){
+            return $this->redirectToRoute('access-denied');
+        }
+
         $sites_select = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('holiday')
@@ -685,6 +693,11 @@ class HolidayController extends BaseController
     #[Route(path: '/holiday/accounts', name: 'holiday.accounts', methods: ['GET'])]
     public function account(Request $request)
     {
+
+        if ($this->config('Conges-Enable') == 0 ){
+            return $this->redirectToRoute('access-denied');
+        }
+
         $session = $request->getSession();
 
         $droits = $GLOBALS['droits'];
