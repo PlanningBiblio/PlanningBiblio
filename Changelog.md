@@ -1,5 +1,28 @@
 # Changelog Planno
 
+## Version 26.04.02 (2026-06-25)
+
+### Enhancement
+
+* MT46629: Convert PasswordLength type param from text to number #1383
+* MT46629: Use of Boostrap grid for planning's menu #1412
+* MT52706: Add descriptive tooltips and controls to the position form #1413
+* MT46629: Use Bootstrap alert in group edition #1415
+
+### Fixes
+
+* MT53764: Fix unit test WorkingHourExportCommand #1407
+* BugFix: duplicate name in select on edit absence #1408
+* MT53830: Fix AbsenceImportCSVCommand #1409
+* Bugfix: valid itemIsActive on navbar for Conges dropdown #1411
+* MT53893: Show only undeleted skills in agent records #1414
+* MT53921: Fix template/workinghour/edit.html.twig #1416
+* MT53977: Fix access control for editing plannings #1423
+
+### Security
+
+* Replace HTTP DELETE methods with POST methods #1420
+
 ## Version 26.04.01 (2026-06-11)
 
 ### Fixes
