@@ -1,5 +1,11 @@
 # Changelog Planno
 
+## Version 25.10.21 (2026-06-25)
+
+### Fixes
+
+* BugFix: duplicate name in select on edit absence
+
 ## Version 25.10.20 (2026-06-11)
 
 ### Fixes
