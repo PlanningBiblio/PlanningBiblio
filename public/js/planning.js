@@ -1210,6 +1210,10 @@ function bataille_navale(poste, date, debut, fin, perso_id, barrer, ajouter, sit
     },
 
     success: function(response) {
+      if (response.error) {
+        CJInfo(Translator.trans(response.error), 'error');
+      }
+
       if (response.undoable == 1) {
         enableUndo();
       }
