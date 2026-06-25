@@ -993,10 +993,10 @@ class PlanningController extends BaseController
      * Cette page est appelée par la function JavaScript "bataille_navale" utilisé par le fichier planning/poste/menudiv.php
      */
     #[Route(path: '/planning/update-cell', name: 'planning.update.cell', methods: ['POST'])]
-    public function updateCell(Request $request)
+    public function updateCell(Request $request): Response
     {
         if (!$this->csrf_protection($request)) {
-            return $this->redirectToRoute('access-denied');
+            return new Response(json_encode(['error' => 'The CSRF token is invalid. Please try to resubmit the form.']));
         }
 
         $ajouter = $request->get('ajouter');
@@ -1030,7 +1030,15 @@ class PlanningController extends BaseController
 
         $barrer = intval($barrer);
 
-        // Pärtie 1 : Enregistrement des nouveaux éléments
+        // Sécurité
+        // Refuser l'accès aux agents n'ayant pas les droits de modifier le planning
+        $droits_agent = $_SESSION['droits'];
+
+        if (!in_array((300 + $site), $droits_agent) and !in_array((1000 + $site), $droits_agent)) {
+            return new Response(json_encode(['error' => 'Access denied.']));
+        }
+
+        // Partie 1 : Enregistrement des nouveaux éléments
 
         // Suppression ou marquage absent
         if (is_numeric($perso_id) and $perso_id == 0) {
@@ -1452,7 +1460,6 @@ class PlanningController extends BaseController
 
         // Sécurité
         // Refuser l'accès aux agents n'ayant pas les droits de modifier le planning
-        $droit = ($this->config['Multisites-nombre'] > 1) ? (300 + $site) : 12;
         $droits_agent = $_SESSION['droits'];
 
         if (!in_array((300 + $site), $droits_agent) and !in_array((1000 + $site), $droits_agent)) {

@@ -272,9 +272,9 @@
 "planning.refresh":
     - 100
 "planning.validation":
-    - 301
+    - 100
 "planning.update.cell":
-    - 301
+    - 100
 "planningjob.contextmenu":
     - 100
 "planningjob.undo":

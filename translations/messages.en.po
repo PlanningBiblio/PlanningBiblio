@@ -283,6 +283,9 @@ msgstr "Days off"
 msgid "Access rights"
 msgstr "Access rights"
 
+msgid "Access denied."
+msgstr "Access denied."
+
 msgid "Yes"
 msgstr "Yes"
 
