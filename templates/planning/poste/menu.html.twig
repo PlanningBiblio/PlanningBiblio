@@ -24,11 +24,13 @@
       </div>
 
       {% if not week_view %}
-        <div class="row nowrap" id="date_planning">
-          Planning du {{ date | datefull }}
-          {% if public_holiday %}
-            <font id='ferie'>{{ public_holiday }}</font>
-          {% endif %}
+        <div class="row" id="date_planning">
+          <span class="p-0 nowrap">
+            Planning du {{ date | datefull }}
+            {% if public_holiday %}
+              <font id='ferie'>{{ public_holiday }}</font>
+            {% endif %}
+          </span>
         </div>
       {% endif %}
 
