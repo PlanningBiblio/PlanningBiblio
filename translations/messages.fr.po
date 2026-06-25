@@ -283,6 +283,9 @@ msgstr "Congés"
 msgid "Access rights"
 msgstr "Droits d'accès"
 
+msgid "Access denied."
+msgstr "Accès refusé."
+
 msgid "Yes"
 msgstr "Oui"
 
