@@ -30,7 +30,7 @@ final class Version20260330081018 extends AbstractMigration
             DEFAULT CHARSET=utf8mb4 
             COLLATE=utf8mb4_unicode_ci;");
 
-        $this->addSql("INSERT INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `technical`, `ordre`) VALUES 
+        $this->addSql("INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `commentaires`, `categorie`, `valeurs`, `technical`, `ordre`) VALUES 
             ('PlanningHebdo-resetCycles', 'boolean', '0', '$configComment',
             'Heures de présence', '', 0, 45);");
     }
