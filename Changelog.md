@@ -1,5 +1,12 @@
 # Changelog Planno
 
+## Version 26.05.03 (2026-06-26)
+
+### Fixes
+
+* MT53990: Delete Mutation Observer #1425
+  * The mutation observer prevented the submission of certain forms. E.g.: Framework forms.
+
 ## Version 26.05.02 (2026-06-25)
 
 ### Enhancement
