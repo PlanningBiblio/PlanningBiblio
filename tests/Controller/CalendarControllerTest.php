@@ -31,13 +31,14 @@ class CalendarControllerTest extends PLBWebTestCase
             )
         );
 
+        $conn = $this->entityManager->getConnection();
+        $conn->executeStatement('DELETE FROM site');
+        foreach (['Site N°1', 'Site N°2', 'Site N°3', 'Site N°4'] as $i => $name) {
+            $conn->executeStatement('INSERT INTO site (id, name, deletedDate) VALUES (?, ?, NULL)', array($i + 1, $name));
+        }
+
         $this->logInAgent($agent2, array(3,100));
 
-        $GLOBALS['config']['Multisites-nombre'] = 4;
-        $GLOBALS['config']['Multisites-site1'] = 'Site N°1';
-        $GLOBALS['config']['Multisites-site2'] = 'Site N°2';
-        $GLOBALS['config']['Multisites-site3'] = 'Site N°3';
-        $GLOBALS['config']['Multisites-site4'] = 'Site N°4';
         $crawler = $this->client->request('GET', "/calendar", array(
             'debut' => '26/09/2022',
             'fin' => '29/09/2022',

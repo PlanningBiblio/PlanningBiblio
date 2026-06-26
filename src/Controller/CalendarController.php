@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 use App\Entity\AbsenceReason;
+use App\Entity\Site;
 use App\Planno\ClosingDay;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -84,8 +85,8 @@ class CalendarController extends BaseController
 
         //Plannings verrouillés
         $verrou = array();
-        $nbSites = $this->config('Multisites-nombre');
-        for ($i = 1; $i <= $nbSites; $i++){
+        $sites_array = $session->get('sites', []);
+        for ($i = 1; $i <= count($sites_array); $i++){
             $verrou[$i]=array();
         }
 
@@ -273,11 +274,17 @@ class CalendarController extends BaseController
             // Si l'agent n'est pas absent toute la journée : affiche ses heures de présences
             $presence = array();
             if (!$absent) {
-                $site_name = $this->config('Multisites-site1');
+                $s = $GLOBALS['entityManager']->getRepository(Site::class)->find(1);
+                $site_name = $s->getName();
                 $site = 1;
-                if ($nbSites > 1 and isset($horaires[4])) {
+                if (count($sites_array) > 1 and isset($horaires[4])) {
                     $site = $horaires[4];
-                    $site_name = $site != '-1' ? $this->config("Multisites-site$site") : '';
+                    if ($site != '-1') {
+                        $s = $GLOBALS['entityManager']->getRepository(Site::class)->find($site);
+                        $site_name = $s->getName();
+                    } else {
+                        $site_name = '';
+                    }
                 }
                 $schedule = array();
                 if (!empty($horaires[0]) and !empty($horaires[1])) {
@@ -391,12 +398,10 @@ class CalendarController extends BaseController
             "days"        => $days,
             'end'         => $end->format('d/m/Y'),
             'endSQL'      => $endSQL,
-            "nbSites"     => $nbSites,
+            "nbSites"     => count($sites_array),
             "perso_id"    => $perso_id
         ));
 
         return $this->output('calendar/index.html.twig');
     }
 }
-
-?>

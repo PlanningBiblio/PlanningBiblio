@@ -19,6 +19,7 @@ use App\Entity\AbsenceReason;
 use App\Entity\AbsenceDocument;
 use App\Entity\PlanningPosition;
 use App\Entity\PlanningPositionLock;
+use App\Entity\Site;
 use App\Planno\WorkingHours;
 use App\Planno\ClosingDay;
 use App\Service\ICalendar;
@@ -76,7 +77,7 @@ class absences
     {
     }
 
-  
+
     /** @function add()
      * Enregistre une nouvelle absence dans la base de données, créé les fichiers ICS pour les absences récurrentes (appel de la methode ics_add_event), envoie les notifications
      * @params : tous les éléments nécessaires à la création d'une absence. Les dates de debut et de fin sont attendues au format d/m/Y
@@ -463,7 +464,7 @@ class absences
             $p=new personnel();
             $p->fetch();
             $agents=$p->elements;
-      
+
             // Calcul des heures d'absences
             $heures=array();
             if (!empty($absences)) {
@@ -471,13 +472,13 @@ class absences
                 foreach ($absences as $key => $value) {
                     $perso_id=$value['perso_id'];
                     $h1=array_key_exists($perso_id, $heures)?$heures[$perso_id]:0;
-      
+
                     // Si $h1 n'est pas un nombre ("N/A"), une erreur de calcul a été enregistrée. Donc on ne continue pas le calcul.
                     // $heures[$perso_id] restera "N/A"
                     if (!is_numeric($h1)) {
                         continue;
                     }
-      
+
                     $a=new absences();
                     $a->debut = max($value['debut'], "$j1 00:00:00");
                     $a->fin = min($value['fin'], "$j7 23:59:59");
@@ -512,7 +513,7 @@ class absences
 
         return (array) $heures;
     }
-  
+
     /**
     * @function calculTemps2
     * @param debut string, date de début au format YYYY-MM-DD [H:i:s]
@@ -633,7 +634,7 @@ class absences
         $this->heures2=heure4(number_format($this->heures, 2, '.', ''));    // heures et minutes (ex: 2h30 => 2h30)
     }
 
-  
+
     /**
     * @method check
     * @param int $perso_id
@@ -655,11 +656,11 @@ class absences
         }
 
         $filter=array("perso_id"=>$perso_id, "debut"=>"<$fin", "fin"=>">$debut");
-    
+
         if ($valide==true or $GLOBALS['config']['Absences-validation']==0) {
             $filter["valide"]=">0";
         }
-    
+
         $db=new db();
         $db->select2("absences", null, $filter);
         return (bool) $db->result;
@@ -734,17 +735,18 @@ class absences
 
         $all=array();
         $groupes=array();
+        $sites_entities = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(['deletedDate' => NULL]);
         if ($db->result) {
             foreach ($db->result as $elem) {
-      
+
         // Multisites, n'affiche que les agents des sites choisis
-                if (!empty($sites)) {
-                    if ($GLOBALS['config']['Multisites-nombre'] > 1) {
+                if (!empty($sites_entities)) {
+                    if (count($sites_entities) > 1) {
                         $sitesAgent = json_decode(html_entity_decode($elem['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
                     } else {
                         $sitesAgent = array(1);
                     }
-          
+
                     $keep = false;
 
                     if (is_array($sitesAgent)) {
@@ -776,7 +778,7 @@ class absences
                     // Le groupe est complété de la date et heure de début et de fin pour qu'il soit unique pour chaque occurence (si récurrence)
                     $groupe = $elem['groupe'].$elem['debut'].$elem['fin'];
                 }
-        
+
                 // N'ajoute qu'une ligne pour les membres d'un groupe si $this->true
                 if ($this->groupe and $groupe and in_array($groupe, $groupes)) {
                     continue;
@@ -787,7 +789,7 @@ class absences
                     // Pour ne plus afficher les membres du groupe par la suite
                     $groupes[]=$groupe;
                     $elem['absdocs'] = array();
-      
+
                     // Ajoute les ID des autres agents appartenant à ce groupe
                     $perso_ids=array();
                     $agents=array();
@@ -838,10 +840,10 @@ class absences
             }
         }
 
-    
+
         //	By default $result=$all
         $result=$all;
-    
+
         //	If name, keep only matching results
         if (is_array($all) and $agent) {
             $result=array();
@@ -860,17 +862,17 @@ class absences
                 }
             }
         }
-    
+
         // Filtre Unique : supprime les absences qui se chevauchent pour ne pas les compter plusieurs fois dans les calculs.
         // Ce filtre ne doit être utilisé que pour le calcul des heures et avec le filtre valide=true
 
         if ($this->unique) {
             usort($result, 'cmp_perso_debut_fin');
             $cles_a_supprimer = array();
-      
+
             $last = 0;
             for ($i=1; $i<count($result); $i++) {
-      
+
         // Comparaisons : différents cas de figures
                 //   |-----------------------------|      $last
                 //   |-----------------------------|      $i    debut[$i] = debut[$last] and fin[$i] = fin[$last]  --> debut[$i] >= debut[$last] and fin[$i] <= fin[$last]*  --> supprime $i
@@ -878,15 +880,15 @@ class absences
                 //      |---------------------|           $i    debut[$i] > debut[$last] and fin[$i] < fin[$last]  --> debut[$i] >= debut[$last] and fin[$i] <= fin[$last]*  --> supprime $i
                 //      |--------------------------|      $i    debut[$i] > debut[$last] and fin[$i] = fin[$last]  --> debut[$i] >= debut[$last] and fin[$i] <= fin[$last]*  --> supprime $i
                 //      |-------------------------------| $i    debut[$i] > debut[$last] and fin[$i] > fin[$last]  --> fin[$last] = debut[$i], $i ne change pas
-        
-        
+
+
                 // *Condition : debut[$i] >= debut[$last] and fin[$i] <= fin[$last]
                 // |-------------------------------|    $last
                 // |-------------------------------|    $i
                 // |--------------------------|         $i
                 //      |--------------------------|    $i
                 //      |---------------------|         $i
-        
+
                 if ($result[$i]['perso_id'] == $result[$last]['perso_id'] and $result[$i]['debut'] < $result[$last]['fin']) {
                     if ($result[$i]['debut'] >= $result[$last]['debut'] and $result[$i]['fin'] <= $result[$last]['fin']) {
                         $cles_a_supprimer[] = $i;
@@ -907,7 +909,7 @@ class absences
                 unset($result[$elem]);
             }
         }
-    
+
         if ($result !== []) {
             $this->elements=$result;
         }
@@ -1066,7 +1068,8 @@ class absences
         $responsables=array();
         $droitsAbsences=array();
         //	Si plusieurs sites et agents autorisés à travailler sur plusieurs sites, vérifions dans l'emploi du temps quels sont les sites concernés par l'absence
-        if ($GLOBALS['config']['Multisites-nombre']>1) {
+        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(['deletedDate' => NULL]);
+        if (count($sites) > 1) {
             $db=new db();
             $db->select("personnel", "temps", "id='$perso_id'");
             $temps=json_decode(html_entity_decode($db->result[0]['temps'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
@@ -1106,8 +1109,10 @@ class absences
 
             // Si les jours d'absences ne concernent aucun site, on ajoute les responsables de tous les sites par sécurité
             if (empty($droitsAbsences)) {
-                for ($i=1;$i<=$GLOBALS['config']['Multisites-nombre'];$i++) {
-                    $droitsAbsences[] = $droit + $i;
+                foreach ($sites as $site) {
+                    if (!in_array(($droit + $site->getId()), $droitsAbsences)) {
+                        $droitsAbsences[] = $droit + $site->getId();
+                    }
                 }
             }
         }
@@ -1207,7 +1212,7 @@ class absences
     }
 
 
-  
+
     /** @function getRecipients2
      * Si le paramètre "Absences-notifications-agent-par-agent" est coché,
      * les notifications de modification d'absence sans validation sont envoyés aux responsables enregistrés dans dans la page Validations / Notifications
@@ -1447,7 +1452,7 @@ class absences
         $this->ics_get_event();
         $ics_event = $this->elements;
         $perso_id = $this->perso_id;
-    
+
         if ($ics_event) {
             // On modifie la date LAST-MODIFIED
             $ics_event = preg_replace("/LAST-MODIFIED:.[^\n]*\n/", "LAST-MODIFIED:".gmdate('Ymd\THis\Z')."\n", $ics_event);
@@ -1519,7 +1524,7 @@ class absences
      */
     public function ics_get_event(): void
     {
-  
+
     // Récupère l'événement depuis la base de données
         $where = array('uid' => $this->uid);
         if (!empty($this->perso_id)) {
@@ -1528,7 +1533,7 @@ class absences
 
         $db = new db();
         $db->select2('absences_recurrentes', 'event', $where);
-    
+
         if ($db->result) {
             $this->elements = $db->result[0]['event'];
         }
@@ -1798,7 +1803,7 @@ class absences
             $file = "$folder/PBCalendar-$perso_id.ics";
 
             file_put_contents($file, $ics_event);
-      
+
             $db = new db();
             $db->CSRFToken = $this->CSRFToken;
             $db->update('absences_recurrentes', array('event' => $ics_event, 'end' => '1', 'last_update' => 'SYSDATE'), array('uid' => $this->uid, 'perso_id' => $perso_id));
@@ -1813,7 +1818,7 @@ class absences
             $ics->logs = true;
             $ics->CSRFToken = $this->CSRFToken;
             $ics->updateTable();
-      
+
             // On supprime le fichier
             unlink($file);
         }
@@ -1834,16 +1839,15 @@ class absences
     {
         $version="absences";
         require_once 'class.postes.php';
-
         global $entityManager;
-  
+
         $debut=dateSQL($this->debut);
         $fin=dateSQL($this->fin);
         $perso_ids=implode(",", $this->perso_ids);
 
         $dateDebut=substr($debut, 0, 10);
         $dateFin=substr($fin, 0, 10);
-    
+
         $heureDebut=substr($debut, 11);
         $heureFin=substr($fin, 11);
 
@@ -1862,12 +1866,13 @@ class absences
         $p=new postes();
         $p->fetch();
         $postes=$p->elements;
-    
+
         // Nom des sites
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(['deletedDate' => NULL]);
         $sites=array(1=>null);
-        if ($GLOBALS['config']['Multisites-nombre']>1) {
-            for ($i=1;$i<=$GLOBALS['config']['Multisites-nombre'];$i++) {
-                $sites[$i]=$GLOBALS['config']["Multisites-site$i"];
+        if (count($sites_array)>0){
+            foreach ($sites_array as $s) {
+                $sites[$s->getId()]=$s->getName();
             }
         }
 
@@ -1898,11 +1903,11 @@ class absences
                 ];
             }
         }
-    
+
         // Création du message
         // Par défaut, message = aucun planning n'est concerné
         $message="<p>Aucun planning n&apos;est affect&eacute; par cette absence.</p>";
-    
+
         // Si des plannings sont concernés
         if (!empty($plannings)) {
             // Fusionne les plages horaires si sur le même poste sur des plages successives
@@ -1920,7 +1925,7 @@ class absences
                 }
             }
             $plannings=$tmp;
-      
+
             // Rédaction du message
             $message="<p><strong>Les plannings suivants sont affect&eacute;s par cette absence :</strong><ul>\n";
             $lastDate=null;
@@ -1936,7 +1941,7 @@ class absences
             }
             $message.="</ul></li></ul></p>\n";
         }
-    
+
         $this->message=$message;
     }
 

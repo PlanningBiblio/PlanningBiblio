@@ -129,16 +129,14 @@ class AgentRepositoryTest extends PLBWebTestCase
 
         $perso_ids = array($mike->getId(), $eric->getId());
 
-        $GLOBALS['config']['Multisites-nombre'] = 1;
-        $sites = $this->entityManager->getRepository(Agent::class)->getSitesForAgents($perso_ids);
+        $sites = $this->entityManager->getRepository(Agent::class)->getSitesForAgents($perso_ids, array(1));
         $this->assertEquals($sites, array('1'));
 
-        $GLOBALS['config']['Multisites-nombre'] = 3;
-        $sites = $this->entityManager->getRepository(Agent::class)->getSitesForAgents($perso_ids);
+        $sites = $this->entityManager->getRepository(Agent::class)->getSitesForAgents($perso_ids, array(1, 2, 3));
         $this->assertEquals($sites, array('1', '2', '3'));
 
         $agent3 = $this->createAgent(array('login' => 'Melvin', 'prenom' => 'Melvin', 'supprime' => 0, 'actif' => 'Actif', 'sites' => []));
-        $sites = $this->entityManager->getRepository(Agent::class)->getSitesForAgents(array($agent3->getId()));
+        $sites = $this->entityManager->getRepository(Agent::class)->getSitesForAgents(array($agent3->getId()), array(1, 2, 3));
         $this->assertEquals($sites, array());
 
     }

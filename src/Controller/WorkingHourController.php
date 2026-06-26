@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Agent;
 use App\Entity\WorkingHour;
+use App\Entity\Site;
 use App\Planno\Helper\HourHelper;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,7 +24,7 @@ class WorkingHourController extends BaseController
     private $workinghours = array();
 
     #[Route(path: '/ajax/workinghour-tables', name: 'ajax.workinghourtables', methods: ['GET'])]
-    public function tables(Request $request)
+    public function tables(Request $request, Session $session): Response
     {
 
         $nbSemaine = $request->get('weeks');
@@ -67,10 +68,12 @@ class WorkingHourController extends BaseController
         $p = new \personnel();
         $p->fetchById($perso_id);
         $sites = $p->elements[0]['sites'];
-        $nbSites = $this->config('Multisites-nombre');
+        $sites_array = $session->get('sites', []);
+        $nbSites = count($sites_array);
         $multisites = array();
         foreach ($sites as $site) {
-            $multisites[$site] = $this->config("Multisites-site{$site}");
+            $s = $GLOBALS['entityManager']->getRepository(Site::class)->find($site);
+            $multisites[$site] = $s ? $s->getName() : "Site $site";
         }
 
         if ($ph_id != null) {
@@ -169,7 +172,7 @@ class WorkingHourController extends BaseController
         list($adminN1, $adminN2) = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('workinghour')
-            ->getValidationLevelFor($session->get('loginId'));
+            ->getValidationLevelFor($session->get('loginId'), 'A', $session->get('sites'));
 
         $notAdmin = !($adminN1 or $adminN2);
         $admin = ($adminN1 or $adminN2);
@@ -178,7 +181,7 @@ class WorkingHourController extends BaseController
         $managed = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('workinghour')
-            ->getManagedFor($session->get('loginId'));
+            ->getManagedFor($session->get('loginId'), 0, $session->get('sites'));
         $perso_ids = array_map(function($a) { return $a->getId(); }, $managed);
 
         // Recherche des plannings
@@ -288,9 +291,9 @@ class WorkingHourController extends BaseController
             ->getRepository(Agent::class)
             ->setModule('workinghour')
             ->forAgent($perso_id)
-            ->getValidationLevelFor($session->get('loginId'));
+            ->getValidationLevelFor($session->get('loginId'), 'A', $session->get('sites'));
 
-        $this->templateParams($this->getStatusesParams(array($perso_id), 'workinghour'));
+        $this->templateParams($this->getStatusesParams(array($perso_id), 'workinghour', null, 'A', $session->get('sites')));
 
         $notAdmin = !($adminN1 or $adminN2);
         $admin = ($adminN1 or $adminN2);
@@ -302,21 +305,22 @@ class WorkingHourController extends BaseController
         $remplace = null;
         $sites = array();
         $nbSemaine = $this->config('nb_semaine');
-        $nbSites = $this->config('Multisites-nombre');
+        $sites_array = $session->get('sites', []);
+        $nbSites = count($sites_array);
         $multisites = array();
 
         $managed = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('workinghour')
-            ->getManagedFor($session->get('loginId'));
+            ->getManagedFor($session->get('loginId'), 0, $session->get('sites'));
 
         if (!$admin && !$this->config('PlanningHebdo-Agents') && count($managed) < 2 ) {
             return $this->redirectToRoute('access-denied');
         }
 
-        for ($i = 1; $i < $nbSites+1; $i++) {
-            $sites[] = $i;
-            $multisites[$i] = $this->config("Multisites-site{$i}");
+        foreach ($sites_array as $s) {
+            $sites[] = $s['id'];
+            $multisites[$s['id']] = $s['name'];
         }
 
         $nomAgent = nom($perso_id, "prenom nom");
@@ -375,13 +379,14 @@ class WorkingHourController extends BaseController
         $lang = $GLOBALS['lang'];
         $pause2_enabled = $this->config('PlanningHebdo-Pause2');
         $nbSemaine = $this->config('nb_semaine');
-        $nbSites = $this->config('Multisites-nombre');
+        $sites_array = $session->get('sites', []);
+        $nbSites = count($sites_array);
         $validation = "";
         $sites = array();
         $multisites = array();
-        for ($i = 1; $i < $nbSites+1; $i++) {
-            $sites[] = $i;
-            $multisites[$i] = $this->config("Multisites-site{$i}");
+        foreach ($sites_array as $s) {
+            $sites[] = $s['id'];
+            $multisites[$s['id']] = $s['name'];
         }
         $exception_back = '/myaccount';
         if ($retour != '/myaccount') {
@@ -425,10 +430,10 @@ class WorkingHourController extends BaseController
             ->getRepository(Agent::class)
             ->setModule('workinghour')
             ->forAgent($perso_id)
-            ->getValidationLevelFor($session->get('loginId'));
+            ->getValidationLevelFor($session->get('loginId'), 'A', $session->get('sites'));
         $admin = ($this->adminN1 or $this->adminN2);
 
-        $this->templateParams($this->getStatusesParams(array($perso_id), 'workinghour', $id));
+        $this->templateParams($this->getStatusesParams(array($perso_id), 'workinghour', $id, 'A', $session->get('sites')));
 
         if (!$admin && $perso_id != $session->get('loginId')) {
             return $this->redirectToRoute('access-denied');
@@ -476,7 +481,7 @@ class WorkingHourController extends BaseController
         $managed = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('workinghour')
-            ->getManagedFor($session->get('loginId'));
+            ->getManagedFor($session->get('loginId'), 0, $session->get('sites'));
 
         // The followings variables are only used when $cle is defined, but we need to initialize them to avoid errors.
         $selected1 = false;

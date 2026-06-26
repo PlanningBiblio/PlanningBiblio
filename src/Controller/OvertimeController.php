@@ -37,7 +37,7 @@ class OvertimeController extends BaseController
         list($admin, $adminN2) = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('holiday')
-            ->getValidationLevelFor($session->get('loginId'));
+            ->getValidationLevelFor($session->get('loginId'), 'A', $session->get('sites'));
 
         if (($admin or $adminN2) and $perso_id === null) {
             $perso_id = isset($_SESSION['oups']['recup_perso_id'])
@@ -72,7 +72,7 @@ class OvertimeController extends BaseController
         $managed = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('holiday')
-            ->getManagedFor($session->get('loginId'));
+            ->getManagedFor($session->get('loginId'), 0, $session->get('sites'));
 
         $perso_ids = array_map(function($a) { return $a->getId(); }, $managed);
 
@@ -192,14 +192,14 @@ class OvertimeController extends BaseController
             ->getRepository(Agent::class)
             ->setModule('holiday')
             ->forAgent($perso_id)
-            ->getValidationLevelFor($session->get('loginId'));
+            ->getValidationLevelFor($session->get('loginId'), 'A', $session->get('sites'));
 
         // Prevent non manager to access other agents request.
         if (!$adminN1 and !$adminN2 and $perso_id != $session->get('loginId')) {
             return $this->output('access-denied.html.twig');
         }
 
-        $this->templateParams($this->getStatusesParams(array($perso_id), 'overtime', $id));
+        $this->templateParams($this->getStatusesParams(array($perso_id), 'overtime', $id, 'A', $session->get('sites')));
 
 
         // Initialisation des variables (suite)
@@ -256,7 +256,7 @@ class OvertimeController extends BaseController
             ->getRepository(Agent::class)
             ->setModule('holiday')
             ->forAgent($perso_id)
-            ->getValidationLevelFor($session->get('loginId'));
+            ->getValidationLevelFor($session->get('loginId'), 'A', $session->get('sites'));
 
 
         // Update hours.
