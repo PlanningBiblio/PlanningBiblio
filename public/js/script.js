@@ -737,47 +737,6 @@ function position(object,top,left){
 // Initialisations JQuery-UI / Bootstrap
 $(function(){
 
-  /* 
-    The following code allows .form-control elements to have inline 
-    validity messages with the default BS validity comportment 
-
-    The necessary template structure for it to work is the following :
-      <div class="col-?">
-        <input class="form-control"/>
-      </div>
-      <div class="col-auto">
-        <div class="invalid-feedback"></div>
-      </div>
-  */
-
-  // Select the item to keep track of
-  const element = document.querySelector('.form-control');
-
-  // Create a MutationObserver
-  const observer = new MutationObserver((mutations) => {
-    mutations.forEach((mutation) => {
-      inline_feedback = element.parentNode.nextElementSibling.children[0];
-      if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-
-        // If .is-invalid class is added to the element, show the inline feedback 
-        if (element.classList.contains('is-invalid')) {
-          inline_feedback.classList.add('d-flex');
-        }
-
-        // If .is-invalid class is removed from the element, hide the inline feedback 
-        if (!element.classList.contains('is-invalid')) {
-          inline_feedback.classList.remove('d-flex');
-        }
-      }
-    });
-  });
-
-  // Configurate the observer to keep track of attributes changes, specifically class addition and deletion
-  observer.observe(element, {
-    attributes: true,
-    attributeFilter: ['class']
-  });
-
   $('form').on('submit', function(e){
     if (this.checkValidity() === false || $('.is-invalid').length > 0) {
       e.preventDefault();
