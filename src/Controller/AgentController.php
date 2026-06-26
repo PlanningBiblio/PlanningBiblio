@@ -227,10 +227,17 @@ class AgentController extends BaseController
         $managersMails = array_map('trim', $managersMails);
         $sites = $agent->getSites();
 
+        $sitesSelect = [];
+
         // Multi-sites
         if ($this->config['Multisites-nombre'] > 1) {
-            $sitesSelect = [];
             for ($i = 1; $i <= $this->config['Multisites-nombre']; $i++) {
+
+                // Avoid displaying unamed or deleted sites
+                if (empty($this->config['Multisites-site' . $i])) {
+                    continue;
+                }
+
                 $sitesSelect[] = [
                     'id' => $i,
                     'name' => $this->config("Multisites-site$i"),
@@ -327,16 +334,11 @@ class AgentController extends BaseController
             $rights[ $elem['categorie'] ]['rights'][] = $elem;
         }
 
+        $rights_sites = [];
+
         // Affichage des droits d'accès dépendant des sites (si plusieurs sites)
         if ($this->config('Multisites-nombre') > 1) {
-            $sites_for_rights = array();
-            for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
-                $sites_for_rights[] = array( 'site_name' => $this->config("Multisites-site$i") );
-            }
 
-            $this->templateParams(array('sites_for_rights' => $sites_for_rights));
-
-            $rights_sites = array();
             foreach ($accessgroupsBySite as $elem) {
                 // N'affiche pas les droits de gérer les congés si le module n'est pas activé
                 if (!$this->config('Conges-Enable') and in_array($elem['groupe_id'], array(25, 401, 601))) {
@@ -356,6 +358,12 @@ class AgentController extends BaseController
 
                 $elem['sites'] = array();
                 for ($i = 1; $i < $this->config('Multisites-nombre') +1; $i++) {
+
+                    // Avoid displaying unamed or deleted sites
+                    if (empty($this->config['Multisites-site' . $i])) {
+                        continue;
+                    }
+
                     $groupe_id = $elem['groupe_id'] - 1 + $i;
 
                     $checked = in_array($groupe_id, $access);
