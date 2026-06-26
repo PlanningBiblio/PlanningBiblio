@@ -90,6 +90,11 @@ class Menu
         
             $i=0;
             foreach ($keys2 as $key2) {
+                // Avoid displaying empty items, such as a deleted site under the planning menu.
+                if (empty($elements[$key][$key2]['titre'])) {
+                  continue;
+                }
+
                 $menu_js[$key]['items'][$i] = array(
                     'key' => $key,
                     'url' => $elements[$key][$key2]['url'],
