@@ -99,7 +99,7 @@
                       <input type="checkbox" name="allday" class="checkdate" checked="checked" />
                     </td>
                   </tr>
-                {% elseif conges_demi_journee %}
+                {% elseif conges_mode == 'jours' and conges_demi_journee %}
                   <tr>
                     <td style="padding-top:15px;">Demi-journée(s) : </td>
                     <td style="padding-top:15px;">
