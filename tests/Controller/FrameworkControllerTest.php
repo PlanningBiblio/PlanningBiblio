@@ -304,7 +304,7 @@ class FrameworkControllerTest extends PLBWebTestCase
         $result = $crawler->filterXPath('//h3');
         $this->assertEquals($result->text(),"Nouveau groupe");
 
-        $result = $crawler->filter('label[for="Nom"]');
+        $result = $crawler->filter('label[for="group-name"]');
         $this->assertEquals($result->text(),"Nom du groupe :");
 
         $result = $crawler->filter('p');
