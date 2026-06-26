@@ -185,6 +185,8 @@ class AgentControllerTest extends PLBWebTestCase
     public function testEditFormElement(): void {
 
         $GLOBALS['config']['Multisites-nombre'] = 2;
+        $GLOBALS['config']['Multisites-site1'] = 'Site 1';
+        $GLOBALS['config']['Multisites-site2'] = 'Site 2';
         $GLOBALS['config']['Granularite'] = 30;
         $GLOBALS['config']['LDAP-Host'] = '';
         $GLOBALS['config']['LDAP-Suffix'] = '';
@@ -203,8 +205,6 @@ class AgentControllerTest extends PLBWebTestCase
         ));
 
         $id = $jdupont->getId();
-
-        //$this->login($kboivin);
 
         $this->logInAgent($kboivin, $kboivin->getACL());
         $crawler = $this->client->request('GET', "/agent/$id");
@@ -241,6 +241,9 @@ class AgentControllerTest extends PLBWebTestCase
         $this->assertStringContainsString('E-mails des responsables :', $result->text('Node does not exist', false));
         $this->assertStringContainsString('Informations :', $result->text('Node does not exist', false));
         $this->assertStringContainsString('Identifiant :', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Identifiant :', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Site 1', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Site 2', $result->text('Node does not exist', false));
 
         $result = $crawler->filterXPath('//input[@name="nom"]');
         $this->assertEquals('Dupont', $result->attr('value'));
@@ -337,6 +340,16 @@ class AgentControllerTest extends PLBWebTestCase
         $this->assertStringContainsString('Accès aux statistiques Présents / Absents', $result->text('Node does not exist', false));
         $this->assertStringContainsString('Gestion des jours fériés', $result->text('Node does not exist', false));
         $this->assertStringContainsString('Informations', $result->text('Node does not exist', false));
+
+
+        // Remove a site name
+        $GLOBALS['config']['Multisites-site2'] = '';
+
+        $crawler = $this->client->request('GET', "/agent/$id");
+        $result = $crawler->filterXPath('//table[@style="width:90%;"]');
+
+        $this->assertStringContainsString('Site 1', $result->text('Node does not exist', false));
+        $this->assertStringNotContainsString('Site 2', $result->text('Node does not exist', false));
 
     }
 

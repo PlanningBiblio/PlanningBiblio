@@ -41,5 +41,36 @@ class ClassMenuTest extends TestCase
         $this->assertEquals($menu->checkCondition('config!=Conges-Enable&config=Conges-Recuperations'), false, 'both equal and not equal single conditions');
         $this->assertEquals($menu->checkCondition('config=Conges-Enable&config!=Conges-Recuperations'), false, 'both equal and not equal single conditions');
 
+        // Check Sites display under Planning Menu
+        $GLOBALS['config']['Multisites-nombre'] = 3;
+        $GLOBALS['config']['Multisites-site1'] = 'Site 1';
+        $GLOBALS['config']['Multisites-site2'] = 'Site 2';
+        $GLOBALS['config']['Multisites-site3'] = 'Site 3';
+
+        $menu = new Menu();
+        $result = $menu->get();
+
+        $this->assertEquals(3, count($result['menu_js'][30]['items']), "Planning menu should count 3 entries.");
+        $this->assertEquals('Site 1', $result['menu_js'][30]['items'][0]['title'], "Planning menu 1 title should be 'Site 1'.");
+        $this->assertEquals('Site 2', $result['menu_js'][30]['items'][1]['title'], "Planning menu 2 title should be 'Site 2'.");
+        $this->assertEquals('Site 3', $result['menu_js'][30]['items'][2]['title'], "Planning menu 3 title should be 'Site 3'.");
+
+        $GLOBALS['config']['Multisites-site2'] = '';
+
+        $menu = new Menu();
+        $result = $menu->get();
+
+        $this->assertEquals(2, count($result['menu_js'][30]['items']), "Planning menu should count 2 entries.");
+        $this->assertEquals('Site 1', $result['menu_js'][30]['items'][0]['title'], "Planning menu 1 title should be 'Site 1'.");
+        $this->assertEquals('Site 3', $result['menu_js'][30]['items'][1]['title'], "Planning menu 2 title should be 'Site 3'.");
     }
+
+    public static function tearDownAfterClass(): void
+    {
+        $GLOBALS['config']['Multisites-nombre'] = 1;
+        $GLOBALS['config']['Multisites-site1'] = '';
+        $GLOBALS['config']['Multisites-site2'] = '';
+        $GLOBALS['config']['Multisites-site3'] = '';
+   }
+
 }
