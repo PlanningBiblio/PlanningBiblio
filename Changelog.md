@@ -1,5 +1,12 @@
 # Changelog Planno
 
+## Version 26.04.03 (2026-06-26)
+
+### Fixes
+
+* MT53990: Delete Mutation Observer #1425
+  * The mutation observer prevented the submission of certain forms. E.g.: Framework forms.
+
 ## Version 26.04.02 (2026-06-25)
 
 ### Enhancement
@@ -19,7 +26,7 @@
 * MT53921: Fix template/workinghour/edit.html.twig #1416
 * MT53977: Fix access control for editing plannings #1423
 
-### Security
+### Plumbing
 
 * Replace HTTP DELETE methods with POST methods #1420
 
