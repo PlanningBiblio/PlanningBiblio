@@ -66,6 +66,11 @@ $(function(){
   $('.checkdate').on('change', function() {
     dateChange(this);
   });
+
+  $('#holiday-form').on('submit', function(){
+    return verifConges();
+  });
+
 });
 
 function dateChange(obj) {
@@ -97,7 +102,6 @@ function checkdate(priority) {
   // If end date is not given, end = start
   if (!fin_date) {
     $('#fin').bootstrapDP('setDate', debut_date);
-    date_fin = $('#fin').bootstrapDP('getDate');
   }
 
   start_half = $('select[name="start_halfday"]');
@@ -113,7 +117,7 @@ function checkdate(priority) {
     return;
   }
 
-  if (debut.getTime() < fin.getTime()) {
+  if (debut_date.getTime() < fin_date.getTime()) {
     $('select[name="start_halfday"] option[value="morning"]').remove();
     $('select[name="end_halfday"] option[value="afternoon"]').remove();
     return;
@@ -215,7 +219,8 @@ function calculCredit(){
   if(!fin){
     fin=debut;
   }
-  if(!debut){
+  if(!debut || !date_validation(debut)){
+    $("#erreurCalcul").val("true");
     return;
   }
 
@@ -1065,7 +1070,6 @@ $(function(){
 });
 
 $(document).ready(function() {
-    checkdate('start');
     calculCredit();
     updateAgentsListBySites();
 

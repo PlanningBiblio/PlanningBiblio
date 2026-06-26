@@ -658,6 +658,8 @@ class HolidayController extends BaseController
             'selected_agent_id'     => $perso_id,
             'sites_select'          => $sites_select,
             'show_allday'           => $show_allday,
+            'title'                 => 'Requesting holidays',
+            'action_path'           => 'holiday',
         );
 
         $this->templateParams($templateParams);

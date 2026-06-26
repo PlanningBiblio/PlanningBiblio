@@ -762,7 +762,6 @@ $(function(){
   $(".datepicker").attr('autocomplete','off');
   $(".datepicker").attr('placeholder', Translator.trans('mm/dd/yyyy'));
 
-  $(document).ready(function() {
 
     // Message display when date input is invalid
     $('.datepicker:not(.start-date):not(.end-date)').on('change',function() {
@@ -905,6 +904,8 @@ $(function(){
         }
       }
     });
+
+    $(document).ready(function() {
 
     granularity = $('form #granularity').val();
     step = setTimePickerStep(granularity);

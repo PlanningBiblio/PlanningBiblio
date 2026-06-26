@@ -103,8 +103,11 @@ class CompTimeController extends BaseController
             'reliquat'              => $reliquat,
             'show_allday'           => true,
             'conges_demi_journee'   => false,
-            'conges_recuperations'  => false,
+            'conges_recuperations'  => 1,
             'conges_mode'           => '',
+            'title'                 => 'Requesting compensation for overtime',
+            'action_path'           => 'comptime',
+            'selected_agent_id'     => $perso_id,
         ));
 
         return $this->output('holiday/add.html.twig');
