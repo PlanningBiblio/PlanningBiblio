@@ -684,15 +684,14 @@ class HolidayController extends BaseController
     }
 
     #[Route(path: '/holiday/{id}', name: 'holiday.delete', methods: ['DELETE'])]
-    public function holidayDelete(int $id, Request $request, Mailer $mailer): Response
+    public function holidayDelete(Request $request, Session $session, Mailer $mailer): Response
     {
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
         }
 
-        global $entityManager;
-
-        $holiday = $entityManager->find(Holiday::class, $id);
+        $id = $request->attributes->getInt('id');
+        $holiday = $this->entityManager->find(Holiday::class, $id);
 
         if ($holiday && $holiday->getDelete() == 0) {
             $perso_id = $holiday->getUser();
@@ -704,7 +703,7 @@ class HolidayController extends BaseController
             $deletionDate = new DateTime;
             $informationDate = (new DateTime)->modify('+1 second');
 
-            $agent = $entityManager->find(Agent::class, $perso_id);
+            $agent = $this->entityManager->find(Agent::class, $perso_id);
 
             // Si le congés a été validé, mise à jour des crédits dans la table personnel
             if ($holiday->getValidLevel2() > 0) {
@@ -718,7 +717,7 @@ class HolidayController extends BaseController
                 $agent->setHolidayCompTime($agentHolidayCompTime + $compTime);
                 $agent->setHolidayAnticipation($agentHolidayAnticipation - $anticipation);
 
-                $entityManager->flush();
+                $this->entityManager->flush();
 
                 // Ajout d'une ligne d'information sur les crédits
 
@@ -753,17 +752,17 @@ class HolidayController extends BaseController
                 $newHoliday->setActualCompTime($agent->getHolidayCompTime());
                 $newHoliday->setActualRemainder($agent->getHolidayRemainder());
                 $newHoliday->setActualAnticipation($agent->getHolidayAnticipation());
-                $newHoliday->setInfo($_SESSION['login_id']);
+                $newHoliday->setInfo($session->get('loginId'));
                 $newHoliday->setInfoDate($informationDate);
 
-                $entityManager->persist($newHoliday);
-                $entityManager->flush();
+                $this->entityManager->persist($newHoliday);
+                $this->entityManager->flush();
 
                 // This holiday has created a regularization.
                 // The regul should be reverted.
                 $regulationId = $holiday->getRegulationId();
                 if ($regulationId) {
-                    $regulationHoliday = $entityManager->find(Holiday::class, $regulationId);
+                    $regulationHoliday = $this->entityManager->find(Holiday::class, $regulationId);
                     $regul = $regulationHoliday->getPreviousCompTime() - $regulationHoliday->getActualCompTime();
 
                     $credits = array(
@@ -773,20 +772,20 @@ class HolidayController extends BaseController
                         'comp_time' => $agent->getHolidayCompTime() + $regul,
                     );
 
-                    $entityManager->getRepository(Holiday::class)->insert($perso_id, $credits, 'update', false, $newHoliday->getId());
+                    $this->entityManager->getRepository(Holiday::class)->insert($perso_id, $credits, 'update', false, $newHoliday->getId());
 
                     $agent->setHolidayCompTime($agent->getHolidayCompTime() + $regul);
 
                     // Mise à jour des compteurs dans la table conges
                     $newHoliday->setRegulationId($regulationId);
-                    $entityManager->flush();
+                    $this->entityManager->flush();
                 }
             }
 
             // Marque la demande de congé comme supprimée dans la table conges
             $holiday->setDelete($_SESSION['login_id']);
             $holiday->setDeleteDate($deletionDate);
-            $entityManager->flush();
+            $this->entityManager->flush();
 
             $mailer->sendDeletedHolidayNotification($holiday);
         }

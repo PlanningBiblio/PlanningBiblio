@@ -8,6 +8,7 @@ use Symfony\Component\Mime\Email;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use App\Entity\Holiday;
 use App\Entity\Agent;
+use App\Entity\Config;
 
 class Mailer
 {
@@ -19,8 +20,6 @@ class Mailer
     }
 
     /**
-     * @param string $subject
-     * @param string $htmlBody
      * @param string[] $to
      */
     protected function sendWithCJMail(string $subject, string $htmlBody, array $to): void
@@ -48,7 +47,9 @@ class Mailer
         $start_sql = $holiday->getStart()->format('Y-m-d H:i:s');
         $end_sql = $holiday->getEnd()->format('Y-m-d H:i:s');
 
-        if ($config['Absences-notifications-agent-par-agent']) {
+        $configRepository = $entityManager->getRepository(Config::class);
+
+        if ($configRepository->getValue('Absences-notifications-agent-par-agent')) {
             $a = new \absences();
             $a->getRecipients2(null, $agent->getId(), 2, 500, $start_sql, $end_sql);
             $recipients = $a->recipients;
