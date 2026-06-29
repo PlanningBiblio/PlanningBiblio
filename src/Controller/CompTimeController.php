@@ -27,6 +27,10 @@ class CompTimeController extends BaseController
             $perso_id = $session->get('loginId');
         }
 
+        if ($this->config('Conges-Recuperations') == 0  || $this->config('Conges-Enable') == 0 ){
+            return $this->redirectToRoute('access-denied');
+        }
+
         list($admin, $adminN2) = $this->entityManager
             ->getRepository(Agent::class)
             ->setModule('holiday')

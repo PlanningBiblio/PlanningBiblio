@@ -15,6 +15,11 @@ class HolidayInfoController extends BaseController
     #[Route(path: '/holiday-info', name: 'holiday_info.index', methods: ['GET'])]
     public function index(Request $request, Session $session)
     {
+
+        if ($this->config('Conges-Enable') == 0 ){
+            return $this->redirectToRoute('access-denied');
+        }
+
         $CSRFSession = $GLOBALS['CSRFSession'];
         $dbprefix = $GLOBALS['dbprefix'];
         $admin = false;
@@ -45,7 +50,7 @@ class HolidayInfoController extends BaseController
     #[Route(path: '/holiday-info/add', name: 'holiday_info.add', methods: ['GET'])]
     public function add(Request $request)
     {
-        if(!$this->isAdmin()){
+        if(!$this->isAdmin() || $this->config('Conges-Enable') == 0 ){
             return $this->redirectToRoute('access-denied');
         }
 
