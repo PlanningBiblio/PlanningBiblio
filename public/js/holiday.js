@@ -146,6 +146,37 @@ function resetSelect() {
   .val(end_val);
 }
 
+function resetTerms(){
+  reliquat = $('input[name="reliquat"]').attr('value');
+  congesRecup = $('#conges-recup').attr('value');
+  is_recover = $('#is-recover').attr('value');
+
+  if (is_recover){
+    return;
+  }
+
+  if (congesRecup == 0){
+    if (reliquat != 0){
+      $('#terms').text('Ces heures seront débitées sur le réliquat de l\'année précédente puis sur :');
+    }
+
+    else {
+      $('#terms').text('Ces heures seront débitées sur :');
+    }
+  }
+
+  else {
+    if (reliquat != 0){
+      $('#terms').text('Ces heures seront débitées sur le réliquat de l\'année précédente puis sur les crédits de congés de l\'année en cours.');
+    }
+
+    else {
+      $('#terms').text('Ces heures seront débitées sur les crédits de congés de l\'année en cours.');
+    }
+  }
+}
+
+
 function afficheRefus(me){
   if(me.value=="-1" || me.value=="-2"){
     document.getElementById("tr_refus").style.display="";
@@ -947,6 +978,7 @@ function supprimeAgent(id){
 
   // Mise à jour des status disponible.
   update_validation_statuses();
+  resetTerms();
 }
 
 function getAgentsBySites(sites) {
@@ -1065,6 +1097,7 @@ $(function(){
 
     currentCredits();
     calculCredit();
+    resetTerms();
 
   });
 });
@@ -1082,4 +1115,5 @@ $(document).ready(function() {
 
     // Mise à jour des status disponible.
     update_validation_statuses();
+    resetTerms();
 });
