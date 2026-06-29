@@ -94,12 +94,19 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $this->assertCount(2, $selectedAgents, 'There should be two selected agents');
         $this->assertEquals('Boivin Karel', $selectedAgents->text(), 'Boivin Karel should be selected');
 
+        // Elements that should not be visible when multiple agents are selected
+        $this->assertSelectorIsNotVisible('#nbHeures');
+        $this->assertSelectorIsNotVisible('#terms');
+        $this->assertSelectorIsNotVisible('#holiday_balance');
+        $this->assertSelectorIsNotVisible('#holiday_credit');
+        $this->assertSelectorIsNotVisible('#holiday_debit');
+
         // Test without Conges-demi-journees
         $crawler = $this->client->request('GET', '/holiday/new');
 
         $this->assertSelectorExists('input[name=allday]');
         $alldayLabel = $crawler->filter('label[for=allday]');
-        $this->assertEquals('Journée(s) entière(s) :', $alldayLabel->text(),'The label for the allday checkbox is incorect');
+        $this->assertStringContainsString('Journée(s) entière(s)', $alldayLabel->text(),'The label for the allday checkbox is incorect');
         $this->assertSelectorNotExists('input[name=halfday]');
 
         $this->assertSelectorIsNotVisible('#hre_debut');
@@ -234,17 +241,18 @@ class HolidayControllerAddTest extends PLBWebTestCase
 
         // Test conges anticipation, reliquat and crédit 
 
-        $result = $crawler->filter('input#holiday_balance');
-        $this->assertStringContainsString('3h48',$result->attr('value'),'The balance value is incorrect');
-        $result = $crawler->filter('input#holiday_credit');
-        $this->assertStringContainsString('3h48',$result->attr('value'),'The credit value is incorrect');
-        $result = $crawler->filter('input#holiday_debit');
-        $this->assertStringContainsString('0h00',$result->attr('value'),'The debit value is incorrect');
+        $terms = $crawler->filter('#terms');
+        $this->assertStringContainsString('Ces heures seront débitées sur le réliquat de l\'année précédente puis sur les crédits de congés de l\'année en cours.',$terms->text(),'The term value is incorrect');
+        $balance = $crawler->filter('input#holiday_balance');
+        $this->assertStringContainsString('3h48',$balance->attr('value'),'The balance value is incorrect');
+        $credit = $crawler->filter('input#holiday_credit');
+        $this->assertStringContainsString('3h48',$credit->attr('value'),'The credit value is incorrect');
+        $debit = $crawler->filter('input#holiday_debit');
+        $this->assertStringContainsString('0h00',$debit->attr('value'),'The debit value is incorrect');
     }
 
     public function testAddMultisite(): void
     {
-        $this->config->setParam('Multisites-nombre', 1);
         $this->config->setParam('Absences-notifications-agent-par-agent', 0);
         $this->config->setParam('PlanningHebdo', 0);
         $this->config->setParam('Conges-Enable', 1);
@@ -298,9 +306,17 @@ class HolidayControllerAddTest extends PLBWebTestCase
 
         $result = $crawler->filterXPath('//body');
 
+        $this->assertSelectorExists('#sites-selection', 'There site selection div should be present');
+        $sites = $crawler->filter('[id^="site_"]');
+        $this->assertCount(2, $sites);
+        
         $this->assertStringContainsString('Sites :',$result->text('Node does not exist', true),'test sites');
         $this->assertStringContainsString('Site N°1',$result->text('Node does not exist', true),'test sites');
         $this->assertStringContainsString('Site N°2',$result->text('Node does not exist', true),'test sites');
+
+        // Deselect Jean Dupont
+        $closeIcon = $crawler->filter("#li" . $jdupont->getId()  . " button.perso-drop");
+        $closeIcon->click();
 
         $agents_list = $this->getSelectValues('perso_ids');
         $this->assertCount(5, $agents_list);
@@ -310,13 +326,15 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $this->assertTrue(in_array($abreton->getId(), $agents_list), 'abreton');
         $this->assertTrue(in_array($kboivin->getId(), $agents_list), 'kboivin');
 
+        // Untick Site n°1
         $button = $crawler->filterXPath('//input[@name="selected_sites"]')->eq(0);
         $button->click();
 
         $agents_list = $this->getSelectValues('perso_ids');
         $this->assertCount(5, $agents_list);
-        $this->assertTrue(in_array($jdupont->getId(), $agents_list), 'jdupont');
-        $this->assertTrue(in_array($kboivin->getId(), $agents_list), 'kboivin');
-
+        $hiddenAgents = $crawler->filter('#perso_ids option[style="display: none;"]');
+        $this->assertCount(2, $hiddenAgents);
+        $this->assertEquals($abreton->getId(), $hiddenAgents->attr('value'), 'Breton Aubert should not be selectable');
+        $this->assertEquals($jdevoe->getId(), $hiddenAgents->eq(1)->attr('value'), 'Devoe John should not be selectable');
     }
 }

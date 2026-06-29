@@ -275,9 +275,9 @@
                     <div class="row mb-2 gx-5 hideWhenMultipleAgents">
                         <div class="col-auto offset-2">
                             {% if reliquat != '0.00' %}
-                                <p>Ces heures seront débitées sur le réliquat de l'année précédente puis sur :</p>
+                                <p id="terms">Ces heures seront débitées sur le réliquat de l'année précédente puis sur :</p>
                             {% else %}
-                                <p>Ces heures seront débitées sur : </p>
+                                <p id="terms">Ces heures seront débitées sur : </p>
                             {% endif %}
                         </div>
                     </div>
@@ -296,9 +296,9 @@
                     <div class="row mb-2 gx-5 hideWhenMultipleAgents">
                         <div class="col-auto offset-2">
                         {% if reliquat != '0.00' %}
-                            <p>Ces heures seront débitées sur le réliquat de l'année précédente puis sur les crédits de congés de l'année en cours.</p>
+                            <p id="terms">Ces heures seront débitées sur le réliquat de l'année précédente puis sur les crédits de congés de l'année en cours.</p>
                         {% else %}
-                            <p>Ces heures seront débitées sur les crédits de congés de l'année en cours.</p>
+                            <p id="terms">Ces heures seront débitées sur les crédits de congés de l'année en cours.</p>
                         {% endif %}
                             <input type="hidden" name="debit" value="credit" />
                         </div>
@@ -309,7 +309,7 @@
 
                 <div class="row mb-2 gx-5">
                     <div class="col-auto offset-2">
-                        <p>Ces heures seront débitées sur les crédits de récupérations.</p>
+                        <p id="terms">Ces heures seront débitées sur les crédits de récupérations.</p>
                         <input type="hidden" name="debit" value="recuperation"/>
                     </div>
                 </div>
