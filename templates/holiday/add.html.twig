@@ -272,16 +272,15 @@
             {% if is_holiday %}
 
                 {% if conges_recuperations == 0 %}
-                    <div class="row mb-2 gx-5 hideWhenMultipleAgents">
+                    <div class="row mb-2 gx-5">
                         <div class="col-auto offset-2">
                             <p id="terms" class="mb-0"></p>
                         </div>
                     </div>
 
-                    <div class="row mb-3 gx-5 hideWhenMultipleAgents">
+                    <div class="row mb-3 gx-5">
                         <div class="col-3 offset-2">
-
-                            <select name="debit" class="form-select form-select-sm">
+                            <select name="debit" class="form-select form-select-sm" id="terms-select">
                                 <option value="recuperation">Le crédit de récupérations</option>
                                 <option value="credit">Le crédit de congés de l'année en cours</option>
                             </select>

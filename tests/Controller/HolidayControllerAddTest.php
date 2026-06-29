@@ -5,6 +5,23 @@ use App\Entity\Manager;
 use Tests\FixtureBuilder;
 use Tests\PLBWebTestCase;
 
+
+/*
+
+5 Configuration modes
+
+       +---------------+-----------------------+-----------------+------------------------+
+       |  Conges-Mode  |  Conges-Recuperation  |  Conges-Heures  |  Conges-demi_journees  |
+   +---+---------------+-----------------------+-----------------+------------------------+
+   | 1 |     Jours     |        Dissocier      |         x       |            1           |
+   | 2 |     Jours     |        Dissocier      |         x       |            0           |
+   | 3 |    Heures     |        Dissocier      |     qq Heures   |            x           |
+   | 4 |    Heures     |        Dissocier      | journée entière |            x           |
+   | 5 |    Heures     |        Assembler      |         x       |            x           |
+   +-------------------+-----------------------+-----------------+------------------------+
+
+*/
+
 class HolidayControllerAddTest extends PLBWebTestCase
 {
     protected function setUp(): void
@@ -20,8 +37,9 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $this->config->setParam('Absences-notifications-agent-par-agent', 0);
         $this->config->setParam('PlanningHebdo', 0);
         $this->config->setParam('Conges-Enable', 1);
-        $this->config->setParam('Conges-Mode', 'heures');
+        $this->config->setParam('Conges-Mode', 'jours');
         $this->config->setParam('Conges-Heures', 1);
+        $this->config->setParam('Conges-demi-journees', 1);
         $this->config->setParam('Conges-validation', 1);
         $this->config->setParam('Conges-Validation-N2', 0);
         $this->config->setParam('Conges-Recuperations', 1);
@@ -95,38 +113,13 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $this->assertEquals('Boivin Karel', $selectedAgents->text(), 'Boivin Karel should be selected');
 
         // Elements that should not be visible when multiple agents are selected
-        $this->assertSelectorIsNotVisible('#nbHeures');
+        $this->assertSelectorIsNotVisible('#nbJours');
         $this->assertSelectorIsNotVisible('#terms');
         $this->assertSelectorIsNotVisible('#holiday_balance');
         $this->assertSelectorIsNotVisible('#holiday_credit');
         $this->assertSelectorIsNotVisible('#holiday_debit');
 
-        // Test without Conges-demi-journees
-        $crawler = $this->client->request('GET', '/holiday/new');
-
-        $this->assertSelectorExists('input[name=allday]');
-        $alldayLabel = $crawler->filter('label[for=allday]');
-        $this->assertStringContainsString('Journée(s) entière(s)', $alldayLabel->text(),'The label for the allday checkbox is incorect');
-        $this->assertSelectorNotExists('input[name=halfday]');
-
-        $this->assertSelectorIsNotVisible('#hre_debut');
-        $this->assertSelectorIsNotVisible('#hre_fin');
-
-        $form = $crawler->filter('#holiday-form')->form();
-        $form['allday']->untick();
-
-        $this->assertSelectorIsVisible('#hre_debut');
-        $this->assertSelectorIsVisible('#hre_fin');
-
-        $debutLabel = $crawler->filter('label[for=hre_debut_select]');
-        $this->assertStringContainsString('Heure de début',$debutLabel->text(),'The label is incorrect');
-        $finLabel = $crawler->filter('label[for=hre_fin_select]');
-        $this->assertStringContainsString('Heure de fin',$finLabel->text(),'The label is incorrect');
-
-        // Test with Conges-demi-journees
-        $this->config->setParam('Conges-Mode', 'jours');
-        $this->config->setParam('Conges-demi-journees', 1);
-
+        // Test Config 1
         $crawler = $this->client->request('GET', '/holiday/new');
 
         $this->assertSelectorExists('input[name=halfday]');
@@ -159,7 +152,47 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $endHalfdayOption = $crawler->filter('#end_halfday')->attr('value');
         $this->assertEquals('morning', $endHalfdayOption,'The end halfday selected value should be the same as the start halfday');
 
+        // Test Config 2
+        $this->config->setParam('Conges-demi-journees', 0);
+        $crawler = $this->client->request('GET', '/holiday/new');
+
+        $this->assertSelectorNotExists('input[name=allday]');
+        $this->assertSelectorNotExists('input[name=halfday]');
+
+        // Test Config 3
+        $this->config->setParam('Conges-Mode', 'heures');
+
+        $crawler = $this->client->request('GET', '/holiday/new');
+
+        $this->assertSelectorExists('input[name=allday]');
+        $alldayLabel = $crawler->filter('label[for=allday]');
+        $this->assertStringContainsString('Journée(s) entière(s)', $alldayLabel->text(),'The label for the allday checkbox is incorect');
+        $this->assertSelectorNotExists('input[name=halfday]');
+
+        $this->assertSelectorIsNotVisible('#hre_debut');
+        $this->assertSelectorIsNotVisible('#hre_fin');
+
+        $form = $crawler->filter('#holiday-form')->form();
+        $form['allday']->untick();
+
+        $this->assertSelectorIsVisible('#hre_debut');
+        $this->assertSelectorIsVisible('#hre_fin');
+
+        $debutLabel = $crawler->filter('label[for=hre_debut_select]');
+        $this->assertStringContainsString('Heure de début',$debutLabel->text(),'The label is incorrect');
+        $finLabel = $crawler->filter('label[for=hre_fin_select]');
+        $this->assertStringContainsString('Heure de fin',$finLabel->text(),'The label is incorrect');
+
+        // Test Config 4
+        $this->config->setParam('Conges-Heures', 0);
+        $crawler = $this->client->request('GET', '/holiday/new');
+
+        $this->assertSelectorNotExists('input[name=allday]');
+        $this->assertSelectorNotExists('input[name=halfday]');
+
         // Test with Conges-validation
+
+        $this->client->getWebDriver()->wait()->until($this->jqueryAjaxFinished());
         $validationState = $crawler->filter('select#validation-state option[selected]');
         $this->assertEquals('Demandée',$validationState->text(),'The selected validation state is incorrect');
         $validationOptions = $crawler->filter('select#validation-state option');
@@ -223,23 +256,27 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $crawler = $this->client->request('GET', '/holiday/new');
         $this->assertSelectorNotExists('#validation-state');
 
-        //test Conges-Mode => jours
-        $crawler = $this->client->request('GET', '/holiday/new');
-
-        $JoursLabel = $crawler->filter('label[for=nbJours]');
-        $this->assertStringContainsString('Nombre de jours',$JoursLabel->text(),'The label is incorrect');
-        $this->assertSelectorNotExists('label[for=nbHeures]');
-
         // Test Conges-Mode => heures
-        $this->config->setParam('Conges-Mode', 'heures');
-
         $crawler = $this->client->request('GET', '/holiday/new');
 
         $HeuresLabel = $crawler->filter('label[for=nbHeures]');
         $this->assertStringContainsString('Nombre d\'heures', $HeuresLabel->text(),'The label is incorrect');
         $this->assertSelectorNotExists('label[for=nbJours]');
 
+
+        // Test Conges-Mode => jours
+        $this->config->setParam('Conges-Mode', 'jours');
+        $crawler = $this->client->request('GET', '/holiday/new');
+
+        $JoursLabel = $crawler->filter('label[for=nbJours]');
+        $this->assertStringContainsString('Nombre de jours',$JoursLabel->text(),'The label is incorrect');
+        $this->assertSelectorNotExists('label[for=nbHeures]');
+
+
         // Test conges anticipation, reliquat and crédit 
+
+        $this->config->setParam('Conges-Mode', 'heures');
+        $crawler = $this->client->request('GET', '/holiday/new');
 
         $terms = $crawler->filter('#terms');
         $this->assertStringContainsString('Ces heures seront débitées sur le réliquat de l\'année précédente puis sur les crédits de congés de l\'année en cours.',$terms->text(),'The term value is incorrect');
@@ -264,7 +301,6 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $this->config->setParam('Conges-tous', 0);
         $this->config->setParam('Conges-tous', 0);
         $this->config->setParam('Conges-Rappels-Jours', 14);
-        $this->config->setParam('Conges-demi-journees', 1);
         $this->config->setParam('Conges-fullday-switching-time', 4);
         $this->config->setParam('Conges-fullday-reference-time', '');
         $this->config->setParam('Conges-planningVide', 1);
@@ -336,5 +372,19 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $this->assertCount(2, $hiddenAgents);
         $this->assertEquals($abreton->getId(), $hiddenAgents->attr('value'), 'Breton Aubert should not be selectable');
         $this->assertEquals($jdevoe->getId(), $hiddenAgents->eq(1)->attr('value'), 'Devoe John should not be selectable');
+    
+        // Test Config 5
+        $this->config->setParam('Conges-Recuperations', 0);
+        $crawler = $this->client->request('GET', '/holiday/new');
+
+        $this->assertSelectorExists('input[name=allday]');
+        $this->assertSelectorNotExists('input[name=halfday]');
+
+        $this->assertSelectorExists('#terms-select');
+        $termsOptions = $this->getSelectValues('terms-select');
+        $this->assertCount(2, $termsOptions);
+        $this->assertTrue(in_array('recuperation', $termsOptions));
+        $this->assertTrue(in_array('credit', $termsOptions));
+    
     }
 }
