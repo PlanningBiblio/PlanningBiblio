@@ -308,7 +308,7 @@ msgid "Would you like to replace it"
 msgstr "Voulez-vous le remplacer"
 
 msgid "Import absent agents"
-msgstr "Importes les agents absents"
+msgstr "Importer les agents absents"
 
 msgid "week"
 msgstr "semaine"
