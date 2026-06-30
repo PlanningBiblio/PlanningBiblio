@@ -43,7 +43,7 @@
         <input type="hidden" name="model" id="model" value="{{ model.modelId }}" />
         <div class="row">
           <p>
-            {% trans with {'%name%': model.name} %}Import the "%name%" model{% endtrans %}{%if model.isWeek %}({% trans %}week{% endtrans %}){% endif %} ?
+            {% trans with {'%name%': model.name} %}Import the "%name%" model{% endtrans %}{%if model.isWeek %} ({% trans %}week{% endtrans %}){% endif %} ?
           </p>
         </div>
 
