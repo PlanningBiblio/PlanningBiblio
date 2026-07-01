@@ -88,10 +88,10 @@ class CompTimeController extends BaseController
         $this->templateParams(array(
             'is_holiday'            => false,
             'anticipation'          => $anticipation,
-            'balance_before'        => heure4($balance[1]),
+            'balance_before'        => heure4($balance[1], true),
             'balance_before_days'   => $balance_before_days,
             'balance_date'          => dateFr($balance[0]),
-            'balance2_before'       => heure4($balance[4]),
+            'balance2_before'       => heure4($balance[4], true),
             'balance2_before_days'  => $balance2_before_days,
             'credit'                => $credit,
             'CSRFToken'             => $GLOBALS['CSRFSession'],

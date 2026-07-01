@@ -56,10 +56,10 @@
                 {% if not admin %}
 
                     <div class="row mb-2 gx-5">
-                        <label class="col-2 col-form-label aRight" for="perso_ids">{% trans %}Agent{% endtrans %} :</label>
+                        <label class="col-2 col-form-label aRight" for="agent">{% trans %}Agent{% endtrans %} :</label>
                         <div class="col-3">
                             <input type="hidden" name="perso_id" id="perso_id" value="{{ loggedin_id }}" />
-                            <input type="text" readonly class="form-control-plaintext" value="{{ loggedin_name }} {{ loggedin_firstname }}">
+                            <input type="text" id="agent" readonly class="form-control-plaintext" value="{{ loggedin_name }} {{ loggedin_firstname }}">
                         </div>
                     </div>
 
@@ -120,7 +120,7 @@
                     <div class="col-3">
 
                         {% if managed | length > 1 %}
-                            <select name="perso_id" id="perso_id" onchange='document.location.href="/comptime/add?perso_id="+this.value;' class="form-select form-selec-sm">
+                            <select name="perso_id" id="perso_id" onchange='document.location.href="/comptime/add?perso_id="+this.value;' class="form-select form-select-sm">
                                 <option value="0"></option>
                                 {% for m in managed %}
                                     <option value="{{ m.id }}" {% if perso_id == m.id %} selected {% endif %}> {{ m.lastname }} {{ m.firstname }}</option>
@@ -400,7 +400,7 @@
             {% else %}
 
                 <div class="row mb-2 gx-5 balance_tr">
-                    <label class="col-2 col-form-label aRight" for="balance_before">Solde disponible au 
+                    <label class="col-2 col-form-label aRight" for="balance_before" style="padding-left: 30px;">Solde disponible au 
                         <span class="balance_date">{{ balance_date }}</span> :
                     </label>
                     <div class="col-1">
@@ -412,7 +412,7 @@
                 </div>
 
                 <div class="row mb-2 gx-5 balance_tr">
-                    <label class="col-2 col-form-label aRight" for="balance2_before">Solde prévisionnel<sup>*</sup> au 
+                    <label class="col-2 col-form-label aRight" for="balance2_before" style="padding-left: 30px;">Solde prévisionnel<sup>*</sup> au 
                         <span class="balance_date">{{ balance_date }}</span> :
                     </label>
                     <div class="col-1">
