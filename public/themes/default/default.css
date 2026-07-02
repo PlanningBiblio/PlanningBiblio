@@ -66,11 +66,6 @@ h4{
   font-weight: bold;
 }
 
-.ui-state-error p,
-.ui-state-highlight p {
-    margin-top: 15px;
-}
-
 #acces_refuse {
   margin: 60px 0 80px 0;
   width:100%;
@@ -2153,31 +2148,6 @@ table.dataTable th{
   display: inline-block;
 }
 
-#admin .ui-state-default, .ui-widget-header .ui-state-default {
-    border: 2px solid #FFF;
-    background: #29495C;
-    font-weight: bold;
-    color: #FFF;
-}
-
-#admin .ui-state-active, .ui-widget-header .ui-state-active{
-  border: 2px solid #FFF;
-  background: #FFF;
-  font-weight: bold;
-  color: #29495C;
-}
-
-#admin .ui-state-hover, .ui-widget-header .ui-state-hover{
-  border: 2px solid #FFF;
-  background: #FFF;
-  font-weight: bold;
-  color: #29495C;
-}
-
-.ui-widget-header .ui-state-hover a {
-  color: #29495C;
-}
-
 #closingday{
   width: 90%;
   margin: 10px auto auto auto;
@@ -2314,28 +2284,6 @@ table.dataTable th{
 }
 
 /*Statistics END*/
-
-/*Account START*/
-
-#account .ui-widget-content a{
-  color: #29495C;
-}
-
-#account .ui-state-default{
-  background-color: #456578;
-  border: 1px solid #456578;
-  border-right-color: #000;
-  color: #29495C;
-}
-
-#account .ui-widget-content .ui-state-default{
-  background-color: #456578;
-  border: 1px solid #456578;
-  border-right-color: #000;
-  color: #FFFFFF;
-}
-
-/*Account END*/
 
 /*Personnalisation couleur tableau*/
 /* Bleu */

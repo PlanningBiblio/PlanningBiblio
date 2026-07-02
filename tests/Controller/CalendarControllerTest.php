@@ -97,7 +97,7 @@ class CalendarControllerTest extends PLBWebTestCase
         $result = $crawler->filterXPath('//h3');
         $this->assertEquals(' Agenda de Devoe John du 26/09/2022 au 29/09/2022 ', $result->text('Node does not exist', false), 'h3 is Agenda');
 
-        $result = $crawler->filterXPath('//tr[@class="center"]');
+        $result = $crawler->filterXPath('//tr[@class="center row-header"]');
         $this->assertStringContainsString('Lundi', $result->text('Node does not exist', false), 'Lundi');
         $this->assertStringContainsString('Mardi', $result->text('Node does not exist', false), 'Mardi');
         $this->assertStringContainsString('Mercredi', $result->text('Node does not exist', false), 'Mercredi');
@@ -149,7 +149,7 @@ class CalendarControllerTest extends PLBWebTestCase
         $result = $crawler->filterXPath('//h3');
         $this->assertEquals(' Agenda de Doenv Jean du 26/09/2022 au 29/09/2022 ', $result->text('Node does not exist', false), 'h3 is Agenda');
 
-        $result = $crawler->filterXPath('//tr[@class="center"]');
+        $result = $crawler->filterXPath('//tr[@class="center row-header"]');
         $this->assertStringContainsString('Lundi', $result->text('Node does not exist', false), 'Lundi');
         $this->assertStringContainsString('Mardi', $result->text('Node does not exist', false), 'Mardi');
         $this->assertStringContainsString('Mercredi', $result->text('Node does not exist', false), 'Mercredi');
@@ -194,7 +194,7 @@ class CalendarControllerTest extends PLBWebTestCase
         $result = $crawler->filterXPath('//h3');
         $this->assertEquals(' Agenda de Doenv Jean du 26/09/2022 au 29/09/2022 ', $result->text('Node does not exist', false), 'h3 is Agenda');
 
-        $result = $crawler->filterXPath('//tr[@class="center"]');
+        $result = $crawler->filterXPath('//tr[@class="center row-header"]');
         $this->assertStringContainsString('Lundi', $result->text('Node does not exist', false), 'Lundi');
         $this->assertStringContainsString('Mardi', $result->text('Node does not exist', false), 'Mardi');
         $this->assertStringContainsString('Mercredi', $result->text('Node does not exist', false), 'Mercredi');
@@ -224,7 +224,7 @@ class CalendarControllerTest extends PLBWebTestCase
         $this->assertEquals(' Agenda de Devoe John du 26/09/2022 au 27/09/2022 ', $result->text('Node does not exist', false), 'h3 is Agenda');
 
 
-        $result = $crawler->filterXPath('//tr[@class="center"]');
+        $result = $crawler->filterXPath('//tr[@class="center row-header"]');
         $this->assertStringContainsString('Lundi', $result->text('Node does not exist', false), 'Lundi');
         $this->assertStringContainsString('Mardi', $result->text('Node does not exist', false), 'Mardi');
         $this->assertStringContainsString('Mercredi', $result->text('Node does not exist', false), 'Mercredi');
@@ -241,7 +241,7 @@ class CalendarControllerTest extends PLBWebTestCase
         $this->assertEquals(' Agenda de Devoe John du 26/09/2022 au 29/09/2022 ', $result->text('Node does not exist', false), 'h3 is Agenda');
 
 
-        $result = $crawler->filterXPath('//tr[@class="center"]');
+        $result = $crawler->filterXPath('//tr[@class="center row-header"]');
         $this->assertStringContainsString('Lundi', $result->text('Node does not exist', false), 'Lundi');
         $this->assertStringContainsString('Mardi', $result->text('Node does not exist', false), 'Mardi');
         $this->assertStringContainsString('Mercredi', $result->text('Node does not exist', false), 'Mercredi');
