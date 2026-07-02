@@ -95,7 +95,7 @@ $(function() {
         });
 
         $('#add-reason-modal').modal('hide');
-        $('#motif').effect('highlight', null, 2000);
+        highlight($('#motif'));
       },
       error: function() {
         alert('Erreur lors de l\'enregistrement des modifications.\nVérifiez qu\'il ne manque aucune information.');
@@ -593,8 +593,7 @@ function update_validation_statuses() {
     dataType: 'html',
     success: function(result){
       $("#validation-statuses").html(result);
-
-      $('tr#validation').effect("highlight",null,2000);
+      highlight($('tr#validation'));
     },
     error: function(xhr, ajaxOptions, thrownError) {
       information("Une erreur s'est produite lors de la mise à jour de la liste des statuts");
