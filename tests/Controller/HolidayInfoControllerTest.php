@@ -145,10 +145,11 @@ class HolidayInfoControllerTest extends PLBWebTestCase
 
         $this->assertSelectorTextContains('h3', 'Informations sur les congés');
 
-        $result = $crawler->filterXPath('//a[@class="btn btn-primary"]');
+        $result = $crawler->filterXPath('//a[@href="/holiday-info/add"]');
         $this->assertEquals('Ajouter', $result->text('Node does not exist', false), 'a is Ajouter');
 
-        $this->assertSelectorTextContains('p', 'Aucune information enregistrée.');
+        $rowCount = $crawler->filter('table > tbody > tr')->count();
+        $this->assertEquals(0, $rowCount);
 
         $start = new DateTime('+1 day');
         $end = new DateTime('+1 month +1 day');
@@ -165,7 +166,7 @@ class HolidayInfoControllerTest extends PLBWebTestCase
 
         $this->assertSelectorTextContains('h3', 'Informations sur les congés');
 
-        $result = $crawler->filterXPath('//a[@class="btn btn-primary"]');
+        $result = $crawler->filterXPath('//a[@href="/holiday-info/add"]');
         $this->assertEquals('Ajouter', $result->text('Node does not exist', false), 'a is Ajouter');
 
         $result = $crawler->filterXPath('//th[@class="dataTableDateFR"]');
@@ -173,11 +174,25 @@ class HolidayInfoControllerTest extends PLBWebTestCase
         $this->assertEquals($result->eq(1)->text('Node does not exist', false), 'Fin','table title is Fin');
 
         $result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-edit"]');
-        $this->assertEquals($result->attr('title'),'Edit','span logo edit title is Edit');
+        $this->assertEquals($result->attr('title'),'Editer','span logo edit title is Edit');
 
         $result = $crawler->filterXPath('//tbody/tr/td');
         $this->assertEquals($result->eq(1)->text(), $start->format('d/m/Y'),'date début is ok');
         $this->assertEquals($result->eq(2)->text(), $end->format('d/m/Y'),'date fin is ok');
         $this->assertEquals($result->eq(3)->text(),'hello','text info is ok');
+
+        $afterEnd = DateTime::createFromInterface($end)->modify('+1 day');
+        $crawler = $this->client->request('GET', sprintf('/holiday-info?start=%s', $afterEnd->format('d/m/Y')));
+        $rowCount = $crawler->filter('table > tbody > tr')->count();
+        $this->assertEquals(0, $rowCount);
+
+        $beforeStart = DateTime::createFromInterface($start)->modify('-1 day');
+        $crawler = $this->client->request('GET', sprintf('/holiday-info?end=%s', $beforeStart->format('d/m/Y')));
+        $rowCount = $crawler->filter('table > tbody > tr')->count();
+        $this->assertEquals(0, $rowCount);
+
+        $crawler = $this->client->request('GET', sprintf('/holiday-info?start=%s&end=%s', $start->format('d/m/Y'), $end->format('d/m/Y')));
+        $rowCount = $crawler->filter('table > tbody > tr')->count();
+        $this->assertEquals(1, $rowCount);
     }
 }
