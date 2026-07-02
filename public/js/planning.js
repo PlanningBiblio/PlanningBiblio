@@ -43,6 +43,25 @@ $(document).ready(function(){
     save_model();
   });
 
+  var ctrlDown = false;
+
+  $('body').keydown(function(e) {
+    if (e.keyCode == 17 || e.keyCode == 91) {
+      ctrlDown = true;
+    };
+  }).keyup(function(e) {
+    if (e.keyCode == 17 || e.keyCode == 91) {
+      ctrlDown = false;
+    };
+  });
+
+  $("body").keydown(function(e){
+  if (((ctrlDown && e.keyCode == 90) || (ctrlDown && e.keyCode == 89)) && $('#icon-lock').is(':visible') ) {
+    e.preventDefault();
+    return false;
+  }
+});
+
   function save_model(erase = 0) {
     modelName = $('#save-model-form input[name="modelName"]').val();
     site = $('#save-model-form input[name="site"]').val();
