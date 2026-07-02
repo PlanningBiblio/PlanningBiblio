@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizer;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,20 +16,19 @@ use App\Entity\AdminInfo;
 
 class AdminInfoController extends BaseController
 {
-    #[Route(path: '/admin/info', name: 'admin.info.index', methods: ['GET'])]
-    public function index(Request $request, Session $session)
+    #[Route(path: '/admin/info/{reset?}', name: 'admin.info.index', methods: ['GET'], requirements: ['reset' => 'reset'])]
+    public function index(Request $request, Session $session, EntityManagerInterface $em)
     {
-        $today = date('Ymd');
+        $start = $this->initDate('start', 'AdminInfoStart');
+        $end = $this->initDate('end', 'AdminInfoEnd', '+1 year');
 
-        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $info = $em->getRepository(AdminInfo::class)->findByDateRange($start, $end);
 
-        $query = $queryBuilder->select(array('a'))
-            ->from(AdminInfo::class, 'a')
-            ->where($queryBuilder->expr()->gte('a.fin', $today))
-            ->orderBy('a.debut', 'ASC', 'a.fin', 'ASC')
-            ->getQuery();
-
-        $this->templateParams( array('info' => $query->getResult()) );
+        $this->templateParams([
+            'info' => $info,
+            'start' => $start,
+            'end' => $end,
+        ]);
 
         return $this->output('adminInfo/index.html.twig');
     }
