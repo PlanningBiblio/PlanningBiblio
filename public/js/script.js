@@ -271,7 +271,10 @@ function addAbsenceDocument(id) {
         success: function(id) {
             refreshAbsenceDocumentList(id);
             return false;
-        }.bind(this, id)
+        }.bind(this, id),
+        error: function() {
+            alert('Le fichier attaché présentait des risques et a été supprimé');
+        }
     });
 }
 
