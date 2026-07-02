@@ -1911,6 +1911,19 @@ div.dt-buttons button.dt-button.buttons-print:hover {
 
 /*Buttons END*/
 
+/* Highlight effect START*/
+
+@keyframes highlight {
+  0% { background-color: #ffed89; }
+  100% { background-color: transparent; }
+}
+
+.highlight {
+  animation: highlight 4s ease;
+}
+
+/* Highlight effect END*/
+
 /* Modals START */
 
 .modal-header {
