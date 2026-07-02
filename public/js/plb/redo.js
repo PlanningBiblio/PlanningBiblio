@@ -6,13 +6,22 @@ $(document).ready(function(){
   });
 
   $('#redo-action').on('click', function() {
-    if (!$(this).hasClass('isDisabled')) {
       redo();
-    }
   });
 });
 
 function redo() {
+
+  // No actions to redo
+  if ($('#redo-action').hasClass('isDisabled')) {
+    return;
+  }
+
+  // Planning has been validated
+  if ($('#icon-lock').is(':visible')){
+    return;
+  }
+
   datepl = $('#date').val();
   site = $('#site').val();
   var _token = $('input[name="_token"]').val();
