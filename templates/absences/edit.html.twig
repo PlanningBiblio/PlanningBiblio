@@ -52,7 +52,7 @@
               <tr>
                 <td>&nbsp;</td>
                 <td>
-                  <select name='perso_id' id='perso_ids' class='ui-widget-content ui-corner-all' style='margin-bottom:20px;'>
+                  <select name='perso_id' id='perso_ids' class="form-select form-select-sm" style='margin-bottom:20px;'>
                     <option value='0' selected='selected'>-- Ajoutez un agent --</option>
                     {% if absences_tous %}
                       <option value='tous'>Tous les agents</option>
@@ -112,7 +112,7 @@
                   <label>Heure de début</label>
                 </td>
                 <td>
-                  <input name="hre_debut" class="planno-timepicker center ui-widget-content ui-corner-all abs-timepicker"
+                  <input name="hre_debut" class="planno-timepicker center form-control form-control-sm abs-timepicker"
                     value="{% if hre_debut != '00:00:00' %}{{ hre_debut | date('H:i')}}{% endif %}"/>
                 </td>
               </tr>
@@ -131,7 +131,7 @@
                 {% endif %}
                   <td class="textAlignRight"><label>Heure de fin</label></td>
                   <td>
-                    <input name="hre_fin" class="planno-timepicker center ui-widget-content ui-corner-all abs-timepicker"
+                    <input name="hre_fin" class="planno-timepicker center form-control form-control-sm abs-timepicker"
                       value="{% if hre_fin != '23:59:59' %}{{ hre_fin | date('H:i')}}{% endif %}"/>
                 </td>
               </tr>
@@ -158,7 +158,7 @@
                 <td class="textAlignRight"><label>Motif</label></td>
 
                 <td style='white-space:nowrap;'>
-                  <select name='motif' id='motif' style='width:100%;' class='ui-widget-content ui-corner-all'>
+                  <select name='motif' id='motif' style='width:100%;' class="form-select form-select-sm">
                     <option value=''></option>
                       {% for r in reasons %}
                         {% if r.type == 2 %}
@@ -200,7 +200,7 @@
               {% endif %}
                 <td><label>Motif (autre)</label></td>
                 <td>
-                  <input type='text' name='motif_autre' style='width:100%;' value='{{ absence.motif_autre }}' class='ui-widget-content ui-corner-all'/>
+                  <input type='text' name='motif_autre' style='width:100%;' value='{{ absence.motif_autre }}' class="form-control form-control-sm"/>
                 </td>
               </tr>
 
@@ -209,7 +209,7 @@
                   <label>Commentaires</label>
                 </td>
                 <td>
-                  <textarea name='commentaires' cols='25' rows='5' class='ui-widget-content ui-corner-all'>{{ absence.commentaires }}</textarea>
+                  <textarea name='commentaires' cols='25' rows='5' class="form-control">{{ absence.commentaires }}</textarea>
                 </td>
               </tr>
 

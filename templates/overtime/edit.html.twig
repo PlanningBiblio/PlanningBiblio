@@ -64,7 +64,7 @@
             <td class="textAlignRight">Heures demandées : </td>
             {% if overtime.editable %}
               <td>
-                <input id="heures" name="heures" class="overtime-timepicker ui-widget-content ui-corner-all" value="{{ overtime.time }}" style="text-align: center;"/>
+                <input id="heures" name="heures" class="overtime-timepicker form-control form-control-sm" value="{{ overtime.time }}" style="text-align: center;"/>
               </td>
             {% else %}
               <td>{{ overtime.heures | hours }}</td>
