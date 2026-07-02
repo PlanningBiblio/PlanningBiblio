@@ -8,6 +8,46 @@ use Tests\FixtureBuilder;
 
 class AdminInfoControllerTest extends PLBWebTestCase
 {
+    public function testAdminInfoList(): void
+    {
+        $builder = new FixtureBuilder();
+        $builder->delete(Agent::class);
+        $agent = $builder->build(Agent::class, ['login' => 'jdevoe']);
+        $builder->delete(AdminInfo::class);
+
+        $this->logInAgent($agent, [23]);
+
+        $info = new AdminInfo();
+        $info->setStart('2022-10-05');
+        $info->setEnd('2022-10-10');
+        $info->setComment('Test comment');
+        $this->entityManager->persist($info);
+
+        $info2 = new AdminInfo();
+        $info2->setStart('2023-10-05');
+        $info2->setEnd('2023-10-10');
+        $info2->setComment('Test comment 2');
+        $this->entityManager->persist($info2);
+
+        $this->entityManager->flush();
+
+        $crawler = $this->client->request('GET', '/admin/info?start=06/10/2022');
+        $rowCount = $crawler->filter('table > tbody > tr')->count();
+        $this->assertEquals(2, $rowCount);
+
+        $crawler = $this->client->request('GET', '/admin/info?start=06/10/2023');
+        $rowCount = $crawler->filter('table > tbody > tr')->count();
+        $this->assertEquals(1, $rowCount);
+
+        $crawler = $this->client->request('GET', '/admin/info?start=01/01/2000&end=06/10/2022');
+        $rowCount = $crawler->filter('table > tbody > tr')->count();
+        $this->assertEquals(1, $rowCount);
+
+        $crawler = $this->client->request('GET', '/admin/info?start=01/01/2000&end=06/10/2021');
+        $rowCount = $crawler->filter('table > tbody > tr')->count();
+        $this->assertEquals(0, $rowCount);
+    }
+
     public function testAdd(): void
     {
         $builder = new FixtureBuilder();
