@@ -70,6 +70,9 @@ msgstr "Clear"
 msgid "Add"
 msgstr "Add"
 
+msgid "Edit"
+msgstr "Edit"
+
 msgid "Import"
 msgstr "Import"
 

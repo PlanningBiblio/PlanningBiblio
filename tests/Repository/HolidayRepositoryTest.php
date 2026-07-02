@@ -199,6 +199,7 @@ class HolidayRepositoryTest extends TestCase
 
         $holiday = $repo->findOneBy(['perso_id' => $amy->getId()]);
         $originHoliday = $repo->find($originHolidayId);
+        $infoDate = (new \DateTime())->getTimestamp();
 
         $this->assertEquals(new \DateTime(date('Y-m-d') . ' 00:00:00'), $holiday->getStart());
         $this->assertEquals(new \DateTime(date('Y-m-d') . ' 00:00:00'), $holiday->getEnd());
@@ -211,7 +212,7 @@ class HolidayRepositoryTest extends TestCase
         $this->assertEquals($credits['conges_reliquat'], $holiday->getActualRemainder());
         $this->assertEquals($credits['conges_anticipation'], $holiday->getActualAnticipation());
         $this->assertEquals(999999999, $holiday->getInfo());
-        $this->assertEquals((new \DateTime())->getTimestamp(), $holiday->getInfoDate()->getTimestamp());
+        $this->assertEquals($infoDate, $holiday->getInfoDate()->getTimestamp());
     }
 
     public function testInsertWithUpdateWithoutOriginId(): void
