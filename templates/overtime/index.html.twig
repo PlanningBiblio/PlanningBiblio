@@ -290,7 +290,7 @@
                     {% endif %}
                   </label>
                   <div class="col-3">
-                    <input type="text" name="date" id="overtime-date" class="ui-corner-all datepicker form-control" required/>
+                    <input type="text" name="date" id="overtime-date" class="datepicker form-control" required/>
                     <div class="invalid-feedback">{% trans from 'validators' %}Please enter a valid date.{% endtrans %}</div>             
                   </div>
                 </div>
@@ -299,7 +299,7 @@
                 <div class=" row">
                   <label for="overtime-date2" class="col-3 col-form-label mb-0">{% trans %}Date (2nd Saturday) (optional){% endtrans %}</label>
                   <div class="col-3">
-                    <input type="text" name="date2" id="overtime-date2" class="ui-corner-all datepicker form-control" optional/>
+                    <input type="text" name="date2" id="overtime-date2" class="datepicker form-control" optional/>
                     <div class="invalid-feedback mb-3">{% trans from 'validators' %}Please enter a valid date.{% endtrans %}</div>
                   </div>
                 </div>
@@ -316,7 +316,7 @@
                 <div class="row mb-3">
                   <label class="col-3 col-form-label" for="overtime-comment">{% trans %}Comment{% endtrans %}</label>
                   <div class="col-5">
-                    <textarea name="commentaires" id="overtime-comment" class="form-control ui-widget-content rounded-1"></textarea>
+                    <textarea name="commentaires" id="overtime-comment" class="form-control"></textarea>
                   </div>
                 </div>
 

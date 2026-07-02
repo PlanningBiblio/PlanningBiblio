@@ -67,7 +67,7 @@
                 <tr>
                   <td>&nbsp;</td>
                   <td>
-                    <select name="perso_id" id="perso_ids" class="ui-widget-content ui-corner-all" style="margin-bottom:20px; width: 100%;">
+                    <select name="perso_id" id="perso_ids" class="form-select form-select-sm" style="margin-bottom:20px; width: 100%;">
                       <option value='0' selected='selected'>-- Ajoutez un agent --</option>
                       {% if config('Absences-tous') %}
                         <option value='tous'>Tous les agents</option>
@@ -119,7 +119,7 @@
                   </td>
 
                   <td>
-                    <input name="hre_debut" class="planno-timepicker center ui-widget-content ui-corner-all abs-timepicker" value=""/>
+                    <input name="hre_debut" class="planno-timepicker center form-control form-control-sm abs-timepicker" value=""/>
                   </td>
                 </tr>
 
@@ -139,7 +139,7 @@
                   </td>
 
                   <td>
-                    <input name="hre_fin" class="planno-timepicker center ui-widget-content ui-corner-all abs-timepicker" value=""/>
+                    <input name="hre_fin" class="planno-timepicker center form-control form-control-sm abs-timepicker" value=""/>
                   </td>
                 </tr>
                 <tr>
@@ -169,7 +169,7 @@
                   </td>
 
                   <td style='white-space:nowrap;'>
-                    <select name='motif' id='motif' style='width:100%;' class='ui-widget-content ui-corner-all'>
+                    <select name='motif' id='motif' style='width:100%;' class="form-select form-select-sm">
                       <option value=''></option>
                       {% for r in reasons %}
                         {% if r.type == 2 %}
@@ -204,7 +204,7 @@
                   </td>
 
                   <td>
-                    <input type='text' name='motif_autre' style='width:100%;' class='ui-widget-content ui-corner-all'/>
+                    <input type='text' name='motif_autre' style='width:100%;' class="form-control form-control-sm"/>
                   </td>
                 </tr>
 
@@ -214,7 +214,7 @@
                   </td>
 
                   <td>
-                    <textarea name='commentaires' cols='16' rows='5' class='ui-widget-content ui-corner-all'></textarea>
+                    <textarea name='commentaires' cols='16' rows='5' class="form-control"></textarea>
                   </td>
                 </tr>
 
