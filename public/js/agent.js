@@ -513,7 +513,7 @@ $(function() {
         });
 
         $('#add-status-modal').modal('hide');
-        $('#statut').effect('highlight', null, 2000);
+        highlight($('#statut'));
       },
 
       error: function() {
@@ -621,7 +621,7 @@ $(function() {
           $('#service').append(option);
         });
         $('#add-service-modal').modal('hide');
-        $('#service').effect('highlight', null, 2000);
+        highlight($('#service'));
       },
 
       error: function() {
