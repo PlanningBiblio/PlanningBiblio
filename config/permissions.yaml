@@ -59,8 +59,6 @@
     - 23
 "admin.info.index":
     - 23
-"admin.index":
-    - 100
 "agent.add":
     - 21
 "agent.check_login":
@@ -308,8 +306,6 @@
 "statistics.attendeesmissing":
     - 1301
 "statistics.export":
-    - 17
-"statistics.index":
     - 17
 "statistics.position":
     - 17

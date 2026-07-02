@@ -31,13 +31,6 @@ include_once __DIR__ . '/../../legacy/Class/class.personnel.php';
 class StatisticController extends BaseController
 {
 
-    #[Route(path: '/statistics', name: 'statistics.index', methods: ['GET'])]
-    public function index(Request $request, Session $session)
-    {
-        return $this->output('statistics/index.html.twig');
-    }
-
-
     #[Route(path: '/statistics/agent', name: 'statistics.agent', methods: ['GET', 'POST'])]
     #[Route(path: '/statistics/service', name: 'statistics.service', methods: ['GET', 'POST'])]
     #[Route(path: '/statistics/status', name: 'statistics.status', methods: ['GET', 'POST'])]
