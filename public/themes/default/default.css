@@ -1698,6 +1698,13 @@ div.dt-buttons button.dt-button.buttons-print:hover {
   display: inline-block;
 }
 
+#tab_agenda{
+  table-layout: fixed;
+  border-radius: 4px;
+  overflow: hidden;
+  border-collapse: separate;
+}
+
 #tab_agenda tr:last-child td:first-child{
   border-bottom-left-radius: 5px;
 }
@@ -2087,7 +2094,7 @@ input::placeholder {
   background-color: aliceblue;
 }
 
-.row.row-header {
+.row-header {
   background-color: #29495C;
   color: white;
   font-weight: bold;
