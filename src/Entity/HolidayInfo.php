@@ -2,10 +2,11 @@
 
 namespace App\Entity;
 
+use App\Repository\HolidayInfoRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: HolidayInfoRepository::class)]
 #[ORM\Table(name: 'conges_infos')]
 class HolidayInfo
 {

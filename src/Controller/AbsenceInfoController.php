@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 
+use DateTime;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -14,20 +16,34 @@ use App\Entity\AbsenceInfo;
 class AbsenceInfoController extends BaseController
 {
     #[Route(path: '/absences/info', name: 'absences.info.index', methods: ['GET'])]
-    public function index(Request $request, Session $session)
+    public function index(Request $request, Session $session, EntityManagerInterface $em)
     {
-        $today = date('Y-m-d');
+        $start = $request->query->get('start');
+        $end = $request->query->get('end');
 
-        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $start_dt = $start ? DateTime::createFromFormat('d/m/Y', $start) : null;
+        $end_dt = $end ? DateTime::createFromFormat('d/m/Y', $end) : null;
 
-        $query = $queryBuilder->select(array('a'))
-            ->from(AbsenceInfo::class, 'a')
-            ->where('a.fin >= :today')
-            ->setParameter('today', $today)
-            ->orderBy('a.debut', 'ASC', 'a.fin', 'ASC')
-            ->getQuery();
+        if (!$start_dt && !$end_dt) {
+            $start_dt = new DateTime('now');
+        }
 
-        $this->templateParams( array('info' => $query->getResult()) );
+        /** @var \App\Repository\AbsenceInfoRepository */
+        $repository = $em->getRepository(AbsenceInfo::class);
+
+        $qb = $repository->createQueryBuilder('info');
+        $repository->filterByDateRange($qb, $start_dt, $end_dt);
+
+        $qb->orderBy('info.debut', 'ASC');
+        $qb->addOrderBy('info.fin', 'ASC');
+
+        $info = $qb->getQuery()->getResult();
+
+        $this->templateParams([
+            'info' => $info,
+            'start' => $start_dt,
+            'end' => $end_dt,
+        ]);
 
         return $this->output('absenceInfo/index.html.twig');
     }

@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 
+use DateTime;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizer;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,19 +18,34 @@ use App\Entity\AdminInfo;
 class AdminInfoController extends BaseController
 {
     #[Route(path: '/admin/info', name: 'admin.info.index', methods: ['GET'])]
-    public function index(Request $request, Session $session)
+    public function index(Request $request, Session $session, EntityManagerInterface $em)
     {
-        $today = date('Ymd');
+        $start = $request->query->get('start');
+        $end = $request->query->get('end');
 
-        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $start_dt = $start ? DateTime::createFromFormat('d/m/Y', $start) : null;
+        $end_dt = $end ? DateTime::createFromFormat('d/m/Y', $end) : null;
 
-        $query = $queryBuilder->select(array('a'))
-            ->from(AdminInfo::class, 'a')
-            ->where($queryBuilder->expr()->gte('a.fin', $today))
-            ->orderBy('a.debut', 'ASC', 'a.fin', 'ASC')
-            ->getQuery();
+        if (!$start_dt && !$end_dt) {
+            $start_dt = new DateTime('now');
+        }
 
-        $this->templateParams( array('info' => $query->getResult()) );
+        /** @var \App\Repository\AdminInfoRepository */
+        $repository = $em->getRepository(AdminInfo::class);
+
+        $qb = $repository->createQueryBuilder('info');
+        $repository->filterByDateRange($qb, $start_dt, $end_dt);
+
+        $qb->orderBy('info.debut', 'ASC');
+        $qb->addOrderBy('info.fin', 'ASC');
+
+        $info = $qb->getQuery()->getResult();
+
+        $this->templateParams([
+            'info' => $info,
+            'start' => $start_dt,
+            'end' => $end_dt,
+        ]);
 
         return $this->output('adminInfo/index.html.twig');
     }

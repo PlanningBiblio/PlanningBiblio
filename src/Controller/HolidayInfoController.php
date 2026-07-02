@@ -3,7 +3,10 @@
 namespace App\Controller;
 
 use App\Controller\BaseController;
+use App\Entity\HolidayInfo;
 
+use DateTime;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
@@ -13,35 +16,42 @@ require_once(__DIR__ . '/../../legacy/Class/class.conges.php');
 class HolidayInfoController extends BaseController
 {
     #[Route(path: '/holiday-info', name: 'holiday_info.index', methods: ['GET'])]
-    public function index(Request $request, Session $session)
+    public function index(Request $request, Session $session, EntityManagerInterface $em)
     {
         if ($this->config('Conges-Enable') == 0 ) {
             return $this->redirectToRoute('access-denied');
         }
 
-        $CSRFSession = $GLOBALS['CSRFSession'];
-        $dbprefix = $GLOBALS['dbprefix'];
-        $admin = false;
-        $today = date("Y-m-d");
-        $information = null;
-
         if (!$this->isAdmin()) {
             return $this->redirectToRoute('access-denied');
         }
 
-        $db = new \db();
-        $db->query("SELECT * FROM `{$dbprefix}conges_infos` WHERE `fin`>='$today' ORDER BY `debut`,`fin`;");
+        $start = $request->query->get('start');
+        $end = $request->query->get('end');
 
-        if($db->result){
-            $information  = $db->result;
+        $start_dt = $start ? DateTime::createFromFormat('d/m/Y', $start) : null;
+        $end_dt = $end ? DateTime::createFromFormat('d/m/Y', $end) : null;
+
+        if (!$start_dt && !$end_dt) {
+            $start_dt = new DateTime('now');
         }
 
-        $this->templateParams(
-            array(
-                'info' => $information,
-                'admin' => $admin
-            )
-        );
+        /** @var \App\Repository\HolidayInfoRepository */
+        $repository = $em->getRepository(HolidayInfo::class);
+
+        $qb = $repository->createQueryBuilder('info');
+        $repository->filterByDateRange($qb, $start_dt, $end_dt);
+
+        $qb->orderBy('info.debut', 'ASC');
+        $qb->addOrderBy('info.fin', 'ASC');
+
+        $info = $qb->getQuery()->getResult();
+
+        $this->templateParams([
+            'info' => $info,
+            'start' => $start_dt,
+            'end' => $end_dt,
+        ]);
 
         return $this->output('holidayInfo/index.html.twig');
     }

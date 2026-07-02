@@ -2,10 +2,11 @@
 
 namespace App\Entity;
 
+use App\Repository\AbsenceInfoRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: AbsenceInfoRepository::class)]
 #[ORM\Table(name: 'absences_infos')]
 class AbsenceInfo
 {
