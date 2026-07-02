@@ -62,7 +62,7 @@ $(function() {
         });
 
         $('#add-floor-modal').modal('hide');
-        $('#etage').effect('highlight', null, 2000);
+        highlight($('#etage'));
       },
 
       error: function() {
@@ -177,7 +177,7 @@ $(function() {
           $('#groupe').append(option);
         });
         $('#add-group-modal').modal('hide');
-        $('#groupe').effect('highlight', null, 2000);
+        highlight($('#groupe'));
       },
 
       error: function() {

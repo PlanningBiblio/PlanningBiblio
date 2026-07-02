@@ -256,8 +256,8 @@ function calculCredit(){
         document.form.elements["heures"].value=0;
         document.form.elements["minutes"].value=0;
         $("#nbHeures").text("0h00");
-        $("#nbHeures").effect("highlight",null,3000);
-        $("#nbJours").effect("highlight",null,3000);
+        highlight($('#nbHeures'));
+        highlight($('#nbJours'));
         information("Aucun planning de présence enregistré pour cette période - calcul impossible.","error");
       } else {
         $("#JSInformation").remove();
@@ -277,7 +277,7 @@ function calculCredit(){
         $("#recuperation_prev").val(balance_estimated);
 
         if (congesRecup == 0 || result.rest != 0) {
-          $(".balance_tr").effect("highlight",null,4000);
+          highlight($('.balance_tr'));
         }
 
         if ($('#hours_per_day').val()) {
@@ -298,8 +298,8 @@ function calculCredit(){
 
         $("#nbHeures").text(result.hr_hours);
         $("#nbJours").text(result.days);
-        $("#nbHeures").effect("highlight",null,4000);
-        $("#nbJours").effect("highlight",null,4000);
+        highlight($('#nbHeures'));
+        highlight($('#nbJours'));
 
         $("#rest").val(0);
         $("#hr_rest").text('');
@@ -312,7 +312,7 @@ function calculCredit(){
           }
           $("#rest").val(result.rest);
           $("#rest").parent().parent().show();
-          $("#hr_rest").effect("highlight",null,4000);
+          highlight($('#hr_rest'));
         }
       }
     },
@@ -441,7 +441,7 @@ function calculRestes(){
       $('.recup-alert').remove();
       if(recuperation < 0){
         CJInfo("Le crédit de récupération ne peut pas être négatif.", "error", null, 5000, 'recup-alert');
-        $(".balance_tr").effect("highlight",null,4000);
+        highlight($('.balance_tr'));
       }
     }
 
@@ -660,7 +660,7 @@ function verifConges()
   }
   if(recuperation < 0 && isRegularization == false) {
     $('.recup-alert').remove();
-    $(".balance_tr").effect("highlight",null,4000);
+    highlight($('.balance_tr'));
     if ($('#validation').val() > 0) {
       CJInfo("Le crédit de récupération ne peut pas être négatif.", "error", null, 5000, 'recup-alert');
       return false;
@@ -913,8 +913,7 @@ function update_validation_statuses() {
     dataType: "html",
     success: function(result){
       $("#validation-statuses").html(result);
-
-      $('tr#validation-line').effect("highlight",null,2000);
+      highlight($('tr#validation-line'));
     },
     error: function(xhr, ajaxOptions, thrownError) {
       information("Une erreur s'est produite lors de la mise à jour de la liste des statuts");

@@ -496,8 +496,7 @@ function updateAgentsList(me,select_id){
       }
       index=in_array?index:0;
       $("#"+select_id).val(index);
-
-      $("#"+select_id).closest("span").effect("highlight",{color: "#FFD700"},2000);
+      highlight($('#' + select_id).closest('span'));
     },
     error: function(){
       information("Une erreur est survenue lors de la mise à jour de la liste des agents.","error");
@@ -514,6 +513,10 @@ function updateAlert(text, translationOptions = null) {
 
 function hideAlert(){
   $('#alert').addClass('d-none');
+}
+
+function highlight(obj) {
+  obj.addClass('highlight');setTimeout(() => {obj.removeClass('highlight');}, 3000);
 }
 
 // updateTips : utilisée pour valider les formulaires Jquery-UI
