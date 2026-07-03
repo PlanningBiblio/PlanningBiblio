@@ -744,14 +744,14 @@ $(function(){
     $('#alert').addClass('d-none');
   })
 
-  $("#pl-calendar").bootstrapDP({
+  $('#pl-calendar').bootstrapDP({
     format: 'yyyy-mm-dd',
     todayHighlight: true,
     language: Translator.locale,
     toggleActive : true,
   });
 
-  $("input.datepicker").bootstrapDP({
+  $('input.datepicker').bootstrapDP({
     format: 'dd/mm/yyyy',
     language: Translator.locale,
     todayHighlight: true,
@@ -759,8 +759,8 @@ $(function(){
     forceParse : false
   });
 
-  $(".datepicker").attr('autocomplete','off');
-  $(".datepicker").attr('placeholder', Translator.trans('mm/dd/yyyy'));
+  $('.datepicker').attr('autocomplete', 'off');
+  $('.datepicker').attr('placeholder', Translator.trans('mm/dd/yyyy'));
 
 
     // Message display when date input is invalid

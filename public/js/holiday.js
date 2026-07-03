@@ -147,9 +147,9 @@ function resetSelect() {
 }
 
 function resetTerms(){
-  reliquat = $('input[name="reliquat"]').attr('value');
-  congesRecup = $('#conges-recup').attr('value');
-  is_recover = $('#is-recover').attr('value');
+  reliquat = $('input[name="reliquat"]').val();
+  congesRecup = $('#conges-recup').val();
+  is_recover = $('#is-recover').val();
 
   if (is_recover){
     return;
@@ -251,7 +251,7 @@ function calculCredit(){
     fin=debut;
   }
   if(!debut || !date_validation(debut)){
-    $("#erreurCalcul").val("true");
+    $('#erreurCalcul').val('true');
     return;
   }
 
@@ -288,7 +288,7 @@ function calculCredit(){
         $("#erreurCalcul").val("true");
         document.form.elements["heures"].value=0;
         document.form.elements["minutes"].value=0;
-        $("#nbHeures").val("0h00");
+        $('#nbHeures').val('0h00');
         $("#nbHeures").effect("highlight",null,3000);
         $("#nbJours").effect("highlight",null,3000);
         information("Aucun planning de présence enregistré pour cette période - calcul impossible.","error");
@@ -329,19 +329,19 @@ function calculCredit(){
         document.form.elements["heures"].value = result.hours;
         document.form.elements["minutes"].value = result.minutes;
 
-        $("#nbHeures").val(result.hr_hours);
-        $("#nbJours").val(result.days);
+        $('#nbHeures').val(result.hr_hours);
+        $('#nbJours').val(result.days);
         $("#nbHeures").effect("highlight",null,4000);
         $("#nbJours").effect("highlight",null,4000);
 
         $("#rest").val(0);
-        $("#hr_rest").val('');
+        $('#hr_rest').val('');
         $("#rest").parent().parent().hide();
         if (result.rest != 0) {
           if (result.rest > 0) {
-            $("#hr_rest").val(result.hr_rest + ' créditée(s)');
+            $('#hr_rest').val(result.hr_rest + ' créditée(s)');
           } else {
-            $("#hr_rest").val(result.hr_rest + ' débitée(s)');
+            $('#hr_rest').val(result.hr_rest + ' débitée(s)');
           }
           $("#rest").val(result.rest);
           $("#rest").parent().parent().show();

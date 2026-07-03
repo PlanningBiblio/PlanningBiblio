@@ -21,11 +21,10 @@
                 <input type="hidden" name="conges-demi-journees" id="conges-demi-journees" value="{{ conges_demi_journee }}" />
                 <input type="hidden" name="multisites" id="multisites" value="{{ config('Multisites-nombre') > 1 ? 1 : 0  }}" />
                 <input type="hidden" id="agents-multiples" value="{{ agents_multiples }}" />
-
             {% else %}
                 <input type="hidden" id="is-recover" value="1" />
-
             {% endif %}
+
                 <input type="hidden" id="conges-recup" value="{{ conges_recuperations }}" />
                 <input type="hidden" id="selected_agent_id" value="{{ selected_agent_id }}" />
                 <input type="hidden" name="CSRFToken" value="{{ CSRFToken }}" />
@@ -36,7 +35,6 @@
                 <input type="hidden" name="anticipation" value="{{ anticipation }}" />
                 <input type="hidden" id="agent" value="{{ agent_name }}" />
 
-                
             {% if is_holiday %}
 
                 {% if admin and config('Multisites-nombre') > 1 %}
@@ -469,5 +467,5 @@
             </div>
         </div>
     {% endif %}
-
+    </div>
 {% endblock %}
