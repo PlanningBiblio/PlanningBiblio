@@ -496,7 +496,7 @@ function updateAgentsList(me,select_id){
       }
       index=in_array?index:0;
       $("#"+select_id).val(index);
-      highlight($('#' + select_id).closest('span'));
+      highlight($('#' + select_id).closest('div.col-xl-2'));
     },
     error: function(){
       information("Une erreur est survenue lors de la mise à jour de la liste des agents.","error");
