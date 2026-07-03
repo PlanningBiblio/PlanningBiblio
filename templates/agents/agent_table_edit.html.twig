@@ -4,14 +4,14 @@
   <tr valign='top'>
     <td style='width:400px'>Nom :</td>
     <td>
-      <input type='text' value='{{ agent.lastName }}' name='nom' id='nom' style='width:400px' />
+      <input type="text" class="form-control form-control-sm" value="{{ agent.lastName }}" name="nom" id="nom" style="width:400px" />
     </td>
   </tr>
 
   <tr>
     <td>Prénom :</td>
     <td>
-      <input type='text' value='{{ agent.firstName }}' name='prenom' id='prenom' style='width:400px' />
+      <input type="text" class="form-control form-control-sm" value="{{ agent.firstName }}" name="prenom" id="prenom" style="width:400px" />
     </td>
   </tr>
 
@@ -21,15 +21,15 @@
     </td>
 
     <td>
-      <input type='text' value='{{ agent.mail }}' name='mail' id='mail' style='width:400px' />
+      <input type="text" class="form-control form-control-sm" value="{{ agent.mail }}" name="mail" id="mail" style="width:400px" />
     </td>
   </tr>
 
   {% if not config('Planook') %}
     <tr>
       <td>Statut :</td>
-      <td style='white-space:nowrap'>
-        <select name='statut' id='statut' style='width:405px'>
+      <td style="display: block ruby;">
+        <select name="statut" id="statut" class="form-select form-select-sm" style="width:400px">
           <option value=''>Aucun</option>
             {%for elem in statuts %}
               {% if elem.value == agent.status %}
@@ -48,7 +48,7 @@
     <tr>
       <td>Contrat :</td>
       <td>
-        <select name='categorie' id='categorie' style='width:405px'>
+        <select name="categorie" id="categorie" class="form-select form-select-sm" style="width:400px">
           <option value=''>Aucun</option>
           {%for elem in contrats %}
             {% if elem == agent.category %}
@@ -63,8 +63,8 @@
 
     <tr>
       <td>Service de rattachement:</td>
-      <td style='white-space:nowrap'>
-        <select name='service' id='service' style='width:405px'>
+      <td style="display: block ruby;">
+        <select name="service" id="service" class="form-select form-select-sm" style="width:400px">
           <option value=''>Aucun</option>
           {%for elem in services %}
             {% if elem.value == agent.service %}
@@ -84,7 +84,7 @@
   <tr>
     <td>Heures de service public par semaine:</td>
     <td>
-      <select name='heuresHebdo' style='width:405px'  title='Choisissez un nombre d&apos;heures ou un pourcentage. Si vous Choisissez un pourcentage, le nombre d&apos;heures sera calculé à partir des plannings de présence'>
+      <select name="heuresHebdo" title="Choisissez un nombre d'heures ou un pourcentage. Si vous Choisissez un pourcentage, le nombre d'heures sera calculé à partir des plannings de présence" class="form-select form-select-sm" style="width:400px">
         <option value='0'>&nbsp;</option>
         {% for i in 1..100 %}
           {% if i ~ '%' == agent.weeklyServiceHours and '%' in agent.weeklyServiceHours %}
@@ -108,7 +108,7 @@
   <tr>
     <td>Heures de travail par semaine:</td>
     <td>
-      <select name='heuresTravail' style='width:405px'>
+      <select name="heuresTravail" class="form-select form-select-sm" style="width:400px">
         <option value='0'>&nbsp;</option>
         {% for time in times %}
           {% if time[0] == agent.weeklyWorkingHours %}
@@ -124,7 +124,7 @@
   <tr>
     <td> Service public / Administratif :</td>
     <td>
-      <select name='actif' style='width:405px'>
+      <select name="actif" class="form-select form-select-sm" style="width:400px">
         {% if actif == 'Actif' %}
           <option selected="selected" value='Actif'>Service public</option>
         {% else %}
@@ -151,11 +151,10 @@
       <td>Sites :</td>
       <td>
         {% for s in sitesSelect %}
-          {% if s.checked %}
-            <input type='checkbox' name='sites[]' value='{{ s.id }}' checked="checked" >{{ s.name }}<br/>
-          {% else %}
-            <input type='checkbox' name='sites[]' value='{{ s.id }}'>{{ s.name }}<br/>
-          {% endif %}
+          <div class="form-check">
+            <input type="checkbox" class="form-check-input mt-1" name="sites[]" value="{{ s.id }}" {% if s.checked %} checked {% endif %} >
+            <label class="form-check-label" for="check-sites">{{ s.name }}</label>
+          </div>
         {% endfor %}
       </td>
     </tr>
@@ -182,7 +181,7 @@
   {% if not config('Planook') %}
     <tr>
       <td>Matricule :</td>
-      <td><input type='text' value='{{ agent.employeeNumber }}' name='matricule' style='width:400px' /></td>
+      <td><input type="text" class="form-control form-control-sm" value="{{ agent.employeeNumber }}" name="matricule" style="width:400px" /></td>
     </tr>
 
     <tr>
@@ -192,14 +191,14 @@
         {% endfor %}
       </td>
       <td>
-        <textarea name='mailsResponsables' style='width:400px' cols='10' rows='4'>{{ agent.managersMails }}</textarea>
+        <textarea class="form-control form-control-sm" name="mailsResponsables" style="width:400px" cols="10" rows="4">{{ agent.managersMails }}</textarea>
       </td>
     </tr>
 
     <tr style='vertical-align:top;'>
       <td>Informations :</td>
       <td>
-        <textarea name='informations' style='width:400px' cols='10' rows='4'>{{ agent.information }}</textarea>
+        <textarea class="form-control form-control-sm" name="informations" style="width:400px" cols="10" rows="4">{{ agent.information }}</textarea>
       </td>
     </tr>
 
@@ -208,9 +207,9 @@
         <td>Récupération :</td>
         <td>
           {% if config('Recup-Agent') == 1 %}
-            <textarea name='recup' style='width:400px' cols='10' rows='4'>{{ agent.recoveryMenu }}</textarea>
+            <textarea class="form-control form-control-sm" name="recup" style="width:400px" cols="10" rows="4">{{ agent.recoveryMenu }}</textarea>
           {% elseif config('Recup-Agent') == 2 %}
-            <select name='recup' style='width:400px'>
+            <select name="recup" class="form-select form-select-sm" style="width:400px">
               <option value=''>&nbsp;</option>
               {% for elem in recupAgents %}
                 {% if elem == agent.recoveryMenu %}
