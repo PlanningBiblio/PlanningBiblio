@@ -54,31 +54,41 @@ class AbsenceDocumentController extends BaseController
         $id = $request->attributes->get('id_absence');
         $file = $request->files->get('documentFile');
         if (!empty($file)) {
-            $filename = $file->getClientOriginalName();
-            $ad = new AbsenceDocument();
-            $ad->setAbsenceId($id);
-            $ad->setFilename($filename);
-            $ad->setDate(new \DateTime());
-            $this->entityManager->persist($ad);
-            $this->entityManager->flush();
 
-            $destination_dir = $ad->upload_dir() . $id . '/' . $ad->getId();
-            $file->move($destination_dir, $filename);
-            if ($scanner->isEnabled()) {
-                $scan_file = $destination_dir . '/' . $filename;
-                $clean = $scanner->scan($scan_file);
-                if ($clean == 1) {
-                    $this->logger->info("ClamAV is enabled and $scan_file is clean");
-                } else {
-                    $this->logger->critical("ClamAV is enabled and $scan_file is unsafe, deleting it");
-                    # We did not prevent the AbsenceDocument creation, so we can use ->deleteFile();
-                    $ad->deleteFile();
-                    $this->entityManager->remove($ad);
-                    $this->entityManager->flush();
-                    return new Response(
-                        $this->translator->trans('The uploaded file contains malware.'),
-                        Response::HTTP_UNPROCESSABLE_ENTITY
-                    );
+            if ($scanner->isConfigured() && !$scanner->isEnabled()) {
+               $this->logger->critical("ClamAV is configured but not available: this file should not have been uploaded"); 
+                return new Response(
+                    $this->translator->trans('The uploaded file cannot be scanned.'),
+                    Response::HTTP_UNPROCESSABLE_ENTITY
+                );
+            } else {
+
+                $filename = $file->getClientOriginalName();
+                $ad = new AbsenceDocument();
+                $ad->setAbsenceId($id);
+                $ad->setFilename($filename);
+                $ad->setDate(new \DateTime());
+                $this->entityManager->persist($ad);
+                $this->entityManager->flush();
+
+                $destination_dir = $ad->upload_dir() . $id . '/' . $ad->getId();
+                $file->move($destination_dir, $filename);
+                if ($scanner->isEnabled()) {
+                    $scan_file = $destination_dir . '/' . $filename;
+                    $clean = $scanner->scan($scan_file);
+                    if ($clean == 1) {
+                        $this->logger->info("ClamAV is enabled and $scan_file is clean");
+                    } else {
+                        $this->logger->critical("ClamAV is enabled and $scan_file is unsafe, deleting it");
+                        # We did not prevent the AbsenceDocument creation, so we can use ->deleteFile();
+                        $ad->deleteFile();
+                        $this->entityManager->remove($ad);
+                        $this->entityManager->flush();
+                        return new Response(
+                            $this->translator->trans('The uploaded file contains malware.'),
+                            Response::HTTP_UNPROCESSABLE_ENTITY
+                        );
+                    }
                 }
             }
         }

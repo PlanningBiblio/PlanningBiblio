@@ -11,6 +11,7 @@ class ClamAvScanner
 {
     private ClamAV $client;
     private string $clamavSocket;
+    private bool $enabled = false;
     private LoggerInterface $logger;
 
     public function __construct(?string $clamavSocket, LoggerInterface $logger)
@@ -18,23 +19,37 @@ class ClamAvScanner
         $this->logger = $logger;
         $clamavSocket ??= '';
         $this->clamavSocket = $clamavSocket;
-        if ($clamavSocket !== '' && $clamavSocket !== '0') {
+
+        if ($this->isConfigured()) {
             $this->logger->info("Connecting to ClamAV with CLAMAV_SOCKET=$clamavSocket");
-            $this->client = ClamAV::fromDSN($clamavSocket);
+            try {
+                $this->client = ClamAV::fromDSN($clamavSocket);
+                $this->logger->info("Successfully connected to CLAMAV_SOCKET=$clamavSocket");
+                $this->enabled = true;
+            } catch (\ErrorException $e) {
+                $this->logger->error("Unable to connect to ClamaAV with CLAMAV_SOCKET=$clamavSocket");
+            }
         } else {
             $this->logger->warning("ClamAV is not configured, please set CLAMAV_SOCKET in your .env file");
         }
     }
 
+    public function isConfigured(): bool
+    {
+        $this->logger->info("clamav isConfigured:" . ($this->clamavSocket !== '' && $this->clamavSocket !== '0'));
+        return ($this->clamavSocket !== '' && $this->clamavSocket !== '0');
+    }
+
     public function isEnabled(): bool
     {
-        return !empty($this->clamavSocket);
+        $this->logger->info("clamav isEnabled:" . $this->enabled);
+        return $this->enabled;
     }
 
     public function scan(File|string $file)
     {
 
-        if (!$this->isEnabled() || !$this->client) {
+        if (!$this->isEnabled() || !$this->isEnabled()) {
             $this->logger->error("ClamAV is not configured or not started, please set CLAMAV_SOCKET in your .env file");
             return;
         }

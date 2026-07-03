@@ -275,7 +275,11 @@
                     <td class="textAlignRight">
                         <label>Attacher un document</label>
                     </td>
-                    <td><input type="file" name="documentFile" id="documentFile" /> <a href="javascript:addAbsenceDocument({{ id }})">Ajouter</a></td>
+                    {% if allow_upload %}
+                      <td><input type="file" name="documentFile" id="documentFile" /> <a href="javascript:addAbsenceDocument({{ id }})">Ajouter</a></td>
+                    {% else %}
+                      <td>{% trans %}Les fichiers ne peuvent pas être scannés, le téléversement est désactivé{% endtrans %}</td>
+                    {% endif %}
                     </tr>
                 {% endif %}
 
