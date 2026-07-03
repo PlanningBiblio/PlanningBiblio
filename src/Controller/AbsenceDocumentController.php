@@ -76,7 +76,7 @@ class AbsenceDocumentController extends BaseController
                     $this->entityManager->remove($ad);
                     $this->entityManager->flush();
                     return new Response(
-                        'The uploaded file contains malware.',
+                        $this->translator->trans('The uploaded file contains malware.'),
                         Response::HTTP_UNPROCESSABLE_ENTITY
                     );
                 }

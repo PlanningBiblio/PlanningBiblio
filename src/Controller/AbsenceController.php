@@ -336,7 +336,7 @@ class AbsenceController extends BaseController
                     $ad->deleteFile();
                     $this->entityManager->remove($ad);
                     $this->entityManager->flush();
-                    $result['msg2'] .= " Le fichier attaché présentait des risques et a été supprimé.";
+                    $result['msg2'] .= $this->translator->trans("Le fichier attaché présentait des risques et a été supprimé.");
                 }
             }
         }
