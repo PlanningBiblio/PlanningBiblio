@@ -5,7 +5,7 @@ Fichier regroupant les fonctions JavaScript utiles à la gestion des congés
 
 $(function(){
 
-  if($('#balance2_before').length){
+  if($('#balance2_before').is(':visible')){
     $('.solde-info').show()
   }
   else {
