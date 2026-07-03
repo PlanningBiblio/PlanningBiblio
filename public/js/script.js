@@ -273,8 +273,14 @@ function addAbsenceDocument(id) {
             $('#documentFile').val(''); 
             return false;
         }.bind(this, id),
-        error: function() {
-            alert(Translator.trans('Le fichier attaché présentait des risques et a été supprimé'));
+        error: function(jqXHR) {
+            if (jqXHR.status === 422) {
+                alert(Translator.trans('Le fichier attaché présentait des risques et a été supprimé'));
+            } else if (jqXHR.status === 413) {
+                alert(Translator.trans('Le fichier était trop volumineux'));
+            } else {
+                alert(Translator.trans('Une erreur est survenue'));
+            }
         }
     });
 }
