@@ -152,8 +152,8 @@
       <td>
         {% for s in sitesSelect %}
           <div class="form-check">
-            <input type="checkbox" class="form-check-input mt-1" name="sites[]" value="{{ s.id }}" {% if s.checked %} checked {% endif %} >
-            <label class="form-check-label" for="check-sites">{{ s.name }}</label>
+            <input type="checkbox" class="form-check-input mt-1" name="sites[]" id="site-{{ s.id }}" value="{{ s.id }}" {% if s.checked %} checked {% endif %} >
+            <label class="form-check-label" for="site-{{ s.id }}">{{ s.name }}</label>
           </div>
         {% endfor %}
       </td>
