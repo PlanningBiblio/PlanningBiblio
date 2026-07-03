@@ -281,18 +281,19 @@ function refreshAbsenceDocumentList(id) {
             url: url('absences/documents/' + id),
             type: 'GET',
             success: function(result) {
-                listString = "<div class='col-6' id='documentsList'>";
+                listString = '<div class="col-6" id="documentsList">';
                 jQuery.each(result, function() {
-                    listString += `<div class="row gx-5" id="document_` + this.id + `">
-                                    <div class="col-6">
-                                      <a type="link" class="btn btn-link text-start" href="/absences/document/` + this.id + `">` + this.filename + `</a>
-                                    </div>
-                                    <div class="col-auto ps-0">
-                                      <button type="button" class="btn btn-link text-start" onclick="deleteAbsenceDocument(` + this.id + `);">Supprimer</button>
-                                    </div>
-                                   </div>`           
+                    listString +=
+                      `<div class="row gx-5" id="document_` + this.id + `">
+                        <div class="col-6">
+                          <a type="link" class="btn btn-link text-start" href="/absences/document/` + this.id + `">` + this.filename + `</a>
+                        </div>
+                        <div class="col-auto ps-0">
+                          <button type="button" class="btn btn-link text-start" onclick="deleteAbsenceDocument(` + this.id + `);">Supprimer</button>
+                        </div>
+                      </div>`;
                   });
-                listString += "</div>";
+                listString += '</div>';
                 $("#documentsList").replaceWith(listString);
                 return false;
             }

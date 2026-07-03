@@ -868,15 +868,12 @@ function recurrenceRRuleText2(rrule){
 }
 
 // Vérification des formulaires (ajouter et modifier)
-function verif_absences(ctrl_form){
+function verif_absences() {
 
   // Ceci évite d'avoir 2 fois les popup de vérification lors de la modification d'absences récurrentes. Le popup n'est affiché qu'une seule fois, avant le choix des occurrences à modifier
   if($('#recurrence-modif').val()){
     return true;
   }
-
-  if(!verif_form(ctrl_form))
-    return false;
 
   if($("select[name=motif] option:selected").attr("disabled")=="disabled"){
     CJInfo("Le motif sélectionné n'est pas valide.\nVeuillez le modifier s'il vous plaît.","error");
