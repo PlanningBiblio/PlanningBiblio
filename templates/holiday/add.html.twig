@@ -246,7 +246,7 @@
         {% if conges_mode == 'heures' and hours_per_day is not empty %}
 
           <div class="row gx-5 mb-2 hideWhenMultipleAgents">
-            <label class="col-2 col-form-label aRight" for="hr_rest">Équivalence utilisée :<br> 1 jour =  {{ hours_per_day_in_hhmm }}</label>
+            <label class="col-2 col-form-label aRight" for="hr_rest">Équivalence en jour :<br/>(1 jour =  {{ hours_per_day_in_hhmm }})</label>
             <div class="col-3">
               <input id="nbJours" readonly class="form-control-plaintext"/>
               <input type="hidden" name="hours_per_day" id="hours_per_day" value="{{ hours_per_day }}" />
