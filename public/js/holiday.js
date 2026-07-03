@@ -318,11 +318,11 @@ function calculCredit(){
 
           if (balance != 0) {
             days= hours_to_days(balance, hours_per_day);
-            $("#balance_before").append(days);
+            $("#balance_before").val(heure4(balance) + days);
           }
           if (balance_estimated != 0) {
             days= hours_to_days(balance_estimated, hours_per_day);
-            $("#balance2_before").append(days);
+            $("#balance2_before").val(heure4(balance_estimated) + days);
           }
         }
 
