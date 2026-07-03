@@ -1890,7 +1890,7 @@ class absences
             if ($planningPositionIntersectsWithTimeSlots) {
                 $plannings[] = [
                     'date' => $planningPosition->getDate()->format('d/m/Y'),
-                    'poste' => $planningPosition->getPosition(),
+                    'poste' => $postes[ $planningPosition->getPosition() ],
                     'debut' => $planningPosition->getStart()->format('H\hi'),
                     'fin' => $planningPosition->getEnd()->format('H\hi'),
                     'site' => $sites[ $planningPosition->getSite() ],
