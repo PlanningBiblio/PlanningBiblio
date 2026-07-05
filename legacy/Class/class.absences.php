@@ -1890,7 +1890,7 @@ class absences
             if ($planningPositionIntersectsWithTimeSlots) {
                 $plannings[] = [
                     'date' => $planningPosition->getDate()->format('d/m/Y'),
-                    'poste' => $planningPosition->getPosition(),
+                    'poste' => $postes[ $planningPosition->getPosition() ],
                     'debut' => $planningPosition->getStart()->format('H\hi'),
                     'fin' => $planningPosition->getEnd()->format('H\hi'),
                     'site' => $sites[ $planningPosition->getSite() ],
@@ -1931,7 +1931,7 @@ class absences
                 if ($elem['date']!=$lastDate) {
                     $message.="<li><strong>{$elem['date']}{$elem['valide']}</strong><ul>\n";
                 }
-                $message.="<li>{$elem['debut']}-{$elem['fin']} {$elem['site']} {$elem['poste']}</li>\n";
+                $message.="<li>{$elem['debut']}-{$elem['fin']} {$elem['site']} {$elem['poste']['nom']}</li>\n";
                 $lastDate=$elem['date'];
             }
             $message.="</ul></li></ul></p>\n";
