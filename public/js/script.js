@@ -865,7 +865,19 @@ $(function(){
       var end_required = typeof($('.datepicker.end-date').attr('required')) != 'undefined';
       var start = $(this).bootstrapDP('getDate');
       var end = $('.datepicker.end-date').bootstrapDP('getDate');
-      var feedback = $(this).parent().parent().siblings().children('.invalid-feedback')
+      var feedback = $(this).parent().parent().siblings().children('.invalid-feedback');
+
+      if (end == null) {
+        $('.datepicker.end-date').bootstrapDP('destroy');
+        $('.datepicker.end-date').bootstrapDP({
+          defaultViewDate : $(this).bootstrapDP('getDate'),
+          format: 'dd/mm/yyyy',
+          language: Translator.locale,
+          todayHighlight: true,
+          autoclose: true,
+          forceParse : false
+        });
+      }
 
       if(!valid_start) {
         if(valid_end) {
