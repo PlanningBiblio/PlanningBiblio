@@ -219,6 +219,28 @@ function currentCredits() {
       $('#holiday_debit').val(credits.holiday_debit);
       $('#anticipation4').text(credits.holiday_debit);
       $('input[name="anticipation"]').val(credits.holiday_debit_decimal);
+ 
+      if ($('#conges-mode').val() == 'heures' && $('#hours_per_day').val()) {
+          var hours_per_day = $('#hours_per_day').val();
+
+          if (credits.holiday_balance != '0h00') {
+            days = hours_to_days(heure4(credits.holiday_balance), hours_per_day);
+            $("#holiday_balance").val(credits.holiday_balance + days);
+            $("#reliquat4").append(days);
+          }
+
+          if (credits.holiday_credit != '0h00') {
+            days= hours_to_days(heure4(credits.holiday_credit), hours_per_day);
+            $("#holiday_credit").val(credits.holiday_credit + days);
+            $("#credit4").append(days);
+          }
+
+          if (credits.holiday_debit != '0h00') {
+            days= hours_to_days(heure4(credits.holiday_debit), hours_per_day);
+            $("#holiday_dedit").val(credits.holiday_debit + days);
+            $("#anticipation4").append(days);
+          }
+        }
     },
     error: function(xhr, ajaxOptions, thrownError){
       information("Impossible de récupérer le compte de congés actuel.","error");
