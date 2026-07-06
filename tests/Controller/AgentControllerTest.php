@@ -249,10 +249,10 @@ class AgentControllerTest extends PLBWebTestCase
         $this->assertEquals('Jean', $result->attr('value'));
 
         $result = $crawler->filterXPath('//input[@name="sites[]"]')->eq(0);
-        $this->assertNotEmpty($result->attr('checked'));
+        $this->assertNotNull($result->attr('checked'), 'The site 1 checkbox should be checked');
 
         $result = $crawler->filterXPath('//input[@name="sites[]"]')->eq(1);
-        $this->assertEmpty($result->attr('checked'));
+        $this->assertNull($result->attr('checked'), 'The site 2 checkbox should not be checked');
 
         $result = $crawler->filterXPath('//input[@id="login"]');
         $this->assertEquals('jdupont', $result->attr('value'));
