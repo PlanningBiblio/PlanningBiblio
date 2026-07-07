@@ -184,6 +184,7 @@ class HolidayControllerListTest extends PLBWebTestCase
         $this->login($kboivin);
 
         $crawler = $this->client->request('GET', '/holiday/new');
+        sleep(1);
 
         $agents_selected = $this->getElementsText('ul#perso_ul1 li');
         $this->assertCount(1, $agents_selected, 'jdupont is the only default selected agent');
