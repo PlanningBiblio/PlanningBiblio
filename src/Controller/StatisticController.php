@@ -239,7 +239,7 @@ class StatisticController extends BaseController
             $resultat = $db->result;
 
             // Add service and status to $resultat for each agent
-            if (in_array($type, ['service', 'status'])) {
+            if ($resultat && in_array($type, ['service', 'status'])) {
                 for ($i = 0; $i < count($resultat); $i++) {
 
                     if (!array_key_exists($resultat[$i]['perso_id'], $agents)) {
