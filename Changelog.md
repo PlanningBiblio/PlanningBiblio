@@ -1,5 +1,30 @@
 # Changelog Planno
 
+## Version 26.05.04 (2026-07-07)
+
+### Enhancement
+
+* MT52863: Add the Workinghour Import From Agent Command #1362
+* MT46629: Use Bootstrap tooltips #1402
+* MT53720: Do not display unamed sites #1427
+* MT46629: Replace jQuery UI effect('highlight') with a custom function #1430
+* MT46629: Remove jQuery UI classes on all form element #1431
+* MT46629: Deleted unused pages due to menu refactoring #1432
+* MT46629: Merge absence/add and absence/edit templates #1437
+* MT46629: Merge holiday/add and comptime/add templates #1440
+* MT46629: Replace aRight classes with text-end #1446
+* MT46629: Replace CJInfo with StackAlert #1447
+
+### Fixes
+
+* BugFix: Undefined variables error on Agent Controller #1422
+* BugFix: Demi-journée available only on day mode #1424
+* MT54010: Fix the migration that add the PlanningHebdo-resetCycles param #1426
+* MT54028 : Translation typo #1428
+* MT51469: Deactivate undo/redo when planning has been validated #1433
+* MT54151: Fix absence notification message #1439
+* BugFix: Remove is-invalid on hidden form element on /absence/add #1449
+
 ## Version 26.05.03 (2026-06-26)
 
 ### Fixes
