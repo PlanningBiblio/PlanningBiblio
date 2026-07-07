@@ -3,6 +3,14 @@ Description :
 Fichier regroupant les scripts JS nécessaires à la page planning/volants/index.php (Gestion des agents volants)
 */
 
+function highlightActiveWeek() {
+  $('td.active.day').parent().children('td').addClass('active-week');
+}
+
+$(document).ready(function() {
+  $('#pl-calendar').datepicker('setDate', dayjs($(date).val(), 'YYYY-MM-DD')['$d']) ;
+  highlightActiveWeek();
+});
 
 // Evénements JQuery
 $(function() {
@@ -10,6 +18,10 @@ $(function() {
   $("#pl-calendar").on('changeDate', function(e) {
     var date = $('#pl-calendar').datepicker('getFormattedDate','yyyy-mm-dd') ;
     window.location.href= url('detached') + '?date=' + date;
+  });
+
+  $('#pl-calendar').on('changeMonth', function() {
+    setTimeout(highlightActiveWeek, 0);
   });
 
 
