@@ -1,5 +1,23 @@
 # Changelog Planno
 
+## Version 26.04.04 (2026-07-07)
+
+### Enhancement
+
+* MT52863: Add the Workinghour Import From Agent Command #1362
+* MT53720: Do not display unamed sites #1427
+* MT46629: Deleted unused pages due to menu refactoring #1432
+
+### Fixes
+
+* BugFix: Undefined variables error on Agent Controller #1422
+* BugFix: Demi-journée available only on day mode #1424
+* MT54010: Fix the migration that add the PlanningHebdo-resetCycles param #1426
+* MT54028 : Translation typo #1428
+* MT51469: Deactivate undo/redo when planning has been validated #1433
+* MT54151: Fix absence notification message #1439
+* BugFix: Remove is-invalid on hidden form element on /absence/add #1449
+
 ## Version 26.04.03 (2026-06-26)
 
 ### Fixes
