@@ -98,91 +98,91 @@
         {% if effective_account %}
           <tr style='vertical-align:top;'>
             <td>{{ a.agent }}</td>
-            <td class='aRight nowrap'>
+            <td class='text-end nowrap'>
               {{ a.conge_annuel }}
               {% if hours_to_days %}
                 <br />{{ a.conge_annuel | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
-            <td class='aRight nowrap'>
+            <td class='text-end nowrap'>
               {{ a.conge_initial }}
               {% if hours_to_days %}
                 <br />{{ a.conge_initial | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
-            <td class='aRight nowrap'>
+            <td class='text-end nowrap'>
               {{ a.conge_utilise }}
               {% if hours_to_days %}
                 <br />{{ a.conge_utilise | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
-            <td class='aRight nowrap'>
+            <td class='text-end nowrap'>
               {{ a.conge_restant }}
               {% if hours_to_days %}
                 <br />{{ a.conge_restant | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
-            <td class='aRight nowrap'>
+            <td class='text-end nowrap'>
               {{ a.reliquat_initial }}
               {% if hours_to_days %}
                 <br />{{ a.reliquat_initial | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
-            <td class='aRight nowrap'>
+            <td class='text-end nowrap'>
               {{ a.reliquat_utilise }}
               {% if hours_to_days %}
                 <br />{{ a.reliquat_utilise | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
-            <td class='aRight nowrap'>
+            <td class='text-end nowrap'>
               {{ a.reliquat_restant }}
               {% if hours_to_days %}
                 <br />{{ a.reliquat_restant | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
-            <td class='aRight nowrap'>
+            <td class='text-end nowrap'>
               {{ a.recup_initial }}
               {% if hours_to_days %}
                 <br />{{ a.recup_initial | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
-            <td class='aRight nowrap'>
+            <td class='text-end nowrap'>
               {{ a.recup_utilise }}
               {% if hours_to_days %}
                 <br />{{ a.recup_utilise | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
-            <td class='aRight nowrap'>
+            <td class='text-end nowrap'>
               {{ a.recup_restant }}
               {% if hours_to_days %}
                 <br />{{ a.recup_restant | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
-            <td class='aRight nowrap'>
+            <td class='text-end nowrap'>
               {{ a.anticipation_initial }}
               {% if hours_to_days %}
                 <br />{{ a.anticipation_initial | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
-            <td class='aRight nowrap'>
+            <td class='text-end nowrap'>
               {{ a.anticipation_utilise }}
               {% if hours_to_days %}
                 <br />{{ a.anticipation_utilise | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
-            <td class='aRight nowrap'>
+            <td class='text-end nowrap'>
               {{ a.anticipation_restant }}
               {% if hours_to_days %}
                 <br />{{ a.anticipation_restant | hoursToDays(a.id) }}
@@ -194,91 +194,91 @@
         {% if waiting_credits %}
           <tr style='vertical-align:top;' class='orange'>
             <td>{{ a.agent }}</td>
-            <td class='aRight nowrap'>
+            <td class='text-end nowrap'>
               {{ a.conge_annuel }}
               {% if hours_to_days %}
                 <br />{{ a.conge_annuel | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
-            <td class='aRight nowrap'>
+            <td class='text-end nowrap'>
               {{ a.conge_initial }}
               {% if hours_to_days %}
                 <br />{{ a.conge_initial | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
-            <td class='aRight nowrap {$elem['conge_classe']}'>
+            <td class='text-end nowrap {$elem['conge_classe']}'>
               {{ a.conge_demande }}
               {% if hours_to_days %}
                 <br />{{ a.conge_demande | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
-            <td class='aRight nowrap {$elem['conge_classe']}'>
+            <td class='text-end nowrap {$elem['conge_classe']}'>
               {{ a.conge_en_attente }}
               {% if hours_to_days %}
                 <br />{{ a.conge_en_attente | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
-            <td class='aRight nowrap'>
+            <td class='text-end nowrap'>
               {{ a.reliquat_initial }}
               {% if hours_to_days %}
                 <br />{{ a.reliquat_initial | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
-            <td class='aRight nowrap {$elem['reliquat_classe']}'>
+            <td class='text-end nowrap {$elem['reliquat_classe']}'>
               {{ a.reliquat_demande }}
               {% if hours_to_days %}
                 <br />{{ a.reliquat_demande | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
-            <td class='aRight nowrap {$elem['reliquat_classe']}'>
+            <td class='text-end nowrap {$elem['reliquat_classe']}'>
               {{ a.reliquat_en_attente }}
               {% if hours_to_days %}
                 <br />{{ a.reliquat_en_attente | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
-            <td class='aRight nowrap'>
+            <td class='text-end nowrap'>
               {{ a.recup_initial }}
               {% if hours_to_days %}
                 <br />{{ a.recup_initial | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
-            <td class='aRight nowrap {$elem['recup_classe']}'>
+            <td class='text-end nowrap {$elem['recup_classe']}'>
               {{ a.recup_demande }}
               {% if hours_to_days %}
                 <br />{{ a.recup_demande | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
-            <td class='aRight nowrap {$elem['recup_classe']}'>
+            <td class='text-end nowrap {$elem['recup_classe']}'>
               {{ a.recup_en_attente }}
               {% if hours_to_days %}
                 <br />{{ a.recup_en_attente | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
-            <td class='aRight nowrap'>
+            <td class='text-end nowrap'>
               {{ a.anticipation_initial }}
               {% if hours_to_days %}
                 <br />{{ a.anticipation_initial | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
-            <td class='aRight nowrap {$elem['anticipation_classe']}'>
+            <td class='text-end nowrap {$elem['anticipation_classe']}'>
               {{ a.anticipation_demande }}
               {% if hours_to_days %}
                 <br />{{ a.anticipation_demande | hoursToDays(a.id) }}
               {% endif %}
             </td>
 
-            <td class='aRight nowrap {$elem['anticipation_classe']}'>
+            <td class='text-end nowrap {$elem['anticipation_classe']}'>
               {{ a.anticipation_en_attente }}
               {% if hours_to_days %}
                 <br />{{ a.anticipation_en_attente | hoursToDays(a.id) }}

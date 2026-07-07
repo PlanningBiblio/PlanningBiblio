@@ -20,7 +20,7 @@
         <input type="hidden" name="id" value="{{ (id is defined) ? id : '' }}" />
         
         <div class="row my-2 gx-5">
-          <label class="col-2 col-form-label aRight" for="nom">{% trans %}Name{% endtrans %} :</label>
+          <label class="col-2 col-form-label text-end" for="nom">{% trans %}Name{% endtrans %} :</label>
           <div class="col-2">
             <input type="text" name="nom" id="nom" value="{{ (nom is defined) ? (nom) : '' }}" class="form-control form-control-sm center" required/>
           </div>
