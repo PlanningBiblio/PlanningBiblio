@@ -738,7 +738,11 @@ $(function(){
       e.stopImmediatePropagation();
 
       // Enables inline-feedback
-      $('.form-control:invalid').addClass('is-invalid');
+      $('.form-control:invalid').each(function() {
+        if ($(this).is(':visible')) {
+          $(this).addClass('is-invalid');
+        }
+      });
     }
     $(this).addClass('was-validated');
   });
