@@ -1177,18 +1177,6 @@ class cellule = cellule par défaut
   margin: 20px 0;
 }
 
-#tab_titre {	/* /index */
-  width:100%;
-  height: 145px;
-  border: none;
-  background-color: #29495C;
-  margin-bottom: 20px;
-}
-
-#tab_titre .row {
-  justify-content: space-around;
-}
-
 /* Datepicker START */
 
 #pl-calendar {
