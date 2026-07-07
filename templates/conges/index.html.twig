@@ -133,15 +133,15 @@
             <td style="font-weight: bold;">{{ c.status }}</td>
           {% endif %}
           <td data-order="{{ c.statusDate }}">{{ c.statusDate | datefr }}</td>
-          <td class="aRight">{{ c.hours }}{% if show_hours_to_days %}<br />{{ c.days }}j{% endif %}</td>
+          <td class="text-end">{{ c.hours }}{% if show_hours_to_days %}<br />{{ c.days }}j{% endif %}</td>
 
           {% if balance %}
             {% if c.valide or c.information %}
               {% if c.solde_prec != c.solde_actuel %}
-                <td class="aRight bold">{{ c.solde_prec }} →  {{ c.solde_actuel }}
+                <td class="text-end bold">{{ c.solde_prec }} →  {{ c.solde_actuel }}
                                  {% if show_hours_to_days %}<br />{{ c.solde_prec_days }}j →  {{ c.solde_actuel_days }}j{% endif %}</td>
               {% else %}
-                <td class="aRight">{{ c.solde_prec }}{% if show_hours_to_days %}<br />{{ c.solde_prec_days }}j{% endif %}</td>
+                <td class="text-end">{{ c.solde_prec }}{% if show_hours_to_days %}<br />{{ c.solde_prec_days }}j{% endif %}</td>
               {% endif %}
             {% else %}
               <td></td>
@@ -149,10 +149,10 @@
 
             {% if c.valide or c.information %}
               {% if c.reliquat_prec != c.reliquat_actuel %}
-                <td class="aRight bold">{{ c.reliquat_prec }} →  {{ c.reliquat_actuel }}
+                <td class="text-end bold">{{ c.reliquat_prec }} →  {{ c.reliquat_actuel }}
                                  {% if show_hours_to_days %}<br />{{ c.reliquat_prec_days }}j →  {{ c.reliquat_actuel_days }}j{% endif %}</td>
               {% else %}
-              <td class="aRight">{{ c.reliquat_prec }}{% if show_hours_to_days %}<br />{{ c.reliquat_prec_days }}j{% endif %}</td>
+              <td class="text-end">{{ c.reliquat_prec }}{% if show_hours_to_days %}<br />{{ c.reliquat_prec_days }}j{% endif %}</td>
               {% endif %}
             {% else %}
               <td></td>
@@ -162,10 +162,10 @@
           {% if recovery %}
             {% if c.valide or c.information %}
               {% if c.recup_prec != c.recup_actuel %}
-                <td class="aRight bold">{{ c.recup_prec }} →  {{ c.recup_actuel }}
+                <td class="text-end bold">{{ c.recup_prec }} →  {{ c.recup_actuel }}
                 {% if show_hours_to_days %}<br />{{ c.recup_prec_days }}j →  {{ c.recup_actuel_days }}j{% endif %}</td>
               {% else %}
-                <td class="aRight">{{ c.recup_prec }}{% if show_hours_to_days %}<br />{{ c.recup_prec_days }}j{% endif %}</td>
+                <td class="text-end">{{ c.recup_prec }}{% if show_hours_to_days %}<br />{{ c.recup_prec_days }}j{% endif %}</td>
               {% endif %}
             {% else %}
               <td></td>
@@ -175,10 +175,10 @@
           {% if balance %}
             {% if c.valide or c.information %}
               {% if c.anticipation_prec != c.anticipation_actuel %}
-                <td class="aRight bold">{{ c.anticipation_prec }} →  {{ c.anticipation_actuel }}
+                <td class="text-end bold">{{ c.anticipation_prec }} →  {{ c.anticipation_actuel }}
                 {% if show_hours_to_days %}<br />{{ c.anticipation_prec_days }}j →  {{ c.anticipation_actuel_days }}j{% endif %}</td>
               {% else %}
-                <td class="aRight">{{ c.anticipation_prec }}{% if show_hours_to_days %}<br />{{ c.anticipation_prec_days }}j{% endif %}</td>
+                <td class="text-end">{{ c.anticipation_prec }}{% if show_hours_to_days %}<br />{{ c.anticipation_prec_days }}j{% endif %}</td>
               {% endif %}
             {% else %}
               <td></td>

@@ -374,7 +374,7 @@ function control_credits_min(o) {
         minutes < 0 ||
         minutes > 59
        ) {
-        o.closest('tr').after('<tr id="' + errorElem + '"><td colspan="2" class="aRight important invalid">Le nombre de minutes doit être un entier compris entre 0 et 59</td></tr>');
+        o.closest('tr').after('<tr id="' + errorElem + '"><td colspan="2" class="text-end important invalid">Le nombre de minutes doit être un entier compris entre 0 et 59</td></tr>');
     }
   }
 }
@@ -390,13 +390,13 @@ function control_credits_hours(o) {
     hours = Number(hours);
     if (id == 'comp_time_hours') {
       if (!Number.isInteger(hours)) {
-          o.closest('tr').after('<tr id="' + errorElem + '"><td colspan="2" class="aRight important invalid">Le nombre d\'heures doit être un entier</td></tr>');
+          o.closest('tr').after('<tr id="' + errorElem + '"><td colspan="2" class="text-end important invalid">Le nombre d\'heures doit être un entier</td></tr>');
       }
     } else {
       if (!Number.isInteger(hours) ||
           hours < 0
          ) {
-          o.closest('tr').after('<tr id="' + errorElem + '"><td colspan="2" class="aRight important invalid">Le nombre d\'heures doit être un entier positif</td></tr>');
+          o.closest('tr').after('<tr id="' + errorElem + '"><td colspan="2" class="text-end important invalid">Le nombre d\'heures doit être un entier positif</td></tr>');
       }
     }
   }

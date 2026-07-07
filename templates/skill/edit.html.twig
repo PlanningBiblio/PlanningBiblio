@@ -13,7 +13,7 @@
       <form method="post" name="form" action="{{ asset('skill') }}" novalidate>
         <input type="hidden" name="CSRFToken" value="{{ CSRFSession }}" />
          <div class="row my-2 gx-5">
-          <label class="col-2 col-form-label aRight" for="skill-name">{% trans %}Name{% endtrans %} :</label>
+          <label class="col-2 col-form-label text-end" for="skill-name">{% trans %}Name{% endtrans %} :</label>
           <div class="col-3">
             <input type="text" name="nom" id="skill-name" value="{{ skill_name }}" class="form-control form-control-sm" required/>
           </div>
