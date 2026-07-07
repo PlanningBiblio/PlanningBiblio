@@ -1,5 +1,12 @@
 # Changelog Planno
 
+## Version 25.10.22 (2026-07-07)
+
+### Fixes
+
+* BugFix: Demi-journée available only on day mode #1424
+* MT51469: Deactivate undo/redo when planning has been validated #1433
+
 ## Version 25.10.21 (2026-06-25)
 
 ### Fixes
