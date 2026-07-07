@@ -494,11 +494,17 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $agentOption = $crawler->filterXPath(".//select[@id='perso_ids']//option[@value='" . $abreton->getId()  . "']");
         $agentOption->click();
 
+        $crawler = $this->client->refreshCrawler();
+        sleep(1);
+
         $validationState = $crawler->filter('#validation-state');
         $this->assertEquals('input', $validationState->nodeName(), 'The validation state objetc is not an input');
 
         $closeIcon = $crawler->filter("#li" . $jdupont->getId()  . " button.perso-drop");
         $closeIcon->click();
+
+        $crawler = $this->client->refreshCrawler();
+        sleep(1);
 
         $validationState = $crawler->filter('#validation-state');
         $this->assertEquals('select', $validationState->nodeName(), 'The validation state objetc is not a select');

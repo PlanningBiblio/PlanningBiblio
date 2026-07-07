@@ -2215,10 +2215,6 @@ table.dataTable th{
   padding: 20px;
 }
 
-.info-align {
-  display: inline-block;
-}
-
 #closingday{
   width: 90%;
   margin: 10px auto auto auto;
