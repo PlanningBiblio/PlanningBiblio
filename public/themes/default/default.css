@@ -1494,10 +1494,6 @@ option.fw-bold{
   background-color: aliceblue;
 }
 
-.nowrap {
-  white-space:nowrap;
-}
-
 /* Statistiques */
 #stat-col1{
   width:350px;

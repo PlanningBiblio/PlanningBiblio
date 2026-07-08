@@ -76,7 +76,7 @@
               <tbody>
                 {% for elem in planning %}
                   <tr>
-                    <td style='white-space:nowrap;'>{{ elem.remplace ? "<font style='font-size:20pt;'>&rdsh;</font>": "" }}
+                    <td class="text-nowrap">{{ elem.remplace ? "<font style='font-size:20pt;'>&rdsh;</font>": "" }}
                       <a href="{{ asset('workinghour') }}/{{ elem.id }}?retour=/myaccount"/>
                         <span class='pl-icon pl-icon-edit' title='Voir'></span>
                       </a>
