@@ -1662,7 +1662,7 @@ class PlanningController extends BaseController
 
         $this->cellId++;
 
-        $cellule = "<td id='td{$this->cellId}' colspan='$colspan' style='text-align:center;' class='menuTrigger' oncontextmenu='cellule={$this->cellId}'
+        $cellule = "<td id='td{$this->cellId}' colspan='$colspan' class='menuTrigger text-center' oncontextmenu='cellule={$this->cellId}'
             data-start='$debut' data-end='$fin' data-situation='$poste' data-cell='{$this->cellId}' data-perso-id='0'>";
 
         for ($i=0;$i<count($resultats);$i++) {
@@ -1813,7 +1813,7 @@ class PlanningController extends BaseController
             $masqueTableaux = null;
             if ($this->config('Planning-TableauxMasques')) {
                 // FIXME HTML
-                $masqueTableaux = "<span title='Masquer' class='pl-icon pl-icon-hide masqueTableau pointer noprint' data-id='$l' ></span>";
+                $masqueTableaux = "<span title='Masquer' class='pl-icon pl-icon-hide masqueTableau pointer d-print-none' data-id='$l' ></span>";
             }
             $tabs[$index]['masqueTableaux'] = $masqueTableaux;
 
@@ -1987,7 +1987,7 @@ class PlanningController extends BaseController
             $nonValidee = null;
             if ($this->config('Absences-non-validees') == 1) {
                 if ($elem['valide'] > 0) {
-                    $bold = 'bold';
+                    $bold = 'fw-bold';
                 } else {
                     $nonValidee = " (non validée)";
                 }

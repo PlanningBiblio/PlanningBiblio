@@ -1,6 +1,6 @@
 {# planning/poste/model_form.html.twig #}
 
-<div class="modal-body" style="text-align:center">
+<div class="modal-body text-center">
   <form name="form" id="import-model-form" method="post" action="{{ asset('modelimport') }}" onsubmit="return ctrl_form('model');">
     <input type="hidden" name="CSRFToken" value="{{ CSRFSession }}" />
     <input type="hidden" name="_token" value="{{ csrf_token("") }}" />
@@ -29,7 +29,7 @@
 
         <div class="row mb-2 justify-content-center">
           <label for="model" class="form-label">{% trans %}Select the template to import{% endtrans %} :</label>
-          <select name="model" id="model" class="form-select form-select-sm" style="max-width: fit-content;text-align:center;">
+          <select name="model" id="model" class="form-select form-select-sm text-center" style="max-width: fit-content;">
             <option hidden disabled selected value=""></option>
             {% for m in models %}
               <option value="{{ m.modelId }}">{{ m.name }}{% if m.isWeek %} (semaine){% endif %}</option>

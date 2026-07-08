@@ -76,7 +76,7 @@
          <th>Demande</th>
          {% if can_manage_sup_doc %}
            <th id='thPiecesJustif' class='dataTableNoSort'>
-             <span style='white-space:nowrap'>Pièces justificatives</span><br/>
+             <span class="text-nowrap">Pièces justificatives</span><br/>
              <div class='absences-pj'>PJ 1</div>
              <div class='absences-pj'>PJ 2</div>
              <div class='absences-pj'>SO</div>
@@ -88,7 +88,7 @@
     <tbody>
       {% for abs in visibles_absences %}
         <tr>
-          <td style='white-space: nowrap;'>
+          <td class="text-nowrap">
             <div class="icon-div">
               {% if abs.view_details %}
                 <a href='{{ asset("absence") }}/{{ abs.id }}'>
@@ -113,12 +113,12 @@
               {{ abs.commentaires }}
             </div>
           </td>
-          <td data-order="{{ abs.demande }}" style="white-space:nowrap;">
+          <td data-order="{{ abs.demande }}" class="text-nowrap">
             {{ abs.demande | datefr }}
           </td>
 
           {% if can_manage_sup_doc %}
-            <td style='text-align:center;'>
+            <td class="text-center">
               <div class="absences-pj">
                 <input type="checkbox" id="pj1-{{ abs.id }}" {% if abs.pj1 %} checked {% endif %}/>
               </div>

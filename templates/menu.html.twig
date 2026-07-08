@@ -56,7 +56,7 @@
       </div>
 
       <div id="accountDivReverse">
-        <ul colspan="2" style="text-align:right;" class="menu_ul navbar-nav me-auto mb-2 mb-lg-0">
+        <ul colspan="2" class="menu_ul navbar-nav me-auto mb-2 mb-lg-0 text-end">
           <li class="nav-item menu_li">
           {% if planninghebdo or ics_export %}
             <a href="{{ asset('myaccount') }}" class="nav-link {% if menuIsActive('myaccount', app.request.uri) %} active {% endif %}" {% if menuIsActive('myaccount', app.request.uri) %} aria-current="page" {% endif %} >Mon Compte</a>

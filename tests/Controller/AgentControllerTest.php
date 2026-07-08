@@ -270,7 +270,7 @@ class AgentControllerTest extends PLBWebTestCase
         $result = $crawler->filterXPath('//div[@id="dispo_div"]');
         $this->assertStringContainsString('Assistance audiovisuel', $result->text('Node does not exist', false));
 
-        $result = $crawler->filterXPath('//td[@style="text-align:center;padding-top:100px;"]/input[@type="button"]');
+        $result = $crawler->filterXPath('//td[@style="padding-top:100px;"]/input[@type="button"]');
         $this->assertEquals('Attribuer >>', $result->attr('value'));
         $this->assertEquals('Attribuer Tout >>', $result->eq(1)->attr('value'));
         $this->assertEquals('<< Supprimer', $result->eq(2)->attr('value'));

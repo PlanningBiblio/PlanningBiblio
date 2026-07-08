@@ -62,7 +62,7 @@
     <tbody>
       {% for elem in tab %}
         <tr id='tr_{{ elem.id }}'>
-          <td style='white-space:nowrap;'>
+          <td class="text-nowrap">
             {{ (elem.remplace != 0) ? "<font style='font-size:20pt;'>&rdsh;</font>": " " }}
             <a href="{{ asset('workinghour')}}/{{ elem.id }}?retour={{ asset("workinghour") }}"/>
               <span class='pl-icon pl-icon-edit' title='Voir'></span>
