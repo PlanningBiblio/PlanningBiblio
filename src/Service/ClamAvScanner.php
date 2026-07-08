@@ -36,20 +36,18 @@ class ClamAvScanner
 
     public function isConfigured(): bool
     {
-        $this->logger->info("clamav isConfigured:" . ($this->clamavSocket !== '' && $this->clamavSocket !== '0'));
         return ($this->clamavSocket !== '' && $this->clamavSocket !== '0');
     }
 
     public function isEnabled(): bool
     {
-        $this->logger->info("clamav isEnabled:" . $this->enabled);
         return $this->enabled;
     }
 
     public function scan(File|string $file)
     {
 
-        if (!$this->isEnabled() || !$this->isEnabled()) {
+        if (!$this->isEnabled() || !$this->isConfigured()) {
             $this->logger->error("ClamAV is not configured or not started, please set CLAMAV_SOCKET in your .env file");
             return;
         }

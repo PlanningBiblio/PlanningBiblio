@@ -266,7 +266,9 @@
                   </div>
                 {% endif %}
             {% else %}
-                <div class="col-3">{% trans %}Files cannot be scanned, upload is disabled{% endtrans %}</div>
+                <div class="col-3">
+                  <input type="text" readonly class="form-control-plaintext" id="documentFile" value="{% trans %}Files cannot be scanned, upload is disabled{% endtrans %}" />
+                </div>
             {% endif %}
           </div>
 

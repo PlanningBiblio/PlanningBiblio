@@ -275,11 +275,11 @@ function addAbsenceDocument(id) {
         }.bind(this, id),
         error: function(jqXHR) {
             if (jqXHR.status === 422) {
-                alert(Translator.trans('Le fichier attaché présentait des risques et a été supprimé'));
+                alert(Translator.trans('The file contained malware and was deleted'));
             } else if (jqXHR.status === 413) {
-                alert(Translator.trans('Le fichier était trop volumineux'));
+                alert(Translator.trans('The file was too big'));
             } else {
-                alert(Translator.trans('Une erreur est survenue'));
+                alert(Translator.trans('An error occured'));
             }
         }
     });
