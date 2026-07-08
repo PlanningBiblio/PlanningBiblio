@@ -7,6 +7,7 @@ use App\Entity\AbsenceDocument;
 use App\Entity\Absence;
 use App\Entity\AbsenceReason;
 use App\Entity\Agent;
+use App\Service\ClamAvScanner;
 
 use App\Planno\Helper\HourHelper;
 use App\Planno\Helper\AbsenceImportCSVHelper;
@@ -222,7 +223,7 @@ class AbsenceController extends BaseController
 
 
     #[Route(path: '/absence/add', name: 'absence.add', methods: ['GET'])]
-    public function add(Request $request)
+    public function add(Request $request, ClamAvScanner $scanner)
     {
         $session = $request->getSession();
 
@@ -275,6 +276,11 @@ class AbsenceController extends BaseController
             $agent_preselection = 1;
         }
 
+        $allow_upload = true;
+        if ($scanner->isConfigured() && !$scanner->isEnabled()) {
+            $allow_upload = false;
+        }
+
         $this->templateParams(array(
             'id'                    => null,
             'access'                => false,
@@ -302,13 +308,14 @@ class AbsenceController extends BaseController
             'reasons'               => $this->availablesReasons(),
             'display_autre'         => false,
             'right701'              => in_array(701, $this->droits) ? 1 : 0,
+            'allow_upload'          => $allow_upload,
         ));
 
         return $this->output('absences/edit.html.twig');
     }
 
     #[Route(path: '/absence', name: 'absence.save', methods: ['POST'])]
-    public function save(Request $request, Session $session)
+    public function save(Request $request, Session $session, ClamAvScanner $scanner)
     {
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
@@ -338,17 +345,36 @@ class AbsenceController extends BaseController
         $file = $request->files->get('documentFile');
         if (!empty($file)) {
 
+            if ($scanner->isConfigured() && !$scanner->isEnabled()) {
+                $this->logger->critical("ClamAV is configured but not available: this file should not have been uploaded");
+            } else {
+
             $filename = $file->getClientOriginalName();
 
-            $ad = new AbsenceDocument();
-            $ad->setAbsenceId($result['id']);
-            $ad->setFilename($filename);
-            $ad->setDate(new \DateTime());
-            $this->entityManager->persist($ad);
-            $this->entityManager->flush();
+                $ad = new AbsenceDocument();
+                $ad->setAbsenceId($result['id']);
+                $ad->setFilename($filename);
+                $ad->setDate(new \DateTime());
+                $this->entityManager->persist($ad);
+                $this->entityManager->flush();
 
-            $file->move($ad->upload_dir() . $result['id'] . '/' . $ad->getId(), $filename);
-
+                $destination_dir = $ad->upload_dir() . $result['id'] . '/' . $ad->getId();
+                $file->move($destination_dir, $filename);
+                if ($scanner->isEnabled()) {
+                    $scan_file = $destination_dir . '/' . $filename;
+                    $clean = $scanner->scan($scan_file);
+                    if ($clean == 1) {
+                        $this->logger->info("ClamAV is enabled and $scan_file is clean");
+                    } else {
+                        $this->logger->critical("ClamAV is enabled and $scan_file is unsafe, deleting it");
+                        # We did not prevent the AbsenceDocument creation, so we can use ->deleteFile();
+                        $ad->deleteFile();
+                        $this->entityManager->remove($ad);
+                        $this->entityManager->flush();
+                        $result['msg2'] .= $this->translator->trans("The file contained malware and was deleted.");
+                    }
+                }
+            }
         }
 
         $msg = $result['msg'];
@@ -365,7 +391,7 @@ class AbsenceController extends BaseController
     }
 
     #[Route(path: '/absence/{id<\d+>}', name: 'absence.edit', methods: ['GET'])]
-    public function edit(Request $request)
+    public function edit(Request $request, ClamAvScanner $scanner)
     {
         $session = $request->getSession();
 
@@ -501,6 +527,11 @@ class AbsenceController extends BaseController
 
         $display_autre = in_array(strtolower($absence['motif']), array("autre","other")) ? 1 : 0;
 
+        $allow_upload = true;
+        if ($scanner->isConfigured() && !$scanner->isEnabled()) {
+            $allow_upload = false;
+        }
+
         $this->templateParams(array(
             'id'                    => $id,
             'access'                => $acces,
@@ -528,6 +559,7 @@ class AbsenceController extends BaseController
             'reason_types'          => $this->reasonTypes(),
             'display_autre'         => $display_autre,
             'right701'              => in_array(701, $this->droits) ? 1 : 0,
+            'allow_upload'          => $allow_upload,
         ));
 
         $this->templateParams(array('documents' => $this->getDocuments($a)));

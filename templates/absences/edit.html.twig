@@ -256,13 +256,19 @@
 
           <div class="row gx-5 mb-2">
             <label class="col-2 col-form-label text-end" for="documentFile">Attacher un document :</label>
-            <div class="col-3">
-              <input type="file" name="documentFile" id="documentFile" class="form-control"/>
-            </div>
-            {% if absence.editable %}
-              <div class="col-auto ps-0">
-                <button id="add-file" type="button" class="btn btn-link text-start" onclick="addAbsenceDocument({{ id }});">Ajouter</button>
-              </div>
+            {% if allow_upload %}
+                <div class="col-3">
+                  <input type="file" name="documentFile" id="documentFile" class="form-control"/>
+                </div>
+                {% if absence.editable %}
+                  <div class="col-auto ps-0">
+                    <button id="add-file" type="button" class="btn btn-link text-start" onclick="addAbsenceDocument({{ id }});">Ajouter</button>
+                  </div>
+                {% endif %}
+            {% else %}
+                <div class="col-3">
+                  <input type="text" readonly class="form-control-plaintext" id="documentFile" value="{% trans %}Files cannot be scanned, upload is disabled{% endtrans %}" />
+                </div>
             {% endif %}
           </div>
 

@@ -4,8 +4,60 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "92050cc22da505aec7527a21ec8c3156",
+    "content-hash": "59408884d99cf9a3c2cd3e5721885d2f",
     "packages": [
+        {
+            "name": "adriengras/php-clamav",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/AdrienGras/php-clamav.git",
+                "reference": "e74c729ba157c400b72b3a3d2d01b39808726aa8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/AdrienGras/php-clamav/zipball/e74c729ba157c400b72b3a3d2d01b39808726aa8",
+                "reference": "e74c729ba157c400b72b3a3d2d01b39808726aa8",
+                "shasum": ""
+            },
+            "require": {
+                "ext-sockets": "*",
+                "php": "^8.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": ">=9"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "AdrienGras\\PhpClamAV\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Adrien Gras",
+                    "email": "agr@owlnext.fr"
+                }
+            ],
+            "description": "A PHP/Composer package to use ClamAV to scan folders and files for viruses",
+            "homepage": "https://github.com/AdrienGras/php-clamav",
+            "keywords": [
+                "antivirus",
+                "clamav",
+                "php",
+                "scan",
+                "virus"
+            ],
+            "support": {
+                "issues": "https://github.com/AdrienGras/php-clamav/issues",
+                "source": "https://github.com/AdrienGras/php-clamav/tree/v1.0.0"
+            },
+            "time": "2024-11-07T13:30:39+00:00"
+        },
         {
             "name": "apereo/phpcas",
             "version": "1.6.2",
@@ -13595,15 +13647,15 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
         "php": "^8.2 || ^8.3"
     },
-    "platform-dev": {},
+    "platform-dev": [],
     "platform-overrides": {
         "php": "8.2"
     },
-    "plugin-api-version": "2.9.0"
+    "plugin-api-version": "2.6.0"
 }
