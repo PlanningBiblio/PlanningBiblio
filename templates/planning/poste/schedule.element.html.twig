@@ -11,11 +11,11 @@
                   <u>Validation</u> : {{ schedule.lockPerson }} {{ schedule.lockDate | datefr }}
               {% else %}
                 {% if autorisationN1 %}
-                  <font class="important bold">
+                  <font class="important fw-bold">
                     Attention ! Le planning du {{ schedule.date | datefr }} n'est pas validé !
                   </font>
                 {% else %}
-                  <font class="important bold">
+                  <font class="important fw-bold">
                     Le planning du {{ schedule.date | datefr }} n'est pas validé !
                   </font>
                 {% endif %}

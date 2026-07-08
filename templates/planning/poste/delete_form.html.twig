@@ -7,7 +7,7 @@
         <h5 class="modal-title" id="drop-model-modal-title">{% trans %}Deletion of the schedule{% endtrans %}</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans %}Close{% endtrans %}"></button>
       </div>
-      <div class="modal-body" style="text-align:center">
+      <div class="modal-body text-center">
         <p>
           {% trans with {'%day%': date | date('d/m/Y'), '%first_day_week%' : start | date('d/m/Y'), '%last_day_week%' : end | date('d/m/Y') } %}Do you want to delete the schedule for the day %day% or for the week (from %first_day_week% to %last_day_week%){% endtrans %} ?
         </p>
@@ -29,7 +29,7 @@
         <h5 class="modal-title" id="drop-day-modal-title">{% trans %}Deletion of the schedule{% endtrans %}</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans %}Close{% endtrans %}"></button>
       </div>
-      <div class="modal-body" style="text-align:center;">
+      <div class="modal-body text-center">
 
         <p class="px-2">
           {% trans with {'%day%': date | date('d/m/Y') } %}Are you sure you want to delete the schedule for %day%{% endtrans %} ?
@@ -60,7 +60,7 @@
         <h5 class="modal-title" id="drop-week-modal-title">{% trans %}Deletion of the schedule{% endtrans %}</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans %}Close{% endtrans %}"></button>
       </div>
-      <div class="modal-body" style="text-align:center;">
+      <div class="modal-body text-center">
         
         <p>
           {% trans with {'%start%': start | date('d/m/Y'), '%end%' : end | date('d/m/Y') } %}Are you sure you want to delete the schedule for the week (%start% to %end%){% endtrans %} ?

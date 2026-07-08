@@ -108,7 +108,7 @@
           {% endif %}
             <td>Heure de début : </td>
             <td>
-              <input name="hre_debut" id="hre_debut_select" class="planno-timepicker checkdate center form-control form-control-sm" style="width:40%" 
+              <input name="hre_debut" id="hre_debut_select" class="planno-timepicker checkdate form-control form-control-sm" style="width:40%" 
                 value="{% if hre_debut != '00:00:00' %}{{ hre_debut | date('H:i')}}{% endif %}"/>
             </td>
           </tr>
@@ -155,7 +155,7 @@
 
             <td>Heure de fin : </td>
             <td>
-              <input name="hre_fin" id="hre_fin_select" class="planno-timepicker checkdate center form-control form-control-sm" style="width:40%"
+              <input name="hre_fin" id="hre_fin_select" class="planno-timepicker checkdate form-control form-control-sm" style="width:40%"
                 value="{% if hre_fin != '23:59:59' %}{{ hre_fin | date('H:i')}}{% endif %}"/>
             </td>
           </tr>
@@ -378,7 +378,7 @@
           </tr>
 
           <tr>
-            <td colspan="2" style="text-align:center;">
+            <td colspan="2" class="text-center">
               {% if conges_recuperations and debit == 'recuperation' %}
                 <a href="{{ asset('holiday/?recup=1') }}" role="button" class="btn btn-secondary" >Annuler</a>
               {% else %}

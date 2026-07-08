@@ -32,13 +32,13 @@
 
         <table class="tableauFiches">
           <tr>
-            <td class="textAlignRight">Agent : </td>
+            <td class="text-end">Agent : </td>
             <td>{{ agent }}</td>
           </tr>
 
           {% if config('Recup-DeuxSamedis') %}
             <tr>
-              <td class="textAlignRight">Date(s) concernée(s) : </td>
+              <td class="text-end">Date(s) concernée(s) : </td>
               <td>{{ overtime.date | datefull }}</td>
             </tr>
 
@@ -48,23 +48,23 @@
             </tr>
           {% else %}
             <tr>
-              <td class="textAlignRight">Date concernée : </td>
+              <td class="text-end">Date concernée : </td>
               <td>{{ overtime.date | datefull }}</td>
             </tr>
           {% endif %}
 
           <tr>
-            <td class="textAlignRight">Date de la demande : </td>
+            <td class="text-end">Date de la demande : </td>
             <td>
               {{ overtime.saisie }} {% if overtime.saisie_par and overtime.saisie_par != overtime.perso_id %} par {{ overtime.saisie_par_nom }} {% endif %}
             <td>
           </tr>
 
           <tr>
-            <td class="textAlignRight">Heures demandées : </td>
+            <td class="text-end">Heures demandées : </td>
             {% if overtime.editable %}
               <td>
-                <input id="heures" name="heures" class="overtime-timepicker form-control form-control-sm" value="{{ overtime.time }}" style="text-align: center;"/>
+                <input id="heures" name="heures" class="overtime-timepicker form-control form-control-sm" value="{{ overtime.time }}"/>
               </td>
             {% else %}
               <td>{{ overtime.heures | hours }}</td>
@@ -72,7 +72,7 @@
           </tr>
 
           <tr>
-            <td class="textAlignRight">Commentaires : </td>
+            <td class="text-end">Commentaires : </td>
             {% if overtime.editable %}
               <td>
                 <textarea name="commentaires">{{ overtime.commentaires }}</textarea>
@@ -83,7 +83,7 @@
           </tr>
 
           <tr>
-            <td class="textAlignRight">Validation : </td>
+            <td class="text-end">Validation : </td>
             {% if show_select == true %}
               <td>
                 <select name="validation" id="validation">
@@ -124,7 +124,7 @@
           </tr>
 
           <tr class="refus">
-            <td class="textAlignRight">Motif du refus : </td>
+            <td class="text-end">Motif du refus : </td>
             {% if show_select == true %}
               <td>
                 <textarea name="refus">{{ overtime.refus }}</textarea>

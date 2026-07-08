@@ -22,7 +22,7 @@
         <div class="row my-2 gx-5">
           <label class="col-2 col-form-label text-end" for="nom">{% trans %}Name{% endtrans %} :</label>
           <div class="col-2">
-            <input type="text" name="nom" id="nom" value="{{ (nom is defined) ? (nom) : '' }}" class="form-control form-control-sm center" required/>
+            <input type="text" name="nom" id="nom" value="{{ (nom is defined) ? (nom) : '' }}" class="form-control form-control-sm text-center" required/>
           </div>
           <div class="col-auto">
             <div class="invalid-feedback" id="line-feedback">{% trans from 'validators' %}This value should not be blank.{% endtrans %}</div>

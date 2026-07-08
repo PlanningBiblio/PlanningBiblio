@@ -775,10 +775,10 @@ class conges
             $tab[$perso_id]['anticipation_demande']=$tab[$perso_id]['anticipation_en_attente']-$tab[$perso_id]['anticipation_initial'];
 
             // Classe bold si différence entre crédits validés et demandés
-            $tab[$perso_id]['conge_classe']=$tab[$perso_id]['conge_demande']!=$tab[$perso_id]['conge_utilise']?"bold":null;
-            $tab[$perso_id]['reliquat_classe']=$tab[$perso_id]['reliquat_demande']!=$tab[$perso_id]['reliquat_utilise']?"bold":null;
-            $tab[$perso_id]['recup_classe']=$tab[$perso_id]['recup_demande']!=$tab[$perso_id]['recup_utilise']?"bold":null;
-            $tab[$perso_id]['anticipation_classe']=$tab[$perso_id]['anticipation_demande']!=$tab[$perso_id]['anticipation_utilise']?"bold":null;
+            $tab[$perso_id]['conge_classe']=$tab[$perso_id]['conge_demande']!=$tab[$perso_id]['conge_utilise']?"fw-bold":null;
+            $tab[$perso_id]['reliquat_classe']=$tab[$perso_id]['reliquat_demande']!=$tab[$perso_id]['reliquat_utilise']?"fw-bold":null;
+            $tab[$perso_id]['recup_classe']=$tab[$perso_id]['recup_demande']!=$tab[$perso_id]['recup_utilise']?"fw-bold":null;
+            $tab[$perso_id]['anticipation_classe']=$tab[$perso_id]['anticipation_demande']!=$tab[$perso_id]['anticipation_utilise']?"fw-bold":null;
 
             foreach ($tab[$perso_id] as $key => $value) {
                 if (!in_array($key, ['nom', 'prenom', 'agent'])) {

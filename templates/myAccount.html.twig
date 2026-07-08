@@ -52,7 +52,7 @@
               <h3>Heures de présence</h3>
             </div>
             {% if config('PlanningHebdo-Agents') %}
-              <div class="col" style="text-align: end;">
+              <div class="col text-end">
                 <a role="button" href="{{ asset ('workinghour/add') }}?retour=/myaccount" class="btn btn-primary">Entrer de nouveaux horaires</a>
               </div>
             {% endif %}
@@ -76,7 +76,7 @@
               <tbody>
                 {% for elem in planning %}
                   <tr>
-                    <td style='white-space:nowrap;'>{{ elem.remplace ? "<font style='font-size:20pt;'>&rdsh;</font>": "" }}
+                    <td class="text-nowrap">{{ elem.remplace ? "<font style='font-size:20pt;'>&rdsh;</font>": "" }}
                       <a href="{{ asset('workinghour') }}/{{ elem.id }}?retour=/myaccount"/>
                         <span class='pl-icon pl-icon-edit' title='Voir'></span>
                       </a>
@@ -101,17 +101,17 @@
           <h3>Crédits</h3>
           <table class='tableauFiches'>
             <tr>
-              <td style='font-weight:bold;' colspan='2'>Congés</td>
+              <td class="fw-bold" colspan='2'>Congés</td>
             </tr>
             <tr>
               <td>Crédit annuel</td>
               {% if config('Conges-Mode') == 'heures' %}
-                <td style='text-align:right;'>
+                <td class="text-end">
                   {{ credits.annuel }}
                 </td>
               {% endif %}
               {% if config('Conges-Mode') == 'jours' or show_hours_to_days %}
-              <td style='text-align:right;'>
+              <td class="text-end">
                 {{ credits.joursAnnuel }}
               </td>
               {% endif %}
@@ -119,13 +119,13 @@
             <tr>
               <td>Crédit restant</td>
               {% if config('Conges-Mode') == 'heures' %}
-                <td style='text-align:right;'>
+                <td class="text-end">
                   {{ credits.conges }}
                 </td>
               {% endif %}
 
               {% if config('Conges-Mode') == 'jours' or show_hours_to_days %}
-                <td style='text-align:right;'>
+                <td class="text-end">
                   {{ credits.joursConges }}
                 </td>
               {% endif %}
@@ -133,12 +133,12 @@
             <tr>
               <td>Reliquat</td>
               {% if config('Conges-Mode') == 'heures' %}
-                <td style='text-align:right;'>
+                <td class="text-end">
                   {{ credits.reliquat }}
                 </td>
               {% endif %}
               {% if config('Conges-Mode') == 'jours' or show_hours_to_days %}
-                <td style='text-align:right;'>
+                <td class="text-end">
                   {{ credits.joursReliquat}}
                 </td>
               {% endif %}
@@ -146,22 +146,22 @@
             <tr>
               <td>Solde débiteur</td>
               {% if config('Conges-Mode') == 'heures' %}
-                <td style='text-align:right;'>
+                <td class="text-end">
                   {{ credits.anticipation }}
                 </td>
                {% endif %}
                {% if config('Conges-Mode') == 'jours' or show_hours_to_days %}
-                 <td style='text-align:right;'>
+                 <td class="text-end">
                    {{ credits.joursAnticipation }}
                  </td>
                {% endif %}
             </tr>
             <tr>
-              <td style='font-weight:bold;padding-top:20px;' colspan='2'>Récupérations</td>
+              <td class="fw-bold pt-4" colspan='2'>Récupérations</td>
             </tr>
             <tr>
               <td>Crédit</td>
-              <td style='text-align:right;'>
+              <td class="text-end">
                 {{ credits.recuperation }}
               </td>
             </tr>

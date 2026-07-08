@@ -63,7 +63,7 @@
                 </tr>
               {% endif %}
               <tr>
-                <td colspan='2' style='text-align:center;padding:10px;'>
+                <td colspan='2' class="text-center p-3">
                   <input type="button" value="{% trans %}Clear{% endtrans %}" onclick="location.href='{{ asset('statistics/supportposition')}}?debut=&amp;fin=&amp;postes='" class="btn btn-secondary" />
                   &nbsp;&nbsp;<input type="submit" role="button" value="{% trans %}Search{% endtrans %}" class="btn btn-primary" />
                 </td>
@@ -103,15 +103,15 @@
                       </tr>
                       <tr>
                         <td>Total</td>
-                        <td style='text-align:right;'>{{ elem[2] }}</td>
+                        <td class="text-end">{{ elem[2] }}</td>
                       </tr>
                       <tr>
                         <td>Moyenne jour</td>
-                        <td style='text-align:right;'>{{ elem.jour }}</td>
+                        <td class="text-end">{{ elem.jour }}</td>
                       </tr>
                       <tr>
                         <td>Moyenne hebdo</td>
-                        <td style='text-align:right;'>{{ elem.hebdo }}</td>
+                        <td class="text-end">{{ elem.hebdo }}</td>
                       </tr>
                       {% if nbSites > 1 %}
                         {% for i in 1..nbSites %}
@@ -121,11 +121,11 @@
                             </tr>
                             <tr>
                               <td>Total</td>
-                              <td style='text-align:right;'>{{ elem.sites[i] }}</td>
+                              <td class="text-end">{{ elem.sites[i] }}</td>
                             </tr>
                             <tr>
                               <td>Moyenne</td>
-                              <td style='text-align:right;'>{{ elem.hebdo }}</td>
+                              <td class="text-end">{{ elem.hebdo }}</td>
                             </tr>
                           {% endif %}
                         {% endfor %}

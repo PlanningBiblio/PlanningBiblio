@@ -56,7 +56,7 @@
         <tbody>
           {% for elem in tableaux %}
             <tr id="tr-tableau-{{ elem.tableau }}" >
-              <td style="white-space:nowrap;">
+              <td class="text-nowrap">
                 <input type="checkbox" name="chk{{ loop.index0 }}" value="{{ elem.tableau }}" class="chk1"/>
                 <input type="hidden" name="numero" id="numero" value ="{{ elem.tableau }}" />
                 <a href="{{ asset('framework') }}/{{ elem.tableau }}">

@@ -79,7 +79,7 @@
   {% endif %}
 
   {% if used %}
-    <p class="warning-text" style="text-align:center">Ce tableau est utilisé sur un planning et ne peut être édité</p>
+    <p class="warning-text text-center">Ce tableau est utilisé sur un planning et ne peut être édité</p>
   {% endif %}
   <input type='hidden' name='used' id='used' value="{{ used }}" />
 
@@ -190,14 +190,12 @@
                         <td>
                           <input name="debut_{{tableau}}_{{i}}"
                             class="planno-timepicker framework-timepicker"
-                            value="{{ elem.debut ? elem.debut | date('H:i') : '' }}"
-                            style="text-align: center;"/>
+                            value="{{ elem.debut ? elem.debut | date('H:i') : '' }}"/>
                         </td>
                         <td>
                           <input name="fin_{{tableau}}_{{i}}"
                             class="planno-timepicker framework-timepicker"
-                            value="{{ elem.fin ? elem.fin | date('H:i') : '' }}"
-                            style="text-align: center;"/>
+                            value="{{ elem.fin ? elem.fin | date('H:i') : '' }}"/>
                           <span class="pl-icon pl-icon-dropblack" title="Supprimer" style="margin-left:5px;cursor:pointer;" onclick="document.form2.debut_{{tableau}}_{{i}}.value='';document.form2.fin_{{tableau}}_{{i}}.value='';$('#tr_{{tableau}}_{{i}}').hide();"></span>
                         </td>
                       </tr>
@@ -252,11 +250,11 @@
             {% if tableauNumero is not null %}
               <table style="min-width:1250px; width:100%;" cellspacing="0" cellpadding="0" border="1" >
                 {% for tab in tabs %}
-                  <tr class="tr_horaires" style="text-align:center;">
-                    <td style="white-space:nowrap;text-align:left;">
-                      Titre <input type="text" name="select_{{ tab.nom }}Titre_0" class="tr_horaires select_titre" style="text-align:center;white-space:nowrap;" value="{{ tab.titre }}"/>&nbsp;
+                  <tr class="tr_horaires text-center">
+                    <td class="text-start text-nowrap">
+                      Titre <input type="text" name="select_{{ tab.nom }}Titre_0" class="tr_horaires select_titre text-center text-nowrap" value="{{ tab.titre }}"/>&nbsp;
                       Classe<sup>*</sup>
-                      <input type="text" name="select_{{ tab.nom }}Classe_0" class="tr_horaires select_titre" style="text-align:center;width:120px;" value="{{ tab.classe }}"/>
+                      <input type="text" name="select_{{ tab.nom }}Classe_0" class="tr_horaires select_titre text-center" style="width:120px;" value="{{ tab.classe }}"/>
                       <a href="javascript:ajout('select_{{ tab.nom }}_',-1);">
                         <span class="pl-icon pl-icon-add-white" title="Ajouter"></span>
                       </a>
@@ -267,7 +265,7 @@
                   </tr>
                   {% for i in 0..100 %}
                     <tr id="tr_select_{{ tab.nom }}_{{ i }}" {% if tab.lignes[i] is not defined %} style="display:none;" {% endif %}>
-                      <td id="td_select_{{ tab.nom }}_{{ i }}_0" style="white-space:nowrap;">
+                      <td id="td_select_{{ tab.nom }}_{{ i }}_0" class="text-nowrap">
                         <select name="select_{{ tab.nom }}_{{ i }}" style="width:200px;color:black;font-weight:normal;" class="tab_select">
                           <option value=""></option>
                           {% if postes is iterable and postes is not empty %}
@@ -288,7 +286,7 @@
                       </td>
                       {% for horaire in tab.horaires %}
                         {% set j = loop.index %}
-                        <td id="td_select_{{tab.nom}}_{{i}}_{{j}}" {% if i ~'_'~ j in tab.cellules_grises %} class="cellule_grise" {% endif %} colspan="{{ horaire.colspan }}" style="text-align:center;">
+                        <td id="td_select_{{tab.nom}}_{{i}}_{{j}}" {% if i ~'_'~ j in tab.cellules_grises %} class="cellule_grise text-center" {% endif %} colspan="{{ horaire.colspan }}">
                           <input type="checkbox" name="checkbox_{{tab.nom}}_{{i}}_{{j}}" {% if i ~'_'~ j in tab.cellules_grises %} checked {% endif %} onclick="couleur2(this, 'td_select_{{tab.nom}}_{{i}}_{{j}}');"/>
                           <span> G </span>
                         </td>

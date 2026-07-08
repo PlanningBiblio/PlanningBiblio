@@ -4,7 +4,7 @@
 
 {% block page %}
   {% if not show_menu %}
-    <p style="text-align:center;">
+    <p class="text-center">
       <div id="auth-logo"></div>
     </p>
   {% endif %}
@@ -18,7 +18,7 @@
   </div>
 
   {% if not show_menu %}
-    <p style="text-align:center; margin-top:30px;">
+    <p class="text-center" style="margin-top:30px;">
       <a style="font-size:1.5em;" href="{{ asset('login') }}">Retour</a>
     </p>
   {% endif %}

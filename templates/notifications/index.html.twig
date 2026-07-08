@@ -46,7 +46,7 @@
       <tbody>
         {% for agent in agents %}
           <tr>
-            <td style="white-space:nowrap;">
+            <td class="text-nowrap">
               <input type="checkbox" name="chk{{loop.index0}}" value="{{ agent.id }}" class="checkboxes"/>
               <span class="pl-icon pl-icon-edit pointer" title="Modifier" data-id="{{ agent.id }}"></span>
             </td>

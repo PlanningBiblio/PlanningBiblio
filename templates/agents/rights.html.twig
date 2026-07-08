@@ -7,7 +7,7 @@
       {% for right in elem.rights %}
         <li>
           {% if right.checked %}
-            {{ right.groupe }}<label class='agent-acces-checked2 green bold'>Oui</label>
+            {{ right.groupe }}<label class='agent-acces-checked2 green fw-bold'>Oui</label>
           {% else %}
             {{ right.groupe }}<label class='agent-acces-checked2 red'>Non</label>
           {% endif %}
@@ -22,7 +22,7 @@
         <tr>
           <th>&nbsp;</th>
           {% for s in sitesSelect %}
-            <th class="center" style="padding:0 10px;">{{ s.name }}</th>
+            <th class="text-center px-3">{{ s.name }}</th>
           {% endfor %}
         </tr>
       </thead>
@@ -38,9 +38,9 @@
               <td>{{ right.groupe }}</td>
               {% for s in right.sites %}
                 {% if s.checked %}
-                  <td class='center green bold'>Oui</td>
+                  <td class='text-center green fw-bold'>Oui</td>
                 {% else %}
-                  <td class='center red'>Non</td>
+                  <td class='text-center red'>Non</td>
                 {% endif %}
               {% endfor %}
             </tr>

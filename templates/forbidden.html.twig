@@ -10,7 +10,7 @@
   <body>
     <center>
       <h2 id='h2-authentification'>Accès refusé</h2>
-      <p style='font-weight:bold;'>
+      <p class="fw-bold">
         <!-- IP Blocker : Message affiché si l'IP a été bloquée -->
         {% if ip_blocker is defined %}
           L'adresse IP "{{ remote_addr }}" a été bloquée.
