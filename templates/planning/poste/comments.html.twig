@@ -22,7 +22,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans %}Close{% endtrans %}"></button>
         </div>
 
-        <div class="modal-body" style="text-align: left;">
+        <div class="modal-body text-start">
           <p class="validateTips" id="pl-notes-tips">Vous pouvez écrire ici un commentaire qui sera affiché en bas du planning.</p>
           <form id="pl-notes-form">
             <textarea id="pl-notes-text" class="emoji-picker-textarea form-control">{{ comments.textarea | raw_black_listed }}</textarea>

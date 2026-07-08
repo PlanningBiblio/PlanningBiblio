@@ -52,7 +52,7 @@ $(document).ready(function() {
         {% if can_manage_agent %}
           <input type='text' id='conges_annuel_hours' name='conges_annuel_hours' value='{{ annuel_heures }}' class="text-end" style='width:70px;'>
           <label class="text-center p-1">h</label>
-          <input type='text' name='conges_annuel_min' id='conges_annuel_min' value='{{ annuel_min | digit(2) }}' style='width:70px;text-align:left;'>
+          <input type='text' name='conges_annuel_min' id='conges_annuel_min' value='{{ annuel_min | digit(2) }}' class="text-start" style='width:70px;'>
         {% else %}
           {{ annuel_heures }}h{{ annuel_min | digit(2) }}
         {% endif %}
@@ -66,7 +66,7 @@ $(document).ready(function() {
         {% if can_manage_agent %}
           <input type='text' id='conges_credit_hours' name='conges_credit_hours' value='{{ credit_heures }}' class="text-end" style='width:70px;'>
           <label class="text-center p-1">h</label>
-          <input type='text' name='conges_credit_min' id='conges_credit_min' value='{{ credit_min | digit(2) }}' style='width:70px;text-align:left;'>
+          <input type='text' name='conges_credit_min' id='conges_credit_min' value='{{ credit_min | digit(2) }}' class="text-start" style='width:70px;'>
         {% else %}
           {{ credit_heures }}h{{ credit_min | digit(2) }}
         {% endif %}
@@ -80,7 +80,7 @@ $(document).ready(function() {
         {% if can_manage_agent %}
           <input type='text' id='conges_reliquat_hours' name='conges_reliquat_hours' value='{{ reliquat_heures }}' class="text-end" style='width:70px;'>
           <label class="text-center p-1">h</label>
-          <input type='text' name='conges_reliquat_min' id='conges_reliquat_min' value='{{ reliquat_min | digit(2) }}' style='width:70px;text-align:left;'>
+          <input type='text' name='conges_reliquat_min' id='conges_reliquat_min' value='{{ reliquat_min | digit(2) }}' class="text-start" style='width:70px;'>
         {% else %}
           {{ reliquat_heures }}h{{ reliquat_min | digit(2) }}
         {% endif %}
@@ -94,7 +94,7 @@ $(document).ready(function() {
         {% if can_manage_agent %}
           <input type='text' id='conges_anticipation_hours' name='conges_anticipation_hours' value='{{ anticipation_heures }}' class="text-end" style='width:70px;'>
           <label class="text-center p-1">h</label>
-          <input type='text' id='conges_anticipation_min' name='conges_anticipation_min' value='{{ anticipation_min | digit(2) }}'  style='width:70px;text-align:left;'>
+          <input type='text' id='conges_anticipation_min' name='conges_anticipation_min' value='{{ anticipation_min | digit(2) }}' class="text-start" style='width:70px;'>
         {% else %}
           {{ anticipation_heures }}h{{ anticipation_min | digit(2) }}
         {% endif %}
@@ -108,7 +108,7 @@ $(document).ready(function() {
         {% if can_manage_agent %}
           <input type='text' name='comp_time_hours' id='comp_time_hours' value='{{ recup_heures }}' class="text-end" style='width:70px;'>
           <label class="text-center p-1">h</label>
-          <input type='text' name='comp_time_min' id='comp_time_min' value='{{ recup_min | digit(2) }}' style='width:70px;text-align:left;'>
+          <input type='text' name='comp_time_min' id='comp_time_min' value='{{ recup_min | digit(2) }}' class="text-start" style='width:70px;'>
         {% else %}
           {{ recup_heures }}h{{ recup_min | digit(2) }}
         {% endif %}

@@ -251,7 +251,7 @@
               <table style="min-width:1250px; width:100%;" cellspacing="0" cellpadding="0" border="1" >
                 {% for tab in tabs %}
                   <tr class="tr_horaires text-center">
-                    <td style="white-space:nowrap;text-align:left;">
+                    <td class="text-start" style="white-space:nowrap;">
                       Titre <input type="text" name="select_{{ tab.nom }}Titre_0" class="tr_horaires select_titre text-center" style="white-space:nowrap;" value="{{ tab.titre }}"/>&nbsp;
                       Classe<sup>*</sup>
                       <input type="text" name="select_{{ tab.nom }}Classe_0" class="tr_horaires select_titre text-center" style="width:120px;" value="{{ tab.classe }}"/>
