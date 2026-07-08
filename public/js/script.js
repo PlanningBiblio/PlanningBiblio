@@ -751,14 +751,14 @@ $(function(){
     $('#alert').addClass('d-none');
   })
 
-  $('#pl-calendar').bootstrapDP({
+  $('#pl-calendar').datepicker({
     format: 'yyyy-mm-dd',
     todayHighlight: true,
     language: Translator.locale,
     toggleActive : true,
   });
 
-  $('input.datepicker').bootstrapDP({
+  $('input.datepicker').datepicker({
     format: 'dd/mm/yyyy',
     language: Translator.locale,
     todayHighlight: true,
@@ -773,7 +773,7 @@ $(function(){
     // Message display when date input is invalid
     $('.datepicker:not(.start-date):not(.end-date)').on('change',function() {
        var required = typeof($(this).attr('required')) != 'undefined';
-       var date = $(this).bootstrapDP('getDate');
+       var date = $(this).datepicker('getDate');
        var valid_date = date_validation($(this).val());
 
       if ((date == null && required ) || (date != null && !valid_date)) {
@@ -816,8 +816,8 @@ $(function(){
       var valid_start = date_validation($('.datepicker.start-date').val());
       var valid_end = date_validation($(this).val());
       var end_required = typeof($(this).attr('required')) != 'undefined';
-      var start = $('.datepicker.start-date').bootstrapDP('getDate');
-      var end = $(this).bootstrapDP('getDate');
+      var start = $('.datepicker.start-date').datepicker('getDate');
+      var end = $(this).datepicker('getDate');
       var feedback = $(this).parent().parent().siblings().children('.invalid-feedback');
 
       if((end == null && end_required ) || (end != null && !valid_end)){
@@ -856,8 +856,8 @@ $(function(){
       var valid_start = date_validation($(this).val());
       var valid_end = date_validation($('.datepicker.end-date').val());
       var end_required = typeof($('.datepicker.end-date').attr('required')) != 'undefined';
-      var start = $(this).bootstrapDP('getDate');
-      var end = $('.datepicker.end-date').bootstrapDP('getDate');
+      var start = $(this).datepicker('getDate');
+      var end = $('.datepicker.end-date').datepicker('getDate');
       var feedback = $(this).parent().parent().siblings().children('.invalid-feedback')
 
       if(!valid_start) {
