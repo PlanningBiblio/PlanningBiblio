@@ -1987,7 +1987,7 @@ class PlanningController extends BaseController
             $nonValidee = null;
             if ($this->config('Absences-non-validees') == 1) {
                 if ($elem['valide'] > 0) {
-                    $bold = 'bold';
+                    $bold = 'fw-bold';
                 } else {
                     $nonValidee = " (non validée)";
                 }

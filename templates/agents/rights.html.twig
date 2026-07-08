@@ -7,7 +7,7 @@
       {% for right in elem.rights %}
         <li>
           {% if right.checked %}
-            {{ right.groupe }}<label class='agent-acces-checked2 green bold'>Oui</label>
+            {{ right.groupe }}<label class='agent-acces-checked2 green fw-bold'>Oui</label>
           {% else %}
             {{ right.groupe }}<label class='agent-acces-checked2 red'>Non</label>
           {% endif %}
@@ -38,7 +38,7 @@
               <td>{{ right.groupe }}</td>
               {% for s in right.sites %}
                 {% if s.checked %}
-                  <td class='center green bold'>Oui</td>
+                  <td class='center green fw-bold'>Oui</td>
                 {% else %}
                   <td class='center red'>Non</td>
                 {% endif %}

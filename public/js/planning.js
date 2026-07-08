@@ -588,7 +588,7 @@ function ContextMenu2agents(data, agent) {
   if (agent.no_lunch) {
     font.append('&nbsp;');
     nolunch = $('<span>').attr({
-      class: 'red bold',
+      class: 'red fw-bold',
       title: "Sans Repas, l'agent n'a aucun créneau horaire pour prendre son repas"
     }).html('(SR)');
     font.append(nolunch);
@@ -598,7 +598,7 @@ function ContextMenu2agents(data, agent) {
   if (agent.placed) {
     font.append('&nbsp;');
     placed = $('<span>').attr({
-      class: 'red bold',
+      class: 'red fw-bold',
       title: "L'agent est déjà placé sur ce poste dans la journée"
     }).html('(DP)');
     font.append(placed);
@@ -608,7 +608,7 @@ function ContextMenu2agents(data, agent) {
   if (agent.two_sr) {
     font.append('&nbsp;');
     two_sp = $('<span>').attr({
-      class: 'red bold',
+      class: 'red fw-bold',
       title: "2 plages de service public consécutives"
     }).html('(2 SP)');
     font.append(two_sp);
@@ -618,7 +618,7 @@ function ContextMenu2agents(data, agent) {
   if (agent.journey) {
     font.append('&nbsp;');
     journey = $('<span>').attr({
-      class: 'red bold',
+      class: 'red fw-bold',
       title: "Temps de trajet insuffisant pour rejoindre le poste"
     }).html('(T)');
     font.append(journey);
@@ -628,7 +628,7 @@ function ContextMenu2agents(data, agent) {
   if (agent.time_limit) {
     font.append('&nbsp;');
     time_limit = $('<span>').attr({
-      class: 'red bold',
+      class: 'red fw-bold',
       title: "Délai insuffisant entre une indisponibilité et une plage de service public"
     }).html('(A)');
     font.append(time_limit);

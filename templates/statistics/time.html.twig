@@ -119,10 +119,10 @@
             {% endfor %}
             {% if nbSemaines != 1 %}
               {% if t.diff1 > 0.5 %}
-              <td style='text-align : center; font-weight: bold; background : #cd1b19;'> {{ t.total }} </td>
+              <td  class="fw-bold" style='text-align : center; background : #cd1b19;'> {{ t.total }} </td>
               {% else %}
                 {% if t.diff1 <= 0.5 and t.diff2 <= 0.5 %}
-                  <td style='text-align : center; font-weight: bold; background : lightgreen ;'>{{ t.total }} </td>
+                  <td class="fw-bold" style='text-align : center; background : lightgreen ;'>{{ t.total }} </td>
                 {% else %}
                   <td style='text-align : center;'>{{ t.total }} </td>
                 {% endif %}
@@ -130,10 +130,10 @@
               <td style='text-align : center;'> {{ t.max }} </td>
             {% endif %}
             {% if t.diff1 > 0.5 %}
-              <td style='text-align : center; font-weight: bold; background : #cd1b19 ;'>{{ t.semaine }}</td>
+              <td class="fw-bold" style='text-align : center; background : #cd1b19 ;'>{{ t.semaine }}</td>
             {% else %}
               {% if t.diff1 <= 0.5 and  t.diff2 <= 0.5 %}
-                <td style='text-align : center; font-weight: bold; background : lightgreen ;'>{{ t.semaine }}</td>
+                <td class="fw-bold" style='text-align : center; background : lightgreen ;'>{{ t.semaine }}</td>
               {% else %}
                 <td style='text-align : center;'>{{ t.semaine }}</td>
               {% endif %}

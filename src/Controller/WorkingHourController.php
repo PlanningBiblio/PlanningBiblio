@@ -202,7 +202,7 @@ class WorkingHourController extends BaseController
             $actuel = $elem['actuel'] ? "Oui" : null;
 
             // Validation
-            $validation_class = 'bold';
+            $validation_class = 'fw-bold';
             $validation_date = dateFr($elem['saisie'], true);
             $validation = 'Demandé';
 

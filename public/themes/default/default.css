@@ -1487,11 +1487,7 @@ form[id^="arrange-"] {
   overflow-y: scroll;
 }
 
-.bold {
-  font-weight:bold;
-}
-
-option.bold{
+option.fw-bold{
   margin-top:3px;
 }
 
