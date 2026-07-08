@@ -175,7 +175,7 @@ $(function() {
       + options_wf
       + '</select>'
       + '</div>'
-      + '<div class="col-2" style="text-align: center;">'
+      + '<div class="col-2 text-center">'
       + '<input type="checkbox" id="teleworking_' + number + '" class="form-check-input"/>'
       + '</div>'
       + '<span class="col-auto p-1" onclick="$(this).closest(\'li\').hide();">'

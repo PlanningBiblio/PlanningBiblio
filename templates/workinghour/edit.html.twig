@@ -41,7 +41,7 @@
                   <div class="row">
                     <label class="col-2 col-form-label" for="perso_id">{% trans %}Agent{% endtrans %}</label>
                     <div class="col-2">
-                      <select name="perso_id" class="form-select form-select-sm" id="perso_id" style="text-align: center;">
+                      <select name="perso_id" class="form-select form-select-sm text-center" id="perso_id">
                         <option hidden disabled selected value=""></option>
                         {% for m in managed %}
                           <option value="{{ m.id }}" {{ (perso_id == m.id) ? "selected = 'selected'" : " " }} >{{ m.lastname }} {{ m.firstname }}</option>

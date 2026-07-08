@@ -271,7 +271,7 @@
                 <div class="row mb-3">
                   <label for="overtime-agent" class="col-3 col-form-label mb-0">{% trans %}Agent{% endtrans %}</label>
                   <div class="col-3">
-                    <select id="overtime-agent" name="agent" class="form-select form-select-sm" style="text-align: center;">
+                    <select id="overtime-agent" name="agent" class="form-select form-select-sm text-center">
                       <option hidden disabled selected value=""></option>
                       {% for m in managed %}
                         <option value="{{ m.id }}" {% if m.id == perso_id %} selected {% endif %}>{{ m.lastname }} {{ m.firstname | first }}</option>
@@ -308,7 +308,7 @@
                 <div class="row mb-3">
                   <label class="col-3 col-form-label" for="overtime-hours">{% trans %}Hours{% endtrans %}</label>
                   <div class="col-3">
-                    <input type="text" id="overtime-hours" name="heures" class="time overtime-timepicker form-control" value="" style="text-align: center;" required/>
+                    <input type="text" id="overtime-hours" name="heures" class="time overtime-timepicker form-control text-center" value="" required/>
                     <div class="invalid-feedback">{% trans from 'validators' %}Please enter a valid time.{% endtrans %}</div>
                   </div>
                 </div>

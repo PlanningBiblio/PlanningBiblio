@@ -18,7 +18,7 @@
         <tr>
           <th>&nbsp;</th>
           {% for s in sitesSelect %}
-            <th class="center" style="padding:0 10px;">{{ s.name }}</th>
+            <th class="text-center px-3">{{ s.name }}</th>
           {% endfor %}
         </tr>
       </thead>
@@ -33,7 +33,7 @@
             <tr>
               <td>{{ right.groupe }}</td>
               {% for s in right.sites %}
-                <td class='center'>
+                <td class='text-center'>
                   {% if s.checked %}
                     <input type='checkbox' name='droits[]' checked="checked" value='{{ s.groupe_id }}' />
                   {% else %}

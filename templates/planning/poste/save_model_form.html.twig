@@ -11,7 +11,7 @@
 
       <div class="modal-body" style="min-height: 108px;">
         <form id="save-model-form">
-          <div class="row mb-2 justify-content-center" style="align-items: center;">
+          <div class="row mb-2 justify-content-center text-center">
             <label for="input-model-name" class="col-auto col-form-label">{% trans %}Model name{% endtrans %} :</label>
             <div class="col-4">
               <input type="text" id="input-model-name" name="modelName"class="form-control form-control-sm" value="{{date}}" required>
@@ -51,8 +51,8 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans %}Close{% endtrans %}"></button>
         </div>
 
-        <div class="modal-body">
-          <p style="text-align: center;">
+        <div class="modal-body text-center">
+          <p>
             {% trans %}A model with that name already exists{% endtrans %}.<br>{% trans %}Would you like to replace it{% endtrans %} ?
           </p>
         </div>

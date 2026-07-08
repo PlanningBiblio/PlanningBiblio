@@ -134,7 +134,7 @@
           <div class="row gx-5 mb-2" id="hre_debut" {% if fullday %} style="display:none;" {% endif %}>
             <label class="col-2 col-form-label text-end" for="absence-start-hour">Heure de début :</label>
             <div class="col-3">
-              <input name="hre_debut" class="planno-timepicker center form-control form-control-sm" value="{% if hre_debut != '00:00:00' %}{{ hre_debut | date('H:i')}}{% endif %}" id="absence-start-hour"/>
+              <input name="hre_debut" class="planno-timepicker text-center form-control form-control-sm" value="{% if hre_debut != '00:00:00' %}{{ hre_debut | date('H:i')}}{% endif %}" id="absence-start-hour"/>
             </div>
           </div>
 
@@ -148,7 +148,7 @@
           <div class="row gx-5 mb-2" id="hre_fin" {% if fullday %} style="display:none;" {% endif %}>
             <label class="col-2 col-form-label text-end" for="absence-end-hour">Heure de fin :</label>
             <div class="col-3">
-              <input name="hre_fin" class="planno-timepicker center form-control form-control-sm" value="{% if hre_fin != '23:59:59' %}{{ hre_fin | date('H:i')}}{% endif %}" id="absence-end-hour"/>
+              <input name="hre_fin" class="planno-timepicker text-center form-control form-control-sm" value="{% if hre_fin != '23:59:59' %}{{ hre_fin | date('H:i')}}{% endif %}" id="absence-end-hour"/>
             </div>
           </div>
 
@@ -468,7 +468,7 @@
               <h5 class="modal-title" id="recurrence-modification-title">Modification d'une absence récurrente</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans %}Close{% endtrans %}"></button>
             </div>
-            <div class="modal-body" style="text-align:center; min-height : 109px; align-content: center;">
+            <div class="modal-body text-center" style="min-height : 109px; align-content: center;">
               <p>Souhaitez-vous modifier uniquement cet événement, cet événement et ceux qui le suivent dans la série ou tous les événements de la série ?</p>
             </div>
             <div class="modal-footer">
@@ -488,7 +488,7 @@
               <h5 class="modal-title" id="recurrence-suppression-title">Suppression d'une absence récurrente</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans %}Close{% endtrans %}"></button>
             </div>
-            <div class="modal-body" style="text-align:center; min-height : 109px; align-content: center;">
+            <div class="modal-body text-center" style="min-height : 109px; align-content: center;">
               <p>Souhaitez-vous supprimer uniquement cet événement, cet événement et ceux qui le suivent dans la série ou tous les événements de la série ?</p>
             </div>
             <div class="modal-footer">

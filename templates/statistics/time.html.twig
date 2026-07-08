@@ -84,9 +84,9 @@
             {% endif %}
             {% for d in dates %}
               {% if t[d[0]].total != '-' %}
-                <td style ='text-align:center;'>
+                <td class="text-center">
               {% else %}
-                <td  style ='text-align:center;'>
+                <td class="text-center">
               {% endif %}
                 <strong>{{ t[d[0]].total }} </strong>
                 {% if groups is iterable %}
@@ -102,14 +102,14 @@
             {% endfor %}
             {% if nbSites > 1 %}
               {% for i in 1..nbSites %}
-                <td style='text-align: center;'>{{ t.sites[i-1] }}</td>
+                <td class="text-center">{{ t.sites[i-1] }}</td>
                 {% if nbSemaines != 1 %}
-                  <td style='text-align: center;'>{{ t.sitesSemaine[i-1] }}</td>
+                  <td class="text-center">{{ t.sitesSemaine[i-1] }}</td>
                 {% endif %}
               {% endfor %}
             {% endif %}
             {% for g in groups %}
-              <td style='text-align:center;'>
+              <td class="text-center">
                 {% if t.groupe[g.id] is defined %}
                   {{ t.groupe[g.id] }}
                 {% else %}
@@ -119,26 +119,26 @@
             {% endfor %}
             {% if nbSemaines != 1 %}
               {% if t.diff1 > 0.5 %}
-              <td  class="fw-bold" style='text-align : center; background : #cd1b19;'> {{ t.total }} </td>
+              <td  class="fw-bold text-center" style='background : #cd1b19;'> {{ t.total }} </td>
               {% else %}
                 {% if t.diff1 <= 0.5 and t.diff2 <= 0.5 %}
-                  <td class="fw-bold" style='text-align : center; background : lightgreen ;'>{{ t.total }} </td>
+                  <td class="fw-bold text-center" style='background : lightgreen ;'>{{ t.total }} </td>
                 {% else %}
-                  <td style='text-align : center;'>{{ t.total }} </td>
+                  <td class="text-center">{{ t.total }} </td>
                 {% endif %}
               {% endif %}
-              <td style='text-align : center;'> {{ t.max }} </td>
+              <td class="text-center"> {{ t.max }} </td>
             {% endif %}
             {% if t.diff1 > 0.5 %}
-              <td class="fw-bold" style='text-align : center; background : #cd1b19 ;'>{{ t.semaine }}</td>
+              <td class="fw-bold" style='background : #cd1b19 ;'>{{ t.semaine }}</td>
             {% else %}
               {% if t.diff1 <= 0.5 and  t.diff2 <= 0.5 %}
-                <td class="fw-bold" style='text-align : center; background : lightgreen ;'>{{ t.semaine }}</td>
+                <td class="fw-bold text-center" style='background : lightgreen ;'>{{ t.semaine }}</td>
               {% else %}
-                <td style='text-align : center;'>{{ t.semaine }}</td>
+                <td class="text-center">{{ t.semaine }}</td>
               {% endif %}
             {% endif %}
-            <td style='text-align : center;'>{{ t.heuresHebdo }}</td>
+            <td class="text-center">{{ t.heuresHebdo }}</td>
           </tr>
         {% endfor %}
         </tbody>

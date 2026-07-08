@@ -178,7 +178,7 @@
         <div class="row gx-5 mb-2" id="hre_debut" {% if is_holiday %} style="display:none;" {% endif %}>
           <label class="col-2 col-form-label text-end" for="hre_debut_select">Heure de début :</label>
           <div class="col-3">
-            <input name="hre_debut" id="hre_debut_select" class="planno-timepicker checkdate center form-control form-control-sm" value="{{ hre_debut is defined ? hre_debut | date('H:i') : '' }}"/>
+            <input name="hre_debut" id="hre_debut_select" class="planno-timepicker checkdate text-center form-control form-control-sm" value="{{ hre_debut is defined ? hre_debut | date('H:i') : '' }}"/>
           </div>
         </div>
 
@@ -206,7 +206,7 @@
         <div class="row gx-5 mb-2" id="hre_fin" {% if is_holiday %} style="display:none;" {% endif %}>
           <label class="col-2 col-form-label text-end" for="hre_fin_select">Heure de fin :</label>
           <div class="col-3">
-            <input name="hre_fin" id="hre_fin_select" class="planno-timepicker checkdate center form-control form-control-sm" value="{{ hre_fin is defined ? hre_fin | date('H:i') : '' }}"/>
+            <input name="hre_fin" id="hre_fin_select" class="planno-timepicker checkdate text-center form-control form-control-sm" value="{{ hre_fin is defined ? hre_fin | date('H:i') : '' }}"/>
           </div>
         </div>
 

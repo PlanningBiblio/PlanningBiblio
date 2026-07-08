@@ -1662,7 +1662,7 @@ class PlanningController extends BaseController
 
         $this->cellId++;
 
-        $cellule = "<td id='td{$this->cellId}' colspan='$colspan' style='text-align:center;' class='menuTrigger' oncontextmenu='cellule={$this->cellId}'
+        $cellule = "<td id='td{$this->cellId}' colspan='$colspan' class='menuTrigger text-center' oncontextmenu='cellule={$this->cellId}'
             data-start='$debut' data-end='$fin' data-situation='$poste' data-cell='{$this->cellId}' data-perso-id='0'>";
 
         for ($i=0;$i<count($resultats);$i++) {

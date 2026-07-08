@@ -133,7 +133,7 @@
                 <div class="row my-2">
                   <label for="statut" class="col-4 col-form-label">{% trans %}Status{% endtrans %}</label>
                   <div class="col-3">
-                    <select name="statut" class="form-select form-select-sm form-control" id="statut" style="text-align:center;">
+                    <select name="statut" class="form-select form-select-sm form-control text-center" id="statut">
                       <option value="-1">{% trans %}Do not change{% endtrans %}</option>
                       <option value="">{% trans %}None{% endtrans %}</option>
                         {% for s in status %}
@@ -146,7 +146,7 @@
                 <div class="row mb-2">
                   <label for="contrat" class="col-4 col-form-label">{% trans %}Contract{% endtrans %}</label>
                   <div class="col-3">
-                    <select name="contrat" class="form-select form-select-sm form-control" id="contrat" style="text-align:center;">
+                    <select name="contrat" class="form-select form-select-sm form-control text-center" id="contrat">
                       <option value="-1">{% trans %}Do not change{% endtrans %}</option>
                       <option value="">{% trans %}None{% endtrans %}</option>
                         {% for c in contracts %}
@@ -159,7 +159,7 @@
                 <div class="row mb-2">
                   <label for="service" class="col-4 col-form-label">{% trans %}Home department{% endtrans %}</label>
                   <div class="col-3">
-                    <select name="service" class="form-select form-select-sm form-control" id="service" style="text-align:center;">
+                    <select name="service" class="form-select form-select-sm form-control text-center" id="service">
                       <option value="-1">{% trans %}Do not change{% endtrans %}</option>
                       <option value="">{% trans %}None{% endtrans %}</option>
                         {% for se in services %}
@@ -172,7 +172,7 @@
                 <div class="row mb-2">
                   <label for="heures_hebdo" class="col-4 col-form-label">{% trans %}Public service hours{% endtrans %}</label>
                   <div class="col-3">
-                  <select id="heures_hebdo" class="form-select form-select-sm form-control" name="heures_hebdo" style="text-align:center;">
+                  <select id="heures_hebdo" class="form-select form-select-sm form-control text-center" name="heures_hebdo">
                       <option value="-1">{% trans %}Do not change{% endtrans %}</option>
                       <option value="0">&nbsp;</option>
                         {% for i in 1..100 %}
@@ -188,7 +188,7 @@
                 <div class="row mb-2">
                   <label for="heures_travail" class="col-4 col-form-label">{% trans %}Hours worked per week{% endtrans %}</label>
                   <div class="col-3">
-                  <select name="heures_travail" class="form-select form-select-sm form-control" id="heures_travail" style="text-align:center;">
+                  <select name="heures_travail" class="form-select form-select-sm form-control text-center" id="heures_travail">
                       <option value="-1">{% trans %}Do not change{% endtrans %}</option>
                       <option value="0">&nbsp;</option>
                         {% for h in hours %}
@@ -201,7 +201,7 @@
                 <div class="row">
                   <label for="actif" class="col-4 col-form-label">{% trans %}Public service{% endtrans %} / {% trans %}Administrative{% endtrans %}</label>
                   <div class="col-3">
-                    <select name="actif" class="form-select form-select-sm form-control" id="actif" style="text-align:center;">
+                    <select name="actif" class="form-select form-select-sm form-control text-center" id="actif">
                       <option value="-1">{% trans %}Do not change{% endtrans %}</option>
                       <option value="Actif">{% trans %}Public service{% endtrans %}</option>
                       <option value="Inactif">{% trans %}Administrative{% endtrans %}</option>
@@ -270,7 +270,7 @@
           <h5 class="modal-title" id="delete-agent-modal-title">Supression d'un agent</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans %}Close{% endtrans %}"></button>
         </div>
-        <div class="modal-body" style="text-align:center;">
+        <div class="modal-body text-center">
           
           <p id="c-text"></p>
           <form id="delete-agent-form" method="post" action="{{ path('agent.delete') }}" >

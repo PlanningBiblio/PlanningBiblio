@@ -79,26 +79,26 @@
           {% for elem in tab %}
             <tr>
               <td class="no-hover">{{ elem.nom }} {{ elem.prenom }}</td>
-              <td class="center nowrap no-hover">{{ elem.total }}</td>
+              <td class="text-center nowrap no-hover">{{ elem.total }}</td>
               {% if afficheHeures == true %}
                 {% if elem.totalHeures == 'Erreur' %}
-                  <td class="center nowrap no-hover" title="Erreur de calcul. Vérifiez les heures de présence de l'agent (Emploi du temps)."> Erreur </td>
+                  <td class="text-center nowrap no-hover" title="Erreur de calcul. Vérifiez les heures de présence de l'agent (Emploi du temps)."> Erreur </td>
                 {% else %}
-                  <td class="center nowrap no-hover">{{ elem.totalHeures }}</td>
+                  <td class="text-center nowrap no-hover">{{ elem.totalHeures }}</td>
                 {% endif %}
               {% endif %}
               {% for motif in motifs %}
                 {% if attribute(elem, motif) is defined and elem[motif].total != '' %}
-                  <td class="center nowrap bg-yellow">{{ elem[motif].total }}</td>
+                  <td class="text-center nowrap bg-yellow">{{ elem[motif].total }}</td>
                 {% else %}
-                  <td class="center nowrap no-hover"> - </td>
+                  <td class="text-center nowrap no-hover"> - </td>
                 {% endif %}  
                 {% if afficheHeures == true %}
                   {% if attribute(elem, motif) is defined %}
                     {% if elem[motif].heures == 'Erreur' %}
-                      <td class="center nowrap bg-yellow" title="Erreur de calcul. Vérifiez les heures de présence de l'agent (Emploi du temps)."> Erreur </td>
+                      <td class="text-center nowrap bg-yellow" title="Erreur de calcul. Vérifiez les heures de présence de l'agent (Emploi du temps)."> Erreur </td>
                     {% else %}
-                      <td class="center nowrap bg-yellow ">{{ elem[motif].heures }}</td>
+                      <td class="text-center nowrap bg-yellow ">{{ elem[motif].heures }}</td>
                     {% endif %}
                   {% else %}
                     <td class="no-hover"></td>
