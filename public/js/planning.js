@@ -733,7 +733,8 @@ function ContextMenu2agents(data, agent) {
   td.append(font);
 
   td2 = $('<td>').attr({
-    style: 'text-align:right;width:20px'
+    style: 'width:20px',
+    class: 'text-end'
   });
 
   tr = $('<tr>').attr({

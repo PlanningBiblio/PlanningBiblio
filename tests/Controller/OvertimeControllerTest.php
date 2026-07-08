@@ -205,7 +205,7 @@ class OvertimeControllerTest extends PLBWebTestCase
         $result = $crawler->filterXPath('//h3');
         $this->assertEquals('Heures supplémentaires', $result->text('Node does not exist', false), 'h3 is Heures supplémentaires');
 
-        $result = $crawler->filterXPath('//td[@class="textAlignRight"]');
+        $result = $crawler->filterXPath('//td[@class="text-end"]');
         $this->assertEquals('Agent : ', $result->text('Node does not exist', false), 'table index is Agent');
         $this->assertEquals('Date concernée : ', $result->eq(1)->text('Node does not exist', false), 'table index is Date concernée');
         $this->assertEquals('Date de la demande : ', $result->eq(2)->text('Node does not exist', false), 'table index is Date de la demande');

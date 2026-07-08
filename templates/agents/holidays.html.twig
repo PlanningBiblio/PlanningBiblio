@@ -4,7 +4,7 @@
   <table class='tableauFiches'>
     <tr>
       <td>Nombre de jours de congés par an :</td>
-      <td style='text-align:right;'>
+      <td class="text-end">
         {% if can_manage_agent %}
           <input type="number" name="conges_annuel" step="0.5" style="width:60px;" value="{{ annuel_heures }}">
           <label class="text-center p-1">jour(s)</label>
@@ -16,7 +16,7 @@
 
     <tr>
       <td>Crédit de congés actuel :</td>
-      <td style='text-align:right;'>
+      <td class="text-end">
         {% if can_manage_agent %}
           <input type='number' name="conges_credit" step="0.5" value='{{ credit_heures}}'  style='width:60px;'>
           <label class="text-center p-1">jour(s)</label>
@@ -28,7 +28,7 @@
 
     <tr>
       <td>Reliquat de congés :</td>
-      <td style='text-align:right;'>
+      <td class="text-end">
         {% if can_manage_agent %}
           <input type='number' name='conges_reliquat' step="0.5" value='{{ reliquat_heures}}'  style='width:60px;'>
           <label class="text-center p-1">jour(s)</label>
@@ -40,7 +40,7 @@
 
     <tr>
       <td>Solde débiteur :</td>
-      <td style='text-align:right;'>
+      <td class="text-end">
         {% if can_manage_agent %}
           <input type='number' name='conges_anticipation' step="0.5" value='{{ anticipation_heures}}'  style='width:60px;'>
           <label class="text-center p-1">jour(s)</label>
@@ -52,9 +52,9 @@
 
     <tr>
       <td>{{ lang_comp_time }} :</td>
-      <td style='text-align:right; padding-right: 45px;'>
+      <td class="text-end" style='padding-right: 45px;'>
         {% if can_manage_agent %}
-          <input type='text' name='comp_time_hours' id='comp_time_hours' value='{{ recup_heures }}' style='width:60px;text-align:right;'>
+          <input type='text' name='comp_time_hours' id='comp_time_hours' value='{{ recup_heures }}' class="text-end" style='width:60px;'>
           <label class="text-center p-1">h</label>
           <input type='text' name='comp_time_min' id='comp_time_min' value='{{ recup_min | digit(2) }}' style='width:60px;text-align:left;'>
         {% else %}
