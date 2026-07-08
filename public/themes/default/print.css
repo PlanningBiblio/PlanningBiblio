@@ -46,6 +46,6 @@ body {
   font-weight: normal;
 }
 
-a, img, .noprint, .footer, #messages_infos, #pl-calendar, .arrow-right, .tooltip {
+a, img, .footer, #messages_infos, #pl-calendar, .arrow-right, .tooltip {
   display:none;
 }

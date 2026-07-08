@@ -1813,7 +1813,7 @@ class PlanningController extends BaseController
             $masqueTableaux = null;
             if ($this->config('Planning-TableauxMasques')) {
                 // FIXME HTML
-                $masqueTableaux = "<span title='Masquer' class='pl-icon pl-icon-hide masqueTableau pointer noprint' data-id='$l' ></span>";
+                $masqueTableaux = "<span title='Masquer' class='pl-icon pl-icon-hide masqueTableau pointer d-print-none' data-id='$l' ></span>";
             }
             $tabs[$index]['masqueTableaux'] = $masqueTableaux;
 

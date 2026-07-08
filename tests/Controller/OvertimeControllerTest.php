@@ -69,10 +69,10 @@ class OvertimeControllerTest extends PLBWebTestCase
 
         $crawler = $this->client->request('GET', "/overtime?annee=2022&perso_id=" . $agent->getId());
 
-        $result = $crawler->filterXPath('//h3[@class="noprint"]');
+        $result = $crawler->filterXPath('//h3[@class="d-print-none"]');
         $this->assertEquals('Heures supplémentaires', $result->text('Node does not exist', false), 'h3 is Heures supplémentaires');
 
-        $result = $crawler->filterXPath('//h4[@class="noprint"]');
+        $result = $crawler->filterXPath('//h4[@class="d-print-none"]');
         $this->assertEquals('Liste des demandes d\'heures supplémentaires', $result->text('Node does not exist', false), 'h4 is Liste des demandes de récupération');
 
         $result = $crawler->filterXPath('//input[contains(@class, "btn-primary")]');
@@ -130,7 +130,7 @@ class OvertimeControllerTest extends PLBWebTestCase
         $result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-edit"]');
         $this->assertEmpty($result,'span logo edit title doesnt exist');
 
-        $result = $crawler->filterXPath('//h3[@class="noprint"]');
+        $result = $crawler->filterXPath('//h3[@class="d-print-none"]');
         $this->assertEquals('Heures supplémentaires', $result->text('Node does not exist', false), 'h3 is Récupérations');
 
         $agent_no_overtime = $builder->build(Agent::class, array('login' => 'jover'));
@@ -141,7 +141,7 @@ class OvertimeControllerTest extends PLBWebTestCase
         $result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-edit"]');
         $this->assertEmpty($result,'span logo edit title doesnt exist');
 
-        $result = $crawler->filterXPath('//h3[@class="noprint"]');
+        $result = $crawler->filterXPath('//h3[@class="d-print-none"]');
         $this->assertEquals('Heures supplémentaires', $result->text('Node does not exist', false), 'h3 is Récupérations');
 
         $overTime2 = new OverTime();

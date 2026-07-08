@@ -27,7 +27,7 @@ class OvertimeControllerAddTest extends PLBWebTestCase
 
         $crawler = $this->client->request('GET', "/overtime");
 
-        $result = $crawler->filterXPath('//h3[@class="noprint"]');
+        $result = $crawler->filterXPath('//h3[@class="d-print-none"]');
         $this->assertEquals('Heures supplémentaires', $result->text(),'h3 is Récupérations');
 
         $this->assertSelectorTextContains('h4', 'Liste des demandes d\'heures supplémentaires');

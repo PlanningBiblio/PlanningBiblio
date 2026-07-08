@@ -4,15 +4,15 @@
 
 {% block page %}
   {% if conges_recuperation == 1 and show_recovery %}
-    <h3 class="noprint">Liste des récupérations</h3>
+    <h3 class="d-print-none">Liste des récupérations</h3>
   {% else %}
-    <h3 class="noprint">Liste des congés</h3>
+    <h3 class="d-print-none">Liste des congés</h3>
   {% endif %}
   <h3 class="print_only">
     Liste des congés de {{ agent_name }}, de {{ debut }} à {{ fin }}.
   </h3>
 
-  <form name="form" method="get" action="{{ asset("holiday") }}" class="noprint" onsubmit="return verif_form('debut=date1;fin=date2');" novalidate>
+  <form name="form" method="get" action="{{ asset("holiday") }}" class="d-print-none" onsubmit="return verif_form('debut=date1;fin=date2');" novalidate>
     <div class="row row-search">
 
       <label class="col-xl-auto col-form-label mt-2" for="holiday-search-start">{% trans %}Start{% endtrans %} :</label>

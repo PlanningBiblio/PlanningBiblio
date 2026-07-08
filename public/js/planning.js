@@ -1087,7 +1087,7 @@ function afficheTableauxDiv(){
 
   if(tab.length > 0) {
     $('#tableau').css('padding-top', '10px');
-    $('#tableau').before('<div id="afficheTableaux" class="noprint">Tableaux masqués : ' + tab.join(' ; ') + '</div>');
+    $('#tableau').before('<div id="afficheTableaux" class="d-print-none">Tableaux masqués : ' + tab.join(' ; ') + '</div>');
   } else {
     $('#tableau').css('padding-top', '30px');
   }
