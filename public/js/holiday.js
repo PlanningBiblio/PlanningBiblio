@@ -91,8 +91,8 @@ function dateChange(obj) {
 }
 
 function checkdate(priority) {
-  debut_date = $('#debut').bootstrapDP('getDate');
-  fin_date = $('#fin').bootstrapDP('getDate');
+  debut_date = $('#debut').datepicker('getDate');
+  fin_date = $('#fin').datepicker('getDate');
 
   // Return if the first date is not given
   if (!debut_date) {
@@ -101,7 +101,7 @@ function checkdate(priority) {
 
   // If end date is not given, end = start
   if (!fin_date) {
-    $('#fin').bootstrapDP('setDate', debut_date);
+    $('#fin').datepicker('setDate', debut_date);
   }
 
   start_half = $('select[name="start_halfday"]');
