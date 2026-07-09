@@ -1488,10 +1488,6 @@ form[id^="arrange-"] {
   overflow-y: scroll;
 }
 
-option.fw-bold{
-  margin-top:3px;
-}
-
 .inline{
   display: inline;
 }

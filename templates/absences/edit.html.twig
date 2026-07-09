@@ -179,11 +179,11 @@
                       &nbsp;&nbsp;&nbsp;{{ r.valeur }}
                     </option>
                   {% elseif r.type == 1 %}
-                    <option value="{{ r.valeur }}" data-workflow="{{ r.notification_workflow }}" class="fw-bold" disabled="disabled">
+                    <option value="{{ r.valeur }}" data-workflow="{{ r.notification_workflow }}" disabled="disabled">
                       {{ r.valeur }}
                     </option>
                   {% else %}
-                    <option value="{{ r.valeur }}" data-workflow="{{ r.notification_workflow }}" class="fw-bold" {% if r.valeur == absence.motif %} selected {% endif %}>
+                    <option value="{{ r.valeur }}" data-workflow="{{ r.notification_workflow }}" {% if r.valeur == absence.motif %} selected {% endif %}>
                       {{ r.valeur }}
                     </option>
                   {% endif %}
