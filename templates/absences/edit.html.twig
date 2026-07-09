@@ -134,7 +134,7 @@
           <div class="row gx-5 mb-2" id="hre_debut" {% if fullday %} style="display:none;" {% endif %}>
             <label class="col-2 col-form-label text-end" for="absence-start-hour">Heure de début :</label>
             <div class="col-3">
-              <input name="hre_debut" class="planno-timepicker text-center form-control form-control-sm" value="{% if hre_debut != '00:00:00' %}{{ hre_debut | date('H:i')}}{% endif %}" id="absence-start-hour"/>
+              <input name="hre_debut" class="planno-timepicker form-control form-control-sm" value="{% if hre_debut != '00:00:00' %}{{ hre_debut | date('H:i')}}{% endif %}" id="absence-start-hour"/>
             </div>
           </div>
 
@@ -148,7 +148,7 @@
           <div class="row gx-5 mb-2" id="hre_fin" {% if fullday %} style="display:none;" {% endif %}>
             <label class="col-2 col-form-label text-end" for="absence-end-hour">Heure de fin :</label>
             <div class="col-3">
-              <input name="hre_fin" class="planno-timepicker text-center form-control form-control-sm" value="{% if hre_fin != '23:59:59' %}{{ hre_fin | date('H:i')}}{% endif %}" id="absence-end-hour"/>
+              <input name="hre_fin" class="planno-timepicker form-control form-control-sm" value="{% if hre_fin != '23:59:59' %}{{ hre_fin | date('H:i')}}{% endif %}" id="absence-end-hour"/>
             </div>
           </div>
 

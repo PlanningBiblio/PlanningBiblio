@@ -1826,6 +1826,10 @@ div#holiday-info .col-4 {
   text-indent: 1px;
 }
 
+.planno-timepicker, .overtime-timepicker {
+  text-align: center;
+}
+
 .planno-timepicker:disabled,
 .planno-break-timepicker:disabled {
     color: var(--charcoal-blue);

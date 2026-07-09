@@ -189,12 +189,12 @@
                       <tr id='tr_{{tableau}}_{{i}}' >
                         <td>
                           <input name="debut_{{tableau}}_{{i}}"
-                            class="planno-timepicker framework-timepicker text-center"
+                            class="planno-timepicker framework-timepicker"
                             value="{{ elem.debut ? elem.debut | date('H:i') : '' }}"/>
                         </td>
                         <td>
                           <input name="fin_{{tableau}}_{{i}}"
-                            class="planno-timepicker framework-timepicker text-center"
+                            class="planno-timepicker framework-timepicker"
                             value="{{ elem.fin ? elem.fin | date('H:i') : '' }}"/>
                           <span class="pl-icon pl-icon-dropblack" title="Supprimer" style="margin-left:5px;cursor:pointer;" onclick="document.form2.debut_{{tableau}}_{{i}}.value='';document.form2.fin_{{tableau}}_{{i}}.value='';$('#tr_{{tableau}}_{{i}}').hide();"></span>
                         </td>
