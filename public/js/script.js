@@ -761,6 +761,7 @@ $(function(){
   $('input.datepicker').datepicker({
     format: 'dd/mm/yyyy',
     language: Translator.locale,
+    enableOnReadonly : false,
     todayHighlight: true,
     autoclose: true,
     forceParse : false

@@ -475,8 +475,14 @@ msgstr "Lock the schedule"
 msgid "Requesting holidays"
 msgstr "Requesting holidays"
 
+msgid "Holiday request"
+msgstr "Holiday request"
+
 msgid "Requesting compensation for overtime"
 msgstr "Requesting compensation for overtime"
+
+msgid "Overtime compensation request"
+msgstr "Overtime compensation request"
 
 #. Error messages
 

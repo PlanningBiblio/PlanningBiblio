@@ -475,8 +475,14 @@ msgstr "Verrouiller le planning"
 msgid "Requesting holidays"
 msgstr "Poser des congés"
 
+msgid "Holiday request"
+msgstr "Demande de congés"
+
 msgid "Requesting compensation for overtime"
 msgstr "Poser des récupérations"
+
+msgid "Overtime compensation request"
+msgstr "Demande de récupérations"
 
 #. Error messages
 

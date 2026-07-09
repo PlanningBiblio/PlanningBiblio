@@ -87,6 +87,16 @@ class CompTimeController extends BaseController
 
         $this->templateParams(array(
             'is_holiday'            => false,
+            'request_type'          => 'recover',
+            'id'                    => null,
+            'allday'                => false,
+            'halfday'               => false,
+            'debut'                 => null,
+            'fin'                   => null,
+            'debit'                 => null,
+            'valide'                => true,
+            'delete_button'         => null,
+            'commentaires'          => '',
             'anticipation'          => $anticipation,
             'balance_before'        => heure4($balance[1], true),
             'balance_before_days'   => $balance_before_days,
@@ -106,15 +116,16 @@ class CompTimeController extends BaseController
             'recuperation_prev'     => $balance[4],
             'reliquat'              => $reliquat,
             'show_allday'           => true,
-            'conges_demi_journee'   => false,
-            'conges_recuperations'  => 1,
-            'conges_mode'           => '',
+            'conges_demi_journee'   => $this->config('Conges-demi-journees'),
+            'conges_recuperations'  => $this->config('Conges-Recuperations'),
+            'conges_mode'           => $this->config('Conges-Mode'),
             'title'                 => 'Requesting compensation for overtime',
             'action_path'           => 'comptime',
             'selected_agent_id'     => $perso_id,
+            'save_button'           => true,
         ));
 
-        return $this->output('holiday/add.html.twig');
+        return $this->output('holiday/edit.html.twig');
     }
 
     #[Route(path: '/comptime', name: 'comptime.save', methods: ['POST'])]

@@ -1198,6 +1198,10 @@ class cellule = cellule par défaut
   text-align: center;
 }
 
+.datepicker:disabled {
+  color: var(--charcoal-blue);
+}
+
 .datepicker .datepicker-days table thead tr th {
   max-width: 25px;
 }

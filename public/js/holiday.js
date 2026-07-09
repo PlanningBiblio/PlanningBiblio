@@ -71,6 +71,10 @@ $(function(){
     return verifConges();
   });
 
+  $('#validation-line').on('change', function() {
+    afficheRefus($('#validation-state'));
+  })
+
 });
 
 function dateChange(obj) {
@@ -150,6 +154,13 @@ function resetTerms(){
   reliquat = $('input[name="reliquat"]').val();
   congesRecup = $('#conges-recup').val();
   is_recover = $('#is-recover').val();
+  id_val = $('input[name="id"]').val();
+  valide_val = $('input[name="valide2"]').val();
+
+  if (id_val && valide_val > 0) {
+    $('#terms').addClass('d-none');
+    $('select[name=debit]').addClass('d-none');
+  }
 
   if (is_recover){
     return;
@@ -176,12 +187,11 @@ function resetTerms(){
   }
 }
 
-
-function afficheRefus(me){
-  if(me.value=="-1" || me.value=="-2"){
+function afficheRefus(select) {
+  if (select.val() == '-1' || select.val() == '-2') {
     document.getElementById("tr_refus").style.display="";
   }
-  else{
+  else {
     document.getElementById("tr_refus").style.display="none";
   }
 }
@@ -360,6 +370,8 @@ function calculCredit(){
         $("#rest").val(0);
         $('#hr_rest').val('');
         $("#rest").parent().parent().hide();
+        $('.balance_tr.rest').hide();
+        $('.solde-info').hide()
         if (result.rest != 0) {
           if (result.rest > 0) {
             $('#hr_rest').val(result.hr_rest + ' créditée(s)');
@@ -368,6 +380,8 @@ function calculCredit(){
           }
           $("#rest").val(result.rest);
           $("#rest").parent().parent().show();
+          $('.balance_tr.rest').show();
+          $('.solde-info').show();
           highlight($('#hr_rest'));
         }
       }
