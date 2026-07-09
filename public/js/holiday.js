@@ -926,7 +926,7 @@ function affiche_perso_ul(){
   }
 
   for(i in tab){
-    var style = tab[i][1] == $("#agent_id").val() ? ' class="fw-bolder"' : '';
+    var style = tab[i][1] == $("#agent_id").val() ? ' style="font-weight:bolder;"' : '';
     var li="<li" + style + " id='li"+tab[i][1]+"' class='perso_ids_li mb-1' data-id='"+tab[i][1]+"'>"+tab[i][0];
 
     if( $('#admin').val() == 1 || tab[i][1] != $('#perso_id').val() ){
@@ -1056,7 +1056,7 @@ function updateAgentsListBySites() {
 
     selected_agent_id = $('#selected_agent_id').val();
     $.each(managed_sites_agents, function(index, value) {
-        style = value.id == $("#agent_id").val() ? ' class="fw-bolder"' : '';
+        style = value.id == $("#agent_id").val() ? ' style="font-weight:bolder;"' : '';
         selected = value.id == selected_agent_id && !agents_multiples ? ' selected="selected"' : '';
         options += '<option' + style + selected + ' value="' + value.id + '" id="option' + value.id;
         options += '">' + value.nom + ' ' + value.prenom + '</option>';
