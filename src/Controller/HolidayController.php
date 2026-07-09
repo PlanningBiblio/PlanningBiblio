@@ -388,6 +388,9 @@ class HolidayController extends BaseController
         $conges_credit = $p->elements[0]['conges_credit'];
         $conges_reliquat = $p->elements[0]['conges_reliquat'];
 
+        $balance_before_days = null;
+        $balance2_before_days = null;
+
         $credit = number_format($conges_credit, 2, '.', ' ');
         $reliquat = number_format($conges_reliquat, 2, '.', ' ');
         $anticipation = number_format($conges_anticipation, 2, '.', ' ');
@@ -397,8 +400,10 @@ class HolidayController extends BaseController
             $balance[4] = 0;
         }
         $request_type = 'holiday';
+        $title = 'Holiday request';
         if ($this->config('Conges-Recuperations') == 1 and $data['debit']=="recuperation") {
             $request_type = 'recover';
+            $title = 'Overtime compensation request';
         }
 
         $show_allday = 0;
@@ -430,10 +435,15 @@ class HolidayController extends BaseController
             $anticipation_jours = $holiday_helper->hoursToDays($conges_anticipation, $perso_id, null, true, '/ ');
             $credit_jours       = $holiday_helper->hoursToDays($conges_credit,       $perso_id, null, true, '/ ');
             $reliquat_jours     = $holiday_helper->hoursToDays($conges_reliquat,     $perso_id, null, true, '/ ');
+
+            $balance_before_days = $holiday_helper->hoursToDays($balance[1], $perso_id, null, true);
+            $balance2_before_days = $holiday_helper->hoursToDays($balance[4], $perso_id, null, true);
+
         }
 
         $templateParams = array(
             'id'                    => $id,
+            'title'                 => $title,
             'perso_id'              => $perso_id,
             'selected_agent_id'     => $perso_id,
             'agent_name'            => $agent_name,
@@ -458,6 +468,7 @@ class HolidayController extends BaseController
             'fin'                   => $fin,
             'hre_debut'             => $hre_debut,
             'hre_fin'               => $hre_fin,
+            'allday'                => ($hre_debut == '00:00:00' && $hre_fin == '23:59:59'),
             'conges_mode'           => $this->config('Conges-Mode'),
             'conges_demi_journee'   => $this->config('Conges-demi-journees'),
             'conges_tous'           => $this->config('Conges-tous'),
@@ -470,12 +481,16 @@ class HolidayController extends BaseController
             'valide_n1'             => $data['valide_n1'],
             'balance_date'          => dateFr($balance[0]),
             'balance_before'        => heure4($balance[1]),
+            'balance_before_days'   => $balance_before_days,
             'balance2_before'       => heure4($balance[4], true),
+            'balance2_before_days'  => $balance2_before_days,
             'recup4'                => heure4($balance[1], true),
             'commentaires'          => html_entity_decode($data['commentaires'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'),
             'refus'                 => html_entity_decode($data['refus'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'),
             'saisie'                => dateFr($data['saisie'], true),
             'displayRefus'          => $displayRefus,
+            'action_path'           => 'holiday/edit',
+            'holiday_info'          => null,
         );
 
         $this->templateParams($templateParams);
@@ -520,7 +535,7 @@ class HolidayController extends BaseController
 
         $this->templateParams(array('delete_button' => $delete_button));
 
-        return $this->output('conges/edit.html.twig');
+        return $this->output('holiday/edit.html.twig');
     }
 
     #[Route(path: '/holiday', name: 'holiday.save', methods: ['POST'])]
@@ -633,6 +648,15 @@ class HolidayController extends BaseController
             'agents_multiples'      => $agents_multiples,
             'perso_id'              => $perso_id,
             'is_holiday'            => true,
+            'request_type'          => 'holiday',
+            'id'                    => null,
+            'allday'                => null,
+            'halfday'               => null,
+            'debut'                 => null,
+            'fin'                   => null,
+            'debit'                 => null,
+            'valide'                => true,
+            'delete_button'         => null,
             'conges_recuperations'  => $this->config('Conges-Recuperations'),
             'conges_mode'           => $this->config('Conges-Mode'),
             'conges_demi_journee'   => $this->config('Conges-demi-journees'),
@@ -645,9 +669,9 @@ class HolidayController extends BaseController
             'reliquat_jours'        => $reliquat_jours,
             'recuperation'          => $recuperation,
             'recuperation_prev'     => $balance[4],
-            'balance0'              => dateFr($balance[0]),
-            'balance1'              => heure4($balance[1], true),
-            'balance4'              => heure4($balance[4], true),
+            'balance_date'          => dateFr($balance[0]),
+            'balance_before'        => heure4($balance[1], true),
+            'balance2_before'       => heure4($balance[4], true),
             'credit'                => $credit,
             'credit2'               => $holiday_helper->HumanReadableDuration($credit),
             'credit_jours'          => $credit_jours,
@@ -668,6 +692,7 @@ class HolidayController extends BaseController
             'show_allday'           => $show_allday,
             'title'                 => 'Requesting holidays',
             'action_path'           => 'holiday',
+            'save_button'           => true,
         );
 
         $this->templateParams($templateParams);
@@ -687,7 +712,7 @@ class HolidayController extends BaseController
 
         $this->templateParams(array('holiday_info' => $holiday_info));
 
-        return $this->output('holiday/add.html.twig');
+        return $this->output('holiday/edit.html.twig');
     }
 
     #[Route(path: '/holiday/accounts', name: 'holiday.accounts', methods: ['GET'])]

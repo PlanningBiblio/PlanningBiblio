@@ -363,6 +363,8 @@ function calculCredit(){
         $("#rest").val(0);
         $('#hr_rest').val('');
         $("#rest").parent().parent().hide();
+        $('.balance_tr.rest').hide();
+        $('.solde-info').hide()
         if (result.rest != 0) {
           if (result.rest > 0) {
             $('#hr_rest').val(result.hr_rest + ' créditée(s)');
@@ -371,6 +373,8 @@ function calculCredit(){
           }
           $("#rest").val(result.rest);
           $("#rest").parent().parent().show();
+          $('.balance_tr.rest').show();
+          $('.solde-info').show();
           highlight($('#hr_rest'));
         }
       }
