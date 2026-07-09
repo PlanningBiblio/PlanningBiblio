@@ -18,31 +18,15 @@ class AbsenceInfoController extends BaseController
     #[Route(path: '/absences/info', name: 'absences.info.index', methods: ['GET'])]
     public function index(Request $request, Session $session, EntityManagerInterface $em)
     {
-        $start = $request->query->get('start');
-        $end = $request->query->get('end');
+        $start = $this->initDate('start', 'AbsInfoStart');
+        $end = $this->initDate('end', 'AbsInfoEnd', '+1 year');
 
-        $start_dt = $start ? DateTime::createFromFormat('d/m/Y', $start) : null;
-        $end_dt = $end ? DateTime::createFromFormat('d/m/Y', $end) : null;
-
-        if (!$start_dt && !$end_dt) {
-            $start_dt = new DateTime('now');
-        }
-
-        /** @var \App\Repository\AbsenceInfoRepository */
-        $repository = $em->getRepository(AbsenceInfo::class);
-
-        $qb = $repository->createQueryBuilder('info');
-        $repository->filterByDateRange($qb, $start_dt, $end_dt);
-
-        $qb->orderBy('info.debut', 'ASC');
-        $qb->addOrderBy('info.fin', 'ASC');
-
-        $info = $qb->getQuery()->getResult();
+        $info = $em->getRepository(AbsenceInfo::class)->get($start, $end);
 
         $this->templateParams([
             'info' => $info,
-            'start' => $start_dt,
-            'end' => $end_dt,
+            'start' => $start,
+            'end' => $end,
         ]);
 
         return $this->output('absenceInfo/index.html.twig');
