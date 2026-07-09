@@ -18,6 +18,9 @@ class AbsenceInfoRepository extends ServiceEntityRepository
 
     public function get($start, $end)
     {
+        $start = $start->setTime(0,0);
+        $end = $end->setTime(23,59);
+
         return $this->createQueryBuilder('a')
             ->andWhere('a.debut <= :end')
             ->andWhere('a.fin >= :start')
