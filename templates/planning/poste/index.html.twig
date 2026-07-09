@@ -98,7 +98,7 @@
 
       {% if locked or (autorisationN1 or autorisationN2) %}
         {% if config('Absences-planning') == 1 and absences_planning | length > 0 %}
-          <h3 class="text-start" style='margin:40px auto 0 auto; width: 90%;'>Liste des absents</h3>
+          <h3 style='margin:40px auto 0 auto; width: 90%;'>Liste des absents</h3>
           <div class='decalage-gauche'>
             <table>
               {% for a in absences_planning %}
@@ -113,7 +113,7 @@
         {% endif %}
 
         {% if config('Absences-planning') == 2 and absences_planning | length > 0 %}
-          <h3 class="text-start" style='margin:40px auto 0 auto; width: 90%;'>Liste des absents</h3>
+          <h3 style='margin:40px auto 0 auto; width: 90%;'>Liste des absents</h3>
 
           <table id='tablePlanningAbsences' class='CJDataTable' data-sort='[[0, "asc"],[1, "asc"]]'>
             <thead>
@@ -140,7 +140,7 @@
         {% endif %}
 
         {% if config('Absences-planning') in [3,4] %}
-          <h3 class="text-start" style='margin:40px auto 0 auto; width: 90%;'>Liste des présents et absents</h3>
+          <h3 style='margin:40px auto 0 auto; width: 90%;'>Liste des présents et absents</h3>
 
           <table id='tablePlanningAbsences' class='CJDataTable' data-sort='[[0, "asc"],[1, "asc"]]' >
             <thead>
