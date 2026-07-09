@@ -71,6 +71,10 @@ $(function(){
     return verifConges();
   });
 
+  $('#validation-line').on('change', function(){
+    afficheRefus($('#validation-state'));
+  })
+
 });
 
 function dateChange(obj) {
@@ -176,9 +180,8 @@ function resetTerms(){
   }
 }
 
-
-function afficheRefus(me){
-  if(me.value=="-1" || me.value=="-2"){
+function afficheRefus(selected){
+  if(selected.val() =="-1" || selected.val() =="-2"){
     document.getElementById("tr_refus").style.display="";
   }
   else{
