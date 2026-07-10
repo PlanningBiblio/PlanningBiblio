@@ -1,5 +1,17 @@
 # Changelog Planno
 
+## Version 26.04.05 (2026-07-10)
+
+### Enhancement
+
+* MT46629: Datepicker: if empty, end open on same month as start #1444
+
+### Fixes
+
+* MT35331: Fix description of setting CAS-debug #1445
+* MT53738: Fix TypeError in StatisticController::common #1450
+* MT46629: Fix: Remove is-invalid flicker on overtime-timepicker #1452
+
 ## Version 26.04.04 (2026-07-07)
 
 ### Enhancement
