@@ -1,5 +1,20 @@
 # Changelog Planno
 
+## Version 26.05.05 (2026-07-10)
+
+### Enhancement
+
+* MT46629: Datepicker: if empty, end open on same month as start #1444
+* MT46629: Selected week highlighted on /detached #1448
+* MT46629: Remove jQuery-UI CSS and icons #1451
+* MT46629: Clean uncessary custom classes with BS classes #1454
+
+### Fixes
+
+* MT35331: Fix description of setting CAS-debug #1445
+* MT53738: Fix TypeError in StatisticController::common #1450
+* MT46629: Fix: Remove is-invalid flicker on overtime-timepicker #1452
+
 ## Version 26.05.04 (2026-07-07)
 
 ### Enhancement
