@@ -1,5 +1,12 @@
 # Changelog Planno
 
+## Version 25.10.23 (2026-07-10)
+
+### Fixes
+
+* MT35331: Fix description of setting CAS-debug #1445
+* MT53738: Fix TypeError in StatisticController::common #1450
+
 ## Version 25.10.22 (2026-07-07)
 
 ### Fixes
