@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 
-use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,7 +20,7 @@ class AbsenceInfoController extends BaseController
         $start = $this->initDate('start', 'AbsInfoStart');
         $end = $this->initDate('end', 'AbsInfoEnd', '+1 year');
 
-        $info = $em->getRepository(AbsenceInfo::class)->get($start, $end);
+        $info = $em->getRepository(AbsenceInfo::class)->getByDateRange($start, $end);
 
         $this->templateParams([
             'info' => $info,
@@ -50,7 +49,7 @@ class AbsenceInfoController extends BaseController
     {
         $id = $request->get('id');
 
-        $info = $this->entityManager->getRepository(AbsenceInfo::class)->findOneById($id);
+        $info = $this->entityManager->getRepository(AbsenceInfo::class)->find($id);
 
         $this->templateParams(array(
             'id'    => $id,

@@ -3,21 +3,16 @@
 namespace App\Repository;
 
 use App\Entity\AbsenceInfo;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\EntityRepository;
 
 /**
- * @extends ServiceEntityRepository<AbsenceInfo>
+ * @extends EntityRepository<AbsenceInfo>
  */
-class AbsenceInfoRepository extends ServiceEntityRepository
+class AbsenceInfoRepository extends EntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function getByDateRange($start, $end = null)
     {
-        parent::__construct($registry, AbsenceInfo::class);
-    }
-
-    public function get($start, $end)
-    {
+        $end = $end ?? $start;
         $start = $start->setTime(0,0);
         $end = $end->setTime(23,59);
 
