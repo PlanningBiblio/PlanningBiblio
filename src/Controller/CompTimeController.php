@@ -7,9 +7,9 @@ use App\Planno\Helper\HolidayHelper;
 use App\Entity\Agent;
 
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-
 
 include_once(__DIR__ . '/../../legacy/Class/class.conges.php');
 
@@ -129,8 +129,12 @@ class CompTimeController extends BaseController
     }
 
     #[Route(path: '/comptime', name: 'comptime.save', methods: ['POST'])]
-    public function save(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
+    public function save(Request $request, Session $session): RedirectResponse
     {
+        if (!$this->csrf_protection($request)) {
+            return $this->redirectToRoute('access-denied');
+        }
+
         $session = $request->getSession();
 
         $CSRFToken = $request->get('CSRFToken');
@@ -151,24 +155,71 @@ class CompTimeController extends BaseController
         $hre_fin = $hre_fin ? $hre_fin : '23:59:59';
         $commentaires = htmlentities($request->get('commentaires'), ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
 
+        $validationStatus = $request->request->getInt('valide');
+        
+        $holidayHelper = new HolidayHelper([
+            'start' => $debutSQL,
+            'hour_start' => $hre_debut,
+            'end' => $finSQL,
+            'hour_end' => $hre_fin,
+            'perso_id' => $perso_id,
+            'is_recover' => 1
+        ]);
+
+        $result = $holidayHelper->getCountedHours();
+        $recover = ($result['hours'] + ($result['minutes'] / 100));
+
+        $c = new \conges();
+        $credit = $c->calculCreditRecup($perso_id, $debut);
+        $credit_after_debit = ($credit[1] - $recover);
+
+        if ($credit_after_debit < 0 and $validationStatus == 1) {
+            $this->addFlash('error', 'La demande de récupération n\'a pas été enregistrée car le crédit de récupération ne peut pas être négatif.');
+            return $this->redirectToRoute('holiday.index', ['recup' => 1]);
+        }
+
         // Enregistrement du congés
         $data = $request->request->all();
 
-        // FIXME : this works only when Conges-validation is disabled.
-        // TODO : Handle the different levels of validation when the dropdown menu will be added to the template for config Conges-validation enabled
-        // TODO : an other (and better) way to fix this is to use the holiday controller and holiday templates for adding comp-time. It's already done for comp-time editions.
-
-        if ($request->get('valide')) {
+        if ($validationStatus) {
             $data['conges-recup'] = 1;
             $data['conges-mode'] = $this->config('Conges-Mode');
             $data['perso_ids'] = array($data['perso_id']);
             $data['confirm'] = 'confirm';
             $data['debit'] = 'recuperation';
-            $data['valide_init'] = 1;
-            $data['valide'] = $session->get('loginId');
-            $data['valide_n1'] = $session->get('loginId');
-            $data['validation'] = date('Y-m-d H:i:s');
-            $data['validation_n1'] = date('Y-m-d H:i:s');
+
+            if (!$this->config['Conges-validation']) {
+                    $data['valide_n1'] = $session->get('loginId');
+                    $data['validation_n1'] = date('Y-m-d H:i:s');
+                    $data['valide'] = $session->get('loginId');
+                    $data['validation'] = date('Y-m-d H:i:s');
+                    $data['valide_init'] = 1;
+            } else {
+                $data['valide_init'] = $validationStatus;
+
+                switch ($validationStatus) {
+                    case -2 :
+                        $data['valide_n1'] = -1 * (int) $session->get('loginId');
+                        $data['validation_n1'] = date('Y-m-d H:i:s');
+                        $data['valide'] = 0;
+                        $data['validation'] = null;
+                    break;
+                    case 2 :
+                        $data['valide_n1'] = $session->get('loginId');
+                        $data['validation_n1'] = date('Y-m-d H:i:s');
+                        $data['valide'] = 0;
+                        $data['validation'] = null;
+                    break;
+                    case -1 :
+                        $data['valide'] = -1 * (int) $session->get('loginId');
+                        $data['validation'] = date('Y-m-d H:i:s');
+                    break;
+                    case 1 :
+                        $data['valide'] = $session->get('loginId');
+                        $data['validation'] = date('Y-m-d H:i:s');
+                    break;
+                }
+            }
         }
 
         $c = new \conges();

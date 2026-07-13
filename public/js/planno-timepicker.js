@@ -38,8 +38,10 @@ function timePickerChange(date, obj) {
     $(obj).val('');
     $(obj).focus();
   }
+
   if ($(obj).hasClass('checkdate')) {
     dateChange(obj);
+    validationStatusInvalidDisplay();
   }
 
   if ($(obj).hasClass('select')) {

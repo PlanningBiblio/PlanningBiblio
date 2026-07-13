@@ -65,6 +65,7 @@ $(function(){
 
   $('.checkdate').on('change', function() {
     dateChange(this);
+    validationStatusInvalidDisplay();
   });
 
   $('#holiday-form').on('submit', function(){
@@ -73,8 +74,8 @@ $(function(){
 
   $('#validation-line').on('change', function() {
     afficheRefus($('#validation-state'));
+    validationStatusInvalidDisplay();
   })
-
 });
 
 function dateChange(obj) {
@@ -184,6 +185,27 @@ function resetTerms(){
     else {
       $('#terms').text('Ces heures seront débitées sur les crédits de congés de l\'année en cours.');
     }
+  }
+}
+
+function validationStatusInvalidDisplay() {
+  recup = $('#negative-recover').val();
+  state = $('select#validation-state').val();
+
+  if (recup == 'true' && state == 1) {
+    $('#validation-state').addClass('is-invalid').removeClass('invalid-warning');
+    $('#invalid-credit').text(Translator.trans('This request cannot be approved as long as the recovery credit is negative'));
+  }
+
+  else if (recup == 'true' ) {
+    $('#validation-state').removeClass('is-invalid').addClass('invalid-warning')
+    $('#invalid-credit').text(Translator.trans('This request will not be approved as long as the recovery credit remains negative')).show();
+    $('#invalid-credit').css('display', 'block ruby');
+  }
+
+  else {
+    $('#validation-state').removeClass('is-invalid').removeClass('invalid-warning');
+    $('#invalid-credit').hide();
   }
 }
 
@@ -439,6 +461,8 @@ function calculRestes(){
   var congesRecup = $('#conges-recup').val();
   var congesMode = $('#conges-mode').val();
 
+  $('#negative-recover').val('false');
+
   // Si les récupérations et les congés sont gérés de la même façon
   if(congesRecup == 0){
     
@@ -510,9 +534,16 @@ function calculRestes(){
       recuperation_prev = recuperation_prev - heures;
 
       $('#alert-stack-top-center').remove();
-      if(recuperation < 0){
-        stackAlert('Le crédit de récupération ne peut pas être négatif.', 'error')
+      if (recuperation < 0) {
         highlight($('.balance_tr'));
+        $('#negative-recover').val('true');
+        if ($('#validation-state').val() == 1) {
+          $('#validation-state').addClass('is-invalid').removeClass('invalid-warning');
+        }
+      }
+      else {
+        $('#negative-recover').val('false');
+        $('#validation-state').removeClass('is-invalid');
       }
     }
 
@@ -723,25 +754,6 @@ function verifConges()
   if (debut >= fin) {
     stackAlert('La date de fin doit être supérieure à la date de début', 'error');
     return false;
-  }
-  
-  // Vérifions si le solde des récupérations n'est pas négatif
-  var recuperation = parseFloat( $('#recup4').text().replace('h', '.') );
-  var isRegularization = false;
-  if ($("#rest").val()) {
-    isRegularization = true;
-  }
-  if(recuperation < 0 && isRegularization == false) {
-    $('#alert-stack-top-center').remove();
-    highlight($('.balance_tr'));
-    if ($('#validation').val() > 0) {
-      stackAlert('Le crédit de récupération ne peut pas être négatif.', 'error');
-      return false;
-    } else {
-      if (!confirm("Attention!\nLe crédit de récupération ne peut pas être négatif.\nCette demande ne pourra pas être validée tant que le crédit restera insufisant.\nVoulez-vous continuer ?")) {
-        return false;
-      }
-    }
   }
 
   // Vérifions si un autre congé a été demandé ou validé
@@ -985,8 +997,9 @@ function update_validation_statuses() {
     data: { ids: perso_ids, module: 'holiday', id: holiday_id },
     dataType: "html",
     success: function(result){
-      $("#validation-statuses").html(result);
+      $("#validation-statuses").html(result + '<div class="invalid-feedback" id="invalid-credit">' + Translator.trans('This request cannot be approved as long as the recovery credit is negative') + '</div>');
       highlight($('div#validation-line'));
+      validationStatusInvalidDisplay();
     },
     error: function(xhr, ajaxOptions, thrownError) {
       stackAlert('Une erreur s\'est produite lors de la mise à jour de la liste des statuts', 'error');

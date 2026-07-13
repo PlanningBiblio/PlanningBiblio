@@ -22,6 +22,7 @@
 
         {% if request_type == 'recover' %}
           <input type="hidden" id="is-recover" value="1" />
+          <input type="hidden" id="negative-recover" value="false"/>
         {% endif %}
 
         {% if request_type == 'holiday' and id == null %}
@@ -30,6 +31,7 @@
           <input type="hidden" id="agents-multiples" value="{{ agents_multiples }}" />
         {% endif %}
 
+        <input type="hidden" name="_token" value="{{ csrf_token('') }}"/>
         <input type="hidden" name="CSRFToken" value="{{ CSRFToken }}" />
         <input type="hidden" name="reliquat" value="{{ reliquat }}" />
         <input type="hidden" name="recuperation" id="recuperation" value="{{ recuperation }}" />
