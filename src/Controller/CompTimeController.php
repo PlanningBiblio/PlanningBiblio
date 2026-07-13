@@ -154,21 +154,46 @@ class CompTimeController extends BaseController
         // Enregistrement du congés
         $data = $request->request->all();
 
-        // FIXME : this works only when Conges-validation is disabled.
-        // TODO : Handle the different levels of validation when the dropdown menu will be added to the template for config Conges-validation enabled
-        // TODO : an other (and better) way to fix this is to use the holiday controller and holiday templates for adding comp-time. It's already done for comp-time editions.
+        if ($request->request->getInt('valide')) {
 
-        if ($request->get('valide')) {
             $data['conges-recup'] = 1;
             $data['conges-mode'] = $this->config('Conges-Mode');
             $data['perso_ids'] = array($data['perso_id']);
             $data['confirm'] = 'confirm';
             $data['debit'] = 'recuperation';
             $data['valide_init'] = 1;
-            $data['valide'] = $session->get('loginId');
-            $data['valide_n1'] = $session->get('loginId');
-            $data['validation'] = date('Y-m-d H:i:s');
-            $data['validation_n1'] = date('Y-m-d H:i:s');
+
+            $valid = $request->request->getInt('valide');
+
+            if (!$this->config['Conges-validation']) {
+                    $data['valide_n1'] = $session->get('loginId');
+                    $data['validation_n1'] = date('Y-m-d H:i:s');
+                    $data['valide'] = $session->get('loginId');
+                    $data['validation'] = date('Y-m-d H:i:s');
+            } else {
+                switch ($valid) {
+                    case -2 :
+                        $data['valide_n1'] = -1 * (int) $session->get('loginId');
+                        $data['validation_n1'] = date('Y-m-d H:i:s');
+                        $data['valide'] = 0;
+                        $data['validation'] = null;
+                    break;
+                    case 2 :
+                        $data['valide_n1'] = $session->get('loginId');
+                        $data['validation_n1'] = date('Y-m-d H:i:s');
+                        $data['valide'] = 0;
+                        $data['validation'] = null;
+                    break;
+                    case -1 :
+                        $data['valide'] = -1 * (int) $session->get('loginId');
+                        $data['validation'] = date('Y-m-d H:i:s');
+                    break;
+                    case 1 :
+                        $data['valide'] = $session->get('loginId');
+                        $data['validation'] = date('Y-m-d H:i:s');
+                    break;
+                }
+            }
         }
 
         $c = new \conges();
