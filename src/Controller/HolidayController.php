@@ -1146,6 +1146,11 @@ class HolidayController extends BaseController
      */
     private function update($request): array
     {
+
+        if (!$this->csrf_protection($request)) {
+            return $this->redirectToRoute('access-denied');
+        }
+
         $post = $request->request->all();
 
         $perso_id = $request->get('perso_id');
@@ -1160,6 +1165,7 @@ class HolidayController extends BaseController
         $valide = $request->get('valide');
         $commentaires = $request->get('commentaires');
         $CSRFToken = $request->get('CSRFToken');
+        $recover = ($post['debit'] == 'recuperation' && $this->config('Conges-Recuperations') == '1') ? 1 : 0;
 
         $lang = $GLOBALS['lang'];
 
@@ -1179,6 +1185,34 @@ class HolidayController extends BaseController
         $post['hre_debut']= $hre_debut;
         $post['hre_fin']= $hre_fin;
 
+        if($recover == '1'){
+
+            $holidayHelper = new HolidayHelper(array(
+                'start' => $debutSQL,
+                'hour_start' => $hre_debut,
+                'end' => $finSQL,
+                'hour_end' => $hre_fin,
+                'perso_id' => $perso_id,
+                'is_recover' => 1
+            ));
+
+            $result = $holidayHelper->getCountedHours();
+            $recover_val = ($result['hours'] + ($result['minutes'] / 100));
+
+            $c=new \conges();
+            $credit = $c->calculCreditRecup($perso_id, $debut); //, $id); // ID : à vérifier, mais en ajout : rien, en modif (holidayController) il faudra le prendre.
+                        
+            $credit_after_debit = ($credit[1] - $recover_val);
+
+            if ($credit_after_debit < 0 and $valide == 1) {
+                return array('msg'          => null,
+                            'msg2'         => 'La demande de récupération n\'a pas été modifiée car le crédit de récupération ne peut pas être négatif.',
+                            'msg2Type'     => "error",
+                            'back_to'      => 'recover'
+                            );
+            }
+        }
+
         // Enregistre la modification du congés
         $c=new \conges();
         $c->CSRFToken = $CSRFToken;
@@ -1189,8 +1223,6 @@ class HolidayController extends BaseController
         $agent = $this->entityManager->find(Agent::class, $perso_id);
         $nom = $agent->getLastname();
         $prenom = $agent->getFirstname();
-
-        $recover = ($post['debit'] == 'recuperation' && $this->config('Conges-Recuperations') == '1') ? 1 : 0;
 
         // Choix du sujet et des destinataires en fonction du degré de validation
         switch ($valide) {
