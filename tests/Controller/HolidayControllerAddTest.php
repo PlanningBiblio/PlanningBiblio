@@ -278,7 +278,7 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $this->login($jdevoe);
         $crawler = $this->client->request('GET', '/holiday/new');
 
-        $agentLabel = $crawler->filter('label[for=agent]');
+        $agentLabel = $crawler->filter('label[for=perso_id]');
         $this->assertEquals('Agent :', $agentLabel->text(), 'Form agent label incorrect');
 
         $this->assertSelectorNotExists('#sites-selection');

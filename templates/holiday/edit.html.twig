@@ -72,7 +72,7 @@
             {% if not admin %}
 
               <div class="row mb-2 gx-5">
-                <label class="col-2 col-form-label text-end" for="agent">{% trans %}Agent{% endtrans %} :</label>
+                <label class="col-2 col-form-label text-end" for="perso_id">{% trans %}Agent{% endtrans %} :</label>
                 <div class="col-3">
                   <input type="hidden" name="perso_id" id="perso_id" value="{{ loggedin_id }}" />
                   <input type="text" id="agent" readonly class="form-control-plaintext" value="{{ loggedin_name }} {{ loggedin_firstname }}">
@@ -372,21 +372,21 @@
 
               <div class="row mb-2 gx-5 balance_tr">
                 <label class="col-2 col-form-label text-end" for="info_balance_before">Crédit de récupérations disponible au
-                  <span class="balance_date">{{ balance0 }}</span> :
+                  <span class="balance_date">{{ balance_date }}</span> :
                 </label>
                 <div class="col-4" id="info_balance_before">
-                  <input type="text" id="balance_before" readonly class="form-control-plaintext" value="{{ balance1 }}">
-                  <span class="form-control-plaintext">(après débit : <span id="recup4">{{ balance1 }}</span>)</span>
+                  <input type="text" id="balance_before" readonly class="form-control-plaintext" value="{{ balance_before }}">
+                  <span class="form-control-plaintext">(après débit : <span id="recup4">{{ balance_before }}</span>)</span>
                 </div>
               </div>
 
               <div class="row mb-2 gx-5 balance_tr">
                 <label class="col-2 col-form-label text-end" for="info_balance2_before">Crédit de récupérations prévisionnel<sup>*</sup> au
-                  <span class="balance_date">{{ balance0 }}</span> :
+                  <span class="balance_date">{{ balance_date }}</span> :
                 </label>
                 <div class="col-4" id="info_balance2_before">
-                  <input type="text" id="balance2_before" readonly class="form-control-plaintext" value="{{ balance4 }}">
-                  <span class="form-control-plaintext">(après débit : <span id="balance2_after">{{ balance4 }}</span>)</span>
+                  <input type="text" id="balance2_before" readonly class="form-control-plaintext" value="{{ balance2_before }}">
+                  <span class="form-control-plaintext">(après débit : <span id="balance2_after">{{ balance2_before }}</span>)</span>
                 </div>
               </div>
 
