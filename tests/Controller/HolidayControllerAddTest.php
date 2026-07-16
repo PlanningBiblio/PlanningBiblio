@@ -1,7 +1,6 @@
 <?php
 
 use App\Entity\Agent;
-use App\Entity\Holiday;
 use App\Entity\Manager;
 use App\Entity\OverTime;
 use App\Entity\WorkingHour;
@@ -34,7 +33,7 @@ class HolidayControllerAddTest extends PLBWebTestCase
 
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
-        $builder->delete(Holiday::class);
+        $builder->delete(Manager::class);
         $builder->delete(WorkingHour::class);
         $builder->delete(Overtime::class);
 
@@ -80,14 +79,6 @@ class HolidayControllerAddTest extends PLBWebTestCase
 
         $entityManager->flush();
 
-        $holiday = new Holiday();
-        $holiday->setUser($jdupont->getId());
-        $holiday->setInfo($jdupont->getId());
-        $holiday->setActualCredit(150);
-        $holiday->setActualRemainder(8);
-
-        $entityManager->persist($holiday);
-
         $hours = [
             ['09:00:00', '', '', '17:00:00'],
             ['09:00:00', '', '', '17:00:00'],
@@ -122,7 +113,7 @@ class HolidayControllerAddTest extends PLBWebTestCase
     {
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
-        $builder->delete(Holiday::class);
+        $builder->delete(Manager::class);
         $builder->delete(WorkingHour::class);
         $builder->delete(Overtime::class);
    }
@@ -278,7 +269,7 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $this->login($jdevoe);
         $crawler = $this->client->request('GET', '/holiday/new');
 
-        $agentLabel = $crawler->filter('label[for=perso_id]');
+        $agentLabel = $crawler->filter('label[for=agent]');
         $this->assertEquals('Agent :', $agentLabel->text(), 'Form agent label incorrect');
 
         $this->assertSelectorNotExists('#sites-selection');
