@@ -38,7 +38,7 @@ class AuthorizationsController extends BaseController
         // SSO Link
         $sSOLink = null;
 
-        if ($this->config('Auth-Mode') == 'OpenIDConnect' and !empty($this->config('OIDC-Provider'))) {
+        if (preg_match('/^OpenIDConnect/', $this->config['Auth-Mode']) and !empty($this->config('OIDC-Provider'))) {
             if (stristr($this->config('OIDC-Provider'), 'google')) {
                 $sSOLink = 'Se connecter avec un compte Google';
             } elseif (stristr($this->config('OIDC-Provider'), 'microsoft')) {
@@ -48,7 +48,7 @@ class AuthorizationsController extends BaseController
             }
         }
 
-        if (substr($this->config('Auth-Mode'), 0, 3) == 'CAS' and !empty($this->config('CAS-Hostname'))) {
+        if (preg_match('/^CAS/', $this->config['Auth-Mode']) and !empty($this->config('CAS-Hostname'))) {
             $sSOLink = 'Se connecter avec un compte CAS';
         }
 
@@ -76,13 +76,11 @@ class AuthorizationsController extends BaseController
         $redirect_url = $request->get('redirURL') ?? '/index.php';
 
         $authArgs = null;
-        if (substr($this->config('Auth-Mode'), 0, 3) == 'CAS') {
-            if (array_key_exists('oups', $_SESSION)
-                and array_key_exists('Auth-Mode', $_SESSION['oups'])
-                and $_SESSION['oups']['Auth-Mode'] == 'CAS') {
-                $authArgs = '?noCAS';
-            }
+        if (preg_match('/^CAS|^OpenIDConnect/', $this->config['Auth-Mode'])) {
+            $authArgs = '?noCAS';
         }
+
+        $auth = false;
 
         if ($login != 'admin') {
             // Check authentication method.
@@ -99,9 +97,9 @@ class AuthorizationsController extends BaseController
                     }
                     break;
 
-                // CAS auth with SQL fallback.
+                // SSO auth with SQL fallback.
                 case 'CAS-SQL':
-                    $auth = false;
+                case 'OpenIDConnect-SQL':
                     if ($login and $_POST['auth'] == 'CAS'
                         and array_key_exists('login_id', $_SESSION)
                         and $login == $session->get('loginId')) {
@@ -175,12 +173,12 @@ class AuthorizationsController extends BaseController
         $session->invalidate();
 
         $authArgs = null;
-        if (in_array($this->config('Auth-Mode'), ['CAS', 'CAS-SQL', 'OpenIDConnect'])) {
-            $authArgs = $_SESSION['oups']['Auth-Mode'] == 'CAS' ? null: '?noCAS';
+        if (preg_match('/^CAS|^OpenIDConnect/', $this->config['Auth-Mode'])) {
+            $authArgs = $_SESSION['oups']['Auth-Mode'] == 'SSO' ? null: '?noCAS';
         }
 
-        if (substr($this->config('Auth-Mode'), 0, 3) == 'CAS'
-            and $_SESSION['oups']['Auth-Mode'] == 'CAS') {
+        if (preg_match('/^CAS/', $this->config['Auth-Mode'])
+            and $_SESSION['oups']['Auth-Mode'] == 'SSO') {
 
             $cas_url = 'https://'
                 . $this->config('CAS-Hostname')
@@ -189,7 +187,8 @@ class AuthorizationsController extends BaseController
             return $this->redirect($cas_url);
         }
 
-        if ($this->config('Auth-Mode') == 'OpenIDConnect') {
+        if (preg_match('/^OpenIDConnect/', $this->config['Auth-Mode'])
+            and $_SESSION['oups']['Auth-Mode'] == 'SSO') {
             $oidc = new OpenIDConnect();
             $oidc->logout($request);
         }
@@ -209,26 +208,27 @@ class AuthorizationsController extends BaseController
     {
         $session = $request->getSession();
 
-        if ((substr($this->config('Auth-Mode'), 0, 3) == 'CAS' or $this->config('Auth-Mode') == 'OpenIDConnect')
+        if (preg_match('/^CAS|^OpenIDConnect/', $this->config['Auth-Mode'])
             and !isset($_GET['noCAS'])
             and empty($session->get('loginId'))
             and !isset($_POST['login'])
-            and !isset($_POST['acces'])) {
+            and !isset($_POST['acces']))
+        {
 
             $redirURL = $_GET['redirURL'] ?? '';
             // TODO : replace "$_SESSION['oups']['Auth-Mode']" with $session->set('Auth-Mode', 'SSO') 
-            $_SESSION['oups']['Auth-Mode']="CAS";
+            $_SESSION['oups']['Auth-Mode'] = 'SSO';
 
             $login = null;
 
             // authCAS function redirect user to the CAS server.
             // Once authenticated, it checks if the login exists.
             // If yes, it create the session and log the action.
-            if (substr($this->config('Auth-Mode'), 0, 3) == 'CAS') {
+            if (preg_match('/^CAS/', $this->config['Auth-Mode'])) {
                 $login = authCAS($logger);
 
             // OpenID Connect
-            } elseif ($this->config('Auth-Mode') == 'OpenIDConnect') {
+            } elseif (preg_match('/^OpenIDConnect/', $this->config['Auth-Mode'])) {
                 $oidc = new OpenIDConnect();
                 $user = $oidc->auth($request);
                 $login = $user ? $user->login : null;
