@@ -123,7 +123,7 @@ class AgentController extends BaseController
     {
         $canChangePassword = true;
 
-        if ($_SESSION['oups']['Auth-Mode'] == 'CAS'
+        if ($_SESSION['oups']['Auth-Mode'] == 'SSO'
             or ($this->config('Auth-Mode') == 'LDAP' and $perso_id != 1))
         {
             $canChangePassword = false;
