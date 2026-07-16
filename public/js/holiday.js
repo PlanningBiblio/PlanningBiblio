@@ -159,6 +159,7 @@ function resetTerms(){
 
   if(id_val && valide_val > 0){
     $('#terms').addClass('d-none');
+    $('select[name=debit]').addClass('d-none');
   }
 
   if (is_recover){

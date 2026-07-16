@@ -408,9 +408,9 @@ class HolidayController extends BaseController
 
         $show_allday = 0;
         if ($this->config('Conges-Mode') == 'heures'
-            and (!$this->config('Conges-Recuperations')
-                or $this->config('Conges-Heures')
-                or $data['debit']=="recuperation")) {
+                and (!$this->config('Conges-Recuperations')
+                or $this->config('Conges-Heures'))
+            or $data['debit']=="recuperation") {
             $show_allday = 1;
         }
 
