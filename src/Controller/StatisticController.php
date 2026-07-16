@@ -1767,7 +1767,7 @@ class StatisticController extends BaseController
         $req.="FROM `{$dbprefix}pl_poste` INNER JOIN `{$dbprefix}personnel` ON `{$dbprefix}pl_poste`.`perso_id`=`{$dbprefix}personnel`.`id` ";
         $req.="INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}postes`.`id`=`{$dbprefix}pl_poste`.`poste` ";
         $req.="WHERE `date`>='$debutREQ' AND `date`<='$finREQ' AND `{$dbprefix}pl_poste`.`absent`<>'1' AND `{$dbprefix}pl_poste`.`supprime`<>'1' ";
-        $req.="AND `{$dbprefix}postes`.`lunch`='0' AND `{$dbprefix}postes`.`quota_sp`='1'";
+        $req.="AND `{$dbprefix}postes`.`quota_sp`='1'";
         $req.="ORDER BY `nom`,`prenom`;";
 
         $db->query($req);
