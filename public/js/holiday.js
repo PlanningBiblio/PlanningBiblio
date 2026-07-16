@@ -154,6 +154,12 @@ function resetTerms(){
   reliquat = $('input[name="reliquat"]').val();
   congesRecup = $('#conges-recup').val();
   is_recover = $('#is-recover').val();
+  id_val = $('input[name="id"]').val();
+  valide_val = $('input[name="valide2"]').val();
+
+  if(id_val && valide_val > 0){
+    $('#terms').addClass('d-none');
+  }
 
   if (is_recover){
     return;
