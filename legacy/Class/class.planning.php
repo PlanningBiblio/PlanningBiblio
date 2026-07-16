@@ -104,12 +104,6 @@ class planning
         // Calcul des heures de SP à effectuer pour tous les agents
         $heuresSP=calculHeuresSP($date, $this->CSRFToken);
 
-        // If the current position is a lunch position, $quotaSP is forced to false
-        $positions = $GLOBALS['entityManager']->getRepository(Position::class);
-        if ($positions->find($poste)->isLunch()) {
-            $quotaSP = false;
-        }
-
         // Nombre d'heures de la cellule choisie
         $hres_cellule = 0;
 
@@ -162,7 +156,6 @@ class planning
                     'date'     => "BETWEEN {$date1} AND {$date2}",
                 ),
                 [
-                    'lunch' => 0,
                     'quota_sp' => 1,
                 ]
             );

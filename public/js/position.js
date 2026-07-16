@@ -253,16 +253,6 @@ $(function() {
 
   $('.form-check-input').on('change', function(e) {
     // Check that the parameters are compatible with each other and displays an error message if they are not
-    if ($('#lunch1').prop('checked')) {
-      if ($('#statistics1').prop('checked')) {
-        $('#lunch1').addClass('is-invalid');
-        $('#statistics1').addClass('is-invalid');
-      }
-      if ($('#quota_sp1').prop('checked')) {
-        $('#lunch1').addClass('is-invalid');
-        $('#quota_sp1').addClass('is-invalid');
-      }
-    }
     if ($('#bloq2').prop('checked')) {
       if ($('#statistics1').prop('checked')) {
         $('#bloq2').addClass('is-invalid');

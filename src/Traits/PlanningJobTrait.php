@@ -240,12 +240,6 @@ trait PlanningJobTrait
             ]);
 
             foreach ($events as $event) {
-                // If the current position is a lunch, don't add it to duration
-                // cause this a not worked position
-                if ($positions->find($event->getPosition())->isLunch()) {
-                    continue;
-                }
-
                 // If the current position is a not blocking, don't add it to duration
                 if (!$positions->find($event->getPosition())->isBlocking()) {
                     continue;

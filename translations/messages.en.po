@@ -413,7 +413,7 @@ msgid "teleworking-info"
 msgstr "Check the "Yes" box next to the "Compatible télétravail" option if the work associated with this position can be performed remotely via telework.\nEmployees will not be barred from "Compatible télétravail" positions when they record "Télétravail" absences."
 
 msgid "lunch-info"
-msgstr "Check the "Yes" box next to "Poste repas" if you want to create "Repas" or "Pause déjeuner" rows in your tables.\nThese rows will be associated with these meal shifts, and the "SR (Sans Repas)" alert will be disabled for them.\ To ensure consistent data, statistics and the calculation of the public service quota must be disabled for "meal" positions."
+msgstr "Check the "Yes" box next to "Poste repas" if you want to create "Repas" or "Pause déjeuner" rows in your tables.\nThese rows will be associated with these meal shifts, and the "SR (Sans Repas)" alert will be disabled for them."
 
 msgid "The selected settings are incompatible with each other."
 msgstr "The selected settings are incompatible with each other."
