@@ -109,7 +109,7 @@ function stackAlert(message, type='success', timeout=7000, position='top-center'
       id: containerId,
       css: $.extend({
         position: 'fixed',
-        zIndex: 1050,
+        zIndex: 10,
         minWidth: '25%'
       }, positions[position])
     }).appendTo('body');
