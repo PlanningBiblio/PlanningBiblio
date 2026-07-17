@@ -129,6 +129,7 @@ class AbsenceController extends BaseController
             'agents_deleted'        => $agents_supprimes,
             'can_manage_sup_doc'    => in_array(701, $droits) ? 1 : 0,
             'can_import_abs_csv'    => in_array(1401, $droits) ? 1 : 0,
+            'title'                 => 'Absence list',
         ));
 
         $visibles_absences = array();
@@ -302,6 +303,7 @@ class AbsenceController extends BaseController
             'reasons'               => $this->availablesReasons(),
             'display_autre'         => false,
             'right701'              => in_array(701, $this->droits) ? 1 : 0,
+            'title'                 => 'Add absence',
         ));
 
         return $this->output('absences/edit.html.twig');
@@ -528,6 +530,7 @@ class AbsenceController extends BaseController
             'reason_types'          => $this->reasonTypes(),
             'display_autre'         => $display_autre,
             'right701'              => in_array(701, $this->droits) ? 1 : 0,
+            'title'                 => 'Edit absence',
         ));
 
         $this->templateParams(array('documents' => $this->getDocuments($a)));

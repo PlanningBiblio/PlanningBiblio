@@ -57,7 +57,7 @@ class AbsenceControllerEditTest extends PLBWebTestCase
 
         $crawler = $this->client->request('GET', '/absence/add');
 
-        $this->assertSelectorTextContains('h3', 'Ajouter une absence');
+        $this->assertSelectorTextContains('h1', 'Ajout d\'une absence');
 
         $agentLabel = $crawler->filter('label[for=perso_ul1]');
         $this->assertEquals('Agent :', $agentLabel->text(), 'Form agent label incorrect');
@@ -135,7 +135,7 @@ class AbsenceControllerEditTest extends PLBWebTestCase
         $abs1 = $entityManager->getRepository(Absence::class)->findOneBy(['perso_id' => $bmarleyId]);
         $crawler = $this->client->request('GET', '/absence/'. $abs1->getId());
 
-        $this->assertSelectorTextContains('h3', 'Modification de l\'absence');
+        $this->assertSelectorTextContains('h1', 'Modification d\'une absence');
 
         $link = $crawler->filter('a#back-link');
         $this->assertEquals('Retour à la liste des absences', $link->text(), 'The agent should not be autorized to edit the absence');
@@ -160,7 +160,7 @@ class AbsenceControllerEditTest extends PLBWebTestCase
         $abs1 = $entityManager->getRepository(Absence::class)->findOneBy(['perso_id' => $bmarleyId]);
         $crawler = $this->client->request('GET', '/absence/'. $abs1->getId());
 
-        $this->assertSelectorTextContains('h3', 'Modification de l\'absence');
+        $this->assertSelectorTextContains('h1', 'Modification d\'une absence');
 
         $agentLabel = $crawler->filter('label[for=perso_ul1]');
         $this->assertEquals('Agents :', $agentLabel->text(), 'Form agent label incorrect');

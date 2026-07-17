@@ -27,7 +27,10 @@ class AbsenceInfoController extends BaseController
             ->orderBy('a.debut', 'ASC', 'a.fin', 'ASC')
             ->getQuery();
 
-        $this->templateParams( array('info' => $query->getResult()) );
+        $this->templateParams([
+            'info' => $query->getResult(),
+            'title' => 'Information on absences',
+        ]);
 
         return $this->output('absenceInfo/index.html.twig');
     }
@@ -40,6 +43,7 @@ class AbsenceInfoController extends BaseController
             'start' => null,
             'end'   => null,
             'text'  => null,
+            'title' => 'Add information about absences',
         ));
 
         return $this->output('absenceInfo/edit.html.twig');
@@ -57,6 +61,7 @@ class AbsenceInfoController extends BaseController
             'start' => date_format($info->getStart(), "d/m/Y"),
             'end'   => date_format($info->getEnd(), "d/m/Y"),
             'text'  => $info->getComment(),
+            'title' => 'Edit information about absences',
         ));
 
         return $this->output('absenceInfo/edit.html.twig');
