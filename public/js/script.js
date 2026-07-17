@@ -534,9 +534,8 @@ function updateTips( text , type) {
 
 // This function is intended to replace verif_date() in the long term
 // It checks the validity of a date (string) and ensures it complies with a specific format
-// The date format is loaded from the translation files for the selected locale
 function date_validation(date_value) {
-  format = Translator.trans('MM/DD/YYYY');
+  format = 'DD/MM/YYYY';
   return dayjs(date_value, format, true).isValid();
 };
 
@@ -775,7 +774,7 @@ $(function(){
     });
 
     $(".datepicker").attr('autocomplete','off');
-    $(".datepicker").attr('placeholder', Translator.trans('mm/dd/yyyy'));
+    $(".datepicker").attr('placeholder', Translator.trans('dd/mm/yyyy'));
 
     // Message display when date input is invalid
     $('.datepicker:not(.start-date):not(.end-date)').on('change',function() {
