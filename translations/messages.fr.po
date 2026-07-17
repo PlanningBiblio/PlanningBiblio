@@ -34,7 +34,7 @@ msgstr "Enregistrer"
 msgid "Cancel"
 msgstr "Annuler"
 
-msgid "mm/dd/yyyy"
+msgid "dd/mm/yyyy"
 msgstr "jj/mm/aaaa"
 
 msgid "MM/DD/YYYY"

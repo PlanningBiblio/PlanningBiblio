@@ -34,8 +34,8 @@ msgstr "Save"
 msgid "Cancel"
 msgstr "Cancel"
 
-msgid "mm/dd/yyyy"
-msgstr "mm/dd/yyyy"
+msgid "dd/mm/yyyy"
+msgstr "dd/mm/yyyy"
 
 msgid "MM/DD/YYYY"
 msgstr "MM/DD/YYYY"
