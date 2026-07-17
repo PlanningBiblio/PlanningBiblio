@@ -2021,8 +2021,7 @@ hr {
 
 /* Form elements START */
 
-.form-control, .form-control:focus, 
-.row.row-search .form-control-plaintext {
+.form-control, .form-control:focus {
   color: var(--charcoal-blue);
   font-size: inherit;
   border-radius: var(--bs-border-radius-sm);
@@ -2032,6 +2031,7 @@ hr {
 
 div.form-control, div.form-control:focus, .form-control-plaintext {
   color: var(--charcoal-blue);
+  font-size: inherit;
 }
 
 input.form-check-input:checked {
