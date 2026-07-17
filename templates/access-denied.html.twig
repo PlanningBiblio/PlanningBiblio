@@ -6,12 +6,14 @@
   <div id='acces_refuse'>
     <div>Accès refusé</div>
       <div class="important">
-        {% if reason == 'CSRF' %}
-          {% trans from 'validators' %}
-            The CSRF token is invalid. Please try to resubmit the form.
-          {% endtrans %}
-        {% else %}
-          {{ reason }}
+        {% if reason is defined %}
+          {% if reason == 'CSRF' %}
+            {% trans from 'validators' %}
+              The CSRF token is invalid. Please try to resubmit the form.
+            {% endtrans %}
+          {% else %}
+            {{ reason }}
+          {% endif %}
         {% endif %}
       </div>
      <a href="javascript:history.back();" class="btn btn-primary" role="button">Retour</a>
