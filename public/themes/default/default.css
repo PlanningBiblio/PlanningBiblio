@@ -54,6 +54,11 @@ body {
 	margin: 0px 0px 0px 0px;
 }
 
+h1 {
+  font-size:26px;
+  font-weight: bold;
+}
+
 h2 {
   font-size: 28px;
   font-weight: bold;

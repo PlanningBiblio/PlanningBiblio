@@ -500,3 +500,18 @@ msgstr "This request will not be approved as long as the recovery credit remains
 
 msgid "Absence list"
 msgstr "Absence list"
+
+msgid "Edit absence"
+msgstr "Edit absence"
+
+msgid "Add absence"
+msgstr "Add absence"
+
+msgid "Information on absences"
+msgstr "Information on absences"
+
+msgid "Add information about absences"
+msgstr "Add information about absences"
+
+msgid "Edit information about absences"
+msgstr "Edit information about absences"
