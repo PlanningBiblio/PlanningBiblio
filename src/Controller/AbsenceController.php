@@ -129,6 +129,7 @@ class AbsenceController extends BaseController
             'agents_deleted'        => $agents_supprimes,
             'can_manage_sup_doc'    => in_array(701, $droits) ? 1 : 0,
             'can_import_abs_csv'    => in_array(1401, $droits) ? 1 : 0,
+            'title'                 => 'Absence list',
         ));
 
         $visibles_absences = array();

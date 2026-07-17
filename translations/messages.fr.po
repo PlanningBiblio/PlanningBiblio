@@ -497,3 +497,6 @@ msgstr "Cette demande ne peut pas être validée tant que le crédit de récupé
 
 msgid "This request will not be approved as long as the recovery credit remains negative"
 msgstr "Cette demande ne pourra pas être validée tant que le crédit de récupération sera négatif"
+
+msgid "Absence list"
+msgstr "Liste des absences"
