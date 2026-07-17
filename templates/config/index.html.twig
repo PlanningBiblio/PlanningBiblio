@@ -51,11 +51,11 @@
         </div>
 
         <div class="modal-footer">
-          <button type="button" class="btn btn-primary" onclick="$('#Conges-Recuperations').val('1');" data-bs-dismiss="modal">
-            {% trans %}Accept{% endtrans %}
-          </button>
           <button type="button" id="cancel-mode" class="btn btn-secondary" onclick="$('#Conges-Mode').val('heures');" data-bs-dismiss="modal">
             {% trans %}Cancel my change{% endtrans %}
+          </button>
+          <button type="button" class="btn btn-primary" onclick="$('#Conges-Recuperations').val('1');" data-bs-dismiss="modal">
+            {% trans %}Accept{% endtrans %}
           </button>
         </div>
       </div>
@@ -75,11 +75,11 @@
         </div>
 
         <div class="modal-footer">
-          <button type="button" class="btn btn-primary" onclick="$('#PlanningHebdo').prop('checked', true);" data-bs-dismiss="modal">
-            {% trans %}Accept{% endtrans %}
-          </button>
           <button type="button" id="cancel-week" class="btn btn-secondary" onclick="nb_week_reset();" data-bs-dismiss="modal">
             {% trans %}Cancel my change{% endtrans %}
+          </button>
+          <button type="button" class="btn btn-primary" onclick="$('#PlanningHebdo').prop('checked', true);" data-bs-dismiss="modal">
+            {% trans %}Accept{% endtrans %}
           </button>
         </div>
       </div>
