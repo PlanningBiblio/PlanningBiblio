@@ -1,5 +1,12 @@
 # Changelog Planno
 
+## Version 26.04.06 (2026-07-20)
+
+### Enhancement
+
+* MT52706: Allow counting lunch positions towards the public service quota #1457
+* MT54305: Allow SQL fallback authentication with OpenIDConnect #1462
+
 ## Version 26.04.05 (2026-07-10)
 
 ### Enhancement
