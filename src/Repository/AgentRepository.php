@@ -285,6 +285,10 @@ class AgentRepository extends EntityRepository
         $sites_number = $entityManager->getRepository(Config::class)
             ->findOneBy(['nom' => 'Multisites-nombre'])->getValue();
 
+        if ($this->agent_id) {
+            $agent = $entityManager->find(Agent::class, $this->agent_id);
+        }
+
         $sites = array(1);
         if ($this->check_by_site && $sites_number > 1) {
             $sites = array();
@@ -293,13 +297,16 @@ class AgentRepository extends EntityRepository
                 $sites[] = $i;
             }
 
-            // will only check for agent sites
             if ($this->agent_id) {
-                $agent = $entityManager->find(Agent::class, $this->agent_id);
                 $sites = $agent->getSites();
             }
         }
 
+        // Give rigths for deleted agents
+        // Avoid "Access denied" when modifying absences with several agents and some of them are deleted
+        if (isset($agent) and $agent->getDeletion() == 2) {
+            return array(true, true);
+        }
         $l1 = false;
         $l2 = false;
 
@@ -344,12 +351,6 @@ class AgentRepository extends EntityRepository
         // No validation by agent.
         // Check for module rights.
         $agent_rights = $loggedin->getACL();
-
-        // Give rigths for deleted agents
-        // Avoid "Access denied" when modifying absences with several agents and some of them are deleted
-        if (isset($agent) and $agent->getDeletion() == 2) {
-            return array(true, true);
-        }
 
         foreach ($sites as $i) {
             if (in_array($this->needed_level1 + $i, $agent_rights)) {
