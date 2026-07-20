@@ -77,7 +77,7 @@ $(function(){
     recup = $('#negative-recover').val();
     state = $('select#validation-state').val();
 
-    if (recup == 'true' && state == 1){
+    if (recup == 'true' && state == 1) {
       $('select#validation-state').addClass('is-invalid');
     }
     else {
@@ -521,13 +521,17 @@ function calculRestes(){
       recuperation_prev = recuperation_prev - heures;
 
       $('#alert-stack-top-center').remove();
-      if(recuperation < 0){
+      if (recuperation < 0) {
         stackAlert('Le crédit de récupération ne peut pas être négatif.', 'error')
         highlight($('.balance_tr'));
         $('#negative-recover').val('true');
-        if ($('select#validation-state').val() == 1){
+        if ($('select#validation-state').val() == 1) {
           $('select#validation-state').addClass('is-invalid');
         }
+      }
+      else {
+        $('#negative-recover').val('false');
+        $('select#validation-state').removeClass('is-invalid');
       }
     }
 

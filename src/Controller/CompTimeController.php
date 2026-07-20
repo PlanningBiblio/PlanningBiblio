@@ -7,9 +7,9 @@ use App\Planno\Helper\HolidayHelper;
 use App\Entity\Agent;
 
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-
 
 include_once(__DIR__ . '/../../legacy/Class/class.conges.php');
 
@@ -129,9 +129,8 @@ class CompTimeController extends BaseController
     }
 
     #[Route(path: '/comptime', name: 'comptime.save', methods: ['POST'])]
-    public function save(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
+    public function save(Request $request, Session $session): RedirectResponse
     {
-
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
         }
@@ -156,25 +155,25 @@ class CompTimeController extends BaseController
         $hre_fin = $hre_fin ? $hre_fin : '23:59:59';
         $commentaires = htmlentities($request->get('commentaires'), ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
 
-        $state_validation = $request->request->getInt('valide');
+        $validationStatus = $request->request->getInt('valide');
         
-        $holidayHelper = new HolidayHelper(array(
+        $holidayHelper = new HolidayHelper([
             'start' => $debutSQL,
             'hour_start' => $hre_debut,
             'end' => $finSQL,
             'hour_end' => $hre_fin,
             'perso_id' => $perso_id,
             'is_recover' => 1
-        ));
+        ]);
 
         $result = $holidayHelper->getCountedHours();
         $recover = ($result['hours'] + ($result['minutes'] / 100));
 
         $c = new \conges();
-        $credit = $c->calculCreditRecup($perso_id, $debut); //, $id); // ID : à vérifier, mais en ajout : rien, en modif (holidayController) il faudra le prendre.
+        $credit = $c->calculCreditRecup($perso_id, $debut);
         $credit_after_debit = ($credit[1] - $recover);
 
-        if ($credit_after_debit < 0 and $state_validation == 1) {
+        if ($credit_after_debit < 0 and $validationStatus == 1) {
             $this->addFlash('error', 'La demande de récupération n\'a pas été enregistrée car le crédit de récupération ne peut pas être négatif.');
             return $this->redirectToRoute('holiday.index', ['recup' => 1]);
         }
@@ -182,8 +181,7 @@ class CompTimeController extends BaseController
         // Enregistrement du congés
         $data = $request->request->all();
 
-        if ($state_validation) {
-
+        if ($validationStatus) {
             $data['conges-recup'] = 1;
             $data['conges-mode'] = $this->config('Conges-Mode');
             $data['perso_ids'] = array($data['perso_id']);
@@ -191,15 +189,13 @@ class CompTimeController extends BaseController
             $data['debit'] = 'recuperation';
             $data['valide_init'] = 1;
 
-            $valid = $state_validation;
-
             if (!$this->config['Conges-validation']) {
                     $data['valide_n1'] = $session->get('loginId');
                     $data['validation_n1'] = date('Y-m-d H:i:s');
                     $data['valide'] = $session->get('loginId');
                     $data['validation'] = date('Y-m-d H:i:s');
             } else {
-                switch ($valid) {
+                switch ($validationStatus) {
                     case -2 :
                         $data['valide_n1'] = -1 * (int) $session->get('loginId');
                         $data['validation_n1'] = date('Y-m-d H:i:s');
@@ -224,6 +220,7 @@ class CompTimeController extends BaseController
             }
         }
 
+        $c = new \conges();
         $c->CSRFToken = $CSRFToken;
         $c->add($data);
         $id = $c->id;

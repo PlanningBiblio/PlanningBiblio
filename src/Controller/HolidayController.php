@@ -1146,7 +1146,6 @@ class HolidayController extends BaseController
      */
     private function update($request): array
     {
-
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
         }
@@ -1185,31 +1184,32 @@ class HolidayController extends BaseController
         $post['hre_debut']= $hre_debut;
         $post['hre_fin']= $hre_fin;
 
-        if($recover == '1'){
+        if($recover == '1') {
 
-            $holidayHelper = new HolidayHelper(array(
+            $holidayHelper = new HolidayHelper([
                 'start' => $debutSQL,
                 'hour_start' => $hre_debut,
                 'end' => $finSQL,
                 'hour_end' => $hre_fin,
                 'perso_id' => $perso_id,
-                'is_recover' => 1
-            ));
+                'is_recover' => 1,
+            ]);
 
             $result = $holidayHelper->getCountedHours();
-            $recover_val = ($result['hours'] + ($result['minutes'] / 100));
+            $recoverValue = ($result['hours'] + ($result['minutes'] / 100));
 
             $c=new \conges();
-            $credit = $c->calculCreditRecup($perso_id, $debut); //, $id); // ID : à vérifier, mais en ajout : rien, en modif (holidayController) il faudra le prendre.
-                        
-            $credit_after_debit = ($credit[1] - $recover_val);
+            $credit = $c->calculCreditRecup($perso_id, $debut, $id);
+
+            $credit_after_debit = ($credit[1] - $recoverValue);
 
             if ($credit_after_debit < 0 and $valide == 1) {
-                return array('msg'          => null,
-                            'msg2'         => 'La demande de récupération n\'a pas été modifiée car le crédit de récupération ne peut pas être négatif.',
-                            'msg2Type'     => "error",
-                            'back_to'      => 'recover'
-                            );
+                return [
+                    'msg' => null,
+                    'msg2' => 'La demande de récupération n\'a pas été modifiée car le crédit de récupération ne peut pas être négatif.',
+                    'msg2Type' => 'error',
+                    'back_to' => 'recover',
+                ];
             }
         }
 
