@@ -11,14 +11,14 @@
       {% else %}
         <h4>Ajout d'une information</h4>
       {% endif %}
-      <form id="form" method="post" action="{{ asset('holiday-info') }}" name="form" onsubmit="return verif_form('debut=date1;fin=date2;texte');">
+      <form id="form" method="post" action="{{ asset('holiday-info') }}" name="form" novalidate>
         <input type="hidden" name="CSRFToken" value="{{ CSRFSession }}"/>
         <input type="hidden" name="id" value="{{ id }}"/>
         <table class="tableauFiches">
           <tr>
             <td><label>Date de début : </label></td>
             <td>
-              <input type="text" name="debut" value="{{ debut }}" style="width:100%;" class="datepicker start-date form-control" />
+              <input type="text" name="debut" value="{{ debut }}" style="width:100%;" class="datepicker start-date form-control" required/>
             </td>
           </tr>
           <tr>
@@ -34,7 +34,7 @@
           <tr>
             <td><label>Texte : </label></td>
             <td>
-              <textarea name="texte" rows="3" cols="25" class="form-control emoji-picker-textarea">{{ texte }}</textarea>
+              <textarea name="texte" rows="3" cols="25" class="form-control emoji-picker-textarea" required>{{ texte }}</textarea>
             </td>
           </tr>
           <tr>

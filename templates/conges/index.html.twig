@@ -12,7 +12,7 @@
     Liste des congés de {{ agent_name }}, de {{ debut }} à {{ fin }}.
   </h3>
 
-  <form name="form" method="get" action="{{ asset("holiday") }}" class="d-print-none" onsubmit="return verif_form('debut=date1;fin=date2');" novalidate>
+  <form name="form" method="get" action="{{ asset("holiday") }}" class="d-print-none" novalidate>
     <div class="row row-search">
 
       <label class="col-xl-auto col-form-label mt-2" for="holiday-search-start">{% trans %}Start{% endtrans %} :</label>

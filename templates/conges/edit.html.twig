@@ -15,7 +15,7 @@
     {% endif %}
 
     <div class="admin-div">
-      <form name="form" action="{{ asset('holiday/edit') }}" method="post" id="form" class="googleCalendarForm" onsubmit="return verif_form('debut=date1;fin=date2', 'form', 'verifConges');">
+      <form name="form" action="{{ asset('holiday/edit') }}" method="post" id="form" class="googleCalendarForm" onsubmit="return verifConges();" novalidate>
         <input type="hidden" name="CSRFToken" value="{{ CSRFSession }}" />
         <input type="hidden" name="confirm" value="confirm" />
         <input type="hidden" name="reliquat" value="{{ reliquat }}" />
@@ -70,7 +70,7 @@
           <tr>
             <td>Date de début : </td>
             <td>
-              <input type="text" name="debut" id="debut" value="{{ debut }}" class="datepicker start-date form-control googleCalendarTrigger checkdate" style="width:40%;"/>
+              <input type="text" name="debut" id="debut" value="{{ debut }}" class="datepicker start-date form-control googleCalendarTrigger checkdate" style="width:40%;" required/>
               {% if halfday %}
                 <select name="start_halfday" class="checkdate">
                   {% if start_halfday == 'fullday' %}

@@ -6,7 +6,7 @@
   <div id="content-form">
     <h3>Statistiques sur les absences</h3>
     <div class="statistics-div">
-      <form name="form" method="get" action="{{ asset('statistics/absence') }}" onsubmit="return verif_form('debut=date1;fin=date2');" novalidate>
+      <form name="form" method="get" action="{{ asset('statistics/absence') }}" novalidate>
         <input type="hidden" id="afficheHeures" value="{{ afficheHeures }}" />
 
         <div class="row row-search">

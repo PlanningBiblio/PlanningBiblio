@@ -13,7 +13,7 @@
                 <h4>Ajout d'une information</h4>
             {% endif %}
 
-            <form id="form" method="post" action="{{ asset('admin/info') }}" name="form" onsubmit="return verif_form('start=date1;end=date2;text');">
+            <form id="form" method="post" action="{{ asset('admin/info') }}" name="form" novalidate>
                 <input type="hidden" name="_token" value="{{ csrf_token('') }}"/>
                 <input type="hidden" name="id" value="{{ id }}"/>
 
@@ -21,7 +21,7 @@
                 <tr>
                     <td><label>Date de début</label> </td>
                     <td>
-                    <input type="text" name="start" value="{{ start }}" style="width:100%;" class="datepicker start-date form-control"/>
+                    <input type="text" name="start" value="{{ start }}" style="width:100%;" class="datepicker start-date form-control" required/>
                     </td>
                 </tr>
 
@@ -39,7 +39,7 @@
                 <tr>
                     <td><label>Texte</label></td>
                     <td>
-                    <textarea name="text" rows="3" cols="25" class="emoji-picker-textarea form-control">{{ text }}</textarea>
+                    <textarea name="text" rows="3" cols="25" class="emoji-picker-textarea form-control" required>{{ text }}</textarea>
                     </td>
                 </tr>
 

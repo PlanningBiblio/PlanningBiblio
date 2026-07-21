@@ -11,7 +11,7 @@
     {% endif %}
     <div id="div_agenda_content">
     {% if agents is iterable %}
-      <form name="form" id="calendar-form" method="get" action="{{ asset('calendar') }}" onsubmit="return verif_form('debut=date1;fin=date2');" novalidate>
+      <form name="form" id="calendar-form" method="get" action="{{ asset('calendar') }}" novalidate>
 
         <div class="row row-search">
 
@@ -28,7 +28,7 @@
           {% if admin == 1 %}
             <label class="col-xl-auto col-form-label mt-2" for="agent-search">{% trans %}Agent{% endtrans %} :</label>
             <div class="col-xl-auto ps-0">
-              <select name="perso_id" class="form-select form-select-sm" id="agent-search" >
+              <select name="perso_id" class="form-select form-select-sm" id="agent-search" required>
                 <option hidden disabled selected value=""></option>
                 {% for a in agents %}
                   <option value="{{a.id}}" {% if a.id == perso_id %} selected {% endif %}> {{ a.nom }} {{ a.prenom }}</option>

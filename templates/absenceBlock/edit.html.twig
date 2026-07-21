@@ -13,14 +13,14 @@
                 <h4>Ajout d'un blocage d'absence</h4>
             {% endif %}
 
-            <form id="form" method="POST" action="{{ asset("absence/block") }}" name="form" onsubmit="return verif_form('start=date1;end=date2');">
+            <form id="form" method="POST" action="{{ asset("absence/block") }}" name="form" novalidate>
                 <input type="hidden" name="_token" id="_token" value="{{ csrf_token('') }}"/>
                 <input type="hidden" name="id" value="{{ id }}"/>
 
                 <div class="row my-3">
                     <label class="col-1 col-form-label ms-2" for="start-date-block">{% trans %}Start date{% endtrans %}</label>
                     <div class="col-2">
-                        <input type="text" id="start-date-block" name="start" value="{{ start }}" class="datepicker form-control start-date ms-2" />
+                        <input type="text" id="start-date-block" name="start" value="{{ start }}" class="datepicker form-control start-date ms-2" required/>
                     </div>
                 </div>
 
