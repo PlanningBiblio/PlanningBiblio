@@ -30,17 +30,17 @@
           <input type="hidden" id="agents-multiples" value="{{ agents_multiples }}" />
         {% endif %}
 
-          <input type="hidden" name="CSRFToken" value="{{ CSRFToken }}" />
-          <input type="hidden" name="reliquat" value="{{ reliquat }}" />
-          <input type="hidden" name="recuperation" id="recuperation" value="{{ recuperation }}" />
-          <input type="hidden" name="recuperation_prev" id="recuperation_prev" value="{{ recuperation_prev }}" />
-          <input type="hidden" name="credit" value="{{ credit }}" />
-          <input type="hidden" name="anticipation" value="{{ anticipation }}" />
-          <input type="hidden" id="agent" value="{{ agent_name }}" />
-          <input type="hidden" name="conges-mode" id="conges-mode" value="{{ conges_mode }}" />
-          <input type="hidden" name="conges-demi-journees" id="conges-demi-journees" value="{{ conges_demi_journee }}" />
-          <input type="hidden" id="conges-recup" name="conges-recup" value="{{ conges_recuperations }}" />
-          <input type="hidden" id="selected_agent_id" value="{{ selected_agent_id }}" />
+        <input type="hidden" name="CSRFToken" value="{{ CSRFToken }}" />
+        <input type="hidden" name="reliquat" value="{{ reliquat }}" />
+        <input type="hidden" name="recuperation" id="recuperation" value="{{ recuperation }}" />
+        <input type="hidden" name="recuperation_prev" id="recuperation_prev" value="{{ recuperation_prev }}" />
+        <input type="hidden" name="credit" value="{{ credit }}" />
+        <input type="hidden" name="anticipation" value="{{ anticipation }}" />
+        <input type="hidden" id="agent" value="{{ agent_name }}" />
+        <input type="hidden" name="conges-mode" id="conges-mode" value="{{ conges_mode }}" />
+        <input type="hidden" name="conges-demi-journees" id="conges-demi-journees" value="{{ conges_demi_journee }}" />
+        <input type="hidden" id="conges-recup" name="conges-recup" value="{{ conges_recuperations }}" />
+        <input type="hidden" id="selected_agent_id" value="{{ selected_agent_id }}" />
 
         {% if id %}
 
@@ -233,9 +233,9 @@
           <div class="row gx-5 mb-2">
             <div class="col-3 offset-2">
               <select id="end_halfday" name="end_halfday" class="form-select form-select-sm checkdate">
-                <option value="fullday"  {% if start_halfday == 'fullday' %} selected {% endif %}>Journée complète</option>
-                <option value="morning" {% if start_halfday == 'morning' %} selected {% endif %}>Matin</option>
-                <option value="afternoon" {% if start_halfday == 'afternoon' %} selected {% endif %}>Après-midi</option>
+                <option value="fullday"  {% if end_halfday == 'fullday' %} selected {% endif %}>Journée complète</option>
+                <option value="morning" {% if end_halfday == 'morning' %} selected {% endif %}>Matin</option>
+                <option value="afternoon" {% if end_halfday == 'afternoon' %} selected {% endif %}>Après-midi</option>
               </select>
             </div>
           </div>
