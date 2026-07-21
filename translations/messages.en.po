@@ -491,3 +491,9 @@ msgstr "An error occurred during deletion"
 
 msgid "An error occurred while saving the information"
 msgstr "An error occurred while saving the information"
+
+msgid "This request cannot be approved as long as the recovery credit is negative"
+msgstr "This request cannot be approved as long as the recovery credit is negative"
+
+msgid "This request will not be approved as long as the recovery credit remains negative"
+msgstr "This request will not be approved as long as the recovery credit remains negative"

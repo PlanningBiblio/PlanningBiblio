@@ -71,17 +71,26 @@ $(function(){
     return verifConges();
   });
 
-  $('#validation-line').on('change', function() {
+  $('#validation-line, .checkdate').on('change', function() {
     afficheRefus($('#validation-state'));
 
     recup = $('#negative-recover').val();
     state = $('select#validation-state').val();
 
     if (recup == 'true' && state == 1) {
-      $('select#validation-state').addClass('is-invalid');
+      $('#validation-state').addClass('is-invalid').removeClass('invalid-warning');
+      $('#invalid-credit').text(Translator.trans('This request cannot be approved as long as the recovery credit is negative'));
     }
+
+    else if (recup == 'true' ) {
+      $('#validation-state').removeClass('is-invalid').addClass('invalid-warning')
+      $('#invalid-credit').text(Translator.trans('This request will not be approved as long as the recovery credit remains negative')).show();
+      $('#invalid-credit').css('display', 'block ruby');
+    }
+
     else {
-      $('select#validation-state').removeClass('is-invalid');
+      $('#validation-state').removeClass('is-invalid').removeClass('invalid-warning');
+      $('#invalid-credit').hide();
     }
   })
 });
@@ -522,16 +531,15 @@ function calculRestes(){
 
       $('#alert-stack-top-center').remove();
       if (recuperation < 0) {
-        stackAlert('Le crédit de récupération ne peut pas être négatif.', 'error')
         highlight($('.balance_tr'));
         $('#negative-recover').val('true');
-        if ($('select#validation-state').val() == 1) {
-          $('select#validation-state').addClass('is-invalid');
+        if ($('#validation-state').val() == 1) {
+          $('#validation-state').addClass('is-invalid').removeClass('invalid-warning');
         }
       }
       else {
         $('#negative-recover').val('false');
-        $('select#validation-state').removeClass('is-invalid');
+        $('#validation-state').removeClass('is-invalid');
       }
     }
 
@@ -745,6 +753,7 @@ function verifConges()
   }
   
   // Vérifions si le solde des récupérations n'est pas négatif
+  // TODO : check if it's still required. New controls were added this bootstrap.
   var recuperation = parseFloat( $('#recup4').text().replace('h', '.') );
   var isRegularization = false;
   if ($("#rest").val()) {
@@ -754,12 +763,10 @@ function verifConges()
     $('#alert-stack-top-center').remove();
     highlight($('.balance_tr'));
     if ($('#validation').val() > 0) {
-      stackAlert('Le crédit de récupération ne peut pas être négatif.', 'error');
       return false;
-    } else {
-      if (!confirm("Attention!\nLe crédit de récupération ne peut pas être négatif.\nCette demande ne pourra pas être validée tant que le crédit restera insufisant.\nVoulez-vous continuer ?")) {
-        return false;
-      }
+    } 
+    else {
+      return true;
     }
   }
 
@@ -1004,7 +1011,7 @@ function update_validation_statuses() {
     data: { ids: perso_ids, module: 'holiday', id: holiday_id },
     dataType: "html",
     success: function(result){
-      $("#validation-statuses").html(result);
+      $("#validation-statuses").html(result + '<div class="invalid-feedback" id="invalid-credit">' + Translator.trans('This request cannot be approved as long as the recovery credit is negative') + '</div>');
       highlight($('div#validation-line'));
     },
     error: function(xhr, ajaxOptions, thrownError) {

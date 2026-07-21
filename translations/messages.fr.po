@@ -491,3 +491,9 @@ msgstr "Une erreur est survenue lors de la suppression"
 
 msgid "An error occurred while saving the information"
 msgstr "Une erreur est survenue lors de l'enregistrement des informations"
+
+msgid "This request cannot be approved as long as the recovery credit is negative"
+msgstr "Cette demande ne peut pas être validée tant que le crédit de récupération est négatif"
+
+msgid "This request will not be approved as long as the recovery credit remains negative"
+msgstr "Cette demande ne pourra pas être validée tant que le crédit de récupération sera négatif"
