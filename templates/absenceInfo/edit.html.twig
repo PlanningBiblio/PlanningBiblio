@@ -13,21 +13,21 @@
                 <h4>Ajout d'une information</h4>
             {% endif %}
 
-            <form id='form' method='POST' action='{{ asset('absences/info') }}' name='form' onsubmit='return verif_form("start=date1;end=date2;text");'>
+            <form id='form' method='POST' action='{{ asset('absences/info') }}' name='form' novalidate>
                 <input type="hidden" name="_token" value="{{ csrf_token('') }}"/>
                 <input type='hidden' name='id' value='{{ id }}'/>
 
                 <div class="row my-3">
-                    <label class="col-1 col-form-label ms-2" for="start-date-info">{% trans %}Start date{% endtrans %}</label>
+                    <label class="col-1 col-form-label" for="start-date-info">{% trans %}Start date{% endtrans %}</label>
                     <div class="col-2">
-                        <input type="text" id="start-date-info" name="start" value="{{ start }}" class="datepicker form-control start-date ms-2" />
+                        <input type="text" id="start-date-info" name="start" value="{{ start }}" class="datepicker form-control start-date" required/>
                     </div>
                 </div>
 
                 <div class="row">
-                    <label class="col-1 col-form-label ms-2" for="end-date-info">{% trans %}End date{% endtrans %}</label>
+                    <label class="col-1 col-form-label" for="end-date-info">{% trans %}End date{% endtrans %}</label>
                     <div class="col-2">
-                        <input type="text" id="end-date-info" name="end" value="{{ end }}" class="datepicker form-control end-date ms-2" />
+                        <input type="text" id="end-date-info" name="end" value="{{ end }}" class="datepicker form-control end-date" />
                     </div>
                 </div>
 
@@ -36,9 +36,9 @@
                 </div>
 
                 <div class="row mb-4">
-                    <label class="col-1 col-form-label ms-2" for="text-info">{% trans %}Text{% endtrans %}</label>
+                    <label class="col-1 col-form-label" for="text-info">{% trans %}Text{% endtrans %}</label>
                     <div class="col-2">
-                        <textarea id="text-info" name="text" class="emoji-picker-textarea form-control ms-2"/>{{ text }}</textarea>
+                        <textarea id="text-info" name="text" rows="5" cols="25" class="emoji-picker-textarea form-control" required/>{{ text }}</textarea>
                     </div>
                 </div>
 

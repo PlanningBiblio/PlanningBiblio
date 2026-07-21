@@ -2502,6 +2502,11 @@ table.dataTable th{
 .emoji-wysiwyg-editor {
   border : 1px solid var(--blue-slate);
   border-radius: 4px;
+  padding-right: 35px;
+}
+
+.emoji-wysiwyg-editor.is-invalid {
+  padding-right: 35px ;
 }
 
 .bi.bi-emoji-smile {

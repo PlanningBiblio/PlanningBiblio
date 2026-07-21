@@ -507,10 +507,8 @@ function highlight(obj) {
   obj.addClass('highlight');setTimeout(() => {obj.removeClass('highlight');}, 3000);
 }
 
-// This function is intended to replace verif_date() in the long term
-// It checks the validity of a date (string) and ensures it complies with a specific format
-function date_validation(date_value) {
-  format = 'DD/MM/YYYY';
+// This function checks the validity of a date (string) and ensures it complies with a specific format
+function date_validation(date_value, format='DD/MM/YYYY') {
   return dayjs(date_value, format, true).isValid();
 };
 
@@ -529,121 +527,6 @@ function text_validation(text_value) {
 // This function checks the validity of an integer value
 function int_validation(value) {
   return !isNaN(value) && parseInt(Number(value)) == value && !isNaN(parseInt(value, 10));
-}
-
-function verif_date(d){
-  // Cette fonction vérifie le format AAAA-MM-JJ saisi et la validité de la date.
-  // Le séparateur est défini dans la variable separateur
-  var amin=1999; // année mini
-  var amax=2080; // année maxi
-  var separateur="-"; // separateur entre jour/mois/annee
-  var j=(d.substring(8));
-  var m=(d.substring(5,7));
-  var a=(d.substring(0,4));
-  var ok=1;
-  if ( ((isNaN(j))||(j<1)||(j>31)) && (ok==1) ) {
-  //       alert("Le jour n'est pas correct."); 
-    ok=0;
-  }
-  if ( ((isNaN(m))||(m<1)||(m>12)) && (ok==1) ) {
-  //       alert("Le mois n'est pas correct."); 
-    ok=0;
-  }
-  if ( ((isNaN(a))||(a<amin)||(a>amax)) && (ok==1) ) {
-  //     alert("L'année n'est pas correcte."); 
-    ok=0;
-  }
-  if ( ((d.substring(4,5)!=separateur)||(d.substring(7,8)!=separateur)) && (ok==1) ) {
-  //   alert("Les séparateurs doivent être des "+separateur); 
-    ok=0;
-  }
-  if (ok==1){
-    var d2=new Date(a,m-1,j);
-    j2=d2.getDate();
-    m2=d2.getMonth()+1;
-    a2=d2.getFullYear();
-    if (a2<=100) {a2=1900+a2}
-    if ( (j!=j2)||(m!=m2)||(a!=a2) ){
-    //           alert("La date "+d+" n'existe pas !");
-      ok=0;
-    }
-  }
-  return ok;
-}
-
-function verif_form(champs, form='form', callback=null)
-{
-  // Checks if the form was submitted with invalid inputs and stops the submission
-  if ($('.is-invalid').length > 0) {
-    event.preventDefault();
-    event.stopPropagation();
-    return;
-  }
-
-  erreurs="";
-  valeur1="";
-  valeur2="";
-  champ=champs.split(";");
-  for(i=0;i<champ.length;i++){
-    tab=champ[i].split("=");
-    objet=tab[0];
-    type=tab[1];
-    valeur=document.forms[form].elements[objet].value;
-
-    if(type=="date2" && !valeur)
-      valeur=valeur1;
-
-    if(valeur=="")
-      erreurs=erreurs+"<li>"+objet+"</li>";
-    else if(type){
-      if(type.substr(0,4)=="date"){
-	// Converti les dates JJ/MM/AAAA en AAAA-MM-JJ
-        valeur=valeur.replace(/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/g,"$3-$2-$1");
-      }
-      if(type.substr(0,4)=="date" && verif_date(valeur)==0)
-	erreurs=erreurs+"<li>"+objet+" doit être au format JJ/MM/AAAA</li>";
-      if(type=="date1"){
-	objet1=objet;
-	valeur1=valeur;
-      }
-      else if(type=="date2"){
-	objet2=objet;
-	valeur2=valeur;
-      }
-      else if(type=="date2Obligatoire"){
-	objet2=objet;
-	valeur2=valeur;
-      }
-      if(type.substr(0,5)=="heure" && verif_heure(valeur)==0)
-	erreurs=erreurs+"<li>"+objet+" doit être au format HH:MM:SS</li>";
-      if(type=="heure1"){
-	objet1=objet;
-	valeur1=valeur;
-      }
-      else if(type=="heure2"){
-	objet2=objet;
-	valeur2=valeur;
-      }
-    }
-  }
-  
-  if(erreurs){
-    stackAlert('Les champs suivants sont obligatoires :<ul>' + erreurs + '</ul>', 'error');
-    return false;
-  }
-  else{
-    if(valeur1 && valeur2 && valeur2 < valeur1) {
-      return false;
-    }
-    else {
-      if (callback) {
-        return window[callback]();
-      } 
-      else {
-        return true;
-      }
-    }
-  }
 }
 
 function verif_heure(heure){
@@ -738,8 +621,16 @@ $(function(){
 
       // Enables inline-feedback
       $('.form-control:invalid').each(function() {
-        if ($(this).is(':visible')) {
-          $(this).addClass('is-invalid');
+
+        if ($(this).hasClass('emoji-picker-textarea')) {
+          $(this).removeAttr('required');
+          $(this).next().addClass('is-invalid');
+        }
+
+        else {
+          if ($(this).is(':visible')) {
+            $(this).addClass('is-invalid');
+          }
         }
       });
     }
@@ -798,8 +689,7 @@ $(function(){
     });
 
     // Message display when text input is invalid
-
-    $('input[type=text]').on('keyup',function(e) {
+    $('input[type=text]:not(.start-date):not(.end-date)').on('keyup',function(e) {
       var required = typeof($(this).attr('required')) != 'undefined';
       var valid_text = text_validation($(this).val());
       
@@ -902,7 +792,6 @@ $(function(){
     });
 
     // One year limitation on research form
-
     $('.start-date.one-year').on('change', function(e) {
       var start = dayjs($('.start-date').val(), Translator.trans('DD/MM/YYYY'));
       var end = dayjs($('.end-date').val(), Translator.trans('DD/MM/YYYY'));
@@ -992,9 +881,18 @@ $(function(){
 
     window.emojiPicker.discover();
 
-    $('.emoji-wysiwyg-editor').on('input', function() {
-      $(this).removeClass('is-invalid');
-    })
+    // Remove invalid display when emoji-picker-textarea input is not empty
+    // We don't add is-invalid on input because it blocks not required fields (e.g.: planning comments).
+    // Adding is-invalid here is not necessary because required fields are already checked when forms are submited.
+    $('div.emoji-picker-textarea').on('input', function() {
+      var valid_text = text_validation($(this).text());
+      var emoji = $('div.emoji-wysiwyg-editor img.img').length;
+
+      if (valid_text || emoji) {
+        $(this).removeClass('is-invalid');
+      }
+    });
+
   });
 
   // Tooltips
