@@ -17,10 +17,10 @@ class AbsenceInfoController extends BaseController
     #[Route(path: '/absences/info', name: 'absences.info.index', methods: ['GET'])]
     public function index(Request $request, Session $session, EntityManagerInterface $em)
     {
-        $start = $this->initDate('start', 'AbsInfoStart');
-        $end = $this->initDate('end', 'AbsInfoEnd', '+1 year');
+        $start = $this->initDate('start', 'AbsenceInfoStart');
+        $end = $this->initDate('end', 'AbsenceInfoEnd', '+1 year');
 
-        $info = $em->getRepository(AbsenceInfo::class)->getByDateRange($start, $end);
+        $info = $em->getRepository(AbsenceInfo::class)->findByDateRange($start, $end);
 
         $this->templateParams([
             'info' => $info,
