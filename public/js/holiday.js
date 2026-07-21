@@ -71,7 +71,7 @@ $(function(){
     return verifConges();
   });
 
-  $('#validation-line').on('change', function(){
+  $('#validation-line').on('change', function() {
     afficheRefus($('#validation-state'));
   })
 
@@ -157,7 +157,7 @@ function resetTerms(){
   id_val = $('input[name="id"]').val();
   valide_val = $('input[name="valide2"]').val();
 
-  if(id_val && valide_val > 0){
+  if (id_val && valide_val > 0) {
     $('#terms').addClass('d-none');
     $('select[name=debit]').addClass('d-none');
   }
@@ -187,11 +187,11 @@ function resetTerms(){
   }
 }
 
-function afficheRefus(selected){
-  if(selected.val() =="-1" || selected.val() =="-2"){
+function afficheRefus(select) {
+  if (select.val() == '-1' || select.val() == '-2') {
     document.getElementById("tr_refus").style.display="";
   }
-  else{
+  else {
     document.getElementById("tr_refus").style.display="none";
   }
 }

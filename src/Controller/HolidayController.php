@@ -408,9 +408,9 @@ class HolidayController extends BaseController
 
         $show_allday = 0;
         if ($this->config('Conges-Mode') == 'heures'
-                and (!$this->config('Conges-Recuperations')
-                or $this->config('Conges-Heures'))
-            or $data['debit']=="recuperation") {
+            and (!$this->config('Conges-Recuperations') or $this->config('Conges-Heures'))
+            or $data['debit'] == 'recuperation')
+        {
             $show_allday = 1;
         }
 
@@ -647,7 +647,6 @@ class HolidayController extends BaseController
             'adminN2'               => $adminN2,
             'agents_multiples'      => $agents_multiples,
             'perso_id'              => $perso_id,
-            'is_holiday'            => true,
             'request_type'          => 'holiday',
             'id'                    => null,
             'allday'                => null,
