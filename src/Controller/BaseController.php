@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Config;
 use App\Planno\Notifier;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -120,15 +121,36 @@ class BaseController extends AbstractController
         return $this->config[$key];
     }
 
-    protected function initDate(string $queryName, string $sessionName, string $when = 'today', string $format = 'd/m/Y'): ?\DateTime
+    /**
+     * Initialize and return a DateTime object using:
+     * - the query parameter named $queryName, or
+     * - the session parameter named $sessionName if the query parameter is absent or empty.
+     *
+     * If both the query parameter and the session parameter are absent, empty
+     * or invalid, the DateTime object is initialized with the method parameter
+     * $when, which can be any string accepted by DateTime constructor
+     * (default: "today")
+     *
+     * The query parameter and the session parameter must be in the format
+     * specified in $format (default: "d/m/Y")
+     *
+     * The resulting date is then stored in the session parameter named
+     * $sessionName using the format specified in $format
+     */
+    protected function initDate(string $queryName, string $sessionName, string $when = 'today', string $format = 'd/m/Y'): DateTime
     {
-        $dateSession = $this->request->getSession()->get($sessionName, date($format, strtotime($when)));
+        $session = $this->request->getSession();
 
-        $date = $this->request->query->get($queryName, $dateSession);
+        $date = $this->request->query->get($queryName) ?: $session->get($sessionName);
 
-        $this->request->getSession()->set($sessionName, $date);
+        $dt = $date ? DateTime::createFromFormat($format, $date) : null;
+        if (!$dt) {
+            $dt = new DateTime($when);
+        }
 
-        return \DateTime::createFromFormat($format, $date);
+        $session->set($sessionName, $dt->format($format));
+
+        return $dt;
     }
 
     protected function csrf_protection(Request $request): bool

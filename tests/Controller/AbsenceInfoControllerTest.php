@@ -12,7 +12,6 @@ use Tests\FixtureBuilder;
 
 class AbsenceInfoControllerTest extends PLBWebTestCase
 {
-
     public function testAdd(): void
     {
         $entityManager = $this->entityManager;
@@ -148,10 +147,11 @@ class AbsenceInfoControllerTest extends PLBWebTestCase
 
         $this->assertSelectorTextContains('h3', 'Informations sur les absences');
 
-        $result = $crawler->filterXPath('//a[@class="btn btn-primary"]');
+        $result = $crawler->filterXPath('//a[@href="/absences/info/add"]');
         $this->assertEquals('Ajouter', $result->text('Node does not exist', false), 'a button is Ajouter');
 
-        $this->assertSelectorTextContains('p', 'Aucune information enregistrée');
+        $rowCount = $crawler->filter('table > tbody > tr')->count();
+        $this->assertEquals(0, $rowCount);
 
         $start = new DateTime('+1 day');
         $end = new DateTime('+1 month +1 day');
@@ -168,7 +168,7 @@ class AbsenceInfoControllerTest extends PLBWebTestCase
 
         $this->assertSelectorTextContains('h3', 'Informations sur les absences');
 
-        $result = $crawler->filterXPath('//a[@class="btn btn-primary"]');
+        $result = $crawler->filterXPath('//a[@href="/absences/info/add"]');
         $this->assertEquals('Ajouter', $result->text('Node does not exist', false), 'a button is Ajouter');
 
         $result = $crawler->filterXPath('//table[@id="AbsenceInfoTable"]');
@@ -184,5 +184,19 @@ class AbsenceInfoControllerTest extends PLBWebTestCase
         $this->assertEquals($result->eq(1)->text('Node does not exist', false), $start->format('d/m/Y'),'date début is ok');
         $this->assertEquals($result->eq(2)->text('Node does not exist', false), $end->format('d/m/Y'),'date fin is ok');
         $this->assertEquals($result->eq(3)->text('Node does not exist', false), 'hello','text info is ok');
+
+        $afterEnd = DateTime::createFromInterface($end)->modify('+1 day');
+        $crawler = $this->client->request('GET', sprintf('/absences/info?start=%s', $afterEnd->format('d/m/Y')));
+        $rowCount = $crawler->filter('table > tbody > tr')->count();
+        $this->assertEquals(0, $rowCount);
+
+        $beforeStart = DateTime::createFromInterface($start)->modify('-1 day');
+        $crawler = $this->client->request('GET', sprintf('/absences/info?end=%s', $beforeStart->format('d/m/Y')));
+        $rowCount = $crawler->filter('table > tbody > tr')->count();
+        $this->assertEquals(0, $rowCount);
+
+        $crawler = $this->client->request('GET', sprintf('/absences/info?start=%s&end=%s', $start->format('d/m/Y'), $end->format('d/m/Y')));
+        $rowCount = $crawler->filter('table > tbody > tr')->count();
+        $this->assertEquals(1, $rowCount);
     }
 }

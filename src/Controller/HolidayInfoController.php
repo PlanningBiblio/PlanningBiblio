@@ -3,7 +3,10 @@
 namespace App\Controller;
 
 use App\Controller\BaseController;
+use App\Entity\HolidayInfo;
 
+use DateTime;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
@@ -13,35 +16,26 @@ require_once(__DIR__ . '/../../legacy/Class/class.conges.php');
 class HolidayInfoController extends BaseController
 {
     #[Route(path: '/holiday-info', name: 'holiday_info.index', methods: ['GET'])]
-    public function index(Request $request, Session $session)
+    public function index(Request $request, Session $session, EntityManagerInterface $em)
     {
         if ($this->config('Conges-Enable') == 0 ) {
             return $this->redirectToRoute('access-denied');
         }
 
-        $CSRFSession = $GLOBALS['CSRFSession'];
-        $dbprefix = $GLOBALS['dbprefix'];
-        $admin = false;
-        $today = date("Y-m-d");
-        $information = null;
-
         if (!$this->isAdmin()) {
             return $this->redirectToRoute('access-denied');
         }
 
-        $db = new \db();
-        $db->query("SELECT * FROM `{$dbprefix}conges_infos` WHERE `fin`>='$today' ORDER BY `debut`,`fin`;");
+        $start = $this->initDate('start', 'HolidayInfoStart');
+        $end = $this->initDate('end', 'HolidayInfoEnd', '+1 year');
 
-        if($db->result){
-            $information  = $db->result;
-        }
+        $info = $em->getRepository(HolidayInfo::class)->findByDateRange($start, $end);
 
-        $this->templateParams(
-            array(
-                'info' => $information,
-                'admin' => $admin
-            )
-        );
+        $this->templateParams([
+            'info' => $info,
+            'start' => $start,
+            'end' => $end,
+        ]);
 
         return $this->output('holidayInfo/index.html.twig');
     }

@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -14,20 +15,18 @@ use App\Entity\AbsenceInfo;
 class AbsenceInfoController extends BaseController
 {
     #[Route(path: '/absences/info', name: 'absences.info.index', methods: ['GET'])]
-    public function index(Request $request, Session $session)
+    public function index(Request $request, Session $session, EntityManagerInterface $em)
     {
-        $today = date('Y-m-d');
+        $start = $this->initDate('start', 'AbsenceInfoStart');
+        $end = $this->initDate('end', 'AbsenceInfoEnd', '+1 year');
 
-        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $info = $em->getRepository(AbsenceInfo::class)->findByDateRange($start, $end);
 
-        $query = $queryBuilder->select(array('a'))
-            ->from(AbsenceInfo::class, 'a')
-            ->where('a.fin >= :today')
-            ->setParameter('today', $today)
-            ->orderBy('a.debut', 'ASC', 'a.fin', 'ASC')
-            ->getQuery();
-
-        $this->templateParams( array('info' => $query->getResult()) );
+        $this->templateParams([
+            'info' => $info,
+            'start' => $start,
+            'end' => $end,
+        ]);
 
         return $this->output('absenceInfo/index.html.twig');
     }
@@ -50,7 +49,7 @@ class AbsenceInfoController extends BaseController
     {
         $id = $request->get('id');
 
-        $info = $this->entityManager->getRepository(AbsenceInfo::class)->findOneById($id);
+        $info = $this->entityManager->getRepository(AbsenceInfo::class)->find($id);
 
         $this->templateParams(array(
             'id'    => $id,
