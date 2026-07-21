@@ -39,11 +39,11 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $rowCount = $crawler->filter('table > tbody > tr')->count();
         $this->assertEquals(1, $rowCount);
 
-        $crawler = $this->client->request('GET', '/admin/info?end=06/10/2022');
+        $crawler = $this->client->request('GET', '/admin/info?start=01/01/2000&end=06/10/2022');
         $rowCount = $crawler->filter('table > tbody > tr')->count();
         $this->assertEquals(1, $rowCount);
 
-        $crawler = $this->client->request('GET', '/admin/info?end=06/10/2021');
+        $crawler = $this->client->request('GET', '/admin/info?start=01/01/2000&end=06/10/2021');
         $rowCount = $crawler->filter('table > tbody > tr')->count();
         $this->assertEquals(0, $rowCount);
     }
