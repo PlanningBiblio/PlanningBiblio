@@ -269,7 +269,7 @@ class HolidayController extends BaseController
 
         $this->templateParams(array('holidays' => $holidays));
 
-        return $this->output('conges/index.html.twig');
+        return $this->output('holiday/index.html.twig');
     }
 
     #[Route(path: '/ajax/holidays-hours-to-days', name: 'ajax.holidays-hours-to-days', methods: ['GET'])]
@@ -804,7 +804,7 @@ class HolidayController extends BaseController
 
         $this->templateParams(array('bar' => 'foo'));
 
-        return $this->output('conges/accounts.html.twig');
+        return $this->output('holiday/accounts.html.twig');
     }
 
     #[Route(path: '/ajax/holiday-halfday-hours', name: 'ajax.holiday-halfday-hours', methods: ['GET'])]
