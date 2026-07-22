@@ -40,6 +40,7 @@ function timePickerChange(date, obj) {
   }
   if ($(obj).hasClass('checkdate')) {
     dateChange(obj);
+    validationInvalidDisplay();
   }
 
   if ($(obj).hasClass('select')) {
