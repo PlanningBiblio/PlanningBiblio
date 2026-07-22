@@ -156,9 +156,9 @@ function resetTerms(){
   congesRecup = $('#conges-recup').val();
   is_recover = $('#is-recover').val();
   id_val = $('input[name="id"]').val();
-  valide_val = $('input[name="valide2"]').val();
+  status_val = $('input[name="status"]').val();
 
-  if (id_val && valide_val > 0) {
+  if (id_val && status_val > 0) {
     $('#terms').addClass('d-none');
     $('select[name=debit]').addClass('d-none');
   }
@@ -684,11 +684,6 @@ function supprimeConges(retour){
       }
     });
   }
-}
-
-function valideConges(){
-  document.form.elements["valide"].value="1";
-  document.form.submit();
 }
 
 function verifConges()
