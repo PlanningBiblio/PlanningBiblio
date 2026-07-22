@@ -15,8 +15,8 @@
 
         {% if id %}
           <input type="hidden" name="confirm" value="confirm" />
-          <input type="hidden" name="valide" value="0" />
-          <input type="hidden" name="valide2" value="{{ valide }}" />
+          {# variable passed via the controller that defines the current approval status of the holiday request (1 if approved, -1 if rejected, and 0 otherwise) #}
+          <input type="hidden" name="status" value="{{ valide }}" />
           <input type="hidden" name="id" value="{{ id }}" id="id" />
         {% endif %}
 
