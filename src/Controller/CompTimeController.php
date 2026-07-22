@@ -91,6 +91,8 @@ class CompTimeController extends BaseController
             'id'                    => null,
             'allday'                => false,
             'halfday'               => false,
+            'hre_debut'             => null,
+            'hre_fin'               => null,
             'debut'                 => null,
             'fin'                   => null,
             'debit'                 => null,

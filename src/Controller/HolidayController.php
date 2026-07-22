@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use DateTime;
+
 use App\Controller\BaseController;
 
 use App\Entity\Agent;
@@ -371,12 +373,16 @@ class HolidayController extends BaseController
         $displayRefus = $data['valide'] > 0 ? "display:none;" : $displayRefus;
         $debut=dateFr(substr($data['debut'], 0, 10));
         $fin=dateFr(substr($data['fin'], 0, 10));
-        $hre_debut=substr($data['debut'], -8);
-        $hre_fin=substr($data['fin'], -8);
+        $hre_debut = substr($data['debut'], -8, 5);
+        $hre_fin = substr($data['fin'], -8, 5);
         $jours=number_format(($data['heures']/7), 2, ".", " ");
         $tmp=explode(".", $data['heures']);
         $heures=$tmp[0];
         $minutes=$tmp[1];
+
+        $allday = ($hre_debut == '00:00' && $hre_fin == '23:59');
+        $hre_debut = $hre_debut != '00:00' ? $hre_debut : '';
+        $hre_fin = $hre_fin != '23:59' ? $hre_fin : '';
 
         // Crédits
         $p = new \personnel();
@@ -412,11 +418,6 @@ class HolidayController extends BaseController
             or $data['debit'] == 'recuperation')
         {
             $show_allday = 1;
-        }
-
-        $displayHeures=null;
-        if ($hre_debut=="00:00:00" and $hre_fin=="23:59:59") {
-            $displayHeures="style='display:none;'";
         }
 
         $holiday_helper = new HolidayHelper();
@@ -480,7 +481,7 @@ class HolidayController extends BaseController
             'fin'                   => $fin,
             'hre_debut'             => $hre_debut,
             'hre_fin'               => $hre_fin,
-            'allday'                => ($hre_debut == '00:00:00' && $hre_fin == '23:59:59'),
+            'allday'                => $allday,
             'request_type'          => $request_type,
             'adminN1'               => $adminN1,
             'adminN2'               => $adminN2,
@@ -660,6 +661,8 @@ class HolidayController extends BaseController
             'id'                    => null,
             'allday'                => true,
             'halfday'               => false,
+            'hre_debut'             => null,
+            'hre_fin'               => null,
             'debut'                 => null,
             'fin'                   => null,
             'debit'                 => null,
@@ -1333,4 +1336,5 @@ class HolidayController extends BaseController
 
         return $message;
     }
+
 }
