@@ -65,33 +65,16 @@ $(function(){
 
   $('.checkdate').on('change', function() {
     dateChange(this);
+    validationInvalidDisplay();
   });
 
   $('#holiday-form').on('submit', function(){
     return verifConges();
   });
 
-  $('#validation-line, .checkdate').on('change', function() {
+  $('#validation-line').on('change', function() {
     afficheRefus($('#validation-state'));
-
-    recup = $('#negative-recover').val();
-    state = $('select#validation-state').val();
-
-    if (recup == 'true' && state == 1) {
-      $('#validation-state').addClass('is-invalid').removeClass('invalid-warning');
-      $('#invalid-credit').text(Translator.trans('This request cannot be approved as long as the recovery credit is negative'));
-    }
-
-    else if (recup == 'true' ) {
-      $('#validation-state').removeClass('is-invalid').addClass('invalid-warning')
-      $('#invalid-credit').text(Translator.trans('This request will not be approved as long as the recovery credit remains negative')).show();
-      $('#invalid-credit').css('display', 'block ruby');
-    }
-
-    else {
-      $('#validation-state').removeClass('is-invalid').removeClass('invalid-warning');
-      $('#invalid-credit').hide();
-    }
+    validationInvalidDisplay();
   })
 });
 
@@ -202,6 +185,30 @@ function resetTerms(){
     else {
       $('#terms').text('Ces heures seront débitées sur les crédits de congés de l\'année en cours.');
     }
+  }
+}
+
+function validationInvalidDisplay(){
+  recup = $('#negative-recover').val();
+  state = $('select#validation-state').val();
+
+  console.log(recup);
+  console.log(state);
+
+  if (recup == 'true' && state == 1) {
+    $('#validation-state').addClass('is-invalid').removeClass('invalid-warning');
+    $('#invalid-credit').text(Translator.trans('This request cannot be approved as long as the recovery credit is negative'));
+  }
+
+  else if (recup == 'true' ) {
+    $('#validation-state').removeClass('is-invalid').addClass('invalid-warning')
+    $('#invalid-credit').text(Translator.trans('This request will not be approved as long as the recovery credit remains negative')).show();
+    $('#invalid-credit').css('display', 'block ruby');
+  }
+
+  else {
+    $('#validation-state').removeClass('is-invalid').removeClass('invalid-warning');
+    $('#invalid-credit').hide();
   }
 }
 
@@ -995,6 +1002,7 @@ function update_validation_statuses() {
     success: function(result){
       $("#validation-statuses").html(result + '<div class="invalid-feedback" id="invalid-credit">' + Translator.trans('This request cannot be approved as long as the recovery credit is negative') + '</div>');
       highlight($('div#validation-line'));
+      validationInvalidDisplay();
     },
     error: function(xhr, ajaxOptions, thrownError) {
       stackAlert('Une erreur s\'est produite lors de la mise à jour de la liste des statuts', 'error');
