@@ -571,18 +571,19 @@
           </div>
         {% endif %}
 
-        {% if holiday_info %}
-          <div class="row mb-2 gx-5 red align-info">
-            <div class="col-3 offset-2">
-            <b>Informations sur les congés :</b><br/>
-              {% for i in holiday_info %}
-              Du {{ i.start }} au {{ i.end }} :<br/>{{ i.texte|nl2br }}<br/>
-              {% endfor %}
-            </div>
-          </div>
-        {% endif %}
-
       </form>
+
+      {% if holiday_info %}
+        <div class="row mb-2 gx-5 red align-info">
+          <div class="col-3 offset-2">
+          <b>Informations sur les congés :</b><br/>
+            {% for i in holiday_info %}
+              Du {{ i.start }} au {{ i.end }} : {{ i.texte | nl2br }}<br/>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+
     </div>
   </div>
 

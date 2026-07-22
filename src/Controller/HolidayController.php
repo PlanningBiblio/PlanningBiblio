@@ -441,6 +441,19 @@ class HolidayController extends BaseController
 
         }
 
+        $date = date("Y-m-d");
+        $db = new \db();
+        $db->query("SELECT * FROM `{$dbprefix}conges_infos` WHERE `fin`>='$date' ORDER BY `debut`,`fin`;");
+
+        $holiday_info = array();
+        if ($db->result) {
+            foreach ($db->result as $elem) {
+                $elem['start'] = dateFr($elem['debut']);
+                $elem['end'] = dateFr($elem['fin']);
+                $holiday_info[] = $elem;
+            }
+        }
+
         $templateParams = array(
             'id'                    => $id,
             'title'                 => $title,
@@ -486,7 +499,7 @@ class HolidayController extends BaseController
             'saisie'                => dateFr($data['saisie'], true),
             'displayRefus'          => $displayRefus,
             'action_path'           => 'holiday/edit',
-            'holiday_info'          => null,
+            'holiday_info'          => $holiday_info,
         );
 
         $this->templateParams($templateParams);
