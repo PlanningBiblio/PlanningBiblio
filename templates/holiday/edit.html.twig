@@ -39,9 +39,9 @@
         <input type="hidden" name="credit" value="{{ credit }}" />
         <input type="hidden" name="anticipation" value="{{ anticipation }}" />
         <input type="hidden" id="agent" value="{{ agent_name }}" />
-        <input type="hidden" name="conges-mode" id="conges-mode" value="{{ conges_mode }}" />
-        <input type="hidden" name="conges-demi-journees" id="conges-demi-journees" value="{{ conges_demi_journee }}" />
-        <input type="hidden" id="conges-recup" name="conges-recup" value="{{ conges_recuperations }}" />
+        <input type="hidden" name="conges-mode" id="conges-mode" value="{{ config('Conges-Mode') }}" />
+        <input type="hidden" name="conges-demi-journees" id="conges-demi-journees" value="{{ config('Conges-demi-journees') }}" />
+        <input type="hidden" id="conges-recup" name="conges-recup" value="{{ config('Conges-Recuperations') }}" />
         <input type="hidden" id="selected_agent_id" value="{{ selected_agent_id }}" />
 
         {% if id %}
@@ -121,7 +121,7 @@
                   <select name="perso_id" id="perso_ids" class="{% if agents_multiples %}agents_multiples{% endif %} form-select form-select-sm">
                     {% if agents_multiples %}
                       <option value="0" selected="selected"> -- Ajoutez un agent --</option>
-                      {% if conges_tous %}
+                      {% if config('Conges-tous') %}
                       <option value="tous">Tous les agents</option>
                       {% endif %}
                     {% endif %}
@@ -170,7 +170,7 @@
             </div>
           </div>
 
-        {% elseif  conges_mode == 'jours' and conges_demi_journee %}
+        {% elseif config('Conges-Mode') == 'jours' and config('Conges-demi-journees') %}
 
           <div class="row mb-2 gx-5 form-check-prepend">
             <label class="col-2 col-form-label text-end form-check-label" for="halfday" >Demi-journée(s) :</label>
@@ -202,7 +202,7 @@
             </div>
           </div>
 
-        {% elseif (conges_recuperations and conges_demi_journee) %}
+        {% elseif config('Conges-Recuperations') and config('Conges-demi-journees') %}
 
           <div class="row gx-5 mb-2">
             <div class="col-3 offset-2">
@@ -242,7 +242,7 @@
             </div>
           </div>
 
-        {% elseif (conges_recuperations and conges_demi_journee) %}
+        {% elseif config('Conges-Recuperations') and config('Conges-demi-journees') %}
 
           <div class="row gx-5 mb-2">
             <div class="col-3 offset-2">
@@ -268,7 +268,7 @@
         </div>
 
         <div class="row gx-5 mb-2 {% if request_type == 'holiday' and not id %} hideWhenMultipleAgents {% endif %}">
-          {% if conges_mode == 'heures' or request_type == 'recover' %}
+          {% if config('Conges-Mode') == 'heures' or request_type == 'recover' %}
             <label class="col-2 col-form-label text-end" for="nbHeures">Nombre d'heures :</label>
             <div class="col-3">
               <input type="text" readonly class="form-control-plaintext" id="nbHeures">
@@ -286,7 +286,7 @@
 
         <hr>
 
-        {% if conges_mode == 'jours' %}
+        {% if config('Conges-Mode') == 'jours' %}
           <div class="row gx-5 mb-2" style="display:none;">
             <label class="col-2 col-form-label text-end" for="hr_rest" style="padding-left: 35px;">Régularisation sur récupération :</label>
             <div class="col-3">
@@ -296,7 +296,7 @@
           </div>
         {% endif %}
 
-        {% if request_type=='holiday' and conges_mode == 'heures' and hours_per_day is not empty %}
+        {% if request_type=='holiday' and config('Conges-Mode') == 'heures' and hours_per_day is not empty %}
 
           <div class="row gx-5 mb-2 hideWhenMultipleAgents">
             <label class="col-2 col-form-label text-end" for="hr_rest">Équivalence en jour :<br/>(1 jour =  {{ hours_per_day_in_hhmm }})</label>
@@ -321,7 +321,7 @@
 
         {% if request_type == 'holiday' %}
 
-          {% if conges_recuperations == 0 %}
+          {% if config('Conges-Recuperations') == 0 %}
             <div class="row mb-2 gx-5 hideWhenMultipleAgents">
               <div class="col-auto offset-2">
                 <p id="terms" class="mb-0"></p>
@@ -373,7 +373,7 @@
                 </div>
               </div>
 
-              {% if conges_recuperations == 0 %}
+              {% if config('Conges-Recuperations') == 0 %}
 
                 <div class="row mb-2 gx-5 balance_tr">
                   <label class="col-2 col-form-label text-end" for="info_balance_before">Crédit de récupérations disponible au
@@ -397,7 +397,7 @@
 
                 {# The comp time information is hidden. If there is rest, it will be shown. #}
 
-              {% elseif conges_mode == 'jours' and conges_recuperations == 1 %}
+              {% elseif config('Conges-Mode') == 'jours' and config('Conges-Recuperations') == 1 %}
 
                 <div class="row mb-2 gx-5 balance_tr rest" style="display: none">
                   <label class="col-2 col-form-label text-end" for="info_balance_before">Crédit de récupérations disponible au
@@ -555,12 +555,12 @@
           </div>
         </div>
 
-        {% if conges_recuperations == 0 %}
+        {% if config('Conges-Recuperations') == 0 %}
           <div class="row mb-2 solde-info">
             <p style="padding-top:30px;font-style:italic;"><sup>*</sup> Le crédit de récupérations prévisionnel tient compte des demandes non validées (crédits et utilisations).</p>
           </div>
 
-        {% elseif conges_mode == 'jours' and conges_recuperations == 1 %}
+        {% elseif config('Conges-Mode') == 'jours' and config('Conges-Recuperations') == 1 %}
           <div class="row mb-2 solde-info" style="display: none;">
             <p style="padding-top:30px;font-style:italic;"><sup>*</sup> Le crédit de récupérations prévisionnel tient compte des demandes non validées (crédits et utilisations).</p>
           </div>
