@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use DateTime;
+
 use App\Controller\BaseController;
 
 use App\Entity\Agent;
@@ -478,8 +480,8 @@ class HolidayController extends BaseController
             'anticipation_jours'    => $anticipation_jours,
             'debut'                 => $debut,
             'fin'                   => $fin,
-            'hre_debut'             => $hre_debut,
-            'hre_fin'               => $hre_fin,
+            'hre_debut'             => $hre_debut != '00:00:00' ? $this->time_format($hre_debut, 'H:i'): '' ,
+            'hre_fin'               => $hre_fin != '23:59:59' ? $this->time_format($hre_fin, 'H:i'): '' ,
             'allday'                => ($hre_debut == '00:00:00' && $hre_fin == '23:59:59'),
             'request_type'          => $request_type,
             'adminN1'               => $adminN1,
@@ -660,6 +662,8 @@ class HolidayController extends BaseController
             'id'                    => null,
             'allday'                => true,
             'halfday'               => false,
+            'hre_debut'             => null,
+            'hre_fin'               => null,
             'debut'                 => null,
             'fin'                   => null,
             'debit'                 => null,
@@ -1300,5 +1304,11 @@ class HolidayController extends BaseController
         $message.="<p>Lien vers la demande de " . ($recover ? "récupération" : "congé") . " :<br/><a href='$url'>$url</a></p>";
 
         return $message;
+    }
+
+    private function time_format($time, $format){
+        $time = new DateTime($time);
+        $time = $time->format($format);
+        return $time;
     }
 }
