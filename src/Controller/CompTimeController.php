@@ -187,14 +187,16 @@ class CompTimeController extends BaseController
             $data['perso_ids'] = array($data['perso_id']);
             $data['confirm'] = 'confirm';
             $data['debit'] = 'recuperation';
-            $data['valide_init'] = 1;
 
             if (!$this->config['Conges-validation']) {
                     $data['valide_n1'] = $session->get('loginId');
                     $data['validation_n1'] = date('Y-m-d H:i:s');
                     $data['valide'] = $session->get('loginId');
                     $data['validation'] = date('Y-m-d H:i:s');
+                    $data['valide_init'] = 1;
             } else {
+                $data['valide_init'] = $validationStatus;
+
                 switch ($validationStatus) {
                     case -2 :
                         $data['valide_n1'] = -1 * (int) $session->get('loginId');
