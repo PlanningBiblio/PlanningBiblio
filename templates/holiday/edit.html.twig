@@ -574,7 +574,7 @@
             <div class="col-3 offset-2">
             <b>Informations sur les congés :</b><br/>
               {% for i in holiday_info %}
-              Du {{ i.start }} au {{ i.end }} :<br/>{{ i.texte|nl2br }}<br/>
+              Du {{ i.start }} au {{ i.end }} : {{ i.texte|nl2br }}<br/>
               {% endfor %}
             </div>
           </div>
