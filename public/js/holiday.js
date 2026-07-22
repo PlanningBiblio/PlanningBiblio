@@ -751,24 +751,6 @@ function verifConges()
     stackAlert('La date de fin doit être supérieure à la date de début', 'error');
     return false;
   }
-  
-  // Vérifions si le solde des récupérations n'est pas négatif
-  // TODO : check if it's still required. New controls were added this bootstrap.
-  var recuperation = parseFloat( $('#recup4').text().replace('h', '.') );
-  var isRegularization = false;
-  if ($("#rest").val()) {
-    isRegularization = true;
-  }
-  if(recuperation < 0 && isRegularization == false) {
-    $('#alert-stack-top-center').remove();
-    highlight($('.balance_tr'));
-    if ($('#validation').val() > 0) {
-      return false;
-    } 
-    else {
-      return true;
-    }
-  }
 
   // Vérifions si un autre congé a été demandé ou validé
   var valid = true;
