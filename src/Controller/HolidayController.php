@@ -2,21 +2,16 @@
 
 namespace App\Controller;
 
-use DateTime;
-
 use App\Controller\BaseController;
-
 use App\Entity\Agent;
-
 use App\Planno\Helper\HolidayHelper;
 use App\Planno\Helper\HourHelper;
 use App\Planno\Helper\WeekPlanningHelper;
-
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\JsonResponse;
 
 require_once(__DIR__ . '/../../legacy/Class/class.conges.php');
 require_once(__DIR__ . '/../../legacy/Class/class.personnel.php');
@@ -276,18 +271,17 @@ class HolidayController extends BaseController
     }
 
     #[Route(path: '/holiday/hours-per-day', name: 'holiday.hours-per-day', methods: ['GET'])]
-    public function getHoursPerDay(Request $request) : JsonResponse    
+    public function getHoursPerDay(Request $request): JsonResponse
     {
         $perso_id = $request->query->getInt('id');
         $holiday_helper = new HolidayHelper();
-        $result = array();
+        $result = [];
         $hoursPerDay = $holiday_helper->hoursPerDay($perso_id);
         $result['hoursPerDay'] = $hoursPerDay;
         $result['hoursPerDayInHoursMinutes'] = HourHelper::decimalToHoursMinutes($hoursPerDay)['as_string'];
 
         return $this->json($result);
     }
-
 
     #[Route(path: '/ajax/holidays-hours-to-days', name: 'ajax.holidays-hours-to-days', methods: ['GET'])]
     public function hoursToDays(Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse

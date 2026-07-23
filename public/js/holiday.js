@@ -188,10 +188,10 @@ function resetTerms(){
   }
 }
 
-function resetHoursPerDay(){
+function resetHoursPerDay() {
 
   if ($('#conges-mode').val() == 'heures' && $('#hours_per_day').val()) {
-    perso_id=$('#selected_agent_id').val();
+    perso_id = $('#selected_agent_id').val();
 
     $.ajax({
       url: url('holiday/hours-per-day'),
@@ -199,11 +199,11 @@ function resetHoursPerDay(){
       dataType: 'json',
       type: 'get',
       async: false,
-      success: function(result){
+      success: function(result) {
         $('#hours_per_day').val(result['hoursPerDay']);
         $('#hours-per-day').text(result['hoursPerDayInHoursMinutes']);
       },
-      error: function(){
+      error: function() {
         stackAlert('Impossible de récupérer le compte d\'heure par jours.', 'error');
       },
     });
