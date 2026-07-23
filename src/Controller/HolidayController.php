@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 require_once(__DIR__ . '/../../legacy/Class/class.conges.php');
 require_once(__DIR__ . '/../../legacy/Class/class.personnel.php');
@@ -274,10 +275,10 @@ class HolidayController extends BaseController
         return $this->output('holiday/index.html.twig');
     }
 
-    #[Route(path: '/ajax/holidays-hours-per-day', name: 'ajax.holidays-hours-per-day', methods: ['GET'])]
-    public function blip(Request $request, Session $session) : \Symfony\Component\HttpFoundation\JsonResponse
+    #[Route(path: '/holiday/hours-per-day', name: 'holiday.hours-per-day', methods: ['GET'])]
+    public function getHoursPerDay(Request $request) : JsonResponse    
     {
-        $perso_id = $request->get('id');
+        $perso_id = $request->query->getInt('id');
         $holiday_helper = new HolidayHelper();
         $result = array();
         $hoursPerDay = $holiday_helper->hoursPerDay($perso_id);

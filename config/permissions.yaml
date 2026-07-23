@@ -107,8 +107,6 @@
     - 100
 "ajax.holidays-hours-to-days":
     - 100
-"ajax.holidays-hours-per-day":
-    - 100
 "ajax.holiday.absence.control":
     - 100
 "ajax.changeownpassword":
@@ -200,6 +198,8 @@
 "holiday.accounts":
     - 100
 "holiday.edit":
+    - 100
+"holiday.hours-per-day":
     - 100
 "holiday.index":
     - 100

@@ -194,14 +194,14 @@ function resetHoursPerDay(){
     perso_id=$('#selected_agent_id').val();
 
     $.ajax({
-      url: url('ajax/holidays-hours-per-day'),
+      url: url('holiday/hours-per-day'),
       data: { id: perso_id },
       dataType: 'json',
       type: 'get',
       async: false,
       success: function(result){
         $('#hours_per_day').val(result['hoursPerDay']);
-        $('label[for=nbJours]').html('Équivalence en jour :<br/>(1 jour = '+ result['hoursPerDayInHoursMinutes'] +')')
+        $('#hours-per-day').text(result['hoursPerDayInHoursMinutes']);
       },
       error: function(){
         stackAlert('Impossible de récupérer le compte d\'heure par jours.', 'error');

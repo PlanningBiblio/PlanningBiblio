@@ -262,7 +262,7 @@ class HolidayHelper extends BaseHelper
 
     public function hoursPerDay($perso_id, $holidays_hours_per_year = null)
     {
-        if ($this->config['Conges-Mode'] == 'heures' and $this->config('conges-hours-per-day')) {
+        if ($this->config['Conges-Mode'] == 'heures' and $this->config['conges-hours-per-day']) {            
             if ($holidays_hours_per_year == null) {
                 $agent = $this->entityManager->find(Agent::class, $perso_id);
                 $holidays_hours_per_year = $agent->getHolidayAnnualCredit();
@@ -286,7 +286,7 @@ class HolidayHelper extends BaseHelper
 
         $hours_per_day = 7;
 
-        if ($this->config('Conges-Mode') == 'heures') {
+        if ($this->config['Conges-Mode'] == 'heures') {
             $hours_per_day = ($holidays_hours_per_year == null) ? $this->hoursPerDay($perso_id) : $this->hoursPerDay(null, $holidays_hours_per_year);
         }
 
