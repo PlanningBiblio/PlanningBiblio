@@ -188,6 +188,28 @@ function resetTerms(){
   }
 }
 
+function resetHoursPerDay() {
+
+  if ($('#conges-mode').val() == 'heures' && $('#hours_per_day').val()) {
+    perso_id = $('#selected_agent_id').val();
+
+    $.ajax({
+      url: url('holiday/hours-per-day'),
+      data: { id: perso_id },
+      dataType: 'json',
+      type: 'get',
+      async: false,
+      success: function(result) {
+        $('#hours_per_day').val(result['hoursPerDay']);
+        $('#hours-per-day').text(result['hoursPerDayInHoursMinutes']);
+      },
+      error: function() {
+        stackAlert('Impossible de récupérer le compte d\'heure par jours.', 'error');
+      },
+    });
+  }
+}
+
 function validationStatusInvalidDisplay() {
   recup = $('#negative-recover').val();
   state = $('select#validation-state').val();
@@ -1026,6 +1048,7 @@ function supprimeAgent(id){
   // Mise à jour des status disponible.
   update_validation_statuses();
   resetTerms();
+  resetHoursPerDay();
 }
 
 function getAgentsBySites(sites) {
@@ -1145,6 +1168,7 @@ $(function(){
     currentCredits();
     calculCredit();
     resetTerms();
+    resetHoursPerDay();
 
   });
 });
@@ -1163,4 +1187,5 @@ $(document).ready(function() {
     // Mise à jour des status disponible.
     update_validation_statuses();
     resetTerms();
+    resetHoursPerDay();
 });

@@ -199,6 +199,8 @@
     - 100
 "holiday.edit":
     - 100
+"holiday.hours-per-day":
+    - 100
 "holiday.index":
     - 100
 "holiday.new":
