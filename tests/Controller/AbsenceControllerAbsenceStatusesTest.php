@@ -330,10 +330,9 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
         $statuses_elements = $crawler->filter('select#validation-state option');
 
-        $this->assertCount(3, $statuses_elements);
-        $this->assertEquals('Demandée', $statuses_elements->eq(0)->html());
-        $this->assertEquals('Acceptée (En attente de validation hiérarchique)', $statuses_elements->eq(1)->html());
-        $this->assertEquals('Refusée (En attente de validation hiérarchique)', $statuses_elements->eq(2)->html());
+        $this->assertCount(2, $statuses_elements);
+        $this->assertEquals('Acceptée (En attente de validation hiérarchique)', $statuses_elements->eq(0)->html());
+        $this->assertEquals('Refusée (En attente de validation hiérarchique)', $statuses_elements->eq(1)->html());
 
     }
 
@@ -359,12 +358,11 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
         $statuses_elements = $crawler->filter('select#validation-state option');
 
-        $this->assertCount(5, $statuses_elements);
-        $this->assertEquals('Demandée', $statuses_elements->eq(0)->html());
-        $this->assertEquals('Acceptée (En attente de validation hiérarchique)', $statuses_elements->eq(1)->html());
-        $this->assertEquals('Refusée (En attente de validation hiérarchique)', $statuses_elements->eq(2)->html());
-        $this->assertEquals('Acceptée', $statuses_elements->eq(3)->html());
-        $this->assertEquals('Refusée', $statuses_elements->eq(4)->html());
+        $this->assertCount(4, $statuses_elements);
+        $this->assertEquals('Acceptée (En attente de validation hiérarchique)', $statuses_elements->eq(0)->html());
+        $this->assertEquals('Refusée (En attente de validation hiérarchique)', $statuses_elements->eq(1)->html());
+        $this->assertEquals('Acceptée', $statuses_elements->eq(2)->html());
+        $this->assertEquals('Refusée', $statuses_elements->eq(3)->html());
 
     }
 
@@ -390,12 +388,11 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
         $statuses_elements = $crawler->filter('select#validation-state option');
 
-        $this->assertCount(5, $statuses_elements);
-        $this->assertEquals('Demandée', $statuses_elements->eq(0)->html());
-        $this->assertEquals('Acceptée (En attente de validation hiérarchique)', $statuses_elements->eq(1)->html());
-        $this->assertEquals('Refusée (En attente de validation hiérarchique)', $statuses_elements->eq(2)->html());
-        $this->assertEquals('Acceptée', $statuses_elements->eq(3)->html());
-        $this->assertEquals('Refusée', $statuses_elements->eq(4)->html());
+        $this->assertCount(4, $statuses_elements);
+        $this->assertEquals('Acceptée (En attente de validation hiérarchique)', $statuses_elements->eq(0)->html());
+        $this->assertEquals('Refusée (En attente de validation hiérarchique)', $statuses_elements->eq(1)->html());
+        $this->assertEquals('Acceptée', $statuses_elements->eq(2)->html());
+        $this->assertEquals('Refusée', $statuses_elements->eq(3)->html());
 
     }
 
@@ -421,12 +418,11 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
         $statuses_elements = $crawler->filter('select#validation-state option');
 
-        $this->assertCount(5, $statuses_elements);
-        $this->assertEquals('Demandée', $statuses_elements->eq(0)->html());
-        $this->assertEquals('Acceptée (En attente de validation hiérarchique)', $statuses_elements->eq(1)->html());
-        $this->assertEquals('Refusée (En attente de validation hiérarchique)', $statuses_elements->eq(2)->html());
-        $this->assertEquals('Acceptée', $statuses_elements->eq(3)->html());
-        $this->assertEquals('Refusée', $statuses_elements->eq(4)->html());
+        $this->assertCount(4, $statuses_elements);
+        $this->assertEquals('Acceptée (En attente de validation hiérarchique)', $statuses_elements->eq(0)->html());
+        $this->assertEquals('Refusée (En attente de validation hiérarchique)', $statuses_elements->eq(1)->html());
+        $this->assertEquals('Acceptée', $statuses_elements->eq(2)->html());
+        $this->assertEquals('Refusée', $statuses_elements->eq(3)->html());
 
     }
 
@@ -500,12 +496,9 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
         $statuses_elements = $crawler->filter('select#validation-state option');
 
-        $this->assertCount(5, $statuses_elements);
-        $this->assertEquals('Demandée', $statuses_elements->eq(0)->html());
-        $this->assertEquals('Acceptée (En attente de validation hiérarchique)', $statuses_elements->eq(1)->html());
-        $this->assertEquals('Refusée (En attente de validation hiérarchique)', $statuses_elements->eq(2)->html());
-        $this->assertEquals('Acceptée', $statuses_elements->eq(3)->html());
-        $this->assertEquals('Refusée', $statuses_elements->eq(4)->html());
+        $this->assertCount(2, $statuses_elements);
+        $this->assertEquals('Acceptée', $statuses_elements->eq(0)->html());
+        $this->assertEquals('Refusée', $statuses_elements->eq(1)->html());
 
     }
 
@@ -531,12 +524,9 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
         $statuses_elements = $crawler->filter('select#validation-state option');
 
-        $this->assertCount(5, $statuses_elements);
-        $this->assertEquals('Demandée', $statuses_elements->eq(0)->html());
-        $this->assertEquals('Acceptée (En attente de validation hiérarchique)', $statuses_elements->eq(1)->html());
-        $this->assertEquals('Refusée (En attente de validation hiérarchique)', $statuses_elements->eq(2)->html());
-        $this->assertEquals('Acceptée', $statuses_elements->eq(3)->html());
-        $this->assertEquals('Refusée', $statuses_elements->eq(4)->html());
+        $this->assertCount(2, $statuses_elements);
+        $this->assertEquals('Acceptée', $statuses_elements->eq(0)->html());
+        $this->assertEquals('Refusée', $statuses_elements->eq(1)->html());
 
     }
 
@@ -562,12 +552,9 @@ class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 
         $statuses_elements = $crawler->filter('select#validation-state option');
 
-        $this->assertCount(5, $statuses_elements);
-        $this->assertEquals('Demandée', $statuses_elements->eq(0)->html());
-        $this->assertEquals('Acceptée (En attente de validation hiérarchique)', $statuses_elements->eq(1)->html());
-        $this->assertEquals('Refusée (En attente de validation hiérarchique)', $statuses_elements->eq(2)->html());
-        $this->assertEquals('Acceptée', $statuses_elements->eq(3)->html());
-        $this->assertEquals('Refusée', $statuses_elements->eq(4)->html());
+        $this->assertCount(2, $statuses_elements);
+        $this->assertEquals('Acceptée', $statuses_elements->eq(0)->html());
+        $this->assertEquals('Refusée', $statuses_elements->eq(1)->html());
 
     }
 
