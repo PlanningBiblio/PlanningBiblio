@@ -443,7 +443,7 @@ class HolidayController extends BaseController
 
         $hoursPerDay = null;
         $hoursPerDayInHoursMinutes = null;
-        if ($request_type = 'holiday' and $holiday_helper->showHoursToDays()) {
+        if ($request_type == 'holiday' and $holiday_helper->showHoursToDays()) {
 
             $hoursPerDay               = $holiday_helper->hoursPerDay($perso_id);
             $hoursPerDayInHoursMinutes = HourHelper::decimalToHoursMinutes($hoursPerDay)['as_string'];

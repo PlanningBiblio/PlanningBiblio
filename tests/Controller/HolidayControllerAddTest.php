@@ -3,7 +3,9 @@
 use App\Entity\Agent;
 use App\Entity\Manager;
 use App\Entity\OverTime;
+use App\Entity\Cron;
 use App\Entity\WorkingHour;
+use App\Planno\Helper\HolidayHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Tests\FixtureBuilder;
 use Tests\PLBWebTestCase;
@@ -36,6 +38,14 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $builder->delete(Manager::class);
         $builder->delete(WorkingHour::class);
         $builder->delete(Overtime::class);
+
+        $cron = $entityManager->getRepository(Cron::class)->findAll();
+        foreach ($cron as $c){
+            $c->setDisabled(true);
+            $entityManager->persist($c);
+        }
+
+        $entityManager->flush();
 
         $jdevoe = new Agent();
         $jdevoe->setLogin('jdevoe');
@@ -116,6 +126,14 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $builder->delete(Manager::class);
         $builder->delete(WorkingHour::class);
         $builder->delete(Overtime::class);
+
+        $entityManager = static::getContainer()->get(EntityManagerInterface::class);
+
+        $cron = $entityManager->getRepository(Cron::class)->findAll();
+        foreach ($cron as $c){
+            $c->setDisabled(false);
+            $entityManager->persist($c);
+        }
    }
 
     protected function setUp(): void
@@ -346,6 +364,8 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $this->config->setParam('Conges-Recuperations', 1);
         $this->config->setParam('Conges-Heures', 1);
 
+        $jdevoe = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'jdevoe']);
+
         $crawler = $this->client->request('GET', '/holiday/new');
 
         $this->assertSelectorExists('input[name=allday]');
@@ -369,7 +389,15 @@ class HolidayControllerAddTest extends PLBWebTestCase
 
         $heuresLabel = $crawler->filter('label[for=nbHeures]');
         $this->assertStringContainsString('Nombre d\'heures', $heuresLabel->text(),'The label is incorrect');
-        $this->assertSelectorNotExists('label[for=nbJours]');
+        
+        $holiday_helper = new HolidayHelper();
+        $hoursPerDay = $holiday_helper->hoursPerDay($jdevoe->getId());
+
+        if ($hoursPerDay == 7)
+            $this->assertSelectorNotExists('label[for=nbJours]');
+        else {
+            $this->assertSelectorExists('label[for=nbJours]');
+        }
     }
 
     public function testHolidayConfig4(): void
