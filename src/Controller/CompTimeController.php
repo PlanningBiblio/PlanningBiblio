@@ -61,12 +61,6 @@ class CompTimeController extends BaseController
         $balance2_before_days = null;
 
         $holiday_helper = new HolidayHelper();
-        $hours_per_day = '';
-        if ($holiday_helper->showHoursToDays()) {
-            $hours_per_day = $holiday_helper->hoursPerDay($perso_id);
-            $balance_before_days = $holiday_helper->hoursToDays($balance[1], $perso_id, null, true);
-            $balance2_before_days = $holiday_helper->hoursToDays($balance[4], $perso_id, null, true);
-        }
 
         $managed = $this->entityManager
             ->getRepository(Agent::class)
@@ -107,7 +101,7 @@ class CompTimeController extends BaseController
             'balance2_before_days'  => $balance2_before_days,
             'credit'                => $credit,
             'CSRFToken'             => $GLOBALS['CSRFSession'],
-            'hours_per_day'         => $hours_per_day,
+            'hours_per_day'         => 0,
             'holiday_info'          => $holiday_info,
             'agent_name'            => $_SESSION['login_nom'] . ' ' . $_SESSION['login_prenom'],
             'loggedin_name'         => $_SESSION['login_nom'],

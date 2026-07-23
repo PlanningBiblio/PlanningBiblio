@@ -262,7 +262,7 @@ class HolidayHelper extends BaseHelper
 
     public function hoursPerDay($perso_id, $holidays_hours_per_year = null)
     {
-        if ($this->config('conges-hours-per-day')) {
+        if ($this->config['Conges-Mode'] == 'heures' and $this->config('conges-hours-per-day')) {
             if ($holidays_hours_per_year == null) {
                 $agent = $this->entityManager->find(Agent::class, $perso_id);
                 $holidays_hours_per_year = $agent->getHolidayAnnualCredit();
@@ -276,6 +276,7 @@ class HolidayHelper extends BaseHelper
         } else {
             return 7;
         }
+        
         return -1;
     }
 
@@ -283,10 +284,16 @@ class HolidayHelper extends BaseHelper
         if (empty($given_hours) and !$human_readable) { return 0; }
         if (empty($given_hours) and $human_readable) { return ''; }
 
-        $hours_per_day = ($holidays_hours_per_year == null) ? $this->hoursPerDay($perso_id) : $this->hoursPerDay(null, $holidays_hours_per_year);
+        $hours_per_day = 7;
 
-        $result = round((float) $given_hours / $hours_per_day, 2);
+        if ($this->config('Conges-Mode') == 'heures') {
+            $hours_per_day = ($holidays_hours_per_year == null) ? $this->hoursPerDay($perso_id) : $this->hoursPerDay(null, $holidays_hours_per_year);
+        }
 
+        $given_hours = (float) $given_hours / $hours_per_day;
+
+        $result = round((float) $given_hours, 2);
+        
         if ($human_readable) {
             if (empty($result)) {
                 return '';

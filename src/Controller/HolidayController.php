@@ -274,6 +274,20 @@ class HolidayController extends BaseController
         return $this->output('holiday/index.html.twig');
     }
 
+    #[Route(path: '/ajax/holidays-hours-per-day', name: 'ajax.holidays-hours-per-day', methods: ['GET'])]
+    public function blip(Request $request, Session $session) : \Symfony\Component\HttpFoundation\JsonResponse
+    {
+        $perso_id = $request->get('id');
+        $holiday_helper = new HolidayHelper();
+        $result = array();
+        $hoursPerDay = $holiday_helper->hoursPerDay($perso_id);
+        $result['hoursPerDay'] = $hoursPerDay;
+        $result['hoursPerDayInHoursMinutes'] = HourHelper::decimalToHoursMinutes($hoursPerDay)['as_string'];
+
+        return $this->json($result);
+    }
+
+
     #[Route(path: '/ajax/holidays-hours-to-days', name: 'ajax.holidays-hours-to-days', methods: ['GET'])]
     public function hoursToDays(Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse
     {
@@ -410,6 +424,7 @@ class HolidayController extends BaseController
         if ($this->config('Conges-Recuperations') == 1 and $data['debit']=="recuperation") {
             $request_type = 'recover';
             $title = 'Overtime compensation request';
+            $hoursPerDay = 0;
         }
 
         $show_allday = 0;
@@ -428,7 +443,7 @@ class HolidayController extends BaseController
 
         $hoursPerDay = null;
         $hoursPerDayInHoursMinutes = null;
-        if ($holiday_helper->showHoursToDays()) {
+        if ($request_type = 'holiday' and $holiday_helper->showHoursToDays()) {
 
             $hoursPerDay               = $holiday_helper->hoursPerDay($perso_id);
             $hoursPerDayInHoursMinutes = HourHelper::decimalToHoursMinutes($hoursPerDay)['as_string'];
