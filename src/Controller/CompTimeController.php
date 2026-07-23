@@ -3,12 +3,12 @@
 namespace App\Controller;
 
 use App\Controller\BaseController;
-use App\Planno\Helper\HolidayHelper;
 use App\Entity\Agent;
-
-use Symfony\Component\HttpFoundation\Session\Session;
+use App\Planno\Helper\HolidayHelper;
+use App\Planno\Helper\HourHelper;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
 include_once(__DIR__ . '/../../legacy/Class/class.conges.php');
@@ -61,6 +61,13 @@ class CompTimeController extends BaseController
         $balance2_before_days = null;
 
         $holiday_helper = new HolidayHelper();
+        $hoursPerDay = 0;
+        if ($holiday_helper->showHoursToDays()) {
+            $hoursPerDay = $holiday_helper->hoursPerDay($perso_id);
+            $hoursPerDayInHoursMinutes = HourHelper::decimalToHoursMinutes($hoursPerDay)['as_string'];
+            $balance_before_days = $holiday_helper->hoursToDays($balance[1], $perso_id, null, true);
+            $balance2_before_days = $holiday_helper->hoursToDays($balance[4], $perso_id, null, true);
+        }
 
         $managed = $this->entityManager
             ->getRepository(Agent::class)
@@ -101,7 +108,8 @@ class CompTimeController extends BaseController
             'balance2_before_days'  => $balance2_before_days,
             'credit'                => $credit,
             'CSRFToken'             => $GLOBALS['CSRFSession'],
-            'hours_per_day'         => 0,
+            'hours_per_day'         => $hoursPerDay,
+            'hours_per_day_in_hhmm' => $hoursPerDayInHoursMinutes,
             'holiday_info'          => $holiday_info,
             'agent_name'            => $_SESSION['login_nom'] . ' ' . $_SESSION['login_prenom'],
             'loggedin_name'         => $_SESSION['login_nom'],

@@ -419,7 +419,6 @@ class HolidayController extends BaseController
         if ($this->config('Conges-Recuperations') == 1 and $data['debit']=="recuperation") {
             $request_type = 'recover';
             $title = 'Overtime compensation request';
-            $hoursPerDay = 0;
         }
 
         $show_allday = 0;
@@ -436,9 +435,9 @@ class HolidayController extends BaseController
         $credit_jours = null;
         $reliquat_jours = null;
 
-        $hoursPerDay = null;
+        $hoursPerDay = 0;
         $hoursPerDayInHoursMinutes = null;
-        if ($request_type == 'holiday' and $holiday_helper->showHoursToDays()) {
+        if ($holiday_helper->showHoursToDays()) {
 
             $hoursPerDay               = $holiday_helper->hoursPerDay($perso_id);
             $hoursPerDayInHoursMinutes = HourHelper::decimalToHoursMinutes($hoursPerDay)['as_string'];
@@ -637,7 +636,7 @@ class HolidayController extends BaseController
         $credit_jours = null;
         $reliquat_jours = null;
 
-        $hoursPerDay = null;
+        $hoursPerDay = 0;
         $hoursPerDayInHoursMinutes = null;
         if ($holiday_helper->showHoursToDays()) {
 
@@ -681,7 +680,7 @@ class HolidayController extends BaseController
             'commentaires'          => '',
             'CSRFToken'             => $GLOBALS['CSRFSession'],
             'hours_per_day'         => $hoursPerDay,
-            'hours_per_day_in_hhmm' => $hoursPerDayInHoursMinutes ?? null,
+            'hours_per_day_in_hhmm' => $hoursPerDayInHoursMinutes,
             'reliquat'              => $reliquat,
             'reliquat2'             => $holiday_helper->HumanReadableDuration($reliquat),
             'reliquat_jours'        => $reliquat_jours,

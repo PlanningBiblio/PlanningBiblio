@@ -364,8 +364,6 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $this->config->setParam('Conges-Recuperations', 1);
         $this->config->setParam('Conges-Heures', 1);
 
-        $jdevoe = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'jdevoe']);
-
         $crawler = $this->client->request('GET', '/holiday/new');
 
         $this->assertSelectorExists('input[name=allday]');
@@ -389,14 +387,12 @@ class HolidayControllerAddTest extends PLBWebTestCase
 
         $heuresLabel = $crawler->filter('label[for=nbHeures]');
         $this->assertStringContainsString('Nombre d\'heures', $heuresLabel->text(),'The label is incorrect');
-        
-        $holiday_helper = new HolidayHelper();
-        $hoursPerDay = $holiday_helper->hoursPerDay($jdevoe->getId());
 
-        if ($hoursPerDay == 7)
-            $this->assertSelectorNotExists('label[for=nbJours]');
-        else {
+        $holiday_helper = new HolidayHelper();
+        if ($holiday_helper->showHoursToDays()) {
             $this->assertSelectorExists('label[for=nbJours]');
+        } else {
+            $this->assertSelectorNotExists('label[for=nbJours]');
         }
     }
 
