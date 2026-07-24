@@ -50,9 +50,7 @@ class AbsenceInfoControllerTest extends PLBWebTestCase
 
         $crawler = $this->client->request('GET', '/absences/info/add');
 
-        $this->assertSelectorTextContains('h3', 'Informations sur les absences');
-
-        $this->assertSelectorTextContains('h4', 'Ajout d\'une information');
+        $this->assertSelectorTextContains('h1', 'Ajout d\'une information sur les absences');
 
         $result=$crawler->filter('label')->eq(0);
         $this->assertEquals($result->text('Node does not exist', false), 'Date de début','label 1 is Date de début');
@@ -105,9 +103,7 @@ class AbsenceInfoControllerTest extends PLBWebTestCase
 
         $crawler = $this->client->request('GET', "/absences/info/$id");
 
-        $this->assertSelectorTextContains('h3', 'Informations sur les absences');
-
-        $this->assertSelectorTextContains('h4', 'Modifications des informations sur les absences');
+        $this->assertSelectorTextContains('h1', 'Modification d\'une information sur les absences');
 
         $result=$crawler->filter('label');
         $this->assertEquals($result->eq(0)->text('Node does not exist', false), 'Date de début','label 1 is Date de début');
@@ -146,7 +142,7 @@ class AbsenceInfoControllerTest extends PLBWebTestCase
 
         $crawler = $this->client->request('GET', "/absences/info");
 
-        $this->assertSelectorTextContains('h3', 'Informations sur les absences');
+        $this->assertSelectorTextContains('h1', 'Informations sur les absences');
 
         $result = $crawler->filterXPath('//a[@class="btn btn-primary"]');
         $this->assertEquals('Ajouter', $result->text('Node does not exist', false), 'a button is Ajouter');
@@ -166,7 +162,7 @@ class AbsenceInfoControllerTest extends PLBWebTestCase
 
         $crawler = $this->client->request('GET', "/absences/info");
 
-        $this->assertSelectorTextContains('h3', 'Informations sur les absences');
+        $this->assertSelectorTextContains('h1', 'Informations sur les absences');
 
         $result = $crawler->filterXPath('//a[@class="btn btn-primary"]');
         $this->assertEquals('Ajouter', $result->text('Node does not exist', false), 'a button is Ajouter');
