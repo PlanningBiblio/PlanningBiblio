@@ -55,16 +55,9 @@ function supprimeLigne(id){
       dataType: 'json',
       data: {id: id, CSRFToken: CSRFToken},
       success: function(){
-        var tr=$("#tr-ligne-"+id).next("tr");
-        while(tr.length>0){
-          var class1=tr.attr("class");
-          var class2=class1=="tr1"?"tr2":"tr1";
-          tr.removeClass();
-          tr.addClass(class2);
-          tr=tr.next("tr");
-        }
-        $("#tr-ligne-"+id).remove();
-        stackAlert('La ligne "%nom%" a été supprimée avec succès', undefined, undefined, undefined, {"nom" : nom});
+        document.location.href = url('workinghour')
+          + '?msg=' + encodeURIComponent('La ligne' + nom + ' a été supprimée avec succès')
+          + '&msgType=success';
       },
       error: function(result){
         stackAlert('Une erreur est survenue lors de la suppression de la ligne "%nom%"', 'error', undefined, undefined, {'nom' : nom});
