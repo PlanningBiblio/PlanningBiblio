@@ -166,6 +166,10 @@ class Holiday
 
     public function getValidLevel1Date(): ?\DateTime
     {
+        if ($this->validation_n1->format('YmdHis') < 0) {
+            return null;
+        }
+
         return $this->validation_n1;
     }
 
@@ -190,6 +194,10 @@ class Holiday
 
     public function getValidLevel2Date(): ?\DateTime
     {
+        if ($this->validation->format('YmdHis') < 0) {
+            return null;
+        }
+
         return $this->validation;
     }
 
