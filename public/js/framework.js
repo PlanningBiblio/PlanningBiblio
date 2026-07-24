@@ -55,7 +55,7 @@ function supprimeLigne(id){
       dataType: 'json',
       data: {id: id, CSRFToken: CSRFToken},
       success: function(){
-        document.location.href = url('workinghour')
+        document.location.href = url('framework')
           + '?msg=' + encodeURIComponent('La ligne' + nom + ' a été supprimée avec succès')
           + '&msgType=success';
       },
