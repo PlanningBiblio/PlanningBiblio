@@ -1,5 +1,17 @@
 # Changelog Planno
 
+## Version 26.04.07 (2026-07-24)
+
+### Fixes
+
+* MT46629: Fix format error on datepicker #1458
+* MT46629: Fix button order on config modals #1459
+* MT46629: Fix time-period display on statistics/time #1460
+
+### Security
+
+* MT54361: Composer update
+
 ## Version 26.04.06 (2026-07-20)
 
 ### Enhancement
