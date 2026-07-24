@@ -409,7 +409,6 @@
       </form>
 
       <form id="delete-form" action="{{ path('holiday.delete', {id: id}) }}" method="post">
-        <input type="hidden" name="_method" value="DELETE">
         <input type="hidden" name="_token" value="{{ csrf_token('') }}"/>
         {% if conges_recuperations and debit == 'recuperation' %}
           <input type="hidden" name="recup" value="1">

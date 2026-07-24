@@ -683,8 +683,8 @@ class HolidayController extends BaseController
         return $this->output('conges/add.html.twig');
     }
 
-    #[Route(path: '/holiday/{id}', name: 'holiday.delete', methods: ['DELETE'])]
-    public function holidayDelete(Request $request, Session $session, Mailer $mailer): Response
+    #[Route(path: '/holiday/{id<\d+>}/delete', name: 'holiday.delete', methods: ['POST'])]
+    public function delete(Request $request, Session $session, Mailer $mailer): Response
     {
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
@@ -765,12 +765,12 @@ class HolidayController extends BaseController
                     $regulationHoliday = $this->entityManager->find(Holiday::class, $regulationId);
                     $regul = $regulationHoliday->getPreviousCompTime() - $regulationHoliday->getActualCompTime();
 
-                    $credits = array(
+                    $credits = [
                         'conges_credit' => $agent->getHolidayCredit(),
                         'conges_reliquat' => $agent->getHolidayRemainder(),
                         'conges_anticipation' => $agent->getHolidayAnticipation(),
                         'comp_time' => $agent->getHolidayCompTime() + $regul,
-                    );
+                    ];
 
                     $this->entityManager->getRepository(Holiday::class)->insert($perso_id, $credits, 'update', false, $newHoliday->getId());
 
