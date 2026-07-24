@@ -1667,10 +1667,8 @@ table.dataTable tbody tr.odd>.dtfc-fixed-left, table.dataTable tbody tr>.dtfc-fi
 }
 
 .dt-buttons {
-    width: 100%;
     padding: 11px 0 11px 0;
-    text-align: right;
-    border-radius: 4px;
+    justify-content: end !important;
     margin-bottom: 5px;
 }
 

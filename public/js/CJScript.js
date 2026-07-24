@@ -37,7 +37,7 @@ function CJDataTableHideRow(selector){
   
   // Lignes paires et impaires : on ne traite que les lignes visibles
   var classe="odd";
-  table.find("tr:visible").each(function(){
+  table.find("tr").each(function(){
     classe=classe=="odd"?"even":"odd";
     $(this).addClass(classe);
   });
@@ -51,7 +51,7 @@ function CJDataTableStripe() {
   
   // Lignes paires et impaires : on ne traite que les lignes visibles
   var classe="odd";
-  (this).find("tr:visible").each(function(){
+  (this).find("tr").each(function(){
     classe=classe=="odd"?"even":"odd";
     $(this).addClass(classe);
   });
