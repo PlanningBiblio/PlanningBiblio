@@ -1948,11 +1948,16 @@ hr {
   justify-content: center;
 }
 
-.form-control, .form-control:focus, .form-control-plaintext {
+.form-control, .form-control:focus, {
   color: #29495C;
   font-size: inherit;
   border-radius: var(--bs-border-radius-sm);
   border: 1px solid #456578;
+}
+
+.form-control-plaintext {
+  color: #29495C;
+  font-size: inherit;
 }
 
 div.form-control, div.form-control:focus {
