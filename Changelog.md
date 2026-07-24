@@ -1,5 +1,25 @@
 # Changelog Planno
 
+## Version 26.05.07 (2026-07-24)
+
+### Fixes
+
+* MT46629: Prevent saving comp-time with negative credit #1455
+* MT46629: Fix format error on datepicker #1458
+* MT46629: Fix button order on config modals #1459
+* MT46629: Fix time-period display on statistics/time #1460
+* MT46629: Fix display conflict between stackAlert and datepicker inputs #1461
+
+### Security
+
+* MT54361: Composer update
+
+### Plumbing
+
+* MT46629: Merge holiday add and edit templates #1456
+* MT46629: Delete verif_date and verif_form JS functions #1465
+* MT46629: Merge holiday add and edit templates, Follow up #1466
+
 ## Version 26.05.06 (2026-07-20)
 
 ### Enhancement
