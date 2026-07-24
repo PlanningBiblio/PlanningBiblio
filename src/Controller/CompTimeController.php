@@ -62,6 +62,7 @@ class CompTimeController extends BaseController
 
         $holiday_helper = new HolidayHelper();
         $hoursPerDay = 0;
+        $hoursPerDayInHoursMinutes = null;
         if ($holiday_helper->showHoursToDays()) {
             $hoursPerDay = $holiday_helper->hoursPerDay($perso_id);
             $hoursPerDayInHoursMinutes = HourHelper::decimalToHoursMinutes($hoursPerDay)['as_string'];
