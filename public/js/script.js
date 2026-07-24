@@ -868,7 +868,7 @@ $(function(){
 
     // Initializes and creates emoji set from sprite sheet
     $('.emoji-picker-textarea').each(function() {
-      $(this).next('div.invalid-feedback').andSelf().wrapAll('<div class="emoji-picker-container"></div>');
+      $(this).next('div.invalid-feedback').addBack().wrapAll('<div class="emoji-picker-container"></div>');
       $(this).attr('data-emojiable', 'true');
       $(this).attr('data-emoji-input', 'image');
     });
