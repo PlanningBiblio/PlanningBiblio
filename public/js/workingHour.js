@@ -221,7 +221,6 @@ function plHebdoSupprime(id){
       data: {id: id, CSRFToken: CSRFToken},
 
       success: function(){
-        // On cache la ligne du planning supprimée dans le tableau
         document.location.href = url('workinghour')
           + '?msg=' + encodeURIComponent('Le planning a été supprimé')
           + '&msgType=success';
