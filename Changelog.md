@@ -1,5 +1,22 @@
 # Changelog Planno
 
+## Version 26.05.08 (2026-07-24)
+
+### Fixes
+
+* BugFix: Allow transition from validationN1 to requested state #1470
+
+### Dependencies
+
+* MT46629: Update bootstrap-datepicker #1471
+* MT46629: Update dayJS #1471
+* MT46629: Update DataTables #1471
+* MT46629: Remove old DataTable functions #1471
+
+### Plumbing
+
+* MT46629: Manage page title into the base template #1469
+
 ## Version 26.05.07 (2026-07-24)
 
 ### Fixes
