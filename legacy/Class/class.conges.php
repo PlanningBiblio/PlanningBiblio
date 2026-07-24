@@ -962,7 +962,10 @@ class conges
                 $update['valide']=0;
             }
         } else {
-            $update['valide']=0;
+            $update['validation']='0000-00-00 00:00:00';
+            $update['validation_n1']='0000-00-00 00:00:00';
+            $update['valide'] = 0;
+            $update['valide_n1'] = 0;
         }
 
         $db=new db();
