@@ -26,23 +26,6 @@ function CJDataTableDraw() {
     });
 }
 
-function CJDataTableHideRow(selector){
-  // (.hide mieux que .remove car si .remove, la ligne réapparait lors de l'utilisation des tris
-  $(selector).hide();
-  var table=$(selector).closest("table");
-  
-  // On refait le zebra
-  table.find("tr").removeClass("odd");
-  table.find("tr").removeClass("even");
-  
-  // Lignes paires et impaires : on ne traite que les lignes visibles
-  var classe="odd";
-  table.find("tr").each(function(){
-    classe=classe=="odd"?"even":"odd";
-    $(this).addClass(classe);
-  });
-}
-
 function CJDataTableStripe() {
   // On refait le zebra, à chaque fois que le tableau est redessiné.
   // Utile en cas de suppression de ligne et d'utilisation du filtre et des tris
@@ -51,7 +34,7 @@ function CJDataTableStripe() {
   
   // Lignes paires et impaires : on ne traite que les lignes visibles
   var classe="odd";
-  (this).find("tr").each(function(){
+  $(this).find("tr:visible").each(function(){
     classe=classe=="odd"?"even":"odd";
     $(this).addClass(classe);
   });
