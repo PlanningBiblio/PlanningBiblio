@@ -221,9 +221,9 @@ function plHebdoSupprime(id){
       data: {id: id, CSRFToken: CSRFToken},
 
       success: function(){
-        // On cache la ligne du planning supprimée dans le tableau
-        CJDataTableHideRow("#tr_"+id);
-        stackAlert('Le planning a été supprimé');
+        document.location.href = url('workinghour')
+          + '?msg=' + encodeURIComponent('Le planning a été supprimé')
+          + '&msgType=success';
       },
       error: function(){
         stackAlert('Erreur lors de la suppression du planning de présence', 'error');
