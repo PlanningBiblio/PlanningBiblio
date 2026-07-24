@@ -1,5 +1,11 @@
 # Changelog Planno
 
+## Version 25.10.24 (2026-07-24)
+
+### Security
+
+MT54361: Composer update
+
 ## Version 25.10.23 (2026-07-10)
 
 ### Fixes
