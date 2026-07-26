@@ -472,7 +472,7 @@ class HolidayController extends BaseController
             'refus'                 => html_entity_decode($data['refus'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'),
             'saisie'                => dateFr($data['saisie'], true),
             'displayRefus'          => $displayRefus,
-            'action_path'           => 'holiday/update',
+            'action_path'           => 'holiday',
             'holiday_info'          => $holiday_info,
         );
 
@@ -521,8 +521,7 @@ class HolidayController extends BaseController
         return $this->output('holiday/edit.html.twig');
     }
 
-    // TODO: merge update and save fonctions, then change the path to /holiday
-    #[Route(path: '/holiday/update', name: 'holiday.update', methods: ['POST'])]
+    #[Route(path: '/holiday', name: 'holiday.update', methods: ['POST'])]
     public function update(Request $request, Session $session): RedirectResponse
     {
         if (!$this->csrf_protection($request)) {
@@ -530,73 +529,68 @@ class HolidayController extends BaseController
         }
 
         $id = $request->request->getInt('id');
+        $recover = 0;
 
-        // Elements du congé demandé
-        $c = new \conges();
-        $c->id = $id;
-        $c->fetch();
-        $data = $c->elements[0];
-        $perso_id = $data['perso_id'];
+        if (!$id) {
+            $result = $this->saveProcess($request);
 
-        // FIXME: move into a dedicated model's method when possible: $holiday->isEditable().
-        if ($c->elements[0]['information'] != 0 or $c->elements[0]['supprime'] != 0) {
-            return $this->output('access-denied.html.twig');
-        }
-
-        $msgType = 'notice';
-
-        if ($data['valide'] > 0) {
-            $msg = "Le congé n'a pas pu être modifié car il a déjà été validé.";
-            $msgType = 'error';
-            $result['back_to'] = 'holiday';
-
-            if ($this->config('Conges-Recuperations') and $data['debit'] == 'recuperation') {
-                $msg = "La récupération n'a pas pu être modifiée car elle a déjà été validée.";
-                $msgType = 'error';
-                $result['back_to'] = 'recover';
+            if (!empty($result['msg'])) {
+                $type = $result['msgType'] == 'success' ? 'notice' : 'error';
+                $session->getFlashBag()->add($type, $result['msg']);
             }
 
+            if (!empty($result['msg2'])) {
+                $type = $result['msg2Type'] == 'success' ? 'notice' : 'error';
+                $session->getFlashBag()->add($type, $result['msg2']);
+            }
         } else {
-            $result = $this->updateProcess($request);
-            $msg = $result['msg'];
-            $msg2 = $result['msg2'];
-            $msg2Type = $result['msg2Type'];
-        }
+            // Elements du congé demandé
+            $c = new \conges();
+            $c->id = $id;
+            $c->fetch();
+            $data = $c->elements[0];
+            $perso_id = $data['perso_id'];
 
-        $recover = 0;
-        if ($result['back_to'] == 'recover') {
-            $recover = 1;
-        }
+            // FIXME: move into a dedicated model's method when possible: $holiday->isEditable().
+            if ($c->elements[0]['information'] != 0 or $c->elements[0]['supprime'] != 0) {
+                return $this->output('access-denied.html.twig');
+            }
 
-        if (!empty($msg)) {
-            $this->addFlash($msgType, $msg);
-        }
+            $msgType = 'notice';
 
-        if (!empty($msg2)) {
-            $type = $msg2Type == 'success' ? 'notice' : 'error';
-            $this->addFlash($type, $msg2);
+            if ($data['valide'] > 0) {
+                $msg = "Le congé n'a pas pu être modifié car il a déjà été validé.";
+                $msgType = 'error';
+                $result['back_to'] = 'holiday';
+
+                if ($this->config('Conges-Recuperations') and $data['debit'] == 'recuperation') {
+                    $msg = "La récupération n'a pas pu être modifiée car elle a déjà été validée.";
+                    $msgType = 'error';
+                    $result['back_to'] = 'recover';
+                }
+
+            } else {
+                $result = $this->updateProcess($request);
+                $msg = $result['msg'];
+                $msg2 = $result['msg2'];
+                $msg2Type = $result['msg2Type'];
+            }
+            
+            if ($result['back_to'] == 'recover') {
+                $recover = 1;
+            }
+
+            if (!empty($msg)) {
+                $this->addFlash($msgType, $msg);
+            }
+
+            if (!empty($msg2)) {
+                $type = $msg2Type == 'success' ? 'notice' : 'error';
+                $this->addFlash($type, $msg2);
+            }
         }
 
         return $this->redirectToRoute('holiday.index', ['recup' => $recover]);
-    }
-
-    // TODO: merge update and save fonctions, and keep the path /holiday
-    #[Route(path: '/holiday', name: 'holiday.save', methods: ['POST'])]
-    public function save(Request $request, Session $session): RedirectResponse
-    {
-        $result = $this->saveProcess($request);
-
-        if (!empty($result['msg'])) {
-            $type = $result['msgType'] == 'success' ? 'notice' : 'error';
-            $session->getFlashBag()->add($type, $result['msg']);
-        }
-
-        if (!empty($result['msg2'])) {
-            $type = $result['msg2Type'] == 'success' ? 'notice' : 'error';
-            $session->getFlashBag()->add($type, $result['msg2']);
-        }
-
-        return $this->redirectToRoute('holiday.index');
     }
 
     // TODO: merge add and edit fonctions, keep route name holiday.edit, function name edit, add route /holiday/add, named holiday.add.
