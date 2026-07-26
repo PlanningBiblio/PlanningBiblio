@@ -263,7 +263,7 @@ class CompTimeController extends BaseController
         }
 
         // ajout d'un lien permettant de rebondir sur la demande
-        $url = $this->config('URL') . "/holiday/edit/$id";
+        $url = $this->config('URL') . "/holiday/$id";
         $message .= "<br/><br/>Lien vers la demande de récupération :<br/><a href='$url'>$url</a><br/><br/>";
 
         // Envoi du mail

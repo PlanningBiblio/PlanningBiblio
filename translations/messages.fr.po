@@ -22,6 +22,9 @@ msgstr "Erreur lors de l'enregistrement de la demande d'heures supplémentaires"
 msgid "Agent"
 msgstr "Agent"
 
+msgid "Agent(s)"
+msgstr "Agent(s)"
+
 msgid "Hours"
 msgstr "Heures"
 

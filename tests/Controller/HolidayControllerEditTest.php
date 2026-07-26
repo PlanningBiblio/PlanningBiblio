@@ -180,7 +180,7 @@ class HolidayControllerEditTest extends PLBWebTestCase
         $holiday = $this->entityManager->getRepository(Holiday::class)->findOneBy(['perso_id' => $abreton->getId()]);
 
         $this->login($jdevoe);
-        $crawler = $this->client->request('GET', '/holiday/edit/' . $holiday->getId());
+        $crawler = $this->client->request('GET', '/holiday/' . $holiday->getId());
         $this->client->getWebDriver()->wait()->until($this->jqueryAjaxFinished());
 
         $this->assertSelectorExists('#acces_refuse');
@@ -201,7 +201,7 @@ class HolidayControllerEditTest extends PLBWebTestCase
         $jdupont->addManaged($manager);
 
         $this->login($jdupont);
-        $crawler = $this->client->request('GET', '/holiday/edit/' . $holiday->getId());
+        $crawler = $this->client->request('GET', '/holiday/' . $holiday->getId());
         $this->client->getWebDriver()->wait()->until($this->jqueryAjaxFinished());
 
         $this->assertSelectorTextContains('h1', 'Demande de congés');
@@ -261,7 +261,7 @@ class HolidayControllerEditTest extends PLBWebTestCase
         $holiday = $this->entityManager->getRepository(Holiday::class)->findOneBy(['perso_id' => $abreton->getId()]);
 
         $this->login($abreton);
-        $crawler = $this->client->request('GET', '/holiday/edit/' . $holiday->getId());
+        $crawler = $this->client->request('GET', '/holiday/' . $holiday->getId());
         $this->client->getWebDriver()->wait()->until($this->jqueryAjaxFinished());
 
         $this->assertSelectorNotExists('#holiday_balance');
@@ -296,7 +296,7 @@ class HolidayControllerEditTest extends PLBWebTestCase
         $jdupont->addManaged($manager);
 
         $this->login($jdupont);
-        $crawler = $this->client->request('GET', '/holiday/edit/' . $comptime->getId());
+        $crawler = $this->client->request('GET', '/holiday/' . $comptime->getId());
         $this->client->getWebDriver()->wait()->until($this->jqueryAjaxFinished());
 
         $this->assertSelectorTextContains('h1', 'Demande de récupérations');
@@ -352,7 +352,7 @@ class HolidayControllerEditTest extends PLBWebTestCase
         $comptime = $this->entityManager->getRepository(Holiday::class)->findOneBy(['perso_id' => $jdevoe->getId()]);
 
         $this->login($jdupont);
-        $crawler = $this->client->request('GET', '/holiday/edit/' . $comptime->getId());
+        $crawler = $this->client->request('GET', '/holiday/' . $comptime->getId());
         $this->client->getWebDriver()->wait()->until($this->jqueryAjaxFinished());
 
         $this->assertSelectorNotExists('#balance_before');

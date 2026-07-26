@@ -202,7 +202,7 @@ Exemple à ajouter en crontab :
             // Affichage de tous les congés non validé le concernant
             $msg .= "<ul>\n";
             foreach ($dest as $conge) {
-                $link = $config['URL'] . '/holiday/edit/' . $conge->getId();
+                $link = $config['URL'] . '/holiday/' . $conge->getId();
 
                 $msg .= "<li style='margin-bottom:15px;'>\n";
                 $msg .= "<strong>{$conge->lastname} {$conge->firstname}</strong><br/>\n";
