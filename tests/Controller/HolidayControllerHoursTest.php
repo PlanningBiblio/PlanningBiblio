@@ -24,6 +24,9 @@ class HolidayControllerHoursTest extends PLBWebTestCase
 
         $admin = $this->builder->build(Agent::class, array('login' => 'kboivin'));
         $this->logInAgent($admin, array(100));
+
+        $crawler = $this->client->request('GET', '/');
+        $this->token = $crawler->filter('#_token')->attr('value');
     }
 
     public function testHolidayOneAgentAllDayNonValidated(): void
@@ -233,6 +236,7 @@ class HolidayControllerHoursTest extends PLBWebTestCase
     private function getHolidayData($replace = array()): array
     {
         $data = array(
+            '_token' => $this->token,
             'CSRFToken' => '00000',
             'confirm' => 'confirm',
             'perso_id' => '1',

@@ -9,7 +9,7 @@
 {% block page %}
   <div id="content-form">
     <div class="admin-div">
-      <form name="form" action= "{{ asset( action_path )}}" method="post" id="holiday-form" class="googleCalendarForm" novalidate>
+      <form name="form" action= "{{ asset('holiday') }}" method="post" id="holiday-form" class="googleCalendarForm" novalidate>
 
         {% if id %}
           {# variable passed via the controller that defines the current approval status of the holiday request (1 if approved, -1 if rejected, and 0 otherwise) #}
@@ -18,7 +18,7 @@
         {% endif %}
 
         {% if request_type == 'recover' %}
-          <input type="hidden" id="is-recover" value="1" />
+          <input type="hidden" id="is-recover" name="is-recover" value="1" />
           <input type="hidden" id="negative-recover" value="false"/>
         {% endif %}
 

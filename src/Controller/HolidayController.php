@@ -472,7 +472,6 @@ class HolidayController extends BaseController
             'refus'                 => html_entity_decode($data['refus'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'),
             'saisie'                => dateFr($data['saisie'], true),
             'displayRefus'          => $displayRefus,
-            'action_path'           => 'holiday',
             'holiday_info'          => $holiday_info,
         );
 
@@ -532,16 +531,19 @@ class HolidayController extends BaseController
         $recover = 0;
 
         if (!$id) {
-            $result = $this->saveProcess($request);
+            if ($request->request->getBoolean('is-recover')) {
+                $result = $this->saveCompTimeProcess($request, $session);
+                $recover = 1;
+            } else {
+                $result = $this->saveProcess($request);
+            }
 
             if (!empty($result['msg'])) {
-                $type = $result['msgType'] == 'success' ? 'notice' : 'error';
-                $session->getFlashBag()->add($type, $result['msg']);
+                $this->addFlash($result['msgType'], $result['msg']);
             }
 
             if (!empty($result['msg2'])) {
-                $type = $result['msg2Type'] == 'success' ? 'notice' : 'error';
-                $session->getFlashBag()->add($type, $result['msg2']);
+                $this->addFlash($result['msg2Type'], $result['msg2']);
             }
         } else {
             // Elements du congé demandé
@@ -728,7 +730,6 @@ class HolidayController extends BaseController
             'sites_select'          => $sites_select,
             'show_allday'           => $show_allday,
             'title'                 => 'Requesting holidays',
-            'action_path'           => 'holiday',
             'save_button'           => true,
         );
 
@@ -1284,13 +1285,157 @@ class HolidayController extends BaseController
 
         return array(
             'msg'       => $msg,
-            'msgType'   => 'success',
+            'msgType'   => 'notice',
         );
     }
 
-    /**
-     * @return mixed[]
-     */
+    public function saveCompTimeProcess(Request $request, Session $session): array
+    {
+        $CSRFToken = $request->get('CSRFToken');
+        $perso_id = $request->get('perso_id');
+
+        $debut = $request->get('debut');
+        $fin = $request->get('fin');
+        $hre_debut = $request->get('hre_debut');
+        $hre_fin = $request->get('hre_fin');
+
+        if (!$fin) {
+            $fin = $debut;
+        }
+
+        $debutSQL = dateSQL($debut);
+        $finSQL = dateSQL($fin);
+        $hre_debut = $hre_debut ? $hre_debut : '00:00:00';
+        $hre_fin = $hre_fin ? $hre_fin : '23:59:59';
+        $commentaires = htmlentities($request->get('commentaires'), ENT_QUOTES|ENT_IGNORE, "UTF-8", false);
+
+        $validationStatus = $request->request->getInt('valide');
+        
+        $holidayHelper = new HolidayHelper([
+            'start' => $debutSQL,
+            'hour_start' => $hre_debut,
+            'end' => $finSQL,
+            'hour_end' => $hre_fin,
+            'perso_id' => $perso_id,
+            'is_recover' => 1
+        ]);
+
+        $result = $holidayHelper->getCountedHours();
+        $recover = ($result['hours'] + ($result['minutes'] / 100));
+
+        $c = new \conges();
+        $credit = $c->calculCreditRecup($perso_id, $debut);
+        $credit_after_debit = ($credit[1] - $recover);
+
+        if ($credit_after_debit < 0 and $validationStatus == 1) {
+            $this->addFlash('error', 'La demande de récupération n\'a pas été enregistrée car le crédit de récupération ne peut pas être négatif.');
+            return $this->redirectToRoute('holiday.index', ['recup' => 1]);
+        }
+
+        // Enregistrement du congés
+        $data = $request->request->all();
+
+        if ($validationStatus) {
+            $data['conges-recup'] = 1;
+            $data['conges-mode'] = $this->config('Conges-Mode');
+            $data['perso_ids'] = array($data['perso_id']);
+            $data['confirm'] = 'confirm';
+            $data['debit'] = 'recuperation';
+
+            if (!$this->config['Conges-validation']) {
+                    $data['valide_n1'] = $session->get('loginId');
+                    $data['validation_n1'] = date('Y-m-d H:i:s');
+                    $data['valide'] = $session->get('loginId');
+                    $data['validation'] = date('Y-m-d H:i:s');
+                    $data['valide_init'] = 1;
+            } else {
+                $data['valide_init'] = $validationStatus;
+
+                switch ($validationStatus) {
+                    case -2 :
+                        $data['valide_n1'] = -1 * (int) $session->get('loginId');
+                        $data['validation_n1'] = date('Y-m-d H:i:s');
+                        $data['valide'] = 0;
+                        $data['validation'] = null;
+                    break;
+                    case 2 :
+                        $data['valide_n1'] = $session->get('loginId');
+                        $data['validation_n1'] = date('Y-m-d H:i:s');
+                        $data['valide'] = 0;
+                        $data['validation'] = null;
+                    break;
+                    case -1 :
+                        $data['valide'] = -1 * (int) $session->get('loginId');
+                        $data['validation'] = date('Y-m-d H:i:s');
+                    break;
+                    case 1 :
+                        $data['valide'] = $session->get('loginId');
+                        $data['validation'] = date('Y-m-d H:i:s');
+                    break;
+                }
+            }
+        }
+
+        $c = new \conges();
+        $c->CSRFToken = $CSRFToken;
+        $c->add($data);
+        $id = $c->id;
+
+        // Récupération des adresses e-mails de l'agent et des responsables pour l'envoi des alertes
+        $agent = $this->entityManager->find(Agent::class, $perso_id);
+        $nom = $agent->getLastname();
+        $prenom = $agent->getFirstname();
+
+        // Choix des destinataires en fonction de la configuration
+        if ($this->config('Absences-notifications-agent-par-agent')) {
+            $a = new \absences();
+            $a->getRecipients2(null, $perso_id, 1);
+            $destinataires = $a->recipients;
+        } else {
+            $c = new \conges();
+            $c->getResponsables($debutSQL, $finSQL, $perso_id);
+            $responsables = $c->responsables;
+
+            $a = new \absences();
+            $a->getRecipients('-A1', $responsables, $agent);
+            $destinataires = $a->recipients;
+        }
+
+        // Message qui sera envoyé par email
+        $message ="Nouvelle demande de récupération: <br/>$prenom $nom<br/>Début : $debut";
+        if ($hre_debut != '00:00:00') {
+            $message .= ' ' . heure3($hre_debut);
+        }
+        $message .= "<br/>Fin : $fin";
+        if ($hre_fin != '23:59:59') {
+            $message .= ' ' . heure3($hre_fin);
+        }
+        if ($commentaires !== '' && $commentaires !== '0') {
+            $message .= "<br/><br/>Commentaire :<br/>$commentaires<br/>";
+        }
+
+        // ajout d'un lien permettant de rebondir sur la demande
+        $url = $this->config('URL') . "/holiday/$id";
+        $message .= "<br/><br/>Lien vers la demande de récupération :<br/><a href='$url'>$url</a><br/><br/>";
+
+        // Envoi du mail
+        $m=new \CJMail();
+        $m->subject="Nouvelle demande de récupération";
+        $m->message=$message;
+        $m->to=$destinataires;
+        $m->send();
+
+        if ($m->error_CJInfo) {
+            $return['msgType'] = 'error';
+            $return['msg'] = $m->error_CJInfo;
+        } else {
+            $return['msgType'] = 'notice';
+            $return['msg'] = 'La demande de récupération a été enregistrée';
+        }
+
+        return $return;
+    }
+
     private function updateProcess($request): array
     {
         $post = $request->request->all();

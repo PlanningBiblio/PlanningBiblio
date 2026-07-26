@@ -23,6 +23,9 @@ class HolidayControllerHalfdayTest extends PLBWebTestCase
 
         $admin = $this->builder->build(Agent::class, array('login' => 'kboivin'));
         $this->logInAgent($admin, array(100));
+
+        $crawler = $this->client->request('GET', '/');
+        $this->token = $crawler->filter('#_token')->attr('value');
     }
 
     public function testHolidayOneAgentOnFullDay(): void
@@ -215,6 +218,7 @@ class HolidayControllerHalfdayTest extends PLBWebTestCase
     private function getHolidayData($replace = array()): array
     {
         $data = array(
+            '_token' => $this->token,
             'CSRFToken' => '00000',
             'confirm' => 'confirm',
             'perso_ids' => array(1),

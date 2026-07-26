@@ -14,9 +14,10 @@ class PLBWebTestCase extends PantherTestCase
 {
     protected $builder;
     protected $client;
+    protected $config;
     protected $CSRFToken;
     protected $entityManager;
-    protected $config;
+    protected $token;
 
     /**
      * The addConfig function allows you to test additional parameters that are usually found in the custom_options.php file
