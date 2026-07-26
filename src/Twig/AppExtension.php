@@ -210,11 +210,6 @@ class AppExtension extends AbstractExtension
             return $url === ($config['URL'] . '/holiday/?recup=1') ;
         }
 
-        // Specific case for /holiday/edit
-        if (preg_match('/(.+?)(\/edit)?(\/[0-9]+)/', $requestedUrl, $match)) {
-            return $url === $match[1];
-        }
-
         // Find the level-up URL for all routes ending in 'add' or in any number for edit
         if (preg_match('/(.+?)(-.+)?\/add/', $requestedUrl, $match) or preg_match('/(.+?)(-.+)?(\/[0-9]+)/', $requestedUrl, $match)) {
             return $url === $match[1];

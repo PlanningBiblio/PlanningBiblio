@@ -12,7 +12,6 @@
       <form name="form" action= "{{ asset( action_path )}}" method="post" id="holiday-form" class="googleCalendarForm" novalidate>
 
         {% if id %}
-          <input type="hidden" name="confirm" value="confirm" />
           {# variable passed via the controller that defines the current approval status of the holiday request (1 if approved, -1 if rejected, and 0 otherwise) #}
           <input type="hidden" name="status" value="{{ valide }}" />
           <input type="hidden" name="id" value="{{ id }}" id="id" />

@@ -22,6 +22,9 @@ msgstr "Error while saving the overtime request"
 msgid "Agent"
 msgstr "Agent"
 
+msgid "Agent(s)"
+msgstr "Agent(s)"
+
 msgid "Hours"
 msgstr "Hours"
 

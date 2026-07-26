@@ -12,6 +12,7 @@ use App\Planno\Helper\HourHelper;
 use App\Planno\Helper\WeekPlanningHelper;
 use App\Service\Mailer;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -302,14 +303,12 @@ class HolidayController extends BaseController
         return $this->json($results);
     }
 
-    #[Route(path: '/holiday/edit', name: 'holiday.update', methods: ['POST'])]
-    #[Route(path: '/holiday/edit/{id}', name: 'holiday.edit', methods: ['GET'])]
+    // TODO: merge add and add fonctions, keep route name holiday.edit, function name edit, add route /holiday/add, named holiday.add.
+    #[Route(path: '/holiday/{id<\d+>}', name: 'holiday.edit', methods: ['GET'])]
     public function edit(Request $request, Session $session)
     {
-        $id = $request->get('id');
-        $confirm = $request->get('confirm');
+        $id = $request->attributes->getInt('id');
         $dbprefix = $GLOBALS['dbprefix'];
-        $this->droits = $GLOBALS['droits'];
 
         // Elements du congé demandé
         $c = new \conges();
@@ -326,45 +325,6 @@ class HolidayController extends BaseController
         // Calcul des crédits de récupération disponibles lors de l'ouverture du formulaire (date du jour)
         $c = new \conges();
         $balance = $c->calculCreditRecup($perso_id);
-
-        if ( $confirm ) {
-
-            $msgType = 'notice';
-
-            if ($data['valide'] > 0) {
-                $msg = "Le congé n'a pas pu être modifié car il a déjà été validé.";
-                $msgType = "error";
-                $result['back_to'] = 'holiday';
-
-                if ($this->config('Conges-Recuperations') and $data['debit'] == 'recuperation') {
-                    $msg = "La récupération n'a pas pu être modifiée car elle a déjà été validée.";
-                    $msgType = "error";
-                    $result['back_to'] = 'recover';
-                }
-
-            } else {
-                $result = $this->update($request);
-                $msg = $result['msg'];
-                $msg2 = $result['msg2'];
-                $msg2Type = $result['msg2Type'];
-            }
-
-            $recover = 0;
-            if ($result['back_to'] == 'recover') {
-                $recover = 1;
-            }
-
-            if (!empty($msg)) {
-                $session->getFlashBag()->add($msgType, $msg);
-            }
-
-            if (!empty($msg2)) {
-                $type = $msg2Type == 'success' ? 'notice' : 'error';
-                $session->getFlashBag()->add($type, $msg2);
-            }
-
-            return $this->redirectToRoute("holiday.index", array('recup' => $recover));
-        }
 
         list($adminN1, $adminN2) = $this->entityManager
             ->getRepository(Agent::class)
@@ -512,7 +472,7 @@ class HolidayController extends BaseController
             'refus'                 => html_entity_decode($data['refus'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'),
             'saisie'                => dateFr($data['saisie'], true),
             'displayRefus'          => $displayRefus,
-            'action_path'           => 'holiday/edit',
+            'action_path'           => 'holiday/update',
             'holiday_info'          => $holiday_info,
         );
 
@@ -561,10 +521,70 @@ class HolidayController extends BaseController
         return $this->output('holiday/edit.html.twig');
     }
 
-    #[Route(path: '/holiday', name: 'holiday.save', methods: ['POST'])]
-    public function add_confirm(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
+    // TODO: merge update and save fonctions, then change the path to /holiday
+    #[Route(path: '/holiday/update', name: 'holiday.update', methods: ['POST'])]
+    public function update(Request $request, Session $session): RedirectResponse
     {
-        $result = $this->save($request);
+        if (!$this->csrf_protection($request)) {
+            return $this->redirectToRoute('access-denied');
+        }
+
+        $id = $request->request->getInt('id');
+
+        // Elements du congé demandé
+        $c = new \conges();
+        $c->id = $id;
+        $c->fetch();
+        $data = $c->elements[0];
+        $perso_id = $data['perso_id'];
+
+        // FIXME: move into a dedicated model's method when possible: $holiday->isEditable().
+        if ($c->elements[0]['information'] != 0 or $c->elements[0]['supprime'] != 0) {
+            return $this->output('access-denied.html.twig');
+        }
+
+        $msgType = 'notice';
+
+        if ($data['valide'] > 0) {
+            $msg = "Le congé n'a pas pu être modifié car il a déjà été validé.";
+            $msgType = 'error';
+            $result['back_to'] = 'holiday';
+
+            if ($this->config('Conges-Recuperations') and $data['debit'] == 'recuperation') {
+                $msg = "La récupération n'a pas pu être modifiée car elle a déjà été validée.";
+                $msgType = 'error';
+                $result['back_to'] = 'recover';
+            }
+
+        } else {
+            $result = $this->updateProcess($request);
+            $msg = $result['msg'];
+            $msg2 = $result['msg2'];
+            $msg2Type = $result['msg2Type'];
+        }
+
+        $recover = 0;
+        if ($result['back_to'] == 'recover') {
+            $recover = 1;
+        }
+
+        if (!empty($msg)) {
+            $this->addFlash($msgType, $msg);
+        }
+
+        if (!empty($msg2)) {
+            $type = $msg2Type == 'success' ? 'notice' : 'error';
+            $this->addFlash($type, $msg2);
+        }
+
+        return $this->redirectToRoute('holiday.index', ['recup' => $recover]);
+    }
+
+    // TODO: merge update and save fonctions, and keep the path /holiday
+    #[Route(path: '/holiday', name: 'holiday.save', methods: ['POST'])]
+    public function save(Request $request, Session $session): RedirectResponse
+    {
+        $result = $this->saveProcess($request);
 
         if (!empty($result['msg'])) {
             $type = $result['msgType'] == 'success' ? 'notice' : 'error';
@@ -579,6 +599,8 @@ class HolidayController extends BaseController
         return $this->redirectToRoute('holiday.index');
     }
 
+    // TODO: merge add and edit fonctions, keep route name holiday.edit, function name edit, add route /holiday/add, named holiday.add.
+    // Check if the route with perso_id is still needed
     #[Route(path: '/holiday/new', name: 'holiday.new', methods: ['GET', 'POST'])]
     #[Route(path: '/holiday/new/{perso_id}', name: 'holiday.new.new', methods: ['GET', 'POST'])]
     public function add(Request $request)
@@ -1105,7 +1127,7 @@ class HolidayController extends BaseController
         return $this->json($holiday_account);
     }
 
-    private function save($request): array
+    private function saveProcess($request): array
     {
         $session = $request->getSession();
 
@@ -1275,12 +1297,8 @@ class HolidayController extends BaseController
     /**
      * @return mixed[]
      */
-    private function update($request): array
+    private function updateProcess($request): array
     {
-        if (!$this->csrf_protection($request)) {
-            return $this->redirectToRoute('access-denied');
-        }
-
         $post = $request->request->all();
 
         $perso_id = $request->get('perso_id');
@@ -1454,7 +1472,7 @@ class HolidayController extends BaseController
         $message .="</ul>";
 
         // ajout d'un lien permettant de rebondir sur la demande
-        $url = $this->config('URL') . "/holiday/edit/$id";
+        $url = $this->config('URL') . "/holiday/$id";
         $message.="<p>Lien vers la demande de " . ($recover ? "récupération" : "congé") . " :<br/><a href='$url'>$url</a></p>";
 
         return $message;
