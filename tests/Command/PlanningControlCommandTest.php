@@ -49,7 +49,9 @@ class PlanningControlCommandTest extends PLBWebTestCase
         $this->login($agent);
 
         // Open the planning page
-        $crawler = $this->client->request('GET', '/');
+        $date = new \DateTime('next tuesday');
+
+        $crawler = $this->client->request('GET', '/' . $date->format('Y-m-d'));
 
         // Delete the planning exist
         try {
@@ -143,7 +145,8 @@ class PlanningControlCommandTest extends PLBWebTestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute([
             'command' => $command->getName(),
-            '--not-really' => true
+            '--not-really' => true,
+            '--when' => 'next tuesday',
         ]);
         $commandTester->assertCommandIsSuccessful();
         $output = $commandTester->getDisplay();
