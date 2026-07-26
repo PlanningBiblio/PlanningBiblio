@@ -28,22 +28,27 @@ class PlanningControlCommand extends Command
 {
     use \App\Traits\LoggerTrait;
 
-    private $entityManager;
-
-    public function __construct(EntityManagerInterface $entityManager)
-    {
-        $this->entityManager = $entityManager;
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+    ) {
         parent::__construct();
     }
 
     protected function configure(): void
     {
-        $this->addOption(
-            'not-really',
-            null,
-            InputOption::VALUE_NONE,
-            'Do not send email but print it (for testing)'
-        );
+        $this
+            ->addOption(
+                'not-really',
+                null,
+                InputOption::VALUE_NONE,
+                'For testing purposes. Does not send the email but displays it.'
+            )
+            ->addOption(
+                'when',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'For testing purposes. When the test needs to be simulated. E.g.: --when=next\ tuesday'
+            );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -73,14 +78,20 @@ class PlanningControlCommand extends Command
         $jours=$config['Rappels-Jours'];
 
         // Recherche la date du jour et les $jours suivants
-        $dates=array();
-        for ($i=0;$i<=$jours;$i++) {
-            $time=strtotime("+ $i days");
-            $jour_semaine=date("w", $time);
+        $dates = [];
 
+        if ($input->getOption('when')) {
+            $when = $input->getOption('when');
+            $date = new \DateTime($when);
+        } else {
+            $date = new \DateTime();
+        }
+
+        for ($i = 0; $i <= $jours; $i++) {
+            $jour_semaine = $date->format('w');
             // Si le jour courant est un dimanche et que la bibliothèque n'ouvre pas les dimanches, on ne l'ajoute pas
             if ($jour_semaine!=0 or $config['Dimanche']) {
-                $dates[]=date("Y-m-d", $time);
+                $dates[] = $date->format('Y-m-d');
             }
 
             // Si le jour courant est un samedi, nous recherchons 2 jours supplémentaires pour avoir le bon nombre de jours ouvrés.
@@ -88,6 +99,8 @@ class PlanningControlCommand extends Command
             if ($jour_semaine==6) {
                 $jours += 2;
             }
+
+            $date->modify('+1 day');
         }
 
         // Listes des postes
