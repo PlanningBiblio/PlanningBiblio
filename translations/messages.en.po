@@ -395,6 +395,9 @@ msgstr "Back"
 msgid "Holiday deletion"
 msgstr "Holiday deletion"
 
+msgid "Compensatory time deletion"
+msgstr "Compensatory time deletion"
+
 msgid "Agent:"
 msgstr "Agent:"
 

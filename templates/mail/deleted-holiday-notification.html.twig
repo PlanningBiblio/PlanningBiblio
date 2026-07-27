@@ -1,7 +1,7 @@
 {% set startTime = holiday.start | date("H:i:s") %}
 {% set endTime = holiday.end | date("H:i:s") %}
 
-<b><u>{{ "Holiday deletion" | trans }}</u></b> :
+<b><u>{{ title | trans }}</u></b> :
 
 <ul>
     <li>{{ "Agent:" | trans }} <b>{{ agent.firstname }} {{ agent.lastname }}</b></li>

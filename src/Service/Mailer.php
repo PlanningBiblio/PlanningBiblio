@@ -42,7 +42,13 @@ class Mailer
 
         $agent = $entityManager->find(Agent::class, $holiday->getUser());
 
-        $htmlBody = $this->twig->render('mail/deleted-holiday-notification.html.twig', ['holiday' => $holiday, 'agent' => $agent]);
+        $title = $holiday->getDebit() == 'recuperation' ? 'Compensatory time deletion' : 'Holiday deletion';
+
+        $htmlBody = $this->twig->render('mail/deleted-holiday-notification.html.twig', [
+            'title' => $title,
+            'holiday' => $holiday,
+            'agent' => $agent,
+        ]);
 
         $start = $holiday->getStart()->format('Y-m-d H:i:s');
         $end = $holiday->getEnd()->format('Y-m-d H:i:s');
@@ -61,7 +67,7 @@ class Mailer
             $recipients = $a->recipients;
         }
 
-        $subject = $this->translator->trans("Holiday deletion");
+        $subject = $this->translator->trans($title);
 
         $this->sendWithCJMail($subject, $htmlBody, $recipients);
     }

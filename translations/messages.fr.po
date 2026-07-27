@@ -394,6 +394,9 @@ msgstr "Retour"
 msgid "Holiday deletion"
 msgstr "Suppression d'un congé"
 
+msgid "Compensatory time deletion"
+msgstr "Suppression d'une demande de récupération"
+
 msgid "Agent:"
 msgstr "Agent :"
 
