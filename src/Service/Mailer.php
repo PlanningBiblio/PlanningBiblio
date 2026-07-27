@@ -28,6 +28,7 @@ class Mailer
         $cjmail->subject = $subject;
         $cjmail->message = $htmlBody;
         $cjmail->to = $to;
+        $cjmail->nl2br = false;
         $cjmail->send();
 
         if ($cjmail->error) {
@@ -38,7 +39,6 @@ class Mailer
     public function sendDeletedHolidayNotification(Holiday $holiday): void
     {
         global $entityManager;
-        global $config;
 
         $agent = $entityManager->find(Agent::class, $holiday->getUser());
 
