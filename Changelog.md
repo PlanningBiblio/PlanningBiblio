@@ -1,5 +1,20 @@
 # Changelog Planno
 
+## Version 26.05.09 (2026-07-28)
+
+### Enhancement
+
+* MT44200: Send a notification when a holiday is deleted #1418 / #1474
+* MT52609: Add date filters to info list pages (admin, absences, holiday) #1434 / #1476
+
+### Fixes
+
+* MT53418: Fix validation level on deleted agents #1463
+
+### Security
+
+* MT53636: Use ClamAV antivirus for absence documents upload #1403 / #1475
+
 ## Version 26.05.08 (2026-07-24)
 
 ### Fixes
