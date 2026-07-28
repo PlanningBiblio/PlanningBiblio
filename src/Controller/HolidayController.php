@@ -303,7 +303,7 @@ class HolidayController extends BaseController
         return $this->json($results);
     }
 
-    // TODO: merge add and add fonctions, keep route name holiday.edit, function name edit, add route /holiday/add, named holiday.add.
+    // TODO: merge add and edit fonctions, keep route name holiday.edit, function name edit, add route /holiday/add, named holiday.add.
     #[Route(path: '/holiday/{id<\d+>}', name: 'holiday.edit', methods: ['GET'])]
     public function edit(Request $request, Session $session)
     {
@@ -594,6 +594,11 @@ class HolidayController extends BaseController
 
         return $this->redirectToRoute('holiday.index', ['recup' => $recover]);
     }
+
+    // TODO: merge CompTime::add into HolidayAdd
+    // * Attention, see this comment in holidays.js : // Only for holiday/new
+    // * First of all, change data with Ajax ans stop reloading the page 
+    //   with `$('select[name="perso_id"]').on('change', function() {` in holidays.js
 
     // TODO: merge add and edit fonctions, keep route name holiday.edit, function name edit, add route /holiday/add, named holiday.add.
     // Check if the route with perso_id is still needed
