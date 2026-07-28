@@ -15,6 +15,7 @@ $(function(){
   $('select[name="perso_id"]').on('change', function() {
 
     // Only for holiday/new
+    // TODO: change this condition when CompTime::add and Holiday::add/edit is merged.
     if (window.location.href.includes(url('comptime/add'))
       || window.location.href.includes(url('overtime'))) {
       return false;
