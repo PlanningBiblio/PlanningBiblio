@@ -26,6 +26,7 @@ class AbsenceInfoController extends BaseController
             'info' => $info,
             'start' => $start,
             'end' => $end,
+            'title' => 'Information on absences',
         ]);
 
         return $this->output('absenceInfo/index.html.twig');
