@@ -142,9 +142,10 @@ class BaseController extends AbstractController
         $session = $this->request->getSession();
 
         $date = $this->request->query->get($queryName) ?: $session->get($sessionName);
+        $reset = $this->request->attributes->get('reset') === 'reset';
 
         $dt = $date ? DateTime::createFromFormat($format, $date) : null;
-        if (!$dt) {
+        if (!$dt or $reset) {
             $dt = new DateTime($when);
         }
 

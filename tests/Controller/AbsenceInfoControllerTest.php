@@ -178,7 +178,7 @@ class AbsenceInfoControllerTest extends PLBWebTestCase
         $this->assertStringContainsString('Texte',$result->text('Node does not exist', false), 'table title is Texte');
 
         $result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-edit"]');
-        $this->assertEquals($result->attr('title'),'Edit','span logo edit title is Edit');
+        $this->assertEquals($result->attr('title'),'Editer','span logo edit title is Edit');
 
         $result = $crawler->filterXPath('//tbody/tr/td');
         $this->assertEquals($result->eq(1)->text('Node does not exist', false), $start->format('d/m/Y'),'date début is ok');

@@ -14,7 +14,7 @@ use App\Entity\AbsenceInfo;
 
 class AbsenceInfoController extends BaseController
 {
-    #[Route(path: '/absences/info', name: 'absences.info.index', methods: ['GET'])]
+    #[Route(path: '/absences/info/{reset?}', name: 'absences.info.index', methods: ['GET'], requirements: ['reset' => 'reset'])]
     public function index(Request $request, Session $session, EntityManagerInterface $em)
     {
         $start = $this->initDate('start', 'AbsenceInfoStart');
@@ -44,7 +44,7 @@ class AbsenceInfoController extends BaseController
         return $this->output('absenceInfo/edit.html.twig');
     }
 
-    #[Route(path: '/absences/info/{id}', name: 'absences.info.edit', methods: ['GET'])]
+    #[Route(path: '/absences/info/{id<\d+>}', name: 'absences.info.edit', methods: ['GET'])]
     public function edit(Request $request)
     {
         $id = $request->get('id');

@@ -174,7 +174,7 @@ class HolidayInfoControllerTest extends PLBWebTestCase
         $this->assertEquals($result->eq(1)->text('Node does not exist', false), 'Fin','table title is Fin');
 
         $result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-edit"]');
-        $this->assertEquals($result->attr('title'),'Edit','span logo edit title is Edit');
+        $this->assertEquals($result->attr('title'),'Editer','span logo edit title is Edit');
 
         $result = $crawler->filterXPath('//tbody/tr/td');
         $this->assertEquals($result->eq(1)->text(), $start->format('d/m/Y'),'date début is ok');

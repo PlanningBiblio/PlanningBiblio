@@ -4,8 +4,6 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 use App\Entity\HolidayInfo;
-
-use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -15,7 +13,7 @@ require_once(__DIR__ . '/../../legacy/Class/class.conges.php');
 
 class HolidayInfoController extends BaseController
 {
-    #[Route(path: '/holiday-info', name: 'holiday_info.index', methods: ['GET'])]
+    #[Route(path: '/holiday-info/{reset?}', name: 'holiday_info.index', methods: ['GET'], requirements: ['reset' => 'reset'])]
     public function index(Request $request, Session $session, EntityManagerInterface $em)
     {
         if ($this->config('Conges-Enable') == 0 ) {
@@ -59,7 +57,7 @@ class HolidayInfoController extends BaseController
         return $this->output('holidayInfo/edit.html.twig');
     }
 
-    #[Route(path: '/holiday-info/{id}', name: 'holiday_info.edit', methods: ['GET'])]
+    #[Route(path: '/holiday-info/{id<\d+>}', name: 'holiday_info.edit', methods: ['GET'])]
     public function edit(Request $request)
     {
         if(!$this->isAdmin()){

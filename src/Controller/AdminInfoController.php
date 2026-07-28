@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 
-use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizer;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig;
@@ -17,7 +16,7 @@ use App\Entity\AdminInfo;
 
 class AdminInfoController extends BaseController
 {
-    #[Route(path: '/admin/info', name: 'admin.info.index', methods: ['GET'])]
+    #[Route(path: '/admin/info/{reset?}', name: 'admin.info.index', methods: ['GET'], requirements: ['reset' => 'reset'])]
     public function index(Request $request, Session $session, EntityManagerInterface $em)
     {
         $start = $this->initDate('start', 'AdminInfoStart');
