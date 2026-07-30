@@ -948,7 +948,7 @@ class StatisticController extends BaseController
 
 
     #[Route(path: '/statistics/attendeesmissing', name: 'statistics.attendeesmissing', methods: ['GET', 'POST'])]
-    public function attendeesmissing( Request $request, Session $session )
+    public function attendeesmissing( Request $request, Session $session, PresentSet $presentSet )
     {
         $params = $request->request->all();
         if ($request->get('reset')) {
@@ -983,7 +983,6 @@ class StatisticController extends BaseController
 
             $absences = new \absences();
             $absences->valide = false;
-            $absent_ids = array(2);
             $absences->fetch("`nom`,`prenom`,`debut`,`fin`", null, $date, $date);
             $absents = $absences->elements;
 
@@ -1007,16 +1006,10 @@ class StatisticController extends BaseController
                 if ($absent['debut'] <= $date . " 00:00:00"
                     and $absent['fin'] >= $date . " 23:59:59"
                     and $absent['valide'] > 0) {
-                    $absent_ids[] = $absent['perso_id'];
                 }
             }
 
-            $d = new \datePL($date);
-            $presentset = new PresentSet($date, $d, $absent_ids, new \db());
-            $presents = $presentset->all();
-            foreach ($presents as $key => $present) {
-                $presents[$key]['heures'] = html_entity_decode($present['heures'], ENT_QUOTES|ENT_HTML5);
-            }
+            $presents = $presentSet->all($date);
 
             // Gather attendance and absences in a single table
             $tab = array();
