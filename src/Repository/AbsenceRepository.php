@@ -82,4 +82,31 @@ class AbsenceRepository extends EntityRepository
         $entityManager->flush();
         return $deleted_absences;
     }
+
+    /**
+     * @return Absence[]
+     */
+    public function get(string $start, string $end, bool $valid = true, ?int $agentId = null): array
+    {
+        $qb = $this->createQueryBuilder('a')
+            ->andWhere('a.debut < :end')
+            ->andWhere('a.fin > :start')
+            ->setParameter('start', $start)
+            ->setParameter('end', $end);
+
+        if ($valid) {
+            $qb->andWhere('a.valide > 0');
+        } else {
+            $qb->andWhere('a.valide = 0');
+        }
+
+        if ($agentId !== null) {
+            $qb->andWhere('a.perso_id = :agentId');
+            $qb->setParameter('agentId', $agentId);
+        }
+
+        $absences = $qb->getQuery()->getResult();
+
+        return $absences;
+    }
 }

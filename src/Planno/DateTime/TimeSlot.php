@@ -59,6 +59,51 @@ class TimeSlot
     }
 
     /**
+     * Merge intersecting time slots and return an array of time slots that do
+     * not intersect
+     *
+     * @param TimeSlot[] $timeSlots
+     *
+     * @return TimeSlot[]
+     */
+    public static function merge(array $timeSlots): array
+    {
+        $mergedTimeSlots = [];
+        while (!empty($timeSlots)) {
+            $initialTimeSlot = array_shift($timeSlots);
+            $nextTimeSlots = [];
+            $intersectingTimeSlot = null;
+
+            // Find the first intersecting time slot
+            foreach ($timeSlots as $timeSlot) {
+                if (!$intersectingTimeSlot && $initialTimeSlot->intersectsWith($timeSlot->start, $timeSlot->end)) {
+                    $intersectingTimeSlot = $timeSlot;
+                } else {
+                    $nextTimeSlots[] = $timeSlot;
+                }
+            }
+
+            // If found, merge it with the initial time slot, and put the
+            // result in the list of time slots for the next iteration.
+            // Else, it means the initial time slot does not intersect with any
+            // other time slot, so put it in the result list
+            if ($intersectingTimeSlot) {
+                $mergedTimeSlot = new TimeSlot(
+                    min($initialTimeSlot->start, $intersectingTimeSlot->start),
+                    max($initialTimeSlot->end, $intersectingTimeSlot->end)
+                );
+                array_unshift($nextTimeSlots, $mergedTimeSlot);
+            } else {
+                $mergedTimeSlots[] = $initialTimeSlot;
+            }
+
+            $timeSlots = $nextTimeSlots;
+        }
+
+        return $mergedTimeSlots;
+    }
+
+    /**
      * Returns true if timeslot intersects with the given date range
      *
      * @param DateTimeInterface $start Start of date range
@@ -71,5 +116,15 @@ class TimeSlot
         }
 
         return $start <= $this->end && $end >= $this->start;
+    }
+
+    /**
+     * Returns true if timeslot includes the given date
+     *
+     * @param DateTimeInterface $date
+     */
+    public function includes(DateTimeInterface $date): bool
+    {
+        return $this->start <= $date && $date <= $this->end;
     }
 }

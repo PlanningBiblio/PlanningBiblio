@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Controller\BaseController;
 use App\Entity\AbsenceReason;
 use App\Planno\ClosingDay;
+use App\Planno\DateTime\TimeSlot;
+use DateTime;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -206,6 +208,11 @@ class CalendarController extends BaseController
             $absent = false;
             $absences_affichage = array();
 
+            /**
+             * @var TimeSlot[] All time slots where the agent is away (absent or in holiday)
+             */
+            $awayTimeSlots = [];
+
             foreach ($current_abs as $elem) {
                 if ($elem['debut'] <= $current." 00:00:00" and $elem['fin'] >= $current." 23:59:59") {
                     $absent = true;
@@ -223,6 +230,8 @@ class CalendarController extends BaseController
                 } else {
                     $absences_affichage[] = "{$elem['debut']} &rarr; {$elem['fin']} : {$elem['motif']}";
                 }
+
+                $awayTimeSlots[] = TimeSlot::createFromFormat('Y-m-d H:i:s', $elem['debut'], $elem['fin']);
             }
 
             // Intégration des congés
@@ -263,6 +272,8 @@ class CalendarController extends BaseController
                                 $current_postes[$j]['absent'] = 1;
                             }
                         }
+
+                        $awayTimeSlots[] = TimeSlot::createFromFormat('Y-m-d H:i:s', $conge['debut'], $conge['fin']);
                     }
                 }
                 // Si congé sur une partie de la journée seulement, complète le message d'absence
@@ -280,43 +291,68 @@ class CalendarController extends BaseController
                     $site_name = $site != '-1' ? $this->config("Multisites-site$site") : '';
                 }
                 $schedule = array();
+
+                // $horaires is indexed like this:
+                // 0: start of day
+                // 1: start of 1st break
+                // 2: end of 1st break
+                // 3: end of day
+                // 4: site
+                // 5: start of 2nd break
+                // 6: end of 2nd break
+
                 if (!empty($horaires[0]) and !empty($horaires[1])) {
                     $schedule[] = array(
-                        'begin' => heure2($horaires[0]),
-                        'end'=> heure2($horaires[1])
+                        'begin' => $horaires[0],
+                        'end'=> $horaires[1],
                     );
                 } elseif (!empty($horaires[0]) and !empty($horaires[5])) {
                     $schedule[] = array(
-                        'begin' => heure2($horaires[0]),
-                        'end'=> heure2($horaires[5])
+                        'begin' => $horaires[0],
+                        'end'=> $horaires[5],
                     );
                 } elseif (!empty($horaires[0]) and !empty($horaires[3])) {
                     $schedule[] = array(
-                        'begin' => heure2($horaires[0]),
-                        'end'=> heure2($horaires[3])
+                        'begin' => $horaires[0],
+                        'end'=> $horaires[3],
                     );
                 }
 
                 if (!empty($horaires[2]) and !empty($horaires[5])) {
                     $schedule[] = array(
-                        'begin' => heure2($horaires[2]),
-                        'end'=> heure2($horaires[5])
+                        'begin' => $horaires[2],
+                        'end'=> $horaires[5],
                     );
                 } elseif (!empty($horaires[2]) and !empty($horaires[3])) {
                     $schedule[] = array(
-                        'begin' => heure2($horaires[2]),
-                        'end'=> heure2($horaires[3])
+                        'begin' => $horaires[2],
+                        'end'=> $horaires[3],
                     );
                 }
 
                 if (!empty($horaires[6]) and !empty($horaires[3])) {
                     $schedule[] = array(
-                        'begin' => heure2($horaires[6]),
-                        'end'=> heure2($horaires[3])
+                        'begin' => $horaires[6],
+                        'end'=> $horaires[3],
                     );
                 }
 
-                if (!empty($schedule)){
+                // Remove hours where the agent is away
+                $awayTimeSlots = TimeSlot::merge($awayTimeSlots);
+                $schedule = array_filter($schedule, function ($s) use ($current, $awayTimeSlots): bool {
+                    $begin = new DateTime(sprintf('%s %s', $current, $s['begin']));
+                    $end = new DateTime(sprintf('%s %s', $current, $s['end']));
+                    foreach ($awayTimeSlots as $awayTimeSlot) {
+                        if ($awayTimeSlot->includes($begin) && $awayTimeSlot->includes($end)) {
+                            return false;
+                        }
+                    }
+                    return true;
+                });
+                $schedule = array_values($schedule);
+
+                if (!empty($schedule)) {
+                    $schedule = array_map(fn ($s) => ['begin' => heure2($s['begin']), 'end' => heure2($s['end'])], $schedule);
                     $presence = array(
                         'site_name' => $site_name,
                         'site'      => $site,
