@@ -101,4 +101,37 @@ class TimeSlotTest extends TestCase
             'start is after, end is before'
         );
     }
+
+    public function testIncludes(): void
+    {
+        $timeSlot = TimeSlot::createAllDay(new DateTime('2026-03-04'), new DateTime('2026-03-07'));
+
+        $this->assertTrue($timeSlot->includes(new DateTime('2026-03-04')));
+        $this->assertTrue($timeSlot->includes((new DateTime('2026-03-08'))->modify('-1 microsecond')));
+        $this->assertTrue($timeSlot->includes(new DateTime('2026-03-05 12:34')));
+
+        $this->assertFalse($timeSlot->includes((new DateTime('2026-03-04'))->modify('-1 microsecond')));
+        $this->assertFalse($timeSlot->includes(new DateTime('2026-03-08')));
+    }
+
+    public function testMerge(): void
+    {
+        $timeSlots = [
+            TimeSlot::createFromFormat('Y-m-d H:i', '2026-04-24 09:30', '2026-04-24 12:30'),
+            TimeSlot::createFromFormat('Y-m-d H:i', '2026-04-25 14:00', '2026-04-25 16:30'),
+            TimeSlot::createFromFormat('Y-m-d H:i', '2026-04-25 12:00', '2026-04-25 13:59'),
+            TimeSlot::createFromFormat('Y-m-d H:i', '2026-04-24 14:00', '2026-04-24 16:30'),
+            TimeSlot::createFromFormat('Y-m-d H:i', '2026-04-24 12:30', '2026-04-24 14:30'),
+        ];
+
+        $mergedTimeSlots = TimeSlot::merge($timeSlots);
+
+        $this->assertCount(3, $mergedTimeSlots);
+        $this->assertEquals('2026-04-24 09:30', $mergedTimeSlots[0]->start->format('Y-m-d H:i'));
+        $this->assertEquals('2026-04-24 16:30', $mergedTimeSlots[0]->end->format('Y-m-d H:i'));
+        $this->assertEquals('2026-04-25 14:00', $mergedTimeSlots[1]->start->format('Y-m-d H:i'));
+        $this->assertEquals('2026-04-25 16:30', $mergedTimeSlots[1]->end->format('Y-m-d H:i'));
+        $this->assertEquals('2026-04-25 12:00', $mergedTimeSlots[2]->start->format('Y-m-d H:i'));
+        $this->assertEquals('2026-04-25 13:59', $mergedTimeSlots[2]->end->format('Y-m-d H:i'));
+    }
 }

@@ -54,7 +54,7 @@ class PlanningController extends BaseController
 
     #[Route(path: '/{date?}', name: 'home', methods: ['GET'], requirements: ['date' => '\d{4}-\d{2}-\d{2}'])]
     #[Route(path: '/{site}/{date?}', name: 'homeWithSite', methods: ['GET'], requirements: ['site' => '\d+', 'date' => '\d{4}-\d{2}-\d{2}'])]
-    public function index(Request $request)
+    public function index(Request $request, PresentSet $presentSet)
     {
         // Show all week plannings.
         if (!$request->get('date') and !empty($_SESSION['week'])) {
@@ -183,19 +183,6 @@ class PlanningController extends BaseController
 
                 $heures=null;
                 $presents=array();
-                $absents=array(2); // 2 = Remove "Everybody" user
-
-                // Excludes those who are absent
-                // all the day
-                if (!empty($absences_planning)) {
-                    foreach ($absences_planning as $elem) {
-                        if ($elem['debut'] <= $date . ' 00:00:00'
-                            and $elem['fin'] >= $date . ' 23:59:59'
-                            and $elem['valide'] > 0) {
-                            $absents[]=$elem['perso_id'];
-                        }
-                    }
-                }
 
                 // Looking for agents to exclude
                 // because they don't work this day
@@ -205,8 +192,7 @@ class PlanningController extends BaseController
                 // Filter by site if required
                 $siteFilter = $this->config('Absences-planning') == 4 ? $site : 0;
 
-                $presentset = new PresentSet($dateSQL, $d, $absents, $db, $siteFilter);
-                $presents = $presentset->all();
+                $presents = $presentSet->all($dateSQL, $siteFilter);
 
                 // Merge presences and absences
                 $presentIds = array();
