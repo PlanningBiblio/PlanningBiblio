@@ -72,4 +72,14 @@ class TimeSlot
 
         return $start <= $this->end && $end >= $this->start;
     }
+
+    /**
+     * Returns true if timeslot includes the given date
+     *
+     * @param DateTimeInterface $date
+     */
+    public function includes(DateTimeInterface $date): bool
+    {
+        return $this->start <= $date && $date <= $this->end;
+    }
 }
