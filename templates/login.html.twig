@@ -13,18 +13,18 @@
       <h2 id='h2-planning-authentification'>Planning - Authentification</h2>
       <h2 id='h2-authentification'>Authentification</h2>
   
-      {% if error is defined and error != '' %}
+      {% if errorPlanno is defined and errorPlanno != '' %}
         <div class="text-center">
           <br/><br/>
-          {% if error == 'unknown_user' %}
+          {% if errorPlanno == 'unknown_user' %}
             <h3 style='color:red'>L'utilisateur n'existe pas dans le planning</h3>
             <br/>
             <a href='{{ asset("login") }}{{ auth_args }}'>Re-essayer</a>
-          {% elseif error == 'login_failed' %}
+          {% elseif errorPlanno == 'login_failed' %}
             <h3 style='color:red'>Erreur lors de l'authentification</h3>
             <br/>
             <a href='{{ asset("login") }}{{ auth_args }}'>Re-essayer</a>
-          {% elseif error == 'cas_unknown_user' %}
+          {% elseif errorPlanno == 'cas_unknown_user' %}
           <div class="row justify-content-center">
             <div class="col-auto">
               <div class="alert alert-danger" role="alert">
@@ -37,24 +37,53 @@
           {% endif %}
         </div>
       {% else %}
-        <form name='form' method='post' action='{{ asset("login") }}'>
+{#        <form name='form' method='post' action='{{ asset("login") }}'> #}
+        <form method="post">
           <input type='hidden' name='auth' value='' />
           <input type='hidden' name='redirURL' value="{{ redirect_url }}" />
+
+          {% if error %}
+            <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+          {% endif %}
+
+          {% if app.user %}
+              <div class="mb-3">
+                  You are logged in as {{ app.user.userIdentifier }}, <a href="{{ logout_path() }}">Logout</a>
+              </div>
+          {% endif %}
+
           <table style='width:100%;'>
             <tr>
               <td class="text-end" style='width:48%;'>Utilisateur : </td>
               <td>
-                <input type='text' name='login' value="{{ new_login }}" />
+{#                <input type='text' name='login' value="{{ new_login }}" /> #}
+                <input type="text" value="{{ last_username }}" name="_username" id="username" class="form-control" autocomplete="username" required autofocus>
               </td>
             </tr>
   
             <tr>
               <td class="text-end">Mot de passe : </td>
               <td>
-                <input type='password' name='password' />
+{#                <input type='password' name='password' /> #}
+                <input type="password" name="_password" id="password" class="form-control" autocomplete="current-password" required>
+                <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
               </td>
             </tr>
-  
+
+        {#
+            Uncomment this section and add a remember_me option below your firewall to activate remember me functionality.
+            See https://symfony.com/doc/current/security/remember_me.html
+
+            <tr>
+              <td colspan='2' align='center'>
+                <div class="checkbox mb-3">
+                    <input type="checkbox" name="_remember_me" id="_remember_me">
+                    <label for="_remember_me">Remember me</label>
+                </div>
+              </td>
+            </tr>
+        #}
+
             <tr>
               <td colspan='2' align='center'><br/>
                 <input type="submit" role="button" class="btn btn-primary" value="Valider" />

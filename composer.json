@@ -50,6 +50,7 @@
         "symfony/lock": "*",
         "symfony/mime": "*",
         "symfony/monolog-bundle": "*",
+        "symfony/notifier": "*",
         "symfony/panther": "^2.1",
         "symfony/process": "*",
         "symfony/property-access": "*",
