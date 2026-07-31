@@ -101,4 +101,16 @@ class TimeSlotTest extends TestCase
             'start is after, end is before'
         );
     }
+
+    public function testIncludes(): void
+    {
+        $timeSlot = TimeSlot::createAllDay(new DateTime('2026-03-04'), new DateTime('2026-03-07'));
+
+        $this->assertTrue($timeSlot->includes(new DateTime('2026-03-04')));
+        $this->assertTrue($timeSlot->includes((new DateTime('2026-03-08'))->modify('-1 microsecond')));
+        $this->assertTrue($timeSlot->includes(new DateTime('2026-03-05 12:34')));
+
+        $this->assertFalse($timeSlot->includes((new DateTime('2026-03-04'))->modify('-1 microsecond')));
+        $this->assertFalse($timeSlot->includes(new DateTime('2026-03-08')));
+    }
 }

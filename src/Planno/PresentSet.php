@@ -2,48 +2,55 @@
 
 namespace App\Planno;
 
+// For datePl
+require_once __DIR__ . '/../../legacy/Common/function.php';
+
+use App\Entity\Absence;
+use App\Entity\Holiday;
+use App\Planno\DateTime\TimeSlot;
+use DateTime;
+use Doctrine\ORM\EntityManagerInterface;
+
 class PresentSet
 {
-    public $date;
-    public $date_planning;
-    public $absents = array();
-    private $db;
+    private EntityManagerInterface $entityManager;
 
-    // Fix me. You shoud find another way to get db object.
-    function __construct($date, $date_planning, $absents, $db, $site = 0)
+    /** @var mixed[] */
+    private array $config;
+
+    function __construct(EntityManagerInterface $entityManager)
     {
-        $this->date = $date;
-        $this->date_planning = $date_planning;
-        $this->absents = $absents;
-        $this->db = $db;
-        $this->site = $site;
+        $this->entityManager = $entityManager;
+        $this->config = $GLOBALS['config'];
     }
 
     /**
      * @return array{id: mixed, nom: non-falsy-string, site: (non-falsy-string | null), heures: non-falsy-string}[]
      */
-    public function all(): array
+    public function all(string $date, int $site = 0): array
     {
-        $config = $GLOBALS['config'];
-        $version = $GLOBALS['version'];
-        $date = $this->date;
-        $date_planning = $this->date_planning;
-        $semaine = $date_planning->semaine;
-        $semaine3 = $date_planning->semaine3;
-        $absents = $this->absents;
+        $query = $this->entityManager->createQuery(<<<'DQL'
+            SELECT a FROM App\Entity\Agent a
+            WHERE a.actif LIKE :actif
+                AND (a.depart >= :date OR a.depart IS NULL)
+                AND a.id != 2
+            ORDER BY a.nom, a.prenom
+        DQL);
+        $query->setParameter('actif', 'Actif');
+        $query->setParameter('date', $date);
+        $agents = $query->getResult();
 
-        $this->db->select("personnel", "*", "`actif` LIKE 'Actif' AND (`depart` >= $date OR `depart` IS NULL)", "ORDER BY `nom`,`prenom`");
-
-        if ($config['PlanningHebdo']) {
+        if ($this->config['PlanningHebdo']) {
             $tempsPlanningHebdo = self::getPlanningHebdo($date);
         }
 
         $presents = array();
-        foreach ($this->db->result as $elem) {
+        foreach ($agents as $agent) {
+            error_log(sprintf('Agent %d', $agent->getId()));
             // Exclude agents who are not working on the request site
-            if ($config['Multisites-nombre'] > 1 and $this->site != 0 ) {
-                $agentSites = json_decode($elem['sites']);
-                if (!is_array($agentSites) or !in_array($this->site, $agentSites)) {
+            if ($this->config['Multisites-nombre'] > 1 and $site != 0 ) {
+                $agentSites = $agent->getSites();
+                if (!is_array($agentSites) or !in_array($site, $agentSites)) {
                     continue;
                 }
             }
@@ -52,16 +59,19 @@ class PresentSet
             $temps = array();
             $week_number = 0;
 
-            if ($config['PlanningHebdo']) {
-                if (array_key_exists($elem['id'], $tempsPlanningHebdo)) {
-                    $temps = $tempsPlanningHebdo[$elem['id']]['temps'];
-                    $week_number = $tempsPlanningHebdo[$elem['id']]['nb_semaine'];
+            $agentId = $agent->getId();
+
+            if ($this->config['PlanningHebdo']) {
+                if (array_key_exists($agentId, $tempsPlanningHebdo)) {
+                    $temps = $tempsPlanningHebdo[$agentId]['temps'];
+                    $week_number = $tempsPlanningHebdo[$agentId]['nb_semaine'];
                 }
             } else {
-                $temps = json_decode(html_entity_decode($elem['temps'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+                $temps = $agent->getWorkingHours();
             }
 
-            $jour = $date_planning->planning_day_index_for($elem['id'], $week_number);
+            $datePl = new \datePl($date);
+            $jour = $datePl->planning_day_index_for($agentId, $week_number);
 
             // Si l'emploi du temps est renseigné
             if (!empty($temps) and array_key_exists($jour, $temps)) {
@@ -73,25 +83,56 @@ class PresentSet
 
             // S'il y a des horaires correctement renseignés
             $siteAgent=null;
-            if ($heures and !in_array($elem['id'], $absents)) {
-                if ($config['Multisites-nombre']>1) {
+            if ($heures) {
+                if ($this->config['Multisites-nombre']>1) {
                     if (!empty($heures[4])) {
-                        $siteAgent = $heures[4] == -1 ? "Tout site" : $config['Multisites-site'.$heures[4]];
+                        $siteAgent = $heures[4] == -1 ? "Tout site" : $this->config['Multisites-site'.$heures[4]];
                     }
                 }
                 $siteAgent=$siteAgent?$siteAgent.", ":null;
 
-                $horaires=null;
-                if (!$heures[1] and !$heures[2]) {		// Pas de pause le midi
-                    $horaires=heure2($heures[0])." - ".heure2($heures[3]);
-                } elseif (!$heures[2] and !$heures[3]) {	// matin seulement
-                    $horaires=heure2($heures[0])." - ".heure2($heures[1]);
-                } elseif (!$heures[0] and !$heures[1]) {	// après midi seulement
-                    $horaires=heure2($heures[2])." - ".heure2($heures[3]);
-                } else {		// matin et après midi avec pause
-                    $horaires=heure2($heures[0])." - ".heure2($heures[1])." & ".heure2($heures[2])." - ".heure2($heures[3]);
+                $schedule = [];
+                if (!empty($heures[0]) and !empty($heures[1])) {
+                    $schedule[] = [$heures[0], $heures[1]];
+                } elseif (!empty($heures[0]) and !empty($heures[5])) {
+                    $schedule[] = [$heures[0], $heures[5]];
+                } elseif (!empty($heures[0]) and !empty($heures[3])) {
+                    $schedule[] = [$heures[0], $heures[3]];
                 }
-                $presents[]=array("id"=>$elem['id'],"nom"=>$elem['nom']." ".$elem['prenom'],"site"=>$siteAgent,"heures"=>$horaires);
+
+                if (!empty($heures[2]) and !empty($heures[5])) {
+                    $schedule[] = [$heures[2], $heures[5]];
+                } elseif (!empty($heures[2]) and !empty($heures[3])) {
+                    $schedule[] = [$heures[2], $heures[3]];
+                }
+
+                if (!empty($heures[6]) and !empty($heures[3])) {
+                    $schedule[] = [$heures[6], $heures[3]];
+                }
+
+                // Remove hours where the agent is away
+                $awayTimeSlots = $this->getAgentAwayTimeSlots($agentId, $date);
+                $schedule = array_filter(
+                    $schedule,
+                    function ($s) use ($date, $awayTimeSlots): bool {
+                        $begin = new DateTime(sprintf('%s %s', $date, $s[0]));
+                        $end = new DateTime(sprintf('%s %s', $date, $s[1]));
+                        foreach ($awayTimeSlots as $awayTimeSlot) {
+                            if ($awayTimeSlot->includes($begin) && $awayTimeSlot->includes($end)) {
+                                return false;
+                            }
+                        }
+                        return true;
+                    }
+                );
+
+                $schedule = array_map(fn ($s) => sprintf('%s - %s', heure2($s[0]), heure2($s[1])), $schedule);
+                $presents[] = [
+                    "id" => $agentId,
+                    "nom" => $agent->getLastname() . " " . $agent->getFirstname(),
+                    "site" => $siteAgent,
+                    "heures" => implode(' & ', $schedule),
+                ];
             }
         }
 
@@ -101,7 +142,7 @@ class PresentSet
     /**
      * @return mixed[]
      */
-    private static function getPlanningHebdo($date): array
+    private static function getPlanningHebdo(string $date): array
     {
         // if module PlanningHebdo: search related plannings.
         require_once __DIR__ . '/../../legacy/Class/class.planningHebdo.php';
@@ -121,6 +162,33 @@ class PresentSet
         }
 
         return $tempsPlanningHebdo;
+    }
+
+    /**
+     * @return TimeSlot[]
+     */
+    public function getAgentAwayTimeSlots(int $agentId, string $date): array
+    {
+        $timeSlots = [];
+
+        if ($this->config['Conges-Enable']) {
+            /** @var \App\Repository\HolidayRepository */
+            $holidayRepository = $this->entityManager->getRepository(Holiday::class);
+            $holidays = $holidayRepository->get("$date 00:00:00", "$date 23:59:59", agentId: $agentId);
+
+            foreach ($holidays as $holiday) {
+                $timeSlots[] = new TimeSlot($holiday->getStart(), $holiday->getEnd());
+            }
+        }
+
+        /** @var \App\Repository\AbsenceRepository */
+        $absenceRepository = $this->entityManager->getRepository(Absence::class);
+        $absences = $absenceRepository->get("$date 00:00:00", "$date 23:59:59", agentId: $agentId);
+        foreach ($absences as $absence) {
+            $timeSlots[] = new TimeSlot($absence->getStart(), $absence->getEnd());
+        }
+
+        return $timeSlots;
     }
 }
 
