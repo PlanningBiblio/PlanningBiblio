@@ -46,7 +46,6 @@ class PresentSet
 
         $presents = array();
         foreach ($agents as $agent) {
-            error_log(sprintf('Agent %d', $agent->getId()));
             // Exclude agents who are not working on the request site
             if ($this->config['Multisites-nombre'] > 1 and $site != 0 ) {
                 $agentSites = $agent->getSites();
