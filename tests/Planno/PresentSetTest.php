@@ -17,6 +17,9 @@ class PresentSetTest extends KernelTestCase
     {
         self::bootKernel();
 
+        // TODO: Do the same tests but with PlanningHebdo enabled
+        $GLOBALS['config']['PlanningHebdo'] = 0;
+
         $container = static::getContainer();
 
         $presentSet = $container->get(PresentSet::class);
