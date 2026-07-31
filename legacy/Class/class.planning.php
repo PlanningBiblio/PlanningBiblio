@@ -731,7 +731,7 @@ class planning
     }
 
     // Insertion, mise à jour des notes
-    public function updateNotes(): void
+    public function updateNotes($loginId): void
     {
         $date=$this->date;
         $site=$this->site;
@@ -744,7 +744,12 @@ class planning
         if (strcmp($previousNotes, $text)!=0) {
             $db=new db();
             $db->CSRFToken = $this->CSRFToken;
-            $db->insert("pl_notes", array("date"=>$date,"site"=>$site,"text"=>$text,"perso_id"=>$_SESSION['login_id']));
+            $db->insert('pl_notes', [
+                'date' => $date,
+                'site' => $site,
+                'text' => $text,
+                'perso_id' => $loginId,
+            ]);
         }
     }
 

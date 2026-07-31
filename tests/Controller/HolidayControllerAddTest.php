@@ -49,6 +49,7 @@ class HolidayControllerAddTest extends PLBWebTestCase
 
         $jdevoe = new Agent();
         $jdevoe->setLogin('jdevoe');
+        $jdevoe->setPassword('password');
         $jdevoe->setLastName('Devoe');
         $jdevoe->setFirstName('John');
         $jdevoe->setSites(['1']);
@@ -58,6 +59,7 @@ class HolidayControllerAddTest extends PLBWebTestCase
 
         $abreton = new Agent();
         $abreton->setLogin('abreton');
+        $abreton->setPassword('password');
         $abreton->setLastName('Breton');
         $abreton->setFirstName('Aubert');
         $abreton->setSites(['1']);
@@ -67,6 +69,7 @@ class HolidayControllerAddTest extends PLBWebTestCase
 
         $kboivin = new Agent();
         $kboivin->setLogin('kboivin');
+        $kboivin->setPassword('password');
         $kboivin->setLastName('Boivin');
         $kboivin->setFirstName('Karel');
         $kboivin->setSites(['2']);
@@ -76,6 +79,7 @@ class HolidayControllerAddTest extends PLBWebTestCase
 
         $jdupont = new Agent();
         $jdupont->setLogin('jdupont');
+        $jdupont->setPassword('password');
         $jdupont->setLastName('Dupont');
         $jdupont->setFirstName('Jean');
         $jdupont->setSites(['1', '2']);

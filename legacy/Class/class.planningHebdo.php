@@ -1,11 +1,9 @@
 <?php
 /**
-Description :
-Fichier regroupant le fonctions planningHebdo.
-Appelé par les autres fichiers du dossier planningHebdo
+ * Description :
+ * Fichier regroupant le fonctions planningHebdo.
+ * Appelé par les autres fichiers du dossier planningHebdo
 */
-
-// pas de $version=acces direct aux pages de ce dossier => Accès refusé
 
 require_once 'class.absences.php';
 
@@ -43,7 +41,7 @@ class planningHebdo
         $data['breaktime'] = isset($data['breaktime']) ? $data['breaktime'] : [];
         $data['exception'] = $data['exception'] ?? 0;
 
-        $perso_id=array_key_exists("perso_id", $data)?$data["perso_id"]:$_SESSION['login_id'];
+        $perso_id = array_key_exists('perso_id', $data) ? $data['perso_id'] : $data['loginId'];
 
         if ($data['exception']) {
             $db = new db();
@@ -68,27 +66,27 @@ class planningHebdo
 
         if (array_key_exists("validation", $data)) {
             switch ($data['validation']) {
-        case -1:
-          $valide_n1 = -1 * $_SESSION['login_id'];
-          $validation_n1 = date("Y-m-d H:i:s");
-          $valide_n2 = 0;
-          $validation_n2 = "0000-00-00 00:00:00";
-          break;
-        case 1:
-          $valide_n1 = $_SESSION['login_id'];
-          $validation_n1 = date("Y-m-d H:i:s");
-          $valide_n2 = 0;
-          $validation_n2 = "0000-00-00 00:00:00";
-          break;
-        case -2:
-          $valide_n2 = -1 * $_SESSION['login_id'];
-          $validation_n2 = date("Y-m-d H:i:s");
-          break;
-        case 2:
-          $valide_n2 = $_SESSION['login_id'];
-          $validation_n2 = date("Y-m-d H:i:s");
-          break;
-      }
+                case -1:
+                    $valide_n1 = -1 * $data['loginId'];
+                    $validation_n1 = date('Y-m-d H:i:s');
+                    $valide_n2 = 0;
+                    $validation_n2 = '0000-00-00 00:00:00';
+                    break;
+                case 1:
+                    $valide_n1 = $data['loginId'];
+                    $validation_n1 = date('Y-m-d H:i:s');
+                    $valide_n2 = 0;
+                    $validation_n2 = '0000-00-00 00:00:00';
+                    break;
+                case -2:
+                    $valide_n2 = -1 * $data['loginId'];
+                    $validation_n2 = date('Y-m-d H:i:s');
+                    break;
+                case 2:
+                    $valide_n2 = $data['loginId'];
+                    $validation_n2 = date('Y-m-d H:i:s');
+                    break;
+            }
         }
 
         $CSRFToken=$data['CSRFToken'];
@@ -470,7 +468,7 @@ class planningHebdo
         $data['fin']=preg_replace("/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/", "$3-$2-$1", $data['fin']);
         $data['breaktime'] = isset($data['breaktime']) ? $data['breaktime'] : null;
 
-        $perso_id = !empty($data['valide']) ? $data['valide'] : $_SESSION['login_id'];
+        $perso_id = !empty($data['valide']) ? $data['valide'] : $data['loginId'];
 
         // Validation : initialisation
         $valide_n1 = 0;
@@ -490,26 +488,26 @@ class planningHebdo
                 $notification = 2;
                 break;
                 case -1:
-                $valide_n1 = -1 * $_SESSION['login_id'];
+                $valide_n1 = -1 * $data['loginId'];
                 $validation_n1 = date("Y-m-d H:i:s");
                 $valide_n2 = 0;
                 $validation_n2 = "0000-00-00 00:00:00";
                 $notification = 3;
                 break;
                 case 1:
-                $valide_n1 = $_SESSION['login_id'];
+                $valide_n1 = $data['loginId'];
                 $validation_n1 = date("Y-m-d H:i:s");
                 $valide_n2 = 0;
                 $validation_n2 = "0000-00-00 00:00:00";
                 $notification = 3;
                 break;
                 case -2:
-                $valide_n2 = -1 * $_SESSION['login_id'];
+                $valide_n2 = -1 * $data['loginId'];
                 $validation_n2 = date("Y-m-d H:i:s");
                 $notification = 4;
                 break;
                 case 2:
-                $valide_n2 = $_SESSION['login_id'];
+                $valide_n2 = $data['loginId'];
                 $validation_n2 = date("Y-m-d H:i:s");
                 $notification = 4;
                 break;

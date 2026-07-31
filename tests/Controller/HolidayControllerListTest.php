@@ -42,7 +42,7 @@ class HolidayControllerListTest extends PLBWebTestCase
         $this->config->setParam('Multisites-nombre', 1);
         $this->config->setParam('PlanningHebdo', 0);
 
-        $client = static::createClient();
+        $this->client = static::createClient();
 
         $workinghours = array(
             0 => array('0' => '09:00:00', '1' => '12:00:00', '2' => '13:00:00', '3' => '17:00:00'),
@@ -94,7 +94,7 @@ class HolidayControllerListTest extends PLBWebTestCase
 
         // Login with agent without rights for holiday
         $this->logInAgent($jdupont, $jdupont->getACL());
-        $crawler = $client->request('GET', "/holiday?debut=$debut&fin=$fin");
+        $crawler = $this->client->request('GET', "/holiday?debut=$debut&fin=$fin");
 
         $this->assertSelectorNotExists('select#perso_id');
 
@@ -103,7 +103,7 @@ class HolidayControllerListTest extends PLBWebTestCase
 
         // Login with agent having rights for holiday
         $this->logInAgent($kboivin, $kboivin->getACL());
-        $crawler = $client->request('GET', "/holiday?debut=$debut&fin=$fin");
+        $crawler = $this->client->request('GET', "/holiday?debut=$debut&fin=$fin");
 
         $agents_select = $crawler->filter('select#perso_id option');
         $this->assertCount(4, $agents_select, 'KBoivin can select 4 options in the list (All, Admin and 3 agents)');

@@ -33,6 +33,7 @@ class AbsenceControllerNotificationTest extends PLBWebTestCase
         $absence->pj1 = '';
         $absence->pj2 = '';
         $absence->so = '';
+        $absence->loginId = 1;
 
         $absence->add();
 
@@ -44,7 +45,7 @@ class AbsenceControllerNotificationTest extends PLBWebTestCase
         $this->config->setParam('Absences-notifications-agent-par-agent', 1);
         $this->config->setParam('Multisites-nombre', 1);
 
-        $client = static::createClient();
+        $this->client = static::createClient();
 
         $jdupont = $this->builder->build(Agent::class, array(
             'login' => 'jdupont', 'nom' => 'Dupont', 'prenom' => 'Jean',
@@ -82,7 +83,7 @@ class AbsenceControllerNotificationTest extends PLBWebTestCase
 
         // Login with agent without rights for absences
         $this->logInAgent($jdupont, $jdupont->getACL());
-        $crawler = $client->request('GET', '/absence?perso_id=0');
+        $crawler = $this->client->request('GET', '/absence?perso_id=0');
 
         $this->assertSelectorNotExists('select#perso_id');
 
@@ -93,7 +94,7 @@ class AbsenceControllerNotificationTest extends PLBWebTestCase
 
         // Login with agent having rights for absences
         $this->logInAgent($kboivin, $kboivin->getACL());
-        $crawler = $client->request('GET', '/absence?perso_id=0');
+        $crawler = $this->client->request('GET', '/absence?perso_id=0');
 
         $agents_select = $crawler->filter('select#perso_id option');
         $this->assertCount(4, $agents_select, 'KBoivin can select 4 options in the list (All, Admin and 3 agents)');

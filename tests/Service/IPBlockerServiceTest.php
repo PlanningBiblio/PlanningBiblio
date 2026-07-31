@@ -1,22 +1,23 @@
 <?php
 
 use App\Entity\Agent;
-
+use App\Service\IPBlockerService;
 use Tests\PLBWebTestCase;
 use Tests\FixtureBuilder;
 
-class AuthorizationsControllerLoginFailedWait extends PLBWebTestCase
+class IPBlockerServiceTest extends PLBWebTestCase
 {
-    public function testLoginFailedWait(): void
+    public function testLogFailure(): void
     {
-        $GLOBALS['config']['IPBlocker-Attempts'] = 3;
+        $this->config->setParam('IPBlocker-Attempts', '3');
         $_SERVER['REMOTE_ADDR'] = '11.11.11.11';
 
-        loginFailed('ben', $this->CSRFToken);
+        $client = static::createClient([]);
+        $iPBlocker = $client->getContainer()->get(IPBlockerService::class);
 
-        $client = static::createClient([], ['REMOTE_ADDR' => '11.11.11.11']);
+        $iPBlocker->logFailure('ben');
+
         $client->request('GET', '/login');
-        //$response = $client->getResponse()->getContent();
 
         $this->assertEquals(
             200,
@@ -24,7 +25,7 @@ class AuthorizationsControllerLoginFailedWait extends PLBWebTestCase
             "One failed attempt don't block the IP"
         );
 
-        loginFailed('ben', $this->CSRFToken);
+        $iPBlocker->logFailure('ben');
         $client->request('GET', '/login');
 
         $this->assertEquals(
@@ -33,7 +34,7 @@ class AuthorizationsControllerLoginFailedWait extends PLBWebTestCase
             "Second failed attempt don't block the IP"
         );
 
-        loginFailed('ben', $this->CSRFToken);
+        $iPBlocker->logFailure('ben');
         $client->request('GET', '/login');
 
         $this->assertEquals(
@@ -42,7 +43,7 @@ class AuthorizationsControllerLoginFailedWait extends PLBWebTestCase
             "Third failed attempt will block the IP"
         );
 
-        loginFailed('ben', $this->CSRFToken);
+        $iPBlocker->logFailure('ben');
         $client->request('GET', '/login');
 
         $this->assertEquals(

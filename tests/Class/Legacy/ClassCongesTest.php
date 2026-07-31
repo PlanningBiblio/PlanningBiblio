@@ -28,12 +28,14 @@ class ClassCongesTest extends KernelTestCase
         // Agents
         $agent = new Agent();
         $agent->setLogin('jdupont');
+        $agent->setPassword('passsword');
         $entityManager->persist($agent);
         $entityManager->flush();
         $userId = $agent->getId();
 
         $agent2 = new Agent();
         $agent2->setLogin('aboiron');
+        $agent2->setPassword('password');
         $entityManager->persist($agent2);
         $entityManager->flush();
         $userId2 = $agent2->getId();
@@ -182,6 +184,7 @@ class ClassCongesTest extends KernelTestCase
         $c = new \conges();
         $c->perso_id = $this->userId;
         $c->admin = true;
+        $c->loginId = $this->userId;
         $c->getRecup();
 
         $this->assertCount(1, $c->elements);
@@ -196,6 +199,7 @@ class ClassCongesTest extends KernelTestCase
         $c->debut = $start;
         $c->fin = $end;
         $c->admin = true;
+        $c->loginId = $this->userId;
         $c->getRecup();
 
         $this->assertCount(2, $c->elements);
@@ -210,6 +214,7 @@ class ClassCongesTest extends KernelTestCase
         $c = new \conges();
         $c->recupId = $OverTimeId;
         $c->admin = true;
+        $c->loginId = $this->userId;
         $c->getRecup();
 
         $this->assertCount(1, $c->elements);

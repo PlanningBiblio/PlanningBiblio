@@ -61,6 +61,7 @@ class AgentRepositoryTest extends PLBWebTestCase
     {
         $agent = new Agent();
         $agent->setLogin($agentInfo['login']);
+        $agent->setPassword('password');
         $agent->setFirstname($agentInfo['prenom']);
         $agent->setActive($agentInfo['actif']);
         $agent->setDeletion($agentInfo['supprime']);
@@ -185,6 +186,7 @@ class AgentRepositoryTest extends PLBWebTestCase
     {
         $leo = new Agent();
         $leo->setLogin(rand(100,999));
+        $leo->setPassword('password');
         $this->entityManager->persist($leo);
         $this->entityManager->flush();
 

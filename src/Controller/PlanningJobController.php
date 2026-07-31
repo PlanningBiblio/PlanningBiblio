@@ -137,9 +137,11 @@ class PlanningJobController extends BaseController
             return $response;
         }
 
+        $loginId = $this->getUser()->getId();
+
         $history = $this->entityManager
             ->getRepository(PlanningPositionHistory::class)
-            ->undoable($date, $site);
+            ->undoable($date, $site, $loginId);
 
         // Nothing to cancel.
         if (empty($history)) {
@@ -212,9 +214,11 @@ class PlanningJobController extends BaseController
             return $response;
         }
 
+        $loginId = $this->getUser()->getId();
+
         $history = $this->entityManager
              ->getRepository(PlanningPositionHistory::class)
-             ->redoable($date, $site);
+             ->redoable($date, $site, $loginId);
 
         // Nothing to cancel.
         if (empty($history)) {

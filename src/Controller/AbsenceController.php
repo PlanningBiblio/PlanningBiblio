@@ -244,8 +244,8 @@ class AbsenceController extends BaseController
 
         $default = [
             'perso_ids' => [],
-            'nom' => $_SESSION['login_nom'],
-            'prenom'=> $_SESSION['login_prenom'], 
+            'nom' => $this->getUser()->getLastname(),
+            'prenom'=> $this->getUser()->getFirstname(), 
             'perso_id' => $session->get('loginId'), 
             'motif' => null, 
             'motif_autre' => null,
@@ -303,8 +303,6 @@ class AbsenceController extends BaseController
             'CSRFToken'             => $GLOBALS['CSRFSession'],
             'fullday'               => $this->config('Absences-journeeEntiere'),
             'loggedin_id'           => $session->get('loginId'),
-            'loggedin_name'         => $_SESSION['login_nom'],
-            'loggedin_firstname'    => $_SESSION['login_prenom'],
             'reason_types'          => $this->reasonTypes(),
             'reasons'               => $this->availablesReasons(),
             'display_autre'         => false,
@@ -553,8 +551,6 @@ class AbsenceController extends BaseController
             'fullday'               => ($hre_debut == '00:00:00' && $hre_fin == '23:59:59'),
             'CSRFToken'             => $GLOBALS['CSRFSession'],
             'loggedin_id'           => $session->get('loginId'),
-            'loggedin_name'         => $_SESSION['login_nom'],
-            'loggedin_firstname'    => $_SESSION['login_prenom'],
             'reasons'               => $this->availablesReasons(),
             'reason_types'          => $this->reasonTypes(),
             'display_autre'         => $display_autre,
@@ -827,8 +823,9 @@ class AbsenceController extends BaseController
         $module = $request->query->get('module');
         $entity_id = $request->query->get('id');
         $workflow = $request->query->get('workflow', 'A');
+        $session = $request->getSession();
 
-        $this->templateParams($this->getStatusesParams($agent_ids, $module, $entity_id, $workflow));
+        $this->templateParams($this->getStatusesParams($agent_ids, $module, $entity_id, $workflow, $session));
 
         return $this->output('/common/validation-statuses.html.twig');
     }
@@ -959,6 +956,7 @@ class AbsenceController extends BaseController
         $a->pj1 = $pj1;
         $a->pj2 = $pj2;
         $a->so = $so;
+        $a->loginId = $session->get('loginId');
         $a->add();
         $msg2 = $a->msg2;
         $msg2_type = $a->msg2_type;
@@ -1366,6 +1364,7 @@ class AbsenceController extends BaseController
                 $a->so = $so;
                 $a->uid = $uid;
                 $a->id = $id;
+                $a->loginId = $session->get('loginId');
                 $a->add();
                 $msg2 = $a->msg2;
                 $msg2_type = $a->msg2_type;

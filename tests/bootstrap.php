@@ -16,7 +16,11 @@ if (!file_exists(__DIR__ . "/../.env.test.local")) {
 }
 
 (new Dotenv())->load(__DIR__ . "/../.env.test.local");
+
 $database_url = $_ENV['DATABASE_URL'];
+if (!empty($_ENV['MEMORY_LIMIT'])) {
+    ini_set('memory_limit', $_ENV['MEMORY_LIMIT']);
+}
 
 $pattern = '/.[^\/]*\/\/(.[^:]*):(.[^@]*)@(.[^:]*):(\d*)\/(.*)/';
 

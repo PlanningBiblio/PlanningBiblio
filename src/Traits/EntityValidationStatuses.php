@@ -5,10 +5,11 @@ namespace App\Traits;
 use App\Planno\ValidationAwareEntity;
 use App\Entity\Agent;
 use App\Entity\Config;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 trait EntityValidationStatuses
 {
-    public function getStatusesParams($agent_ids, $module, $entity_id = null, String $workflow = 'A'): array
+    public function getStatusesParams($agent_ids, $module, $entity_id = null, String $workflow = 'A', ?Session $session = null): array
     {
         if (!$agent_ids) {
             throw new \Exception("EntityValidationStatuses::getStatusesParams: No agent");
@@ -16,7 +17,7 @@ trait EntityValidationStatuses
 
         $show_select = false;
 
-        $entity = new ValidationAwareEntity($module, $entity_id);
+        $entity = new ValidationAwareEntity($module, $entity_id, $session);
         list($entity_state, $entity_state_desc) = $entity->status();
 
         // At this point, overtime entities
@@ -31,7 +32,7 @@ trait EntityValidationStatuses
                 ->getRepository(Agent::class)
                 ->setModule($module)
                 ->forAgent($id)
-                ->getValidationLevelFor($_SESSION['login_id'], $workflow);
+                ->getValidationLevelFor($session->get('loginId'), $workflow);
 
             $adminN1 = $N1 && $adminN1;
             $adminN2 = $N2 && $adminN2;

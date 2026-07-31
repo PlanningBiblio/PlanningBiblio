@@ -33,14 +33,18 @@ class WorkingHourControllerCyclesTest extends PLBWebTestCase
         // Create agents
         $agent = new Agent();
         $agent->setLogin('agent1')
+            ->setPassword('password')
             ->setACL([6, 99, 100, 201, 301, 302, 501, 1001, 1002, 1101, 1201]);
 
         $alex = new Agent();
         $alex->setLogin('alex');
+        $alex->setPassword('password');
         $aurelie = new Agent();
         $aurelie->setLogin('aurelie');
+        $aurelie->setPassword('password');
         $delphine = new Agent();
         $delphine->setLogin('delphine');
+        $delphine->setPassword('password');
 
         $entityManager->persist($agent);
         $entityManager->persist($alex);

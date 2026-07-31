@@ -6,9 +6,21 @@ use App\Entity\Config;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
+use Facebook\WebDriver\WebDriverDimension;
 use Facebook\WebDriver\WebDriverSelect;
 use Symfony\Component\BrowserKit\Cookie;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\Panther\PantherTestCase;
+// Pour Symfony 8.4
+// use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
+use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
+use Symfony\Component\Security\Http\Authenticator\Token\PostAuthenticationToken;
+use Symfony\Component\Security\Http\Event\LoginSuccessEvent;
+
 
 class PLBWebTestCase extends PantherTestCase
 {
@@ -75,13 +87,16 @@ class PLBWebTestCase extends PantherTestCase
         $this->config = $entityManager->getRepository(Config::class);
 
         $_SESSION['oups']['Auth-Mode'] = 'SQL';
-        $_SESSION['login_id'] = 1;
         $_SESSION['oups']['CSRFToken'] = $CSRFToken;
         $GLOBALS['CSRFSession'] = $CSRFToken;
     }
 
-    protected function logInAgent($agent, $rights = array(99, 100)) {
-        $_SESSION['login_id'] = $agent->getId();
+    // loginAgent is used without Panther (WebTestCase)
+    protected function logInAgent($agent, $rights = array(99, 100)): void
+    {
+        global $entityManager;
+
+        $GLOBALS['droits'] = $rights;
 
         $agent->setACL($rights);
 
@@ -89,27 +104,59 @@ class PLBWebTestCase extends PantherTestCase
         $entityManager->persist($agent);
         $entityManager->flush();
 
-        $GLOBALS['droits'] = $rights;
-        $crawler = $this->client->request('GET', '/login');
-        $session = $this->client->getRequest()->getSession();
-        $session->set('loginId', $agent->getId());
-        $session->save();
-    
-        $cookie = new Cookie($session->getName(), $session->getId());
-        $this->client->getCookieJar()->set($cookie);
-    }
+        $this->client->request('GET', '/'); 
+        $this->client->loginUser($agent);
 
-    protected function setUpPantherClient()
-    {
-        $this->client = static::createPantherClient(
-            array(
-                '--no-sandbox',
-                '--disable-dev-shm-usage',
-                '--headless'
-            )
+        $passport = new SelfValidatingPassport(
+            new UserBadge($agent->getUserIdentifier(), function() use ($agent) {
+                return $agent;
+            })
         );
+
+        $token = new PostAuthenticationToken(
+            $agent, 
+            'main',
+            $agent->getRoles()
+        );
+
+        $request = Request::create('/');
+        $session = static::getContainer()->get('session.factory')->createSession();
+        $request->setSession($session);
+
+        $authenticator = static::getContainer()->get('security.authenticator.form_login.main');
+
+        $event = new LoginSuccessEvent(
+            $authenticator,
+            $passport,
+            $token,
+            $request,
+            new Response(),
+            'main'
+        );
+
+        // Pour Symfony 8.4
+        // $token = new UsernamePasswordToken($agent, 'main', $agent->getRoles());
+        // $request = Request::create('/');
+        // $session = static::getContainer()->get('session.factory')->createSession();
+        // $request->setSession($session);
+
+        // $event = new LoginSuccessEvent(
+        //     static::getContainer()->get('security.authenticator.form_login.main'),
+        //     $token,
+        //     $request,
+        //     new Response(),
+        //     'main'
+        // );
+
+        $eventDispatcher = static::getContainer()->get('event_dispatcher');
+        $eventDispatcher->dispatch($event);
+
+        // TEST
+        // $this->client->request('GET', '/absence');
+        // $this->assertResponseIsSuccessful();
     }
 
+    // login is used with Panther (PantherTestCase)
     protected function login($agent)
     {
         $this->logout();
@@ -123,9 +170,8 @@ class PLBWebTestCase extends PantherTestCase
         $crawler = $this->client->request('GET', '/login');
 
         $form = $crawler->selectButton('Valider')->form();
-        $form['login'] = $agent->getLogin();
-        $form['password'] = 'MyPass';
-
+        $form['_username'] = $agent->getLogin();
+        $form['_password'] = 'MyPass';
         $crawler = $this->client->submit($form);
 
         $this->client->waitForVisibility('html');
@@ -134,6 +180,20 @@ class PLBWebTestCase extends PantherTestCase
     protected function logout()
     {
         $this->client->request('GET', '/logout');
+    }
+
+    protected function setUpPantherClient()
+    {
+        $this->client = static::createPantherClient(
+            array(
+                '--no-sandbox',
+                '--disable-dev-shm-usage',
+                '--headless'
+            )
+        );
+
+        $size = new WebDriverDimension(1920, 1080);
+        $this->client->manage()->window()->maximize()->setSize($size);
     }
 
     protected function jqueryAjaxFinished(): callable

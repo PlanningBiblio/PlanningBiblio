@@ -19,8 +19,6 @@ class WorkingHourControllerListTest extends PLBWebTestCase
 
     private function createWorkingHoursFor($agent, $status = 0)
     {
-        $_SESSION['login_id'] = 1;
-
         $date = new DateTime('now + 3 day');
         $end = new DateTime('now + 1 year');
 
@@ -54,7 +52,7 @@ class WorkingHourControllerListTest extends PLBWebTestCase
         $this->config->setParam('PlanningHebdo', 1);
         $this->config->setParam('PlanningHebdo-notifications-agent-par-agent',1);
 
-        $client = static::createClient();
+        $this->client = static::createClient();
 
 
         $jdupont = $this->builder->build(Agent::class, array(
@@ -93,7 +91,7 @@ class WorkingHourControllerListTest extends PLBWebTestCase
 
         // Login with agent without rights for WeekPlannings
         $this->logInAgent($jdupont, $jdupont->getACL());
-        $crawler = $client->request('GET', '/workinghour');
+        $crawler = $this->client->request('GET', '/workinghour');
 
         $this->assertSelectorNotExists('select#perso_id');
 
@@ -103,7 +101,7 @@ class WorkingHourControllerListTest extends PLBWebTestCase
 
         // Login with agent having rights for WeekPlanning
         $this->logInAgent($kboivin, $kboivin->getACL());
-        $crawler = $client->request('GET', '/workinghour');
+        $crawler = $this->client->request('GET', '/workinghour');
 
         // Check available agents ordered by name
         $result = $crawler->filterXPath('//table[@id="tablePlanningHebdo"]/tbody/tr');

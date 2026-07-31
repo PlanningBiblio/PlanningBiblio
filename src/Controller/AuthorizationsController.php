@@ -8,6 +8,7 @@ use App\Planno\OpenIDConnect;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 use Psr\Log\LoggerInterface;
 
@@ -17,13 +18,19 @@ include_once(__DIR__ . '/../../legacy/Class/class.ldap.php');
 class AuthorizationsController extends BaseController
 {
 
-    #[Route(path: '/login', name: 'login', methods: ['GET'])]
-    public function login(Request $request, LoggerInterface $logger = null)
+    #[Route(path: '/login', name: 'app_login')]
+    public function login(AuthenticationUtils $authenticationUtils, Request $request, LoggerInterface $logger = null): Response
     {
+        // get the login error if there is one
+        $error = $authenticationUtils->getLastAuthenticationError();
 
-        $error = $this->redirectCAS($request, $logger);
+        // last username entered by the user
+        $lastUsername = $authenticationUtils->getLastUsername();
+
+        $errorPlanno = $this->redirectCAS($request, $logger);
 
         $IPBlocker = loginFailedWait();
+
         if ($IPBlocker > 0) {
             $content = $this->renderView('forbidden.html.twig', array(
                 'remote_addr' => $_SERVER['REMOTE_ADDR'],
@@ -58,21 +65,26 @@ class AuthorizationsController extends BaseController
             'new_login' => $new_login,
             'demo_mode' => empty($this->config('demo')) ? 0 : 1,
             'error' => $error,
+            'errorPlanno' => $errorPlanno,
             'sSOLink' => $sSOLink,
+            'last_username' => $lastUsername,
         ));
 
-        return $this->output('login.html.twig');
+        return $this->output('security/login.html.twig');
     }
 
-    #[Route(path: '/login', name: 'login.check', methods: ['POST'])]
+    // This route has not been used since Symfony authentication was implemented,
+    // but some aspects need to be revisited for LDAP and SSO connections.
+    // #[Route(path: '/login', name: 'login.check', methods: ['POST'])]
     public function check_login(Request $request, LoggerInterface $logger = null)
     {
         $this->redirectCAS($request, $logger);
 
         $session = $request->getSession();
 
-        $login = $request->get('login');
-        $password = $request->get('password');
+        $login = $request->get('_username');
+        $password = $request->get('_password');
+
         $redirect_url = $request->get('redirURL') ?? '/index.php';
 
         $authArgs = null;
@@ -130,14 +142,13 @@ class AuthorizationsController extends BaseController
 
         if ($auth) {
             // Log login and client IP if success login.
+            // LoginSuccess process is now in LoginSuccessListener
             loginSuccess($login, $CSRFToken);
+
+            // Update lastLogin is now done in LoginSuccessListener
             $db = new \db();
             $db->select2("personnel", "id,nom,prenom", array("login"=>$login));
             if ($db->result) {
-                $_SESSION['login_id'] = $db->result[0]['id'];
-                $_SESSION['login_nom'] = $db->result[0]['nom'];
-                $_SESSION['login_prenom'] = $db->result[0]['prenom'];
-
                 // Symfony Session
                 $session = $request->getSession();
                 $session->set('loginId', $db->result[0]['id']);
@@ -150,6 +161,7 @@ class AuthorizationsController extends BaseController
                 $error = "unknown_user";
             }
         } else {
+            // LoginFailure process is now in LoginFailureListener
             loginFailed($login, $CSRFToken);
             $error = 'login_failed';
         }
@@ -160,10 +172,10 @@ class AuthorizationsController extends BaseController
             'auth_args' => $authArgs
         ));
 
-        return $this->output('login.html.twig');
+        return $this->output('security/login.html.twig');
     }
 
-    #[Route(path: '/logout', name: 'logout', methods: ['GET'])]
+    #[Route(path: '/logout', name: 'app_logout')]
     public function logout(Request $request): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         session_destroy();
@@ -247,10 +259,6 @@ class AuthorizationsController extends BaseController
 
             // Création de la session
             // If login exists, create session.
-            $_SESSION['login_id']=$db->result[0]['id'];
-            $_SESSION['login_nom']=$db->result[0]['nom'];
-            $_SESSION['login_prenom']=$db->result[0]['prenom'];
-
             // Symfony Session
             $session = $request->getSession();
             $session->set('loginId', $db->result[0]['id']);

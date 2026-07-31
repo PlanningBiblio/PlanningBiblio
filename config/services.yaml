@@ -65,7 +65,7 @@ services:
     # The Authorization Listener checks the user's rights and redirects him to the access denied page if the rights do not match
     App\EventListener\ControllerAuthorizationListener:
         tags:
-            - { name: kernel.event_listener, event: kernel.request }
+            - { name: kernel.event_listener, event: kernel.request, priority: 5 }
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
@@ -73,3 +73,6 @@ services:
         arguments:
             $prefix: '%env(resolve:DATABASE_PREFIX)%'
         public: true
+
+    # Enables autowiring for the Doctrine Migrations DependencyFactory
+    Doctrine\Migrations\DependencyFactory: '@doctrine.migrations.dependency_factory'

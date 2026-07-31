@@ -19,7 +19,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
     {
         $this->config->setParam('PlanningHebdo-Validation-N2', 0);
 
-        $client = static::createClient();
+        $this->client = static::createClient();
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -33,7 +33,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         $agent_id = $jdevoe->getId();
 
         $this->logInAgent($loggedin, $loggedin->getACL());
-        $crawler = $client->request('GET', "workinghour/add/$agent_id");
+        $crawler = $this->client->request('GET', "workinghour/add/$agent_id");
 
         $statuses_element = $crawler->filter('span#validation');
 
@@ -45,7 +45,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         $this->config->setParam('PlanningHebdo-notifications-agent-par-agent',0);
         $this->config->setParam('PlanningHebdo-Validation-N2', 0);
 
-        $client = static::createClient();
+        $this->client = static::createClient();
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -58,7 +58,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         $agent_id = $jdevoe->getId();
 
         $this->logInAgent($loggedin, $loggedin->getACL());
-        $crawler = $client->request('GET', "workinghour/add/$agent_id");
+        $crawler = $this->client->request('GET', "workinghour/add/$agent_id");
 
         $statuses_elements = $crawler->filter('select#validation option');
 
@@ -74,7 +74,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         $this->config->setParam('PlanningHebdo-notifications-agent-par-agent',0);
         $this->config->setParam('PlanningHebdo-Validation-N2', 0);
 
-        $client = static::createClient();
+        $this->client = static::createClient();
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -87,7 +87,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         $agent_id = $jdevoe->getId();
 
         $this->logInAgent($loggedin, $loggedin->getACL());
-        $crawler = $client->request('GET', "workinghour/add/$agent_id");
+        $crawler = $this->client->request('GET', "workinghour/add/$agent_id");
 
         $statuses_elements = $crawler->filter('select#validation option');
 
@@ -105,7 +105,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         $this->config->setParam('PlanningHebdo-notifications-agent-par-agent',0);
         $this->config->setParam('PlanningHebdo-Validation-N2', 0);
 
-        $client = static::createClient();
+        $this->client = static::createClient();
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -118,7 +118,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         $agent_id = $jdevoe->getId();
 
         $this->logInAgent($loggedin, $loggedin->getACL());
-        $crawler = $client->request('GET', "workinghour/add/$agent_id");
+        $crawler = $this->client->request('GET', "workinghour/add/$agent_id");
 
         $statuses_elements = $crawler->filter('select#validation option');
 
@@ -136,7 +136,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         $this->config->setParam('PlanningHebdo-notifications-agent-par-agent',0);
         $this->config->setParam('PlanningHebdo-Validation-N2', 1);
 
-        $client = static::createClient();
+        $this->client = static::createClient();
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -149,7 +149,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         $agent_id = $jdevoe->getId();
 
         $this->logInAgent($loggedin, $loggedin->getACL());
-        $crawler = $client->request('GET', "workinghour/add/$agent_id");
+        $crawler = $this->client->request('GET', "workinghour/add/$agent_id");
 
         $statuses_element = $crawler->filter('span#validation');
 
@@ -161,7 +161,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         $this->config->setParam('PlanningHebdo-notifications-agent-par-agent',0);
         $this->config->setParam('PlanningHebdo-Validation-N2', 0);
 
-        $client = static::createClient();
+        $this->client = static::createClient();
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -174,7 +174,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
 
         // request /absence-statuses
         $this->logInAgent($loggedin, $loggedin->getACL());
-        $crawler = $client->request('GET', "workinghour/$wh_id");
+        $crawler = $this->client->request('GET', "workinghour/$wh_id");
 
         $statuses_element = $crawler->filter('span#validation');
 
@@ -186,7 +186,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         $this->config->setParam('PlanningHebdo-notifications-agent-par-agent',0);
         $this->config->setParam('PlanningHebdo-Validation-N2', 0);
 
-        $client = static::createClient();
+        $this->client = static::createClient();
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -201,7 +201,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         $wh_id = $this->createWorkinghoursFor($jdevoe, 0);
 
         $this->logInAgent($loggedin, $loggedin->getACL());
-        $crawler = $client->request('GET', "workinghour/$wh_id");
+        $crawler = $this->client->request('GET', "workinghour/$wh_id");
 
         $statuses_elements = $crawler->filter('select#validation option');
 
@@ -217,7 +217,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         $this->config->setParam('PlanningHebdo-notifications-agent-par-agent',0);
         $this->config->setParam('PlanningHebdo-Validation-N2', 0);
 
-        $client = static::createClient();
+        $this->client = static::createClient();
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -232,7 +232,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         $wh_id = $this->createWorkinghoursFor($jdevoe, 0);
 
         $this->logInAgent($loggedin, $loggedin->getACL());
-        $crawler = $client->request('GET', "workinghour/$wh_id");
+        $crawler = $this->client->request('GET', "workinghour/$wh_id");
 
         $statuses_elements = $crawler->filter('select option');
 
@@ -250,7 +250,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         $this->config->setParam('PlanningHebdo-notifications-agent-par-agent',0);
         $this->config->setParam('PlanningHebdo-Validation-N2', 0);
 
-        $client = static::createClient();
+        $this->client = static::createClient();
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -265,7 +265,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         $wh_id = $this->createWorkinghoursFor($jdevoe, 0);
 
         $this->logInAgent($loggedin, $loggedin->getACL());
-        $crawler = $client->request('GET', "workinghour/$wh_id");
+        $crawler = $this->client->request('GET', "workinghour/$wh_id");
 
         $statuses_elements = $crawler->filter('select option');
 
@@ -283,7 +283,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         $this->config->setParam('PlanningHebdo-notifications-agent-par-agent',0);
         $this->config->setParam('PlanningHebdo-Validation-N2', 1);
 
-        $client = static::createClient();
+        $this->client = static::createClient();
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -298,7 +298,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         $wh_id = $this->createWorkinghoursFor($jdevoe, 0);
 
         $this->logInAgent($loggedin, $loggedin->getACL());
-        $crawler = $client->request('GET', "workinghour/$wh_id");
+        $crawler = $this->client->request('GET', "workinghour/$wh_id");
 
         $statuses_element = $crawler->filter('span#validation');
 
@@ -311,7 +311,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         $this->config->setParam('PlanningHebdo-notifications-agent-par-agent',0);
         $this->config->setParam('PlanningHebdo-Validation-N2', 0);
 
-        $client = static::createClient();
+        $this->client = static::createClient();
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -323,7 +323,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         $agent_id = $loggedin->getId();
 
         $this->logInAgent($loggedin, $loggedin->getACL());
-        $crawler = $client->request('GET', "workinghour/$wh_id");
+        $crawler = $this->client->request('GET', "workinghour/$wh_id");
 
         $statuses_element = $crawler->filter('span#validation');
 
@@ -335,7 +335,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         $this->config->setParam('PlanningHebdo-Validation-N2', 0);
         $this->config->setParam('PlanningHebdo-notifications-agent-par-agent',0);
 
-        $client = static::createClient();
+        $this->client = static::createClient();
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -350,7 +350,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         $wh_id = $this->createWorkinghoursFor($jdevoe, 1);
 
         $this->logInAgent($loggedin, $loggedin->getACL());
-        $crawler = $client->request('GET', "workinghour/$wh_id");
+        $crawler = $this->client->request('GET', "workinghour/$wh_id");
 
         $statuses_elements = $crawler->filter('select#validation option');
 
@@ -365,7 +365,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
     {        $this->config->setParam('PlanningHebdo-notifications-agent-par-agent',0);
         $this->config->setParam('PlanningHebdo-Validation-N2', 0);
 
-        $client = static::createClient();
+        $this->client = static::createClient();
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -380,7 +380,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         $wh_id = $this->createWorkinghoursFor($jdevoe, 1);
 
         $this->logInAgent($loggedin, $loggedin->getACL());
-        $crawler = $client->request('GET', "workinghour/$wh_id");
+        $crawler = $this->client->request('GET', "workinghour/$wh_id");
 
         $statuses_elements = $crawler->filter('select#validation option');
 
@@ -398,7 +398,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         $this->config->setParam('PlanningHebdo-notifications-agent-par-agent',0);
         $this->config->setParam('PlanningHebdo-Validation-N2', 0);
 
-        $client = static::createClient();
+        $this->client = static::createClient();
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -414,7 +414,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
 
         // request /absence-statuses
         $this->logInAgent($loggedin, $loggedin->getACL());
-        $crawler = $client->request('GET', "workinghour/$wh_id");
+        $crawler = $this->client->request('GET', "workinghour/$wh_id");
 
         $statuses_elements = $crawler->filter('select#validation option');
 
@@ -432,7 +432,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         $this->config->setParam('PlanningHebdo-notifications-agent-par-agent',0);
         $this->config->setParam('PlanningHebdo-Validation-N2', 1);
 
-        $client = static::createClient();
+        $this->client = static::createClient();
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -447,7 +447,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         $wh_id = $this->createWorkinghoursFor($jdevoe, 1);
 
         $this->logInAgent($loggedin, $loggedin->getACL());
-        $crawler = $client->request('GET', "workinghour/$wh_id");
+        $crawler = $this->client->request('GET', "workinghour/$wh_id");
 
         $statuses_elements = $crawler->filter('select#validation option');
 
@@ -465,7 +465,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         $this->config->setParam('PlanningHebdo-notifications-agent-par-agent',0);
         $this->config->setParam('PlanningHebdo-Validation-N2', 0);
 
-        $client = static::createClient();
+        $this->client = static::createClient();
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -477,7 +477,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         $agent_id = $loggedin->getId();
 
         $this->logInAgent($loggedin, $loggedin->getACL());
-        $crawler = $client->request('GET', "workinghour/$wh_id");
+        $crawler = $this->client->request('GET', "workinghour/$wh_id");
 
         $statuses_element = $crawler->filter('span#validation');
 
@@ -489,7 +489,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         $this->config->setParam('PlanningHebdo-notifications-agent-par-agent',0);
         $this->config->setParam('PlanningHebdo-Validation-N2', 0);
 
-        $client = static::createClient();
+        $this->client = static::createClient();
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -504,7 +504,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         $wh_id = $this->createWorkinghoursFor($jdevoe, 2);
 
         $this->logInAgent($loggedin, $loggedin->getACL());
-        $crawler = $client->request('GET', "workinghour/$wh_id");
+        $crawler = $this->client->request('GET', "workinghour/$wh_id");
 
         $statuses_element = $crawler->filter('span#validation');
 
@@ -517,7 +517,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         $this->config->setParam('PlanningHebdo-notifications-agent-par-agent',0);
         $this->config->setParam('PlanningHebdo-Validation-N2', 0);
 
-        $client = static::createClient();
+        $this->client = static::createClient();
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -532,7 +532,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         $wh_id = $this->createWorkinghoursFor($jdevoe, 2);
 
         $this->logInAgent($loggedin, $loggedin->getACL());
-        $crawler = $client->request('GET', "workinghour/$wh_id");
+        $crawler = $this->client->request('GET', "workinghour/$wh_id");
 
         $statuses_elements = $crawler->filter('select#validation option');
 
@@ -550,7 +550,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         $this->config->setParam('PlanningHebdo-notifications-agent-par-agent',0);
         $this->config->setParam('PlanningHebdo-Validation-N2', 0);
 
-        $client = static::createClient();
+        $this->client = static::createClient();
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -565,7 +565,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         $wh_id = $this->createWorkinghoursFor($jdevoe, 2);
 
         $this->logInAgent($loggedin, $loggedin->getACL());
-        $crawler = $client->request('GET', "workinghour/$wh_id");
+        $crawler = $this->client->request('GET', "workinghour/$wh_id");
 
         $statuses_elements = $crawler->filter('select#validation option');
 
@@ -583,7 +583,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         $this->config->setParam('PlanningHebdo-notifications-agent-par-agent',0);
         $this->config->setParam('PlanningHebdo-Validation-N2', 1);
 
-        $client = static::createClient();
+        $this->client = static::createClient();
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -598,7 +598,7 @@ class WorkingHourControllerStatusesTest extends PLBWebTestCase
         $wh_id = $this->createWorkinghoursFor($jdevoe, 2);
 
         $this->logInAgent($loggedin, $loggedin->getACL());
-        $crawler = $client->request('GET', "workinghour/$wh_id");
+        $crawler = $this->client->request('GET', "workinghour/$wh_id");
 
         $statuses_elements = $crawler->filter('select#validation option');
 

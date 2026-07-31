@@ -198,6 +198,7 @@ class ICalendarControllerTest extends PLBWebTestCase
 
         $c = new \conges();
         $c->CSRFToken = $this->CSRFToken;
+        $c->loginId = $agent->getId();
         $c->add($data);
 
         return $c->id;
@@ -220,6 +221,7 @@ class ICalendarControllerTest extends PLBWebTestCase
         $absence->pj1 = '';
         $absence->pj2 = '';
         $absence->so = '';
+        $absence->loginId = 1;
 
         $absence->add();
 

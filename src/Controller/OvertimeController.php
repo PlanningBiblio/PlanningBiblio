@@ -69,6 +69,7 @@ class OvertimeController extends BaseController
         if ($perso_id != 0) {
             $c->perso_id = $perso_id;
         }
+        $c->loginId = $session->get('loginId');
         $c->getRecup();
         $recup = $c->elements;
 
@@ -187,6 +188,7 @@ class OvertimeController extends BaseController
 
         $c = new \conges();
         $c->recupId = $id;
+        $c->loginId = $session->get('loginId');
         $c->getRecup();
         $recup = $c->elements[0];
         $perso_id = $recup['perso_id'];
@@ -203,7 +205,7 @@ class OvertimeController extends BaseController
             return $this->output('access-denied.html.twig');
         }
 
-        $this->templateParams($this->getStatusesParams(array($perso_id), 'overtime', $id));
+        $this->templateParams($this->getStatusesParams([$perso_id], 'overtime', $id, 'A', $session));
 
 
         // Initialisation des variables (suite)
@@ -251,6 +253,7 @@ class OvertimeController extends BaseController
         // Retrieving compensatory time.
         $c = new \conges();
         $c->recupId = $id;
+        $c->loginId = $session->get('loginId');
         $c->getRecup();
         $recup = $c->elements[0];
         $perso_id = $recup['perso_id'];

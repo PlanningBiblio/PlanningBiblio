@@ -52,7 +52,7 @@
               <ul id="perso_ul1" class="perso_ul">
                 {% if agent_preselection %}
                   <li id="li{{ loggedin_id }}" class="perso_ids_li">
-                    {{ loggedin_name }} {{ loggedin_firstname }}
+                    {{ app.user.lastname }} {{ app.user.firstname }}
                     {% if admin %}
                       <button type="button" class="perso-drop btn btn-icon p-0" onclick="supprimeAgent({ loggedin_id });" title="{% trans %}Delete{% endtrans %}">
                         <span class="pl-icon pl-icon-dropblack"></span>

@@ -21,8 +21,11 @@ use App\Entity\SaturdayWorkingHours;
 use App\Entity\WorkingHour;
 use App\Entity\Config;
 use App\Planno\Helper\HourHelper;
+use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
 
-class AgentRepository extends EntityRepository
+class AgentRepository extends EntityRepository implements PasswordUpgraderInterface
 {
     private $module = 'absence';
 
@@ -780,4 +783,19 @@ class AgentRepository extends EntityRepository
 
         return $query->getSingleColumnResult();
     }
+
+    /**
+     * Used to upgrade (rehash) the user's password automatically over time.
+     */
+    public function upgradePassword(PasswordAuthenticatedUserInterface $user, string $newHashedPassword): void
+    {
+        if (!$user instanceof Agent) {
+            throw new UnsupportedUserException(sprintf('Instances of "%s" are not supported.', $user::class));
+        }
+
+        $user->setPassword($newHashedPassword);
+        $this->getEntityManager()->persist($user);
+        $this->getEntityManager()->flush();
+    }
+
 }

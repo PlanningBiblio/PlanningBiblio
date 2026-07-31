@@ -112,9 +112,7 @@ class CompTimeController extends BaseController
             'hours_per_day'         => $hoursPerDay,
             'hours_per_day_in_hhmm' => $hoursPerDayInHoursMinutes,
             'holiday_info'          => $holiday_info,
-            'agent_name'            => $_SESSION['login_nom'] . ' ' . $_SESSION['login_prenom'],
-            'loggedin_name'         => $_SESSION['login_nom'],
-            'loggedin_firstname'    => $_SESSION['login_prenom'],
+            'agent_name'            => $this->getUser()->getLastname() . ' ' . $this->getUser()->getFirstname(),
             'managed'               => $managed,
             'perso_id'              => $perso_id,
             'recuperation'          => $recuperation,
@@ -226,6 +224,7 @@ class CompTimeController extends BaseController
 
         $c = new \conges();
         $c->CSRFToken = $CSRFToken;
+        $c->loginId = $this->getUser()->getId();
         $c->add($data);
         $id = $c->id;
 

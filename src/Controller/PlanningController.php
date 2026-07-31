@@ -90,12 +90,14 @@ class PlanningController extends BaseController
 
         // Index page only
         // Check if an action is undoable or redoable.
+        $loginId = $this->getUser()->getId();
+
         $undoables = $this->entityManager
             ->getRepository(PlanningPositionHistory::class)
-            ->undoable($date, $site);
+            ->undoable($date, $site, $loginId);
         $redoables = $this->entityManager
             ->getRepository(PlanningPositionHistory::class)
-            ->redoable($date, $site);
+            ->redoable($date, $site, $loginId);
 
         $undoable = 1;
         if (empty($undoables)) {
@@ -923,12 +925,14 @@ class PlanningController extends BaseController
             return new Response(json_encode(['error' => 'Vous n\'avez pas le droit de modifier les commentaires']));
         }
 
+        $loginId = $this->getUser()->getId();
+
         $p=new \planning();
         $p->date = $date;
         $p->site = $site;
         $p->notes = $text;
         $p->CSRFToken = $CSRFToken;
-        $p->updateNotes();
+        $p->updateNotes($loginId);
 
         $p->getNotes();
         $notes = $p->notes;
@@ -1025,7 +1029,7 @@ class PlanningController extends BaseController
         $tout = filter_var($tout, FILTER_CALLBACK, array('options' => 'sanitize_on'));
         $logaction = filter_var($logaction, FILTER_CALLBACK, array('options' => 'sanitize_on'));
 
-        $login_id = $_SESSION['login_id'];
+        $login_id = $this->getUser()->getId();
         $now = date("Y-m-d H:i:s");
 
         $barrer = intval($barrer);
@@ -1226,10 +1230,10 @@ class PlanningController extends BaseController
 
         $undoables = $this->entityManager
         ->getRepository(PlanningPositionHistory::class)
-        ->undoable($date, $site);
+        ->undoable($date, $site, $login_id);
         $redoables = $this->entityManager
         ->getRepository(PlanningPositionHistory::class)
-        ->redoable($date, $site);
+        ->redoable($date, $site, $login_id);
 
         if (empty($undoables)) {
             $response['undoable'] = 0;
@@ -1307,7 +1311,7 @@ class PlanningController extends BaseController
 
             // Color the logged in agent.
             $tab[$i]['is_current_user'] = false;
-            if (!empty($this->config('Affichage-Agent')) and $tab[$i]['perso_id'] == $_SESSION['login_id']) {
+            if (!empty($this->config('Affichage-Agent')) and $tab[$i]['perso_id'] == $this->getUser()->getId()) {
                 $tab[$i]['is_current_user'] = true;
             }
 
@@ -1646,7 +1650,7 @@ class PlanningController extends BaseController
                     }
 
                     // Color the logged in agent.
-                    if (!empty($this->config('Affichage-Agent')) and $elem['perso_id'] == $_SESSION['login_id']) {
+                    if (!empty($this->config('Affichage-Agent')) and $elem['perso_id'] == $this->getUser()->getId()) {
                         $class_tmp[] = 'current-user-cell';
                     }
 

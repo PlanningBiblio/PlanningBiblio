@@ -2,6 +2,8 @@
 
 namespace App\Planno;
 
+use Symfony\Component\HttpFoundation\Session\Session;
+
 require_once(__DIR__ . '/../../legacy/Class/class.absences.php');
 require_once(__DIR__ . '/../../legacy/Class/class.conges.php');
 require_once(__DIR__ . '/../../legacy/Class/class.planningHebdo.php');
@@ -31,7 +33,7 @@ class ValidationAwareEntity
 
     private $config;
 
-    public function __construct($entity_type, $entity_id)
+    public function __construct($entity_type, $entity_id, ?Session $session)
     {
         if (!in_array($entity_type, array('absence', 'holiday', 'overtime', 'workinghour'))) {
             throw new \Exception("ValidationAwareEntity::new: Unsupported entity $entity_type");
@@ -54,7 +56,7 @@ class ValidationAwareEntity
         }
 
         if ($entity_type == 'overtime') {
-            $this->entity = self::load_overtime($entity_id);
+            $this->entity = self::load_overtime($entity_id, $session);
         }
 
         if ($entity_type == 'workinghour') {
@@ -147,10 +149,11 @@ class ValidationAwareEntity
         return $c->elements[0];
     }
 
-    private static function load_overtime($id)
+    private static function load_overtime($id, $session)
     {
-        $c = new \conges();
+        $c = new \conges($session);
         $c->recupId = $id;
+        $c->loginId = $session->get('loginId');
         $c->getRecup();
 
         return $c->elements[0];
