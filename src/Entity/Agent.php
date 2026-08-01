@@ -403,6 +403,11 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getDisplayName(): ?string
+    {
+        return $this->prenom . ' ' . $this->nom;
+    }
+
     public function getMail(): ?string
     {
         return $this->mail;

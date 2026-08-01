@@ -50,6 +50,11 @@
               <div class="mb-3">
                   You are logged in as {{ app.user.userIdentifier }}, <a href="{{ logout_path() }}">Logout</a>
               </div>
+
+              <span> {{ app.user.lastname }} {{ app.user.firstname }} </span>
+              {% if is_granted('ROLE_ADMIN') %}
+                  <span>Compte admin</span>
+              {% endif %}
           {% endif %}
 
           <table style='width:100%;'>
