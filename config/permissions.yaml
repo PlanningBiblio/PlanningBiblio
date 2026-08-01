@@ -1,5 +1,6 @@
 # This file gathers the routes and the rights required to access each of them
 # This file is called by the ControllerAuthorization Listener
+# Whenever possible, use access_control in config/packages/security.yaml instead.
 
 "absence.add":
     - 100

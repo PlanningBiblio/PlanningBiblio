@@ -21,8 +21,7 @@ security:
                 enable_csrf: true
             logout:
                 path: app_logout
-            custom_authenticators:
-                - App\Security\PlannoAuthenticator
+            # custom_authenticators:
                 # where to redirect after logout
                 # target: app_any_route
 
@@ -36,6 +35,5 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        - { path: ^/absence, roles: ROLE_ADMIN }
-        - { path: ^/admin, roles: ROLE_ADMIN }
-        - { path: ^/profile, roles: ROLE_USER }
+        # - { path: ^/admin, roles: ROLE_ADMIN }
+        # - { path: ^/profile, roles: ROLE_USER }

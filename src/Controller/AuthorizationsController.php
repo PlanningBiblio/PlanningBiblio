@@ -18,16 +18,9 @@ include_once(__DIR__ . '/../../legacy/Class/class.ldap.php');
 class AuthorizationsController extends BaseController
 {
 
-    // #[Route(path: '/login', name: 'login', methods: ['GET'])]
     #[Route(path: '/login', name: 'app_login')]
     public function login(AuthenticationUtils $authenticationUtils, Request $request, LoggerInterface $logger = null): Response
     {
-        // if ($request->request->get('_username')
-        //     and $request->request->get('_password')
-        // ){
-        //     $this->check_login($request, null);
-        // }
-
         // get the login error if there is one
         $error = $authenticationUtils->getLastAuthenticationError();
 
@@ -79,6 +72,8 @@ class AuthorizationsController extends BaseController
         return $this->output('login.html.twig');
     }
 
+    // This route has not been used since Symfony authentication was implemented,
+    // but some aspects need to be revisited for LDAP and SSO connections.
     // #[Route(path: '/login', name: 'login.check', methods: ['POST'])]
     public function check_login(Request $request, LoggerInterface $logger = null)
     {
@@ -89,9 +84,6 @@ class AuthorizationsController extends BaseController
         $login = $request->get('_username');
         $password = $request->get('_password');
 
-        var_dump($login); echo "<br>";
-        var_dump($password); echo "<br>";
-        exit;
         $redirect_url = $request->get('redirURL') ?? '/index.php';
 
         $authArgs = null;
@@ -182,7 +174,6 @@ class AuthorizationsController extends BaseController
         return $this->output('login.html.twig');
     }
 
-    // #[Route(path: '/logout', name: 'logout', methods: ['GET'])]
     #[Route(path: '/logout', name: 'app_logout')]
     public function logout(Request $request): \Symfony\Component\HttpFoundation\RedirectResponse
     {

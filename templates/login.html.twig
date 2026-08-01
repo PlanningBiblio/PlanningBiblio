@@ -37,31 +37,19 @@
           {% endif %}
         </div>
       {% else %}
-{#        <form name='form' method='post' action='{{ asset("login") }}'> #}
         <form method="post">
           <input type='hidden' name='auth' value='' />
           <input type='hidden' name='redirURL' value="{{ redirect_url }}" />
+          <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
 
           {% if error %}
             <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-          {% endif %}
-
-          {% if app.user %}
-              <div class="mb-3">
-                  You are logged in as {{ app.user.userIdentifier }}, <a href="{{ logout_path() }}">Logout</a>
-              </div>
-
-              <span> {{ app.user.lastname }} {{ app.user.firstname }} </span>
-              {% if is_granted('ROLE_ADMIN') %}
-                  <span>Compte admin</span>
-              {% endif %}
           {% endif %}
 
           <table style='width:100%;'>
             <tr>
               <td class="text-end" style='width:48%;'>Utilisateur : </td>
               <td>
-{#                <input type='text' name='login' value="{{ new_login }}" /> #}
                 <input type="text" value="{{ last_username }}" name="_username" id="username" class="form-control" autocomplete="username" required autofocus>
               </td>
             </tr>
@@ -69,9 +57,7 @@
             <tr>
               <td class="text-end">Mot de passe : </td>
               <td>
-{#                <input type='password' name='password' /> #}
                 <input type="password" name="_password" id="password" class="form-control" autocomplete="current-password" required>
-                <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
               </td>
             </tr>
 
