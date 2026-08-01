@@ -69,7 +69,7 @@ class AuthorizationsController extends BaseController
             'last_username' => $lastUsername,
         ));
 
-        return $this->output('login.html.twig');
+        return $this->output('security/login.html.twig');
     }
 
     // This route has not been used since Symfony authentication was implemented,
@@ -145,10 +145,6 @@ class AuthorizationsController extends BaseController
             $db = new \db();
             $db->select2("personnel", "id,nom,prenom", array("login"=>$login));
             if ($db->result) {
-                $_SESSION['login_id'] = $db->result[0]['id'];
-                $_SESSION['login_nom'] = $db->result[0]['nom'];
-                $_SESSION['login_prenom'] = $db->result[0]['prenom'];
-
                 // Symfony Session
                 $session = $request->getSession();
                 $session->set('loginId', $db->result[0]['id']);
@@ -171,7 +167,7 @@ class AuthorizationsController extends BaseController
             'auth_args' => $authArgs
         ));
 
-        return $this->output('login.html.twig');
+        return $this->output('security/login.html.twig');
     }
 
     #[Route(path: '/logout', name: 'app_logout')]
@@ -258,10 +254,6 @@ class AuthorizationsController extends BaseController
 
             // Création de la session
             // If login exists, create session.
-            $_SESSION['login_id']=$db->result[0]['id'];
-            $_SESSION['login_nom']=$db->result[0]['nom'];
-            $_SESSION['login_prenom']=$db->result[0]['prenom'];
-
             // Symfony Session
             $session = $request->getSession();
             $session->set('loginId', $db->result[0]['id']);

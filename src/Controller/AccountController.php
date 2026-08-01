@@ -90,8 +90,6 @@ class AccountController extends BaseController
 
         }
 
-        $login = array('name' => $_SESSION['login_prenom'], 'surname' => $_SESSION['login_nom'], 'id' => $perso_id);
-
         $canChangePassword = true;
         if ($_SESSION['oups']['Auth-Mode'] == 'SSO'
             or ($this->config('Auth-Mode') == 'LDAP' and $perso_id != 1))
@@ -104,7 +102,6 @@ class AccountController extends BaseController
                 'canChangePassword' => $canChangePassword,
                 'credits'  => $credits,
                 'ics'      => $ics,
-                'login'    => $login,
                 'planning' => $planning
             )
         );

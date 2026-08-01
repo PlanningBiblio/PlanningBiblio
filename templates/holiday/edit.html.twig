@@ -24,7 +24,7 @@
         {% endif %}
 
         {% if request_type == 'holiday' and id == null %}
-          <input type="hidden" id="agent_id" value="{{ loggedin_id }}" />
+          <input type="hidden" id="agent_id" value="{{ app.user.id }}" />
           <input type="hidden" name="multisites" id="multisites" value="{{ config('Multisites-nombre') > 1 ? 1 : 0  }}" />
           <input type="hidden" id="agents-multiples" value="{{ agents_multiples }}" />
         {% endif %}
@@ -43,9 +43,8 @@
         <input type="hidden" id="selected_agent_id" value="{{ selected_agent_id }}" />
 
         {% if id %}
-
           <div class="row mb-2 gx-5">
-              <label class="col-2 col-form-label text-end" for="agent">{% trans %}Agent{% endtrans %} :</label>
+              <label class="col-2 col-form-label text-end" for="agent">{{ 'Agent:' | trans }}</label>
               <div class="col-3">
                 <input type="hidden" name="perso_id" id="perso_id" value="{{ perso_id }}" />
                 <input type="text" id="agent" readonly class="form-control-plaintext" value="{{ agent_name }}">
@@ -73,10 +72,10 @@
             {% if not admin %}
 
               <div class="row mb-2 gx-5">
-                <label class="col-2 col-form-label text-end" for="agent">{% trans %}Agent{% endtrans %} :</label>
+                <label class="col-2 col-form-label text-end" for="agent">{{ 'Agent:' | trans }}</label>
                 <div class="col-3">
-                  <input type="hidden" name="perso_id" id="perso_id" value="{{ loggedin_id }}" />
-                  <input type="text" id="agent" readonly class="form-control-plaintext" value="{{ loggedin_name }} {{ loggedin_firstname }}">
+                  <input type="hidden" name="perso_id" id="perso_id" value="{{ app.user.id }}" />
+                  <input type="text" id="agent" readonly class="form-control-plaintext" value="{{ app.user.displayname }}">
                 </div>
               </div>
 
@@ -84,16 +83,16 @@
 
               {% if agents_multiples %}
 
-                <input type="hidden" name="perso_ids[]" value="{{ loggedin_id }}" id="hidden{{ loggedin_id }}" class="perso_ids_hidden"/>
+                <input type="hidden" name="perso_ids[]" value="{{ app.user.id }}" id="hidden{{ app.user.id }}" class="perso_ids_hidden"/>
 
                 <fieldset class="row mb-2 gx-5">
                   <legend class="col-2 col-form-label text-end" for="perso_ul1">{% trans %}Agent(s){% endtrans %} :</legend>
                   <div class="col-auto">
 
                     <ul id="perso_ul1" class="perso_ul">
-                      <li id="li{{ loggedin_id }}" class="perso_ids_li mb-1">
-                        <b>{{ loggedin_name }} {{ loggedin_firstname }}</b>
-                        <button class="perso-drop btn btn-icon p-0" onclick="supprimeAgent({{ loggedin_id }});">
+                      <li id="li{{ app.user.id }}" class="perso_ids_li mb-1">
+                        <b>{{ app.user.displayname }}</b>
+                        <button class="perso-drop btn btn-icon p-0" onclick="supprimeAgent({{ app.user.id }});">
                           <span class="pl-icon pl-icon-dropblack"></span>
                         </button>
                       </li>

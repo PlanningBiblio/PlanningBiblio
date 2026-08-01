@@ -81,12 +81,6 @@ class LegalNoticesControllerTest extends PLBWebTestCase
             'droits' => array(100)
         ));
 
-        $_SESSION['login_id'] = '';
-        $_SESSION['login_nom'] = '';
-        $_SESSION['login_prenom'] = '';
-        $_SESSION['oups']['Auth-Mode'] = '';
-        $_SESSION['oups']['week'] = '';
-
         $this->login($agent2);
 
         $crawler = $this->client->request('GET', "/legal-notices");
