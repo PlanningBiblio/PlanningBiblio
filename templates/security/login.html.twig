@@ -13,18 +13,18 @@
       <h2 id='h2-planning-authentification'>Planning - Authentification</h2>
       <h2 id='h2-authentification'>Authentification</h2>
   
-      {% if errorPlanno is defined and errorPlanno != '' %}
+      {% if error is defined and error != '' %}
         <div class="text-center">
           <br/><br/>
-          {% if errorPlanno == 'unknown_user' %}
+          {% if error == 'unknown_user' %}
             <h3 style='color:red'>L'utilisateur n'existe pas dans le planning</h3>
             <br/>
             <a href='{{ asset("login") }}{{ auth_args }}'>Re-essayer</a>
-          {% elseif errorPlanno == 'login_failed' %}
+          {% elseif error == 'login_failed' %}
             <h3 style='color:red'>Erreur lors de l'authentification</h3>
             <br/>
             <a href='{{ asset("login") }}{{ auth_args }}'>Re-essayer</a>
-          {% elseif errorPlanno == 'cas_unknown_user' %}
+          {% elseif error == 'cas_unknown_user' %}
           <div class="row justify-content-center">
             <div class="col-auto">
               <div class="alert alert-danger" role="alert">
@@ -37,44 +37,25 @@
           {% endif %}
         </div>
       {% else %}
-        <form method="post" name="loginForm">
+        <form method="post">
+          <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
           <input type='hidden' name='auth' value='' />
           <input type='hidden' name='redirURL' value="{{ redirect_url }}" />
-          <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
-
-          {% if error %}
-            <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-          {% endif %}
-
           <table style='width:100%;'>
             <tr>
               <td class="text-end" style='width:48%;'>Utilisateur : </td>
               <td>
-                <input type="text" value="{{ last_username }}" name="_username" id="username" class="form-control" autocomplete="username" required autofocus>
+                <input type="text" name="_username" value="{{ new_login }}" />
               </td>
             </tr>
   
             <tr>
               <td class="text-end">Mot de passe : </td>
               <td>
-                <input type="password" name="_password" id="password" class="form-control" autocomplete="current-password" required>
+                <input type="password" name="_password" />
               </td>
             </tr>
-
-        {#
-            Uncomment this section and add a remember_me option below your firewall to activate remember me functionality.
-            See https://symfony.com/doc/current/security/remember_me.html
-
-            <tr>
-              <td colspan='2' align='center'>
-                <div class="checkbox mb-3">
-                    <input type="checkbox" name="_remember_me" id="_remember_me">
-                    <label for="_remember_me">Remember me</label>
-                </div>
-              </td>
-            </tr>
-        #}
-
+  
             <tr>
               <td colspan='2' align='center'><br/>
                 <input type="submit" role="button" class="btn btn-primary" value="Valider" />
