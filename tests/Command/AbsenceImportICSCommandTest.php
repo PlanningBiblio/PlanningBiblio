@@ -7,9 +7,9 @@ use App\Entity\Agent;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Console\Output\OutputInterface;
-use Tests\PlannoPantherTestCase;
+use Tests\PLBWebTestCase;
 
-class AbsenceImportICSCommandTest extends PlannoPantherTestCase
+class AbsenceImportICSCommandTest extends PLBWebTestCase
 {
     private string $lockFile;
 

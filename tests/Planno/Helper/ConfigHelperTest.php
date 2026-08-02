@@ -3,9 +3,9 @@
 use App\Repository\ConfigRepository;
 use App\Entity\Config;
 use App\Planno\Helper\ConfigHelper;
-use Tests\PlannoPantherTestCase;
+use Tests\PLBWebTestCase;
 
-class ConfigHelperTest extends PlannoPantherTestCase
+class ConfigHelperTest extends PLBWebTestCase
 {
     public function testPasswordUpdate(): void {
 

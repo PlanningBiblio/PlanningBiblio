@@ -10,7 +10,7 @@ use Facebook\WebDriver\WebDriverSelect;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\Panther\PantherTestCase;
 
-class PlannoPantherTestCase extends PantherTestCase
+class PLBWebTestCase extends PantherTestCase
 {
     protected $builder;
     protected $client;

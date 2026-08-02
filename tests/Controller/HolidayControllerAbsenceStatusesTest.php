@@ -2,11 +2,11 @@
 
 use App\Entity\Agent;
 use Tests\FixtureBuilder;
-use Tests\PlannoWebTestCase;
+use Tests\PLBWebTestCase;
 
 require_once(__DIR__ . '/../../legacy/Class/class.conges.php');
 
-class HolidayControllerAbsenceStatusesTest extends PlannoWebTestCase
+class HolidayControllerAbsenceStatusesTest extends PLBWebTestCase
 {
     protected function setUp(): void
     {

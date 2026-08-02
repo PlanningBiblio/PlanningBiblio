@@ -5,10 +5,10 @@ use App\Entity\HolidayInfo;
 
 use Symfony\Component\DomCrawler\Crawler;
 
-use Tests\PlannoWebTestCase;
+use Tests\PLBWebTestCase;
 use Tests\FixtureBuilder;
 
-class HolidayInfoControllerTest extends PlannoWebTestCase
+class HolidayInfoControllerTest extends PLBWebTestCase
 {
     public function testAdd(): void
     {

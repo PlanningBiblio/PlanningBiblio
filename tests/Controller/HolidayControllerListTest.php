@@ -4,9 +4,9 @@ use App\Entity\Agent;
 use App\Entity\Holiday;
 use App\Entity\Manager;
 use Tests\FixtureBuilder;
-use Tests\PlannoPantherTestCase;
+use Tests\PLBWebTestCase;
 
-class HolidayControllerListTest extends PlannoPantherTestCase
+class HolidayControllerListTest extends PLBWebTestCase
 {
     protected function setUp(): void
     {

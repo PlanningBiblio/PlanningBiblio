@@ -4,12 +4,12 @@ namespace App\Tests\Command;
 
 use App\Entity\Agent;
 use App\Entity\Holiday;
-use Tests\PlannoPantherTestCase;
+use Tests\PLBWebTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class HolidayResetCompTimeCommandTest extends PlannoPantherTestCase
+class HolidayResetCompTimeCommandTest extends PLBWebTestCase
 {
     protected function setUp(): void
     {

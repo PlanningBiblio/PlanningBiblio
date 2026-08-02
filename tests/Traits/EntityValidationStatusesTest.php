@@ -5,12 +5,12 @@ use App\Entity\Model;
 use App\Entity\Manager;
 
 use Tests\FixtureBuilder;
-use Tests\PlannoPantherTestCase;
+use Tests\PLBWebTestCase;
 
 use PHPUnit\Framework\TestCase;
 
 #class EntityValidationStatusesTest extends TestCase
-class EntityValidationStatusesTest extends PlannoPantherTestCase
+class EntityValidationStatusesTest extends PLBWebTestCase
 {
     use \App\Traits\EntityValidationStatuses;
 

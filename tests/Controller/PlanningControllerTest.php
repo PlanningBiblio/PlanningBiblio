@@ -8,10 +8,10 @@ use App\Entity\PlanningPositionTabAffectation;
 
 use Symfony\Component\DomCrawler\Crawler;
 
-use Tests\PlannoWebTestCase;
+use Tests\PLBWebTestCase;
 use Tests\FixtureBuilder;
 
-class PlanningControllerTest extends PlannoWebTestCase
+class PlanningControllerTest extends PLBWebTestCase
 {
     public function testPlanningNotReadyWithoutPermission(): void
     {

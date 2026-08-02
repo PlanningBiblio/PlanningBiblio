@@ -1,14 +1,14 @@
 <?php
 
 namespace App\Tests\Command;
-use Tests\PlannoPantherTestCase;
+use Tests\PLBWebTestCase;
 use App\Entity\Agent;
 use App\Entity\Holiday;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class HolidayResetCreditsCommandTest extends PlannoPantherTestCase
+class HolidayResetCreditsCommandTest extends PLBWebTestCase
 {
     protected function setUp(): void
     {

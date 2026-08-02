@@ -2,9 +2,9 @@
 
 use App\Entity\Agent;
 use Tests\FixtureBuilder;
-use Tests\PlannoWebTestCase;
+use Tests\PLBWebTestCase;
 
-class AbsenceControllerAbsenceStatusesTest extends PlannoWebTestCase
+class AbsenceControllerAbsenceStatusesTest extends PLBWebTestCase
 {
     protected function setUp(): void
     {

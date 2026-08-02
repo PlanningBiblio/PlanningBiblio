@@ -7,9 +7,9 @@ use App\Entity\WorkingHour;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Console\Output\OutputInterface;
-use Tests\PlannoPantherTestCase;
+use Tests\PLBWebTestCase;
 
-class WorkingHourExportCommandTest extends PlannoPantherTestCase
+class WorkingHourExportCommandTest extends PLBWebTestCase
 {
     private string $lockFile;
 

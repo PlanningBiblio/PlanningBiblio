@@ -5,12 +5,12 @@ use App\Entity\AbsenceInfo;
 
 use Symfony\Component\DomCrawler\Crawler;
 
-use Tests\PlannoWebTestCase;
+use Tests\PLBWebTestCase;
 use Tests\FixtureBuilder;
 
 
 
-class AbsenceInfoControllerTest extends PlannoWebTestCase
+class AbsenceInfoControllerTest extends PLBWebTestCase
 {
     public function testAdd(): void
     {

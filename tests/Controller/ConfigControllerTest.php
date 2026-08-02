@@ -2,10 +2,10 @@
 
 use App\Entity\Agent;
 
-use Tests\PlannoWebTestCase;
+use Tests\PLBWebTestCase;
 use Tests\FixtureBuilder;
 
-class ConfigControllerTest extends PlannoWebTestCase
+class ConfigControllerTest extends PLBWebTestCase
 {
     public function testAccessWithNonLoggedIn(): void {
         $this->client->request('GET', '/config');

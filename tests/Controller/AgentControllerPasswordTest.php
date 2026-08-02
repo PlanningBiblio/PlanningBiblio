@@ -5,9 +5,9 @@ use App\Entity\Agent;
 use App\Planno\WorkingHours;
 use Symfony\Component\DomCrawler\Crawler;
 use Tests\FixtureBuilder;
-use Tests\PlannoWebTestCase;
+use Tests\PLBWebTestCase;
 
-class AgentControllerPasswordTest extends PlannoWebTestCase
+class AgentControllerPasswordTest extends PLBWebTestCase
 {
     protected function setUp(): void
     {

@@ -6,9 +6,9 @@ use App\Entity\Agent;
 use App\Entity\Config;
 use App\Entity\WorkingHour;
 use App\Entity\WorkingHourCycle;
-use Tests\PlannoPantherTestCase;
+use Tests\PLBWebTestCase;
 
-class WorkingHourControllerCyclesTest extends PlannoPantherTestCase
+class WorkingHourControllerCyclesTest extends PLBWebTestCase
 {
     public static function setUpBeforeClass(): void
     {

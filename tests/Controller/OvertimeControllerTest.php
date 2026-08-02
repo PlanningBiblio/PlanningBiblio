@@ -5,11 +5,11 @@ use App\Entity\OverTime;
 
 use Symfony\Component\DomCrawler\Crawler;
 
-use Tests\PlannoWebTestCase;
+use Tests\PLBWebTestCase;
 use Tests\FixtureBuilder;
 
 
-class OvertimeControllerTest extends PlannoWebTestCase
+class OvertimeControllerTest extends PLBWebTestCase
 {
 
     public function testSave(): void

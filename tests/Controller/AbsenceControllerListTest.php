@@ -2,12 +2,12 @@
 
 use App\Entity\Agent;
 use App\Entity\Manager;
-use Tests\PlannoWebTestCase;
+use Tests\PLBWebTestCase;
 use Tests\FixtureBuilder;
 
 require_once(__DIR__ . '/../../legacy/Class/class.absences.php');
 
-class AbsenceControllerListTest extends PlannoWebTestCase
+class AbsenceControllerListTest extends PLBWebTestCase
 {
     protected function setUp(): void
     {

@@ -2,10 +2,10 @@
 
 use App\Entity\Agent;
 
-use Tests\PlannoPantherTestCase;
+use Tests\PLBWebTestCase;
 use Tests\FixtureBuilder;
 
-class AuthorizationsControllerLoginFailedWait extends PlannoPantherTestCase
+class AuthorizationsControllerLoginFailedWait extends PLBWebTestCase
 {
     public function testLoginFailedWait(): void
     {

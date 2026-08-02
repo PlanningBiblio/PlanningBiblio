@@ -3,9 +3,9 @@
 use App\Entity\Agent;
 use App\Entity\PublicHoliday;
 use App\Planno\ClosingDay;
-use Tests\PlannoWebTestCase;
+use Tests\PLBWebTestCase;
 
-class ClosingDayControllerTest extends PlannoWebTestCase
+class ClosingDayControllerTest extends PLBWebTestCase
 {
 
     public function testListClosingDay(): void
