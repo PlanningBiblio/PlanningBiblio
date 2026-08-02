@@ -38,11 +38,11 @@ class HolidayControllerListTest extends PLBWebTestCase
 
     public function testHolidayList(): void
     {
-        $this->setUpPantherClient();
-
         $this->config->setParam('Absences-notifications-agent-par-agent', 1);
         $this->config->setParam('Multisites-nombre', 1);
         $this->config->setParam('PlanningHebdo', 0);
+
+        $client = static::createClient();
 
         $workinghours = array(
             0 => array('0' => '09:00:00', '1' => '12:00:00', '2' => '13:00:00', '3' => '17:00:00'),
@@ -93,18 +93,17 @@ class HolidayControllerListTest extends PLBWebTestCase
         $fin= $date->format('d/m/Y');
 
         // Login with agent without rights for holiday
-        $this->login($jdupont);
-        $crawler = $this->client->request('GET', "/holiday?debut=$debut&fin=$fin");
+        $this->logInAgent($jdupont, $jdupont->getACL());
+        $crawler = $client->request('GET', "/holiday?debut=$debut&fin=$fin");
 
         $this->assertSelectorNotExists('select#perso_id');
 
-        // $result = $crawler->filterXPath('//table[@id="tableConges"]');
-        $result = $crawler->filter('#tableConges');
-        $this->assertStringNotContainsString('Nom', $result->text());
+        $result = $crawler->filterXPath('//table[@id="tableConges"]');
+        $this->assertStringNotContainsString('Nom', $result->text(null,false));
 
         // Login with agent having rights for holiday
-        $this->login($kboivin);
-        $crawler = $this->client->request('GET', "/holiday?debut=$debut&fin=$fin");
+        $this->logInAgent($kboivin, $kboivin->getACL());
+        $crawler = $client->request('GET', "/holiday?debut=$debut&fin=$fin");
 
         $agents_select = $crawler->filter('select#perso_id option');
         $this->assertCount(4, $agents_select, 'KBoivin can select 4 options in the list (All, Admin and 3 agents)');
@@ -116,9 +115,8 @@ class HolidayControllerListTest extends PLBWebTestCase
         $this->assertEquals('Dupont Jean', $agents_select->eq(3)->html());
 
         // Check for absence list.
-        // $result = $crawler->filterXPath('//table[@id="tableConges"]');
-        $result = $crawler->filter('#tableConges');
-        $this->assertStringContainsString('Dupont J', $result->text());
+        $result = $crawler->filterXPath('//table[@id="tableConges"]');
+        $this->assertStringContainsString('Dupont J', $result->text(null,false));
     }
 
     public function testStatuses(): void

@@ -21,6 +21,8 @@ class HolidayControllerAbsenceStatusesTest extends PLBWebTestCase
     {
         $this->config->setParam('Conges-Validation-N2', 0);
 
+        $client = static::createClient();
+
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
             'droits' => array(99,100, 201, 501)
@@ -35,7 +37,7 @@ class HolidayControllerAbsenceStatusesTest extends PLBWebTestCase
 
         // request /absence-statuses
         $this->logInAgent($loggedin, $loggedin->getACL());
-        $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=holiday&id=$absence_id");
+        $crawler = $client->request('GET', "/absence-statuses?ids[]=$agent_id&module=holiday&id=$absence_id");
 
         $statuses_element = $crawler->filter('#validation-state');
 

@@ -21,6 +21,7 @@ class OvertimeControllerTest extends PLBWebTestCase
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
         $builder->delete(OverTime::class);
 
+
         $this->logInAgent($agent, array(100));
 
         $_SESSION['oups']['CSRFToken'] = '00000';
