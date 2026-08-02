@@ -290,7 +290,7 @@ class WorkingHourController extends BaseController
             ->forAgent($perso_id)
             ->getValidationLevelFor($session->get('loginId'));
 
-        $this->templateParams($this->getStatusesParams(array($perso_id), 'workinghour'));
+        $this->templateParams($this->getStatusesParams([$perso_id], 'workinghour', null, 'A', $session));
 
         $notAdmin = !($adminN1 or $adminN2);
         $admin = ($adminN1 or $adminN2);
@@ -428,7 +428,7 @@ class WorkingHourController extends BaseController
             ->getValidationLevelFor($session->get('loginId'));
         $admin = ($this->adminN1 or $this->adminN2);
 
-        $this->templateParams($this->getStatusesParams(array($perso_id), 'workinghour', $id));
+        $this->templateParams($this->getStatusesParams([$perso_id], 'workinghour', $id, 'A', $session));
 
         if (!$admin && $perso_id != $session->get('loginId')) {
             return $this->redirectToRoute('access-denied');

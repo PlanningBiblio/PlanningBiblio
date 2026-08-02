@@ -177,7 +177,6 @@ class OvertimeControllerTest extends PLBWebTestCase
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'J'));
         $builder->delete(OverTime::class);
 
-
         $this->logInAgent($agent, array(100));
 
         $start = \DateTime::createFromFormat("d/m/Y", '05/10/2022');
