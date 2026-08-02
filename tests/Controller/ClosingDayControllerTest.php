@@ -3,16 +3,14 @@
 use App\Entity\Agent;
 use App\Entity\PublicHoliday;
 use App\Planno\ClosingDay;
-use Tests\PLBWebTestCase;
+use Tests\PlannoWebTestCase;
 
-class ClosingDayControllerTest extends PLBWebTestCase
+class ClosingDayControllerTest extends PlannoWebTestCase
 {
 
     public function testListClosingDay(): void
     {
         $this->builder->delete(Agent::class);
-
-        $client = static::createClient();
 
         $agent = $this->builder->build(
             Agent::class,
@@ -65,7 +63,7 @@ class ClosingDayControllerTest extends PLBWebTestCase
         );
         $id2 = $public_holiday_2->getId();
 
-        $crawler = $client->request('GET', "/closingday");
+        $crawler = $this->client->request('GET', "/closingday");
 
         $result = $crawler->filterXPath('//h3');
         $this->assertEquals($result->text('Node does not exist', false),"Jours fériés et jours de fermeture");

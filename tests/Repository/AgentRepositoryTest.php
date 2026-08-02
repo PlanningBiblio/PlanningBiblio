@@ -9,12 +9,12 @@ use App\Entity\Manager;
 use App\Entity\OverTime;
 use App\Entity\WorkingHour;
 use PHPStan\Type\Php\GettypeFunctionReturnTypeExtension;
-use Tests\PLBWebTestCase;
+use Tests\PlannoPantherTestCase;
 use Tests\FixtureBuilder;
 
 use function PHPUnit\Framework\assertEquals;
 
-class AgentRepositoryTest extends PLBWebTestCase
+class AgentRepositoryTest extends PlannoPantherTestCase
 {
     protected function setUp(): void
     {

@@ -6,9 +6,9 @@ use App\Entity\Absence;
 use App\Entity\AbsenceDocument;
 use Tests\FixtureBuilder;
 use Doctrine\ORM\EntityManagerInterface;
-use Tests\PLBWebTestCase;
+use Tests\PlannoPantherTestCase;
 
-class AbsenceControllerEditTest extends PLBWebTestCase
+class AbsenceControllerEditTest extends PlannoPantherTestCase
 {
 
     public static function setUpBeforeClass(): void

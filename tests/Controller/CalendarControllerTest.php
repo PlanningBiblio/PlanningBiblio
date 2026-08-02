@@ -4,10 +4,10 @@ use App\Entity\Agent;
 use App\Entity\Absence;
 use App\Entity\WorkingHour;
 use Symfony\Component\DomCrawler\Crawler;
-use Tests\PLBWebTestCase;
+use Tests\PlannoWebTestCase;
 use Tests\FixtureBuilder;
 
-class CalendarControllerTest extends PLBWebTestCase
+class CalendarControllerTest extends PlannoWebTestCase
 {
     public function testCalendarWithMultiSites(): void
     {

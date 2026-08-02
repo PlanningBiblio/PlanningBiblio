@@ -2,12 +2,12 @@
 
 use App\Entity\Agent;
 use App\Entity\Manager;
-use Tests\PLBWebTestCase;
+use Tests\PlannoWebTestCase;
 use Tests\FixtureBuilder;
 
 require_once(__DIR__ . '/../../legacy/Class/class.absences.php');
 
-class AbsenceControllerListTest extends PLBWebTestCase
+class AbsenceControllerListTest extends PlannoWebTestCase
 {
     protected function setUp(): void
     {
@@ -21,8 +21,6 @@ class AbsenceControllerListTest extends PLBWebTestCase
 
         $this->config->setParam('Absences-notifications-agent-par-agent', 0);
         $this->config->setParam('Multisites-nombre', 1);
-
-        $client = static::createClient();
 
         $jdevoe = $this->builder->build(Agent::class, array(
             'login' => 'jdevoe', 'nom' => 'Devoe', 'prenom' => 'John',
@@ -42,7 +40,7 @@ class AbsenceControllerListTest extends PLBWebTestCase
         $this->createAbsenceFor($kboivin, 2);
 
         $this->logInAgent($jdevoe, $jdevoe->getACL());
-        $crawler = $client->request('GET', '/absence?perso_id=0');
+        $crawler = $this->client->request('GET', '/absence?perso_id=0');
 
         $this->assertResponseIsSuccessful('Jdevoe can access to list page');
         $this->assertSelectorNotExists('select#perso_id');
@@ -54,7 +52,7 @@ class AbsenceControllerListTest extends PLBWebTestCase
 
         // Login with agent having rights for absences
         $this->logInAgent($kboivin, $kboivin->getACL());
-        $crawler = $client->request('GET', '/absence?perso_id=0');
+        $crawler = $this->client->request('GET', '/absence?perso_id=0');
 
         $this->assertResponseIsSuccessful('KBoivin can access to list page');
         $this->assertSelectorExists('select#perso_id');
@@ -85,8 +83,6 @@ class AbsenceControllerListTest extends PLBWebTestCase
         $this->config->setParam('Absences-notifications-agent-par-agent', 0);
         $this->config->setParam('Multisites-nombre', 2);
 
-        $client = static::createClient();
-
         $dailleboust = $this->builder->build(Agent::class, array(
             'login' => 'dailleboust', 'nom' => 'Ailleboust', 'prenom' => 'Denis',
             'sites' => [], 'droits' => array(99,100)
@@ -111,7 +107,7 @@ class AbsenceControllerListTest extends PLBWebTestCase
 
         // Login with agent having rights for absences
         $this->logInAgent($kboivin, $kboivin->getACL());
-        $crawler = $client->request('GET', '/absence?perso_id=0');
+        $crawler = $this->client->request('GET', '/absence?perso_id=0');
 
         $agents_select = $crawler->filter('select#perso_id option');
         $this->assertCount(3, $agents_select, 'KBoivin can select 3 options in the list (All, Admin and 3 agents)');
@@ -132,8 +128,6 @@ class AbsenceControllerListTest extends PLBWebTestCase
     {
         $this->config->setParam('Absences-notifications-agent-par-agent', 1);
         $this->config->setParam('Multisites-nombre', 2);
-
-        $client = static::createClient();
 
         $dailleboust = $this->builder->build(Agent::class, array(
             'login' => 'dailleboust', 'nom' => 'Ailleboust', 'prenom' => 'Denis',
@@ -171,7 +165,7 @@ class AbsenceControllerListTest extends PLBWebTestCase
 
         // Login with agent having rights for absences
         $this->logInAgent($kboivin, $kboivin->getACL());
-        $crawler = $client->request('GET', '/absence?perso_id=0');
+        $crawler = $this->client->request('GET', '/absence?perso_id=0');
 
         $agents_select = $crawler->filter('select#perso_id option');
         $this->assertCount(4, $agents_select, 'KBoivin can select 4 options in the list (All, Admin and 3 agents)');

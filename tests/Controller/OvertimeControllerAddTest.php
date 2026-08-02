@@ -2,9 +2,9 @@
 
 use App\Entity\Agent;
 use Tests\FixtureBuilder;
-use Tests\PLBWebTestCase;
+use Tests\PlannoPantherTestCase;
 
-class OvertimeControllerAddTest extends PLBWebTestCase
+class OvertimeControllerAddTest extends PlannoPantherTestCase
 {
     protected function setUp(): void
     {

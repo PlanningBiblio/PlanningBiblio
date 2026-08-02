@@ -37,7 +37,7 @@
           {% endif %}
         </div>
       {% else %}
-        <form method="post">
+        <form method="post" name="Connexion">
           <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
           <input type='hidden' name='auth' value='' />
           <input type='hidden' name='redirURL' value="{{ redirect_url }}" />

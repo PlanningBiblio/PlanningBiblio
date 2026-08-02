@@ -9,9 +9,9 @@ use App\Entity\WorkingHour;
 use App\Planno\WorkingHours;
 use Symfony\Component\DomCrawler\Crawler;
 use Tests\FixtureBuilder;
-use Tests\PLBWebTestCase;
+use Tests\PlannoWebTestCase;
 
-class PlanningJobControllerTest extends PLBWebTestCase
+class PlanningJobControllerTest extends PlannoWebTestCase
 {
     protected function setUp(): void
     {

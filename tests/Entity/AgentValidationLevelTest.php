@@ -4,9 +4,9 @@ use App\Entity\Agent;
 use App\Entity\Manager;
 use PHPUnit\Framework\TestCase;
 use Tests\FixtureBuilder;
-use Tests\PLBWebTestCase;
+use Tests\PlannoPantherTestCase;
 
-class AgentValidationLevelTest extends PLBWebTestCase
+class AgentValidationLevelTest extends PlannoPantherTestCase
 {
     protected $builder;
     protected $entityManager;

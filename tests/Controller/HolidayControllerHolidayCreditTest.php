@@ -2,10 +2,10 @@
 
 use App\Entity\Agent;
 
-use Tests\PLBWebTestCase;
+use Tests\PlannoWebTestCase;
 use Tests\FixtureBuilder;
 
-class HolidayControllerHolidayCreditTest extends PLBWebTestCase
+class HolidayControllerHolidayCreditTest extends PlannoWebTestCase
 {
     protected function setUp(): void
     {

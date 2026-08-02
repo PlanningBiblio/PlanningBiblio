@@ -1,11 +1,11 @@
 <?php
 
 use App\Entity\Agent;
-use Tests\PLBWebTestCase;
+use Tests\PlannoWebTestCase;
 use Tests\FixtureBuilder;
 
 
-class UnsubscribeControllerTest extends PLBWebTestCase
+class UnsubscribeControllerTest extends PlannoWebTestCase
 {
     protected function setUp(): void
     {

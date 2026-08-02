@@ -3,10 +3,10 @@
 use App\Entity\Agent;
 use App\Entity\AdminInfo;
 use Symfony\Component\DomCrawler\Crawler;
-use Tests\PLBWebTestCase;
+use Tests\PlannoWebTestCase;
 use Tests\FixtureBuilder;
 
-class AdminInfoControllerTest extends PLBWebTestCase
+class AdminInfoControllerTest extends PlannoWebTestCase
 {
     public function testAdminInfoList(): void
     {

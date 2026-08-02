@@ -2,10 +2,10 @@
 
 use App\Entity\Agent;
 
-use Tests\PLBWebTestCase;
+use Tests\PlannoWebTestCase;
 use Tests\FixtureBuilder;
 
-class WorkingHourControllerTest extends PLBWebTestCase
+class WorkingHourControllerTest extends PlannoWebTestCase
 {
     public function testAccessWorkingHoursList(): void {
         $builder = $this->builder;

@@ -9,9 +9,9 @@ use App\Entity\Holiday;
 use App\Entity\WorkingHour;
 use Doctrine\ORM\EntityManagerInterface;
 use Tests\FixtureBuilder;
-use Tests\PLBWebTestCase;
+use Tests\PlannoPantherTestCase;
 
-class HolidayControllerEditTest extends PLBWebTestCase
+class HolidayControllerEditTest extends PlannoPantherTestCase
 {
 
     public static function setUpBeforeClass(): void

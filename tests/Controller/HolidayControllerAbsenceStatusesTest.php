@@ -2,11 +2,11 @@
 
 use App\Entity\Agent;
 use Tests\FixtureBuilder;
-use Tests\PLBWebTestCase;
+use Tests\PlannoWebTestCase;
 
 require_once(__DIR__ . '/../../legacy/Class/class.conges.php');
 
-class HolidayControllerAbsenceStatusesTest extends PLBWebTestCase
+class HolidayControllerAbsenceStatusesTest extends PlannoWebTestCase
 {
     protected function setUp(): void
     {
@@ -20,8 +20,6 @@ class HolidayControllerAbsenceStatusesTest extends PLBWebTestCase
     public function testEditN2AbsenceRightN1AndN2(): void
     {
         $this->config->setParam('Conges-Validation-N2', 0);
-
-        $client = static::createClient();
 
         $loggedin = $this->builder->build(Agent::class, array(
             'login' => 'loggedin', 'nom' => 'In', 'prenom' => 'Logged',
@@ -37,7 +35,7 @@ class HolidayControllerAbsenceStatusesTest extends PLBWebTestCase
 
         // request /absence-statuses
         $this->logInAgent($loggedin, $loggedin->getACL());
-        $crawler = $client->request('GET', "/absence-statuses?ids[]=$agent_id&module=holiday&id=$absence_id");
+        $crawler = $this->client->request('GET', "/absence-statuses?ids[]=$agent_id&module=holiday&id=$absence_id");
 
         $statuses_element = $crawler->filter('#validation-state');
 

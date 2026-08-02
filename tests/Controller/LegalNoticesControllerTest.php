@@ -3,9 +3,9 @@
 use App\Entity\Agent;
 use Symfony\Component\DomCrawler\Crawler;
 use Tests\FixtureBuilder;
-use Tests\PLBWebTestCase;
+use Tests\PlannoWebTestCase;
 
-class LegalNoticesControllerTest extends PLBWebTestCase
+class LegalNoticesControllerTest extends PlannoWebTestCase
 {
     protected function setUp(): void
     {

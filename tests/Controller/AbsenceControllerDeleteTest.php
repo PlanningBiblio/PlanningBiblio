@@ -5,9 +5,9 @@ use App\Entity\AbsenceReason;
 use App\Entity\Agent;
 use App\Entity\Manager;
 use Tests\FixtureBuilder;
-use Tests\PLBWebTestCase;
+use Tests\PlannoWebTestCase;
 
-class AbsenceControllerDeleteTest extends PLBWebTestCase
+class AbsenceControllerDeleteTest extends PlannoWebTestCase
 {
 
     private $agents;

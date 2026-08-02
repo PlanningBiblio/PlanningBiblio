@@ -6,10 +6,10 @@ use App\Entity\PlanningPosition;
 use App\Entity\PlanningPositionLock;
 use App\Entity\Position;
 
-use Tests\PLBWebTestCase;
+use Tests\PlannoPantherTestCase;
 use Tests\FixtureBuilder;
 
-class ICalendarControllerTest extends PLBWebTestCase
+class ICalendarControllerTest extends PlannoPantherTestCase
 {
 
     public function testICalendar(): void

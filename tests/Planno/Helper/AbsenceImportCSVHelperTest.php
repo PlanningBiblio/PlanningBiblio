@@ -3,10 +3,10 @@
 use App\Planno\Helper\AbsenceImportCSVHelper;
 use App\Entity\Agent;
 use App\Entity\Absence;
-use Tests\PLBWebTestCase;
+use Tests\PlannoPantherTestCase;
 use Tests\FixtureBuilder;
 
-class AbsenceImportCSVHelperTest extends PLBWebTestCase
+class AbsenceImportCSVHelperTest extends PlannoPantherTestCase
 {
 
     protected function setUp(): void

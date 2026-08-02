@@ -15,9 +15,9 @@ use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
-use Tests\PLBWebTestCase;
+use Tests\PlannoPantherTestCase;
 
-class PlanningControlCommandTest extends PLBWebTestCase
+class PlanningControlCommandTest extends PlannoPantherTestCase
 {
     protected function setUp(): void
     {

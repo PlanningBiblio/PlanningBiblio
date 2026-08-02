@@ -3,10 +3,10 @@
 use App\Entity\Agent;
 use App\Entity\Holiday;
 
-use Tests\PLBWebTestCase;
+use Tests\PlannoWebTestCase;
 use Tests\FixtureBuilder;
 
-class HolidayControllerHalfdayTest extends PLBWebTestCase
+class HolidayControllerHalfdayTest extends PlannoWebTestCase
 {
     protected function setUp(): void
     {

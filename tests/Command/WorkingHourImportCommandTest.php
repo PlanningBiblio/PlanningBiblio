@@ -9,9 +9,9 @@ use App\Entity\WorkingHour;
 use App\Entity\Agent;
 use DateTime;
 use App\Entity\Config;
-use Tests\PLBWebTestCase;
+use Tests\PlannoPantherTestCase;
 
-class WorkingHourImportCommandTest extends PLBWebTestCase
+class WorkingHourImportCommandTest extends PlannoPantherTestCase
 {
     private string $lockFile;
 

@@ -3,10 +3,10 @@
 use App\Entity\Agent;
 use App\Entity\Skill;
 use Symfony\Component\DomCrawler\Crawler;
-use Tests\PLBWebTestCase;
+use Tests\PlannoWebTestCase;
 use Tests\FixtureBuilder;
 
-class SkillControllerTest extends PLBWebTestCase
+class SkillControllerTest extends PlannoWebTestCase
 {
     public function testAdd(): void
     {

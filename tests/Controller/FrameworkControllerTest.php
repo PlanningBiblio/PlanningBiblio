@@ -8,9 +8,9 @@ use App\Entity\PlanningPositionTab;
 use App\Planno\Framework;
 use Symfony\Component\DomCrawler\Crawler;
 use Tests\FixtureBuilder;
-use Tests\PLBWebTestCase;
+use Tests\PlannoPantherTestCase;
 
-class FrameworkControllerTest extends PLBWebTestCase
+class FrameworkControllerTest extends PlannoPantherTestCase
 {
     protected function setUp(): void
     {

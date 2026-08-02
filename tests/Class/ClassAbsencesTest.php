@@ -7,11 +7,11 @@ use App\Entity\AbsenceReason;
 use App\Entity\Config;
 use App\Entity\Manager;
 use Tests\FixtureBuilder;
-use Tests\PLBWebTestCase;
+use Tests\PlannoPantherTestCase;
 
 require_once(__DIR__ . '/../../legacy/Class/class.absences.php');
 
-class ClassAbsencesTest extends PLBWebTestCase
+class ClassAbsencesTest extends PlannoPantherTestCase
 {
     public function testBuildICSContent(): void
     {

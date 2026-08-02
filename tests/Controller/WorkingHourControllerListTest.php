@@ -4,9 +4,9 @@ use App\Entity\Agent;
 use App\Entity\Manager;
 use App\Entity\WorkingHour;
 use Tests\FixtureBuilder;
-use Tests\PLBWebTestCase;
+use Tests\PlannoWebTestCase;
 
-class WorkingHourControllerListTest extends PLBWebTestCase
+class WorkingHourControllerListTest extends PlannoWebTestCase
 {
     protected function setUp(): void
     {

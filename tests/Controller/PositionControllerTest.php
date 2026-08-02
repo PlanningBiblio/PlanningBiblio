@@ -5,12 +5,12 @@ use App\Entity\Position;
 
 use Symfony\Component\DomCrawler\Crawler;
 
-use Tests\PLBWebTestCase;
+use Tests\PlannoWebTestCase;
 use Tests\FixtureBuilder;
 
 
 
-class PositionControllerTest extends PLBWebTestCase
+class PositionControllerTest extends PlannoWebTestCase
 {
     public function testAdd(): void
     {

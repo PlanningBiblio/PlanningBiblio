@@ -4,9 +4,9 @@ namespace App\Tests\Entity;
 
 use App\Entity\AbsenceDocument;
 use App\Entity\Agent;
-use Tests\PLBWebTestCase;
+use Tests\PlannoWebTestCase;
 
-class AbsenceDocumentTest extends PLBWebTestCase
+class AbsenceDocumentTest extends PlannoWebTestCase
 {
     private AbsenceDocument $document;
 

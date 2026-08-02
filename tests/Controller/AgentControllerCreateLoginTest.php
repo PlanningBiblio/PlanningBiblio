@@ -2,9 +2,9 @@
 
 use App\Entity\Agent;
 use Tests\FixtureBuilder;
-use Tests\PLBWebTestCase;
+use Tests\PlannoPantherTestCase;
 
-class AgentControllerCreateLoginTest extends PLBWebTestCase
+class AgentControllerCreateLoginTest extends PlannoPantherTestCase
 {
     protected function setUp(): void
     {

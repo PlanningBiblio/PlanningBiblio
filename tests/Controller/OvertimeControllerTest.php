@@ -5,11 +5,11 @@ use App\Entity\OverTime;
 
 use Symfony\Component\DomCrawler\Crawler;
 
-use Tests\PLBWebTestCase;
+use Tests\PlannoWebTestCase;
 use Tests\FixtureBuilder;
 
 
-class OvertimeControllerTest extends PLBWebTestCase
+class OvertimeControllerTest extends PlannoWebTestCase
 {
 
     public function testSave(): void
@@ -20,7 +20,6 @@ class OvertimeControllerTest extends PLBWebTestCase
         $builder->delete(Agent::class);
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
         $builder->delete(OverTime::class);
-
 
         $this->logInAgent($agent, array(100));
 

@@ -10,7 +10,7 @@ use Facebook\WebDriver\WebDriverSelect;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\Panther\PantherTestCase;
 
-class PLBWebTestCase extends PantherTestCase
+class PlannoPantherTestCase extends PantherTestCase
 {
     protected $builder;
     protected $client;
@@ -80,25 +80,6 @@ class PLBWebTestCase extends PantherTestCase
         $GLOBALS['CSRFSession'] = $CSRFToken;
     }
 
-    protected function logInAgent($agent, $rights = array(99, 100)) {
-        $_SESSION['login_id'] = $agent->getId();
-
-        $agent->setACL($rights);
-
-        global $entityManager;
-        $entityManager->persist($agent);
-        $entityManager->flush();
-
-        $GLOBALS['droits'] = $rights;
-        $crawler = $this->client->request('GET', '/login');
-        $session = $this->client->getRequest()->getSession();
-        $session->set('loginId', $agent->getId());
-        $session->save();
-    
-        $cookie = new Cookie($session->getName(), $session->getId());
-        $this->client->getCookieJar()->set($cookie);
-    }
-
     protected function setUpPantherClient()
     {
         $this->client = static::createPantherClient(
@@ -128,6 +109,7 @@ class PLBWebTestCase extends PantherTestCase
         $crawler = $this->client->submit($form);
 
         $this->client->waitForVisibility('html');
+        sleep(1);
     }
 
     protected function logout()
