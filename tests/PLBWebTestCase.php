@@ -123,9 +123,8 @@ class PLBWebTestCase extends PantherTestCase
         $crawler = $this->client->request('GET', '/login');
 
         $form = $crawler->selectButton('Valider')->form();
-        $form['login'] = $agent->getLogin();
-        $form['password'] = 'MyPass';
-
+        $form['_username'] = $agent->getLogin();
+        $form['_password'] = 'MyPass';
         $crawler = $this->client->submit($form);
 
         $this->client->waitForVisibility('html');

@@ -28,12 +28,14 @@ class ClassCongesTest extends KernelTestCase
         // Agents
         $agent = new Agent();
         $agent->setLogin('jdupont');
+        $agent->setPassword('passsword');
         $entityManager->persist($agent);
         $entityManager->flush();
         $userId = $agent->getId();
 
         $agent2 = new Agent();
         $agent2->setLogin('aboiron');
+        $agent2->setPassword('password');
         $entityManager->persist($agent2);
         $entityManager->flush();
         $userId2 = $agent2->getId();

@@ -108,6 +108,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
         $jdoe = new Agent();
         $jdoe->setLogin('jdoe');
+        $jdoe->setPassword('password');
         $jdoe->setLastname('Doe');
         $jdoe->setFirstname('John');
         $jdoe->setSkills([$id]);
@@ -118,6 +119,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
         $mgeorges = new Agent();
         $mgeorges->setLogin('mgeorges');
+        $mgeorges->setPassword('password');
         $mgeorges->setLastname('Georges');
         $mgeorges->setFirstname('Marie');
         $mgeorges->setSkills([$id]);
@@ -129,6 +131,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
         $emartin = new Agent();
         $emartin->setLogin('emartin');
+        $emartin->setPassword('password');
         $emartin->setLastname('Martin');
         $emartin->setFirstname('Eric');
         $emartin->setSkills([$id]);
@@ -139,6 +142,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
         $jmarc = new Agent();
         $jmarc->setLogin('jmarc');
+        $jmarc->setPassword('password');
         $jmarc->setLastname('Marc');
         $jmarc->setFirstname('Jeremy');
         $jmarc->setSkills([$id]);
@@ -149,6 +153,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
         $bmarley = new Agent();
         $bmarley->setLogin('bmarley');
+        $bmarley->setPassword('password');
         $bmarley->setLastname('Marley');
         $bmarley->setFirstname('Bob');
         $bmarley->setSkills([$id]);

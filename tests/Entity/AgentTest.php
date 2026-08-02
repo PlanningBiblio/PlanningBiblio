@@ -358,14 +358,17 @@ class AgentTest extends KernelTestCase
 
         $manager1 = new Agent();
         $manager1->setLogin('manager1');
+        $manager1->setPassword('password');
         $entityManager->persist($manager1);
 
         $manager2 = new Agent();
         $manager2->setLogin('manager2');
+        $manager2->setPassword('password');
         $entityManager->persist($manager2);
 
         $agent = new Agent();
         $agent->setLogin('myAgent');
+        $agent->setPassword('password');
 
         // Tests getManaged and getManagers for a new agent before persist
         $this->assertIsArray($agent->getManaged());

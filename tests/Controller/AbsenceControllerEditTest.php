@@ -23,6 +23,7 @@ class AbsenceControllerEditTest extends PLBWebTestCase
 
         $jdoe = new Agent();
         $jdoe->setLogin('jdoe');
+        $jdoe->setPassword('password');
         $jdoe->setLastname('Doe');
         $jdoe->setFirstname('John');
         $jdoe->setACL([99, 100]);
@@ -31,6 +32,7 @@ class AbsenceControllerEditTest extends PLBWebTestCase
 
         $bmarley = new Agent();
         $bmarley->setLogin('bmarley');
+        $bmarley->setPassword('password');
         $bmarley->setLastname('Marley');
         $bmarley->setFirstname('Bob');
         $bmarley->setACL([99, 100]);

@@ -32,4 +32,9 @@ final class Version20260731161022 extends AbstractMigration
         // Allows reverting the migration if necessary
         $this->addSql("ALTER TABLE `{$dbprefix}personnel` DROP roles;");
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }

@@ -51,6 +51,7 @@ class HolidayRepositoryTest extends TestCase
     
         $agent = new Agent();
         $agent->setLogin('alice');
+        $agent->setPassword('password');
         $agent->setHolidayCredit(5);
         $agent->setHolidayCompTime(2);
         $agent->setHolidayRemainder(1);
