@@ -61,9 +61,6 @@ class LoginListener
             // Anonymous login
             $login = $event->getRequest()->get('login');
             if ($login and $login === 'anonyme' and $config->findOneBy(array('nom' => 'Auth-Anonyme'))->getValue()) {
-                // TODO Manage Anonymous
-                $_SESSION['login_nom']="Anonyme";
-                $_SESSION['login_prenom']="";
                 $_SESSION['oups']["Auth-Mode"]="Anonyme";
 
                 // Symfony Session

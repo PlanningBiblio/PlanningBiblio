@@ -37,9 +37,7 @@
 
       <div id="accountDiv">
         <div id="username">
-          {% if app.user %}
-            {{ app.user.displayName }}
-          {% endif %}
+          {{ app.user.displayName ?? 'Anonymous' | trans }}
         </div>
 
         <div id="logoutIcon">

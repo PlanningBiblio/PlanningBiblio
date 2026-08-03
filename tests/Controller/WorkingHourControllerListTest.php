@@ -19,8 +19,6 @@ class WorkingHourControllerListTest extends PLBWebTestCase
 
     private function createWorkingHoursFor($agent, $status = 0)
     {
-        $_SESSION['login_id'] = 1;
-
         $date = new DateTime('now + 3 day');
         $end = new DateTime('now + 1 year');
 

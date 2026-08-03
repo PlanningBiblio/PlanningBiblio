@@ -570,3 +570,6 @@ msgstr "Demandé"
 
 msgid "Comment:"
 msgstr "Commentaire :"
+
+msgid "Anonymous"
+msgstr "Anonyme"
