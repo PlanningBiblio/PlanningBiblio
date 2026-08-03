@@ -2,37 +2,32 @@
 
 namespace App\EventListener;
 
-use Symfony\Component\HttpFoundation\Response;
-use Doctrine\ORM\EntityManagerInterface;
-
+use App\Entity\Access;
 use Doctrine\Common\Annotations\Reader;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\Yaml\Yaml;
-
-use App\Entity\Agent;
-use App\Entity\Access;
 
 use ReflectionClass;
 
 class ControllerAuthorizationListener
 {
-    private $anonymous_pages = array('', '/index', '/week', '/help');
-    private Array $droits;
-    private EntityManagerInterface $entityManager;
-    private $permissions = array();
-    private $templateParams = array();
-    private \Twig\ENvironment $twig;
-
-    public function __construct(\Twig\Environment $twig, EntityManagerInterface $em)
-    {
-        $this->permissions = Yaml::parseFile(__DIR__."/../../config/permissions.yaml");
-
-        $this->twig = $twig;
-
-        $this->templateParams = $GLOBALS['templates_params'];
+    private $anonymous_pages = ['', '/index', '/week', '/help'];
+    private $droits;
+    private $permissions;
+    private $templateParams;
+    
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+        private Security $security,
+        private \Twig\Environment $twig, 
+    ) {
         $this->droits = $GLOBALS['droits'];
-        $this->entityManager = $em;
+        $this->permissions = Yaml::parseFile(__DIR__."/../../config/permissions.yaml");
+        $this->templateParams = $GLOBALS['templates_params'];
     }
 
     public function onKernelRequest(RequestEvent $event): void
@@ -51,9 +46,9 @@ class ControllerAuthorizationListener
         }
 
         // Droits necessaires pour consulter la page en cours
-        $loginId = $event->getRequest()->getSession()->get('loginId');
         $accesses = $this->entityManager->getRepository(Access::class)->findBy(array('page' => $page));
-        $logged_in = $this->entityManager->find(Agent::class, $loginId);
+
+        $logged_in = $this->security->getUser();
 
         $route = $event->getRequest()->attributes->get('_route');
 
