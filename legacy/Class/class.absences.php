@@ -24,7 +24,6 @@ use App\Planno\ClosingDay;
 use App\Service\ICalendar;
 use App\Planno\DateTime\TimeSlot;
 
-
 class absences
 {
     public $agents_supprimes=array(0);
@@ -47,6 +46,7 @@ class absences
     public $id;
     public $ignoreFermeture=false;
     public $last_modified;
+    public $loginId;
     public $message = '';
     public $minutes=0;
     public $msg2 = '';
@@ -76,7 +76,6 @@ class absences
     {
     }
 
-  
     /** @function add()
      * Enregistre une nouvelle absence dans la base de données, créé les fichiers ICS pour les absences récurrentes (appel de la methode ics_add_event), envoie les notifications
      * @params : tous les éléments nécessaires à la création d'une absence. Les dates de debut et de fin sont attendues au format d/m/Y
@@ -118,25 +117,25 @@ class absences
         else {
             switch ($this->valide) {
                 case 1:
-                    $valide_n2 = $_SESSION['login_id'];
+                    $valide_n2 = $this->loginId;
                     $validation_n2 = date("Y-m-d H:i:s");
                     $validationText = "Valid&eacute;e";
                     break;
 
                 case -1:
-                    $valide_n2 = $_SESSION['login_id']*-1;
+                    $valide_n2 = $this->loginId * -1;
                     $validation_n2 = date("Y-m-d H:i:s");
                     $validationText = "Refus&eacute;e";
                     break;
 
                 case 2:
-                    $valide_n1 = $_SESSION['login_id'];
+                    $valide_n1 = $this->loginId;
                     $validation_n1 = date("Y-m-d H:i:s");
                     $validationText = "Accept&eacute;e (en attente de validation hi&eacute;rarchique)";
                     break;
 
                 case -2:
-                    $valide_n1 = $_SESSION['login_id']*-1;
+                    $valide_n1 = $this->loginId * -1;
                     $validation_n1 = date("Y-m-d H:i:s");
                     $validationText = "Refus&eacute;e (en attente de validation hi&eacute;rarchique)";
                     break;

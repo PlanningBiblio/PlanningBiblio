@@ -43,6 +43,7 @@ class ClassAbsencesRRulesTest extends TestCase
         $a->pj1 = '';
         $a->pj2 = '';
         $a->so = '';
+        $a->loginId = $agent->getId();
         $a->add();
 
         $absences = $entityManager->getRepository(Absence::class)
@@ -126,6 +127,7 @@ class ClassAbsencesRRulesTest extends TestCase
         $a->pj1 = '';
         $a->pj2 = '';
         $a->so = '';
+        $a->loginId = $agent->getId();
         $a->add();
 
         $absences = $entityManager->getRepository(Absence::class)
@@ -193,6 +195,7 @@ class ClassAbsencesRRulesTest extends TestCase
         $a->pj1 = '';
         $a->pj2 = '';
         $a->so = '';
+        $a->loginId = $agent->getId();
         $a->add();
 
         $absences = $entityManager->getRepository(Absence::class)
@@ -261,6 +264,7 @@ class ClassAbsencesRRulesTest extends TestCase
         $a->pj1 = '';
         $a->pj2 = '';
         $a->so = '';
+        $a->loginId = $agent->getId();
         $a->add();
 
         $absences = $entityManager->getRepository(Absence::class)
@@ -321,6 +325,7 @@ class ClassAbsencesRRulesTest extends TestCase
         $a->pj1 = '';
         $a->pj2 = '';
         $a->so = '';
+        $a->loginId = $agent->getId();
         $a->add();
 
         $absences = $entityManager->getRepository(Absence::class)
@@ -381,6 +386,7 @@ class ClassAbsencesRRulesTest extends TestCase
         $a->pj1 = '';
         $a->pj2 = '';
         $a->so = '';
+        $a->loginId = $agent->getId();
         $a->add();
 
         $absences = $entityManager->getRepository(Absence::class)

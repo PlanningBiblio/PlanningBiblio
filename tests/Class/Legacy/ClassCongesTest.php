@@ -184,6 +184,7 @@ class ClassCongesTest extends KernelTestCase
         $c = new \conges();
         $c->perso_id = $this->userId;
         $c->admin = true;
+        $c->loginId = $this->userId;
         $c->getRecup();
 
         $this->assertCount(1, $c->elements);
@@ -198,6 +199,7 @@ class ClassCongesTest extends KernelTestCase
         $c->debut = $start;
         $c->fin = $end;
         $c->admin = true;
+        $c->loginId = $this->userId;
         $c->getRecup();
 
         $this->assertCount(2, $c->elements);
@@ -212,6 +214,7 @@ class ClassCongesTest extends KernelTestCase
         $c = new \conges();
         $c->recupId = $OverTimeId;
         $c->admin = true;
+        $c->loginId = $this->userId;
         $c->getRecup();
 
         $this->assertCount(1, $c->elements);

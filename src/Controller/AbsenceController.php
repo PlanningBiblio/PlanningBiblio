@@ -956,6 +956,7 @@ class AbsenceController extends BaseController
         $a->pj1 = $pj1;
         $a->pj2 = $pj2;
         $a->so = $so;
+        $a->loginId = $session->get('loginId');
         $a->add();
         $msg2 = $a->msg2;
         $msg2_type = $a->msg2_type;
@@ -1363,6 +1364,7 @@ class AbsenceController extends BaseController
                 $a->so = $so;
                 $a->uid = $uid;
                 $a->id = $id;
+                $a->loginId = $session->get('loginId');
                 $a->add();
                 $msg2 = $a->msg2;
                 $msg2_type = $a->msg2_type;

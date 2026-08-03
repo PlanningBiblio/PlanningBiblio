@@ -17,7 +17,7 @@ trait EntityValidationStatuses
 
         $show_select = false;
 
-        $entity = new ValidationAwareEntity($module, $entity_id);
+        $entity = new ValidationAwareEntity($module, $entity_id, $session);
         list($entity_state, $entity_state_desc) = $entity->status();
 
         // At this point, overtime entities

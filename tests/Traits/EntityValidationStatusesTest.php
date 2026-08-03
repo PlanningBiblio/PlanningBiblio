@@ -3,7 +3,7 @@ use App\Entity\AbsenceReason;
 use App\Entity\Agent;
 use App\Entity\Model;
 use App\Entity\Manager;
-use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Request;
 use Tests\FixtureBuilder;
 use Tests\PLBWebTestCase;
 
@@ -78,8 +78,6 @@ class EntityValidationStatusesTest extends PLBWebTestCase
         $managed3->setLevel2(1);
         $manager_level1_level2_for_agent1->addManaged($managed3);
 
-        $session = new Session();
-
         $this->assertTrue( $manager_level1_for_agent1->isManagerOf(array($agent1->getId()), 'level1'));
         $this->assertFalse($manager_level1_for_agent1->isManagerOf(array($agent1->getId()), 'level2'));
 
@@ -90,6 +88,9 @@ class EntityValidationStatusesTest extends PLBWebTestCase
         $this->assertTrue($manager_level1_level2_for_agent1->isManagerOf(array($agent1->getId()), 'level2'));
 
         $this->login($agent1);
+
+        $request = Request::create('/');
+        $session = static::getContainer()->get('session.factory')->createSession();
         $session->set('loginId', $agent1->getId());
 
         $agents_ids = array($agent1->getId());
@@ -444,6 +445,7 @@ class EntityValidationStatusesTest extends PLBWebTestCase
         $absence->pj1 = '';
         $absence->pj2 = '';
         $absence->so = '';
+        $absence->loginId = 1;
 
         $absence->add();
 

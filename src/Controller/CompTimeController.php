@@ -226,6 +226,7 @@ class CompTimeController extends BaseController
 
         $c = new \conges();
         $c->CSRFToken = $CSRFToken;
+        $c->loginId = $session->get('loginId');
         $c->add($data);
         $id = $c->id;
 

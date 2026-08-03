@@ -9,7 +9,6 @@ class ClassPlanningTest extends TestCase
 {
     public function testWorkingHours(): void {
         $_SESSION['oups']['CSRFToken'] = 'FOO';
-        $_SESSION['login_id'] = 1;
 
         $db = new \db();
         $db->CSRFToken = 'FOO';
@@ -18,6 +17,7 @@ class ClassPlanningTest extends TestCase
         $p = new \planningHebdo();
         $p->add(array(
             'CSRFToken'     => 'FOO',
+            'loginId'       => 1,
             'perso_id'      => 1,
             'debut'         => '2020-01-01',
             'fin'           => '2040-12-31',
@@ -59,6 +59,7 @@ class ClassPlanningTest extends TestCase
         $p = new \planningHebdo();
         $p->add(array(
             'CSRFToken'     => 'FOO',
+            'loginId'       => 1,
             'perso_id'      => 1,
             'debut'         => '2021-03-08',
             'fin'           => '2021-03-13',
@@ -99,7 +100,6 @@ class ClassPlanningTest extends TestCase
 
     public function testWorkingHoursWithTwoWeeksTurnover(): void {
         $_SESSION['oups']['CSRFToken'] = 'FOO';
-        $_SESSION['login_id'] = 1;
         $GLOBALS['config']['nb_semaine'] = "2";
 
         $db = new \db();
@@ -109,6 +109,7 @@ class ClassPlanningTest extends TestCase
         $p = new \planningHebdo();
         $p->add(array(
             'CSRFToken'     => 'FOO',
+            'loginId'       => 1,
             'perso_id'      => 1,
             'debut'         => '2020-01-01',
             'fin'           => '2040-12-31',
@@ -145,6 +146,7 @@ class ClassPlanningTest extends TestCase
         $p = new \planningHebdo();
         $p->add(array(
             'CSRFToken'     => 'FOO',
+            'loginId'       => 1,
             'perso_id'      => 1,
             'debut'         => '2021-03-08',
             'fin'           => '2021-03-13',

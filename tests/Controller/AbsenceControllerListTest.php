@@ -207,6 +207,8 @@ class AbsenceControllerListTest extends PLBWebTestCase
         $absence->pj1 = '';
         $absence->pj2 = '';
         $absence->so = '';
+        $absence->loginId = 1;
+
         $absence->add();
     }
 }

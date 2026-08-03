@@ -68,6 +68,7 @@ class HolidayControllerAbsenceStatusesTest extends PLBWebTestCase
 
         $c = new \conges();
         $c->CSRFToken = $this->CSRFToken;
+        $c->loginId = $agent->getId();
         $c->add($data);
 
         return $c->id;

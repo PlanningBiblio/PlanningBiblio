@@ -586,6 +586,8 @@ class WorkingHourController extends BaseController
             }
         }
 
+        $post['loginId'] = $session->get('loginId');
+
         switch ($post["action"]) {
             case "ajout":
                 $p = new \planningHebdo();

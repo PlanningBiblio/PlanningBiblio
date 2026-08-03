@@ -59,12 +59,12 @@ class HolidayController extends BaseController
             ->getValidationLevelFor($session->get('loginId'));
 
         if (($admin or $adminN2) and $perso_id==null) {
-            $perso_id = $_SESSION['oups']['conges_perso_id'] ?? $session->get('loginId');
+            $perso_id = $session->get('holidayAgentId') ?? $session->get('loginId');
         } elseif ($perso_id==null) {
             $perso_id = $session->get('loginId');
         }
 
-        $agents_supprimes = isset($_SESSION['oups']['conges_agents_supprimes'])?$_SESSION['oups']['conges_agents_supprimes']:false;
+        $agents_supprimes = $session->get('HolidayDeletedAgents', false);
         $agents_supprimes = (!empty($request->get('debut')) and !empty($request->get('supprimes'))) ? true : $agents_supprimes;
         $agents_supprimes = (!empty($request->get('debut')) and empty($request->get('supprimes'))) ? false :$agents_supprimes;
 
@@ -85,8 +85,8 @@ class HolidayController extends BaseController
 
         $session->set('HolidayStart', $debut);
         $session->set('HolidayEnd', $fin);
-        $_SESSION['oups']['conges_perso_id']=$perso_id;
-        $_SESSION['oups']['conges_agents_supprimes']=$agents_supprimes;
+        $session->set('holidayAgentId', $perso_id);
+        $session->set('HolidayDeletedAgents', $agents_supprimes);
 
         $debutSQL = dateSQL($debut);
         $finSQL = dateSQL($fin);
@@ -343,7 +343,7 @@ class HolidayController extends BaseController
                 }
 
             } else {
-                $result = $this->update($request);
+                $result = $this->update($request, $session);
                 $msg = $result['msg'];
                 $msg2 = $result['msg2'];
                 $msg2Type = $result['msg2Type'];
@@ -830,7 +830,7 @@ class HolidayController extends BaseController
             }
 
             // Marque la demande de congé comme supprimée dans la table conges
-            $holiday->setDelete($_SESSION['login_id']);
+            $holiday->setDelete($session('loginId'));
             $holiday->setDeleteDate($deletionDate);
             $this->entityManager->flush();
 
@@ -841,13 +841,11 @@ class HolidayController extends BaseController
     }
 
     #[Route(path: '/holiday/accounts', name: 'holiday.accounts', methods: ['GET'])]
-    public function account(Request $request)
+    public function account(Request $request, Session $session)
     {
         if ($this->config('Conges-Enable') == 0 ) {
             return $this->redirectToRoute('access-denied');
         }
-
-        $session = $request->getSession();
 
         $droits = $GLOBALS['droits'];
         $admin = false;
@@ -868,37 +866,34 @@ class HolidayController extends BaseController
         $show_hours_to_days = $holiday_helper->showHoursToDays();
 
         // Initialisation des variables
-        $agents_supprimes = isset($_SESSION['oups']['conges_agents_supprimes'])
-            ? $_SESSION['oups']['conges_agents_supprimes'] : false;
+        $agents_supprimes = $session->get('HolidayDeletedAgents', false);
         $agents_supprimes = (isset($_GET['get']) and isset($_GET['supprimes']))
             ? true: $agents_supprimes;
         $agents_supprimes = (isset($_GET['get']) and !isset($_GET['supprimes']))
             ? false : $agents_supprimes;
 
-        $credits_effectifs = isset($_SESSION['oups']['conges_credits_effectifs'])
-            ? $_SESSION['oups']['conges_credits_effectifs'] : true;
+        $credits_effectifs = $session->get('HolidayActualCredits', true);
         $credits_effectifs = (isset($_GET['get']) and isset($_GET['effectifs']))
             ?true : $credits_effectifs;
         $credits_effectifs = (isset($_GET['get']) and !isset($_GET['effectifs']))
             ? false: $credits_effectifs;
 
-        $credits_en_attente = isset($_SESSION['oups']['conges_credits_attente'])
-            ? $_SESSION['oups']['conges_credits_attente'] : true;
+        $credits_en_attente = $session->get('HolidayPendingCredits', true);
         $credits_en_attente = (isset($_GET['get']) and isset($_GET['attente']))
             ? true : $credits_en_attente;
         $credits_en_attente = (isset($_GET['get']) and !isset($_GET['attente']))
             ?false : $credits_en_attente;
 
         global $hours_to_days;
-        $hours_to_days = $_SESSION['oups']['conges_hours_to_days'] ?? false;
+        $hours_to_days = $session->get('HolidayHoursToDay', false);
         $hours_to_days = $_GET['hours_to_days'] ?? $hours_to_days;
         $hours_to_days = (isset($_GET['get']) and !isset($_GET['hours_to_days']))
             ? false : $hours_to_days;
 
-        $_SESSION['oups']['conges_agents_supprimes'] = $agents_supprimes;
-        $_SESSION['oups']['conges_credits_effectifs'] = $credits_effectifs;
-        $_SESSION['oups']['conges_credits_attente'] = $credits_en_attente;
-        $_SESSION['oups']['conges_hours_to_days'] = $hours_to_days;
+        $session->set('HolidayDeletedAgents', $agents_supprimes);
+        $session->set('HolidayActualCredits', $credits_effectifs);
+        $session->set('HolidayPendingCredits', $credits_en_attente);
+        $session->set('HolidayHoursToDay', $hours_to_days);
 
         $checked1=$agents_supprimes?"checked='checked'":null;
         $checked2=$credits_effectifs?"checked='checked'":null;
@@ -1196,6 +1191,7 @@ class HolidayController extends BaseController
             $c = new \conges();
             $c->CSRFToken = $CSRFToken;
             $data['perso_id'] = $perso_id;
+            $c->loginId = $session->get('loginId');
             $c->add($data);
             $id = $c->id;
 
@@ -1269,7 +1265,7 @@ class HolidayController extends BaseController
     /**
      * @return mixed[]
      */
-    private function update($request): array
+    private function update(Request $request, Session $session): array
     {
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
@@ -1341,6 +1337,7 @@ class HolidayController extends BaseController
         // Enregistre la modification du congés
         $c=new \conges();
         $c->CSRFToken = $CSRFToken;
+        $c->loginId = $session->get('loginId');
         $c->update($post);
 
         // Envoi d'une notification par email

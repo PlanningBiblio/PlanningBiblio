@@ -2,9 +2,9 @@
 
 namespace App\Repository;
 
-use Doctrine\ORM\EntityRepository;
-
 use App\Entity\PlanningPositionHistory;
+use Doctrine\ORM\EntityRepository;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 class PlanningPositionHistoryRepository extends EntityRepository
 {
@@ -34,6 +34,8 @@ class PlanningPositionHistoryRepository extends EntityRepository
 
     public function undoable($date, $site)
     {
+        $session = new Session();
+
         if (!$date || !$site) {
             return array();
         }
@@ -56,7 +58,7 @@ class PlanningPositionHistoryRepository extends EntityRepository
             ->getArrayResult();
 
         // If the last change is not made by the logged in agent, undo is not allowed
-        if (empty($history) or $history[0]['updated_by'] != $_SESSION['login_id']) {
+        if (empty($history) or $history[0]['updated_by'] != $session('loginId')) {
             return array();
         }
 
@@ -65,6 +67,8 @@ class PlanningPositionHistoryRepository extends EntityRepository
 
     public function redoable($date, $site)
     {
+        $session = new Session();
+
         if (!$date || !$site) {
             return array();
         }
@@ -87,7 +91,7 @@ class PlanningPositionHistoryRepository extends EntityRepository
             ->getArrayResult();
 
         // If the last undo is not made by the logged in agent, redo is not allowed
-        if (empty($history) or $history[0]['updated_by'] != $_SESSION['login_id']) {
+        if (empty($history) or $history[0]['updated_by'] != $session('loginId')) {
             return array();
         }
 
