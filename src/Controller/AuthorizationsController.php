@@ -141,6 +141,7 @@ class AuthorizationsController extends BaseController
 
         if ($auth) {
             // Log login and client IP if success login.
+            // LoginSuccess process is now in LoginSuccessListener
             loginSuccess($login, $CSRFToken);
             $db = new \db();
             $db->select2("personnel", "id,nom,prenom", array("login"=>$login));

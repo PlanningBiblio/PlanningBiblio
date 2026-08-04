@@ -29,4 +29,40 @@ class IPBlocker
     {
         return $this->id;
     }
+
+    public function getIP(): ?string
+    {
+        return $this->ip;
+    }
+
+    public function setIP(string $ip): static
+    {
+        $this->ip = $ip;
+
+        return $this;
+    }
+
+    public function getLogin(): ?string
+    {
+        return $this->login;
+    }
+
+    public function setLogin(string $login): static
+    {
+        $this->login = $login;
+
+        return $this;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): static
+    {
+        $this->status = $status;
+
+        return $this;
+    }
 }
