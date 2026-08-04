@@ -1109,15 +1109,15 @@ function html_entity_decode_latin1($n)
  */
 function loginFailed($login, $CSRFToken): void
 {
-    // Recherche le nombre de login failed lors des $seconds dernières secondes
+    // Recherche le nombre de login failure lors des $seconds dernières secondes
     $seconds=$GLOBALS['config']['IPBlocker-TimeChecked']*60;
     $attempts=$GLOBALS['config']['IPBlocker-Attempts'];
 
     $timestamp=date("Y-m-d H:i:s", strtotime(" -$seconds seconds"));
     $db=new db();
-    $db->select2("ip_blocker", null, array("ip"=>$_SERVER['REMOTE_ADDR'], "status"=>"failed", "timestamp"=> ">=$timestamp"));
+    $db->select2("ip_blocker", null, array("ip"=>$_SERVER['REMOTE_ADDR'], "status"=>"failure", "timestamp"=> ">=$timestamp"));
     // S'il y a eu $attempts -1 echecs lors des $seconds dernières secondes, on block l'accès
-    $status=$db->nb>=$attempts?"blocked":"failed";
+    $status=$db->nb>=$attempts?"blocked":"failure";
 
     // Insertion dans la base de données
     $insert=array("ip"=>$_SERVER['REMOTE_ADDR'], "login"=>$login, "status"=>$status);

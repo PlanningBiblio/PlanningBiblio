@@ -2,9 +2,11 @@
 
 namespace App\Entity;
 
+use App\Repository\IPBlockerRepository;
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: IPBlockerRepository::class)]
 #[ORM\Table(name: 'ip_blocker')]
 class IPBlocker
 {
@@ -23,7 +25,7 @@ class IPBlocker
     private ?string $status = null;
 
     #[ORM\Column]
-    private ?\DateTime $timestamp = null;
+    private ?DateTime $timestamp = null;
 
     public function getId(): ?int
     {
@@ -62,6 +64,18 @@ class IPBlocker
     public function setStatus(string $status): static
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    public function getTimestamp(): ?DateTime
+    {
+        return $this->timestamp;
+    }
+
+    public function setTimestamp(DateTime $timestamp): static
+    {
+        $this->timestamp = $timestamp;
 
         return $this;
     }

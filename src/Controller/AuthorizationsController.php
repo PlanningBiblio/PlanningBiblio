@@ -30,6 +30,7 @@ class AuthorizationsController extends BaseController
         $errorPlanno = $this->redirectCAS($request, $logger);
 
         $IPBlocker = loginFailedWait();
+
         if ($IPBlocker > 0) {
             $content = $this->renderView('forbidden.html.twig', array(
                 'remote_addr' => $_SERVER['REMOTE_ADDR'],
@@ -158,6 +159,7 @@ class AuthorizationsController extends BaseController
                 $error = "unknown_user";
             }
         } else {
+            // LoginFailure process is now in LoginFailureListener
             loginFailed($login, $CSRFToken);
             $error = 'login_failed';
         }
