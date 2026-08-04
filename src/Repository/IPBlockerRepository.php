@@ -5,7 +5,6 @@ namespace App\Repository;
 use App\Entity\IPBlocker;
 use DateTimeInterface;
 use Doctrine\ORM\EntityRepository;
-use Doctrine\DBAL\Types\Types;
 
 /**
  * @extends EntityRepository<IPBlocker>
@@ -21,7 +20,7 @@ class IPBlockerRepository extends EntityRepository
             ->andWhere('i.status = \'failure\'')
             ->andWhere('i.timestamp >= :timestamp')
             ->setParameter('ip', $address)
-            ->setParameter('timestamp', $timestamp, Types::DATETIME_MUTABLE)
+            ->setParameter('timestamp', $timestamp)
             ->getQuery()
             ->getSingleScalarResult();
     }
