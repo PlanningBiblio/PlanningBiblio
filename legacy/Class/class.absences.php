@@ -19,6 +19,7 @@ use App\Entity\AbsenceReason;
 use App\Entity\AbsenceDocument;
 use App\Entity\PlanningPosition;
 use App\Entity\PlanningPositionLock;
+use App\Entity\Site;
 use App\Planno\WorkingHours;
 use App\Planno\ClosingDay;
 use App\Service\ICalendar;
@@ -734,12 +735,13 @@ class absences
 
         $all=array();
         $groupes=array();
+        $sites_entities = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(['deletedDate' => NULL]);
         if ($db->result) {
             foreach ($db->result as $elem) {
       
         // Multisites, n'affiche que les agents des sites choisis
                 if (!empty($sites)) {
-                    if ($GLOBALS['config']['Multisites-nombre'] > 1) {
+                    if (count($sites_entities) > 1) {
                         $sitesAgent = json_decode(html_entity_decode($elem['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
                     } else {
                         $sitesAgent = array(1);
@@ -1066,7 +1068,8 @@ class absences
         $responsables=array();
         $droitsAbsences=array();
         //	Si plusieurs sites et agents autorisés à travailler sur plusieurs sites, vérifions dans l'emploi du temps quels sont les sites concernés par l'absence
-        if ($GLOBALS['config']['Multisites-nombre']>1) {
+        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(['deletedDate' => NULL]);
+        if (count($sites) > 1) {
             $db=new db();
             $db->select("personnel", "temps", "id='$perso_id'");
             $temps=json_decode(html_entity_decode($db->result[0]['temps'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
@@ -1106,8 +1109,10 @@ class absences
 
             // Si les jours d'absences ne concernent aucun site, on ajoute les responsables de tous les sites par sécurité
             if (empty($droitsAbsences)) {
-                for ($i=1;$i<=$GLOBALS['config']['Multisites-nombre'];$i++) {
-                    $droitsAbsences[] = $droit + $i;
+                foreach ($sites as $site) {
+                    if (!in_array(($droit + $site->getId()), $droitsAbsences)) {
+                        $droitsAbsences[] = $droit + $site->getId();
+                    }
                 }
             }
         }
@@ -1864,10 +1869,11 @@ class absences
         $postes=$p->elements;
     
         // Nom des sites
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(['deletedDate' => NULL]);
         $sites=array(1=>null);
-        if ($GLOBALS['config']['Multisites-nombre']>1) {
-            for ($i=1;$i<=$GLOBALS['config']['Multisites-nombre'];$i++) {
-                $sites[$i]=$GLOBALS['config']["Multisites-site$i"];
+        if (count($sites_array)>0){
+            foreach ($sites_array as $s) {
+                $sites[$s->getId()]=$s->getName();
             }
         }
 

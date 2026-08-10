@@ -1,4 +1,6 @@
 <?php
+
+use App\Entity\Site;
 use App\Planno\Helper\HolidayHelper;
 
 # Very very tricky solution but this is this fatsest
@@ -70,7 +72,7 @@ for ($j = 0; $j < $nb_semaine; $j++) {
         $hours_tab .= "<th>Temps de pause</th>";
     }
 
-    if ($config['Multisites-nombre']>1) {
+    if (count($sites_array)>1) {
         $hours_tab .= "<th>Site</th>";
     }
   
@@ -161,22 +163,29 @@ for ($j = 0; $j < $nb_semaine; $j++) {
             $hours_tab .= '</td>';
         }
 
-        if ($config['Multisites-nombre']>1) {
+        if (count($sites_array)>1) {
             if ($disabled !== '' && $disabled !== '0') {
-                $site=null;
+                $site = '';
                 if (isset($temps[$i-1][4])) {
-                    $site="Multisites-site".$temps[$i-1][4];
-                    $site = isset($config[$site]) ? $config[$site] : null;
-
-                    $site = $temps[$i-1][4] == -1 ? 'Tout site' : $site;
+                    if ($temps[$i-1][4] == -1) {
+                        $site = 'Tout site';
+                    } else {
+                        $s = '';
+                        foreach ($sites_array as $elem) {
+                            if ($temps[$i-1][4] == $elem['id']) {
+                                $s = $elem['name'];
+                                break;
+                            }
+                        }
+                    }
                 }
                 $hours_tab .= "<td>$site</td>";
             } else {
                 $hours_tab .= "<td><select name='temps[".($i-1)."][4]' class='edt-site'>\n";
                 $hours_tab .= "<option value='' class='edt-site-0'>&nbsp;</option>\n";
-                for ($l=1;$l<=$config['Multisites-nombre'];$l++) {
-                    $selected = (isset($temps[$i-1][4]) and $temps[$i-1][4]==$l) ? "selected='selected'" : null;
-                    $hours_tab .= "<option value='$l' $selected class='edt-site-$l'>" . htmlspecialchars($config["Multisites-site{$l}"]) . "</option>\n";
+                foreach ($sites_array as $site) {
+                    $selected = (isset($temps[$i-1][4]) and $temps[$i-1][4]==$site['id']) ? "selected='selected'" : null;
+                    $hours_tab .= "<option value='". $site['id'] ."' $selected class='edt-site-". $site['id'] ."'>" . $site['name'] . "</option>\n";
                 }
                 $selected = (isset($temps[$i-1][4]) and $temps[$i-1][4] == -1) ? "selected='selected'" : null;
                 $hours_tab .= "<option value='-1' $selected class='edt-site--1'>Tout site</option>\n";

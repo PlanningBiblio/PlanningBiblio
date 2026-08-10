@@ -23,6 +23,7 @@ class CompTimeController extends BaseController
         }
 
         $session = $request->getSession();
+        $sites_array = $session->get('sites', []);
 
         $dbprefix = $GLOBALS['dbprefix'];
         $perso_id = filter_input(INPUT_GET, 'perso_id', FILTER_SANITIZE_NUMBER_INT);
@@ -125,6 +126,7 @@ class CompTimeController extends BaseController
             'action_path'           => 'comptime',
             'selected_agent_id'     => $perso_id,
             'save_button'           => true,
+            'nbSites'               => count($sites_array),
         ));
 
         return $this->output('holiday/edit.html.twig');

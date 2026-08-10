@@ -2,6 +2,8 @@
 
 namespace App\Planno;
 
+use App\Entity\Site;
+
 class Menu
 {
     public $elements = array();
@@ -50,11 +52,11 @@ class Menu
             }
         }
 
-        if ($GLOBALS['config']['Multisites-nombre']>1) {
-            for ($i=0;$i<$GLOBALS['config']['Multisites-nombre'];$i++) {
-                $j=$i+1;
-                $menu[30][$j]['titre']=$GLOBALS['config']["Multisites-site".$j];
-                $menu[30][$j]['url'] = $j;
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(['deletedDate' => NULL]);
+        if (count($sites_array)>1) {
+            foreach ($sites_array as $site) {
+                $menu[30][$site->getId()]['titre']=$site->getName();
+                $menu[30][$site->getId()]['url']=$site->getId();
             }
         }
 

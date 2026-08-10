@@ -6,6 +6,7 @@ use App\Entity\Config;
 use App\Entity\PlanningPosition;
 use App\Entity\PlanningPositionLock;
 use App\Entity\PlanningPositionTabAffectation;
+use App\Entity\Site;
 use App\Planno\Framework;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -63,11 +64,7 @@ class PlanningControlCommand extends Command
         }
 
         // Gestion des sites
-        $sites=array();
-
-        for ($i = 1; $i <= $config['Multisites-nombre']; $i++) {
-            $sites[] = array($i, $config['Multisites-site' . $i]);
-        }
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(['deletedDate' => NULL]);
 
         // Dates à controler
         $jours=$config['Rappels-Jours'];
@@ -101,19 +98,19 @@ class PlanningControlCommand extends Command
         // Pour chaque date et pour chaque site
         foreach ($dates as $date) {
             $dateObj = new \DateTime($date);
-            foreach ($sites as $site) {
+            foreach ($sites_array as $site) {
 
                 // on créé un tableau pour stocker les éléments par dates et sites
-                $data[$date][$site[0]]=array("date"=>dateFr($date), "site"=>$site[1]);
+                $data[$date][$site->getId()]=array("date"=>dateFr($date), "site"=>$site->getName());
 
                 // On recherche les plannings qui ne sont pas créés (aucune structure affectée)
                 $planningPositionTabAffectation = $this->entityManager->getRepository(PlanningPositionTabAffectation::class)->findBy([
                     'date'     => $dateObj,
-                    'site'     => $site[0],
+                    'site'     => $site->getId(),
                 ]);
 
                 if (!$planningPositionTabAffectation) {
-                    $data[$date][$site[0]]["message"]="Le planning {$site[1]} du <strong>".dateFr($date)." <span style='color:red;'>n'est pas créé</span></strong>\n";
+                    $data[$date][$site->getId()]["message"]="Le planning {$site->getName()} du <strong>".dateFr($date)." <span style='color:red;'>n'est pas créé</span></strong>\n";
                     continue;
                 } else {
                     // Si le planning est créé, on récupère le numéro du tableau pour ensuite
@@ -123,13 +120,13 @@ class PlanningControlCommand extends Command
                     // On recherche les plannings qui ne sont pas validés
                     $planningPositionLock = $this->entityManager->getRepository(PlanningPositionLock::class)->findBy([
                         'date'     => $dateObj,
-                        'site'     => $site[0],
-                        'verrou2'  => 1, 
+                        'site'     => $site->getId(),
+                        'verrou2'  => 1,
                     ]);
                     if ($planningPositionLock) {
-                        $data[$date][$site[0]]["message"]="Le planning {$site[1]} du <strong>".dateFr($date)."</strong> est validé;\n";
+                        $data[$date][$site->getId()]["message"]="Le planning {$site->getName()} du <strong>".dateFr($date)."</strong> est validé;\n";
                     } else {
-                        $data[$date][$site[0]]["message"]="Le planning {$site[1]} du <strong>".dateFr($date)." <span style='color:red;'>n'est pas validé;</span></strong>\n";
+                        $data[$date][$site->getId()]["message"]="Le planning {$site->getName()} du <strong>".dateFr($date)." <span style='color:red;'>n'est pas validé;</span></strong>\n";
                     }
                 }
 
@@ -143,7 +140,7 @@ class PlanningControlCommand extends Command
                 foreach ($tableau as $elem) {
 
                     // On stock dans notre tableau data les éléments date, site, tableau
-                    $data[$date][$site[0]]['tableau'][$elem['nom']]["tableau"]=$elem['titre'];
+                    $data[$date][$site->getId()]['tableau'][$elem['nom']]["tableau"]=$elem['titre'];
 
                     // $tab = liste des postes/plages horaires non occupés, cellules grisées excluses, poste non obligatoires exclus selon config
                     $tab=array();
@@ -167,7 +164,7 @@ class PlanningControlCommand extends Command
                                 // Pour ceci, on execute la requête préparée plus haut avec PDO
                                 $result = $this->entityManager->getRepository(PlanningPosition::class)->findBy([
                                     'date'     => $dateObj,
-                                    'site'     => $site[0],
+                                    'site'     => $site->getId(),
                                     'poste'    => $l['poste'],
                                     'debut'    => new \DateTime('today ' . $h['debut']),
                                     'fin'      => new \DateTime('today ' . $h['fin']),
@@ -220,7 +217,7 @@ class PlanningControlCommand extends Command
                             }
                         }
                     }
-                    $data[$date][$site[0]]['tableau'][$elem['nom']]["data"]=$tab;
+                    $data[$date][$site->getId()]['tableau'][$elem['nom']]["data"]=$tab;
                 }
             }
         }

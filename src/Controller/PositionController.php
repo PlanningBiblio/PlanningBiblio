@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 
+use App\Entity\Site;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
@@ -19,7 +20,7 @@ require_once(__DIR__ . '/../../legacy/Class/class.activites.php');
 class PositionController extends BaseController
 {
     #[Route(path: '/position', name: 'position.index', methods: ['GET'])]
-    public function index(Request $request)
+    public function index(Request $request, Session $session)
     {
         //            Affichage de la liste des postes
         $groupe = "Tous";
@@ -53,9 +54,10 @@ class PositionController extends BaseController
             $postes[] = $poste;
         }
 
-        $nbMultisite = $this->config('Multisites-nombre');
+        $sites_array = $session->get('sites', []);
+        $nbSites=count($sites_array);
         $this->templateParams(array(
-            'multisite'     => $nbMultisite,
+            'multisite'     => $nbSites,
             'usedPositions' => $postes_utilises,
             'CSRFSession'   => $GLOBALS['CSRFSession']
         ));
@@ -89,8 +91,9 @@ class PositionController extends BaseController
                 $activitesAffichees.=" ...";
             }
 
-            if ($nbMultisite>1) {
-                $site = $this->config("Multisites-site{$value->getSite()}") ? $this->config("Multisites-site{$value->getSite()}") :"-";
+            if ($nbSites>1) {
+                $s = $GLOBALS['entityManager']->getRepository(Site::class)->find($value->getSite());
+                $site = $s->getName() ? $s->getName() :"-";
                 $new['site'] = $site;
             }
             $new['nom'] =  $value->getName();
@@ -112,7 +115,7 @@ class PositionController extends BaseController
 
     #[Route(path: '/position/add', name: 'position.add', methods: ['GET'])]
     #[Route(path: '/position/{id}', name: 'position.edit', methods: ['GET'])]
-    public function edit(Request $request)
+    public function edit(Request $request, Session $session)
     {
         // Initialisation des variables
         $id = $request->get('id');
@@ -208,14 +211,15 @@ class PositionController extends BaseController
         $db->select2("select_categories", "*", "1", "order by rang");
         $categories_list = $db->result;
 
-        $nbSites = $this->config('Multisites-nombre');
+        $sites_array = $session->get('sites', []);
+        $nbSites = count($sites_array);
         $multisite = array();
         $selectedSites = array();
 
         if ($nbSites>1){
-            for ($i = 1; $i<= $nbSites; $i++) {
-                $selected = $site==$i?"selected='selected'":null;
-                $multisite[] = $this->config("Multisites-site{$i}");
+            foreach ($sites_array as $site) {
+                $selected = $site==$site['id']?"selected='selected'":null;
+                $multisite[] = $site['name'];
                 $selectedSites[] = $selected;
             }
         }

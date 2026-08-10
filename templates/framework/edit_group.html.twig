@@ -9,7 +9,7 @@
       grp_nom.push("{{ elem.nom | lower }}");
     {% endfor %}
   </script>
-  {% if config('Multisites-nombre') > 1 %}
+  {% if multisites|length > 1 %}
     <script type="text/JavaScript">
       $(document).ready(function(){
         $(".hiddenOptions").hide();
@@ -48,7 +48,7 @@
           </div>
         </div>
 
-        {% if config('Multisites-nombre') > 1 %}
+        {% if multisites|length > 1 %}
           <div class="row gx-5">
             <label class="col-2 col-form-label text-end" for="selectSite">
               {% trans %} Site {% endtrans %} :
@@ -56,7 +56,7 @@
             <div class="col-3">
               <select name="site" id="selectSite" class="form-select form-select-sm" onchange="tabOptions(this)" required>
                   <option hidden disabled selected value=""></option>
-                  {% for i in 1..config('Multisites-nombre') %}
+                  {% for i in 1..multisites|length %}
                     <option value="{{ i }}" {% if groupe.site == i %} selected {% endif %}>{{ multisites[i] }}</option>
                   {% endfor %}
               </select>

@@ -39,9 +39,10 @@ class HolidayInfoController extends BaseController
     }
 
     #[Route(path: '/holiday-info/add', name: 'holiday_info.add', methods: ['GET'])]
-    public function add(Request $request)
+    public function add(Request $request, Session $session)
     {
-        if(!$this->isAdmin() || $this->config('Conges-Enable') == 0 ) {
+        $sites_array = $session->get('sites', []);
+        if(!$this->isAdmin($sites_array) || $this->config('Conges-Enable') == 0 ) {
             return $this->redirectToRoute('access-denied');
         }
 
@@ -60,7 +61,8 @@ class HolidayInfoController extends BaseController
     #[Route(path: '/holiday-info/{id<\d+>}', name: 'holiday_info.edit', methods: ['GET'])]
     public function edit(Request $request)
     {
-        if(!$this->isAdmin()){
+        $sites_array = $session->get('sites', []);
+        if(!$this->isAdmin($sites_array)){
             return $this->redirectToRoute('access-denied');
         }
 
@@ -87,7 +89,8 @@ class HolidayInfoController extends BaseController
     #[Route(path: '/holiday-info', name: 'holiday_info.update', methods: ['POST'])]
     public function save(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
     {
-        if(!$this->isAdmin()){
+        $sites_array = $session->get('sites', []);
+        if(!$this->isAdmin($sites_array)){
             return $this->redirectToRoute('access-denied');
         }
 
@@ -122,7 +125,8 @@ class HolidayInfoController extends BaseController
     #[Route(path: '/holiday-info', name: 'holiday_info.delete', methods: ['DELETE'])]
     public function delete(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
     {
-        if(!$this->isAdmin()){
+        $sites_array = $session->get('sites', []);
+        if(!$this->isAdmin($sites_array)){
             return $this->redirectToRoute('access-denied');
         }
 
@@ -138,11 +142,11 @@ class HolidayInfoController extends BaseController
         return $this->redirectToRoute('holiday_info.index');
     }
 
-    private function isAdmin(): bool
+    private function isAdmin($sites_array): bool
     {
         $droits = $GLOBALS['droits'];
 
-        for ($i = 1; $i <= $this->config('Multisites-nombre') ; $i++) {
+        for ($i = 1; $i <= count($sites_array) ; $i++) {
             if (in_array((400+$i), $droits) or in_array((600+$i), $droits)) {
                 return true;
             }

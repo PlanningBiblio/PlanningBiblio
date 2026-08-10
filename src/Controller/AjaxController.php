@@ -51,9 +51,10 @@ class AjaxController extends BaseController
             ->getManagedFor($session->get('loginId'));
 
         $agents = array();
+        $sites_array = $session->get('sites', []);
         foreach ($managed as $m) {
             if ($m->getId() == $session->get('loginId') ||
-                $this->config('Multisites-nombre') == 1 ||
+                count($sites_array) == 1 ||
                 ($sites && $m->inOneOfSites($sites))) {
 
                 $agents[] = array(

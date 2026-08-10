@@ -4,6 +4,7 @@ namespace App\Command;
 
 use App\Entity\Agent;
 use App\Entity\Config;
+use App\Entity\Site;
 use App\Entity\WorkingHour;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -90,6 +91,8 @@ class WorkingHourImportCommand extends Command
         // On place les éléments du fichiers dans le tableau $temps
         $temps = [];
 
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(['deletedDate' => NULL]);
+
         // Pour chaque ligne
         foreach ($lines as $line) {
             $cells = explode(';', $line);
@@ -154,7 +157,7 @@ class WorkingHourImportCommand extends Command
             // Récupération depuis la table personnel, donc ne fonctionne que si l'agent ne travaille que sur un site
 
             // Config. monosite : $site = 1
-            if ($config['Multisites-nombre'] == 1) {
+            if (count($sites_array) == 1) {
                 $site = 1;
                 // Config. Multisites
             } else {
