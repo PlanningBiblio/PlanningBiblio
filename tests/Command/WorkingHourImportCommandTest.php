@@ -43,7 +43,6 @@ class WorkingHourImportCommandTest extends PLBWebTestCase
     {
         $this->config->setParam('PlanningHebdo-ImportAgentId', 'login');
         $this->config->setParam('PlanningHebdo-CSV', __DIR__ . '/../data/workingHourImport_login.csv');
-        $this->config->setParam('Multisites-nombre', 1);
 
         $alex = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'alex']);
         $aurelie = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'aurelie']);
@@ -67,8 +66,7 @@ class WorkingHourImportCommandTest extends PLBWebTestCase
     {
         $this->addConfig('PlanningHebdo-ImportAgentId', 'mail');
         $this->config->setParam('PlanningHebdo-CSV', __DIR__ . '/../data/workingHourImport_mail.csv');
-        $this->config->setParam('Multisites-nombre', 1);
-        
+
         $alex = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'alex']);
         $aurelie = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'aurelie']);
 
@@ -91,8 +89,7 @@ class WorkingHourImportCommandTest extends PLBWebTestCase
     {
         $this->addConfig('PlanningHebdo-ImportAgentId', 'matricule');
         $this->config->setParam('PlanningHebdo-CSV', __DIR__ . '/../data/workingHourImport_matricule.csv');
-        $this->config->setParam('Multisites-nombre', 1);
-        
+
         $alex = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'alex']);
         $aurelie = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'aurelie']);
 

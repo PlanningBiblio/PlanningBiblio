@@ -256,6 +256,7 @@ class AgentTest extends KernelTestCase
     {
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
+        $builder->delete(Site::class);
 
         $start = \DateTime::createFromFormat("H:i:s", '08:00:00');
         $end = \DateTime::createFromFormat("H:i:s", '17:00:00');
@@ -269,14 +270,20 @@ class AgentTest extends KernelTestCase
 
         //Multi sites :
 
-        $GLOBALS['config']['Multisites-nombre'] = 4;
         $GLOBALS['config']['Mail-Planning'] = '';
+        $site2 = $this->builder->build(Site::class, array('name' => 'Site 2'));
+        $site3 = $this->builder->build(Site::class, array('name' => 'Site 3'));
+        $site4 = $this->builder->build(Site::class, array('name' => 'Site 4'));
 
         $agent2 = $builder->build(Agent::class, array('login' => 'jmarc', 'sites' => ["1", "2", "3","4"]));
-        $GLOBALS['config']['Multisites-site1-mail'] ='jmarc@mail.fr;jcharles@mail.fr;jdevoe@mail.com';
-        $GLOBALS['config']['Multisites-site2-mail'] ='jcharles@mail.fr;jmarc@mail.fr;j.paul@mail.com';
-        $GLOBALS['config']['Multisites-site3-mail'] ='j.claude@mail.com;jmarc@mail.fr;jcharles@mail.fr';
-        $GLOBALS['config']['Multisites-site4-mail'] ='j.paul@mail.com;j.claude@mail.com';
+
+        global $entityManager;
+        $site1 = $entityManager->find(Site::class, 1);
+
+        $this->builder->build(SiteMail::class, array('site' => $site1->getId(), 'mail' => 'jmarc@mail.fr;jcharles@mail.fr;jdevoe@mail.com'));
+        $this->builder->build(SiteMail::class, array('site' => $site2->getId(), 'mail' => 'jcharles@mail.fr;jmarc@mail.fr;j.paul@mail.com'));
+        $this->builder->build(SiteMail::class, array('site' => $site3->getId(), 'mail' => 'j.claude@mail.com;jmarc@mail.fr;jcharles@mail.fr'));
+        $this->builder->build(SiteMail::class, array('site' => $site4->getId(), 'mail' => 'j.paul@mail.com;j.claude@mail.com'));
 
         $this->assertEquals(
             $agent2->get_planning_unit_mails(),

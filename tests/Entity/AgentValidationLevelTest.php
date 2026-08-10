@@ -2,6 +2,7 @@
 
 use App\Entity\Agent;
 use App\Entity\Manager;
+use App\Entity\Site;
 use PHPUnit\Framework\TestCase;
 use Tests\FixtureBuilder;
 use Tests\PLBWebTestCase;
@@ -136,7 +137,6 @@ class AgentValidationLevelTest extends PLBWebTestCase
     {
 
         $this->config->setParam('Absences-notifications-agent-par-agent', 0);
-        $this->config->setParam('Multisites-nombre', 1);
 
         $agent1 = $this->builder->build(Agent::class,
             array(
@@ -183,7 +183,9 @@ class AgentValidationLevelTest extends PLBWebTestCase
     {
 
         $this->config->setParam('Absences-notifications-agent-par-agent', 0);
-        $this->config->setParam('Multisites-nombre', 2);
+
+        $this->builder->build(Site::class, array('name' => 'Site 2'));
+        $sites = $this->entityManager->getRepository(Site::class)->findBy(['deletedDate' => null]);
 
         $agent1 = $this->builder->build(Agent::class,
             array(
@@ -230,7 +232,6 @@ class AgentValidationLevelTest extends PLBWebTestCase
     {
 
         $this->config->setParam('Absences-notifications-agent-par-agent', 1);
-        $this->config->setParam('Multisites-nombre', 1);
 
         $agent_manager = $this->builder->build(Agent::class);
         $agent1 = $this->builder->build(Agent::class);

@@ -1,6 +1,7 @@
 <?php
 
 use App\Entity\Agent;
+use App\Entity\Site;
 use App\Entity\Manager;
 use App\Entity\OverTime;
 use App\Entity\Cron;
@@ -38,6 +39,7 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $builder->delete(Manager::class);
         $builder->delete(WorkingHour::class);
         $builder->delete(Overtime::class);
+        $builder->delete(Site::class);
 
         $cron = $entityManager->getRepository(Cron::class)->findAll();
         foreach ($cron as $c){
@@ -126,6 +128,7 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $builder->delete(Manager::class);
         $builder->delete(WorkingHour::class);
         $builder->delete(Overtime::class);
+        $builder->delete(Site::class);
 
         $entityManager = static::getContainer()->get(EntityManagerInterface::class);
 
@@ -170,17 +173,14 @@ class HolidayControllerAddTest extends PLBWebTestCase
     {
         $this->setUpPantherClient();
 
-        // Without Multisite
-        $this->config->setParam('Multisites-nombre', 1);
-
         $crawler = $this->client->request('GET', '/holiday/new');
         $this->assertSelectorExists('#holiday-form');
         $this->assertSelectorNotExists('#sites-selection', 'There site selection div should not be present');
 
         // With Multisite
-        $this->config->setParam('Multisites-nombre', 2);
-        $this->config->setParam('Multisites-site1', 'Site N°1');
-        $this->config->setParam('Multisites-site2', 'Site N°2');
+        $site2 = $this->builder->build(Site::class, array('name' => 'Site N°2'));
+        $jdupont = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'jdupont']);
+        $this->login($jdupont);
 
         $jdupont = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'jdupont']);
         $jdevoe = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'jdevoe']);
@@ -195,7 +195,7 @@ class HolidayControllerAddTest extends PLBWebTestCase
 
         $result = $crawler->filterXPath('//body');
         $this->assertStringContainsString('Sites :',$result->text('Node does not exist', true),'test sites');
-        $this->assertStringContainsString('Site N°1',$result->text('Node does not exist', true),'test sites');
+        $this->assertStringContainsString('Site par défaut',$result->text('Node does not exist', true),'test sites');
         $this->assertStringContainsString('Site N°2',$result->text('Node does not exist', true),'test sites');
 
         // Deselect Jean Dupont

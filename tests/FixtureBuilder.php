@@ -70,6 +70,9 @@ class FixtureBuilder
             if ($model == 'App\Entity\Agent' && ($entity->getId() == 1 or $entity->getId() == 2)) {
                 continue;
             }
+            if ($model == 'App\Entity\Site' && ($entity->getId() == 1)) {
+                continue;
+            }
             $this->em->remove($entity);
         }
         $this->em->flush();

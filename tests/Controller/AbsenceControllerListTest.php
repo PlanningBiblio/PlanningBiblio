@@ -2,6 +2,7 @@
 
 use App\Entity\Agent;
 use App\Entity\Manager;
+use App\Entity\Site;
 use Tests\PLBWebTestCase;
 use Tests\FixtureBuilder;
 
@@ -14,13 +15,13 @@ class AbsenceControllerListTest extends PLBWebTestCase
         parent::setUp();
 
         $this->builder->delete(Agent::class);
+        $this->builder->delete(Site::class);
     }
 
     public function testList(): void
     {
 
         $this->config->setParam('Absences-notifications-agent-par-agent', 0);
-        $this->config->setParam('Multisites-nombre', 1);
 
         $client = static::createClient();
 
@@ -83,7 +84,7 @@ class AbsenceControllerListTest extends PLBWebTestCase
     public function testListMultiSites(): void
     {
         $this->config->setParam('Absences-notifications-agent-par-agent', 0);
-        $this->config->setParam('Multisites-nombre', 2);
+        $this->builder->build(Site::class, array('name' => 'Site 2'));
 
         $client = static::createClient();
 
@@ -131,7 +132,7 @@ class AbsenceControllerListTest extends PLBWebTestCase
     public function testListWithAbsencesNotificationsAgentParAgent(): void
     {
         $this->config->setParam('Absences-notifications-agent-par-agent', 1);
-        $this->config->setParam('Multisites-nombre', 2);
+        $this->builder->build(Site::class, array('name' => 'Site 2'));
 
         $client = static::createClient();
 

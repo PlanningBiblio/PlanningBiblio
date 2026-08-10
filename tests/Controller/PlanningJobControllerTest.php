@@ -61,8 +61,6 @@ class PlanningJobControllerTest extends PLBWebTestCase
         $GLOBALS['config']['PlanningHebdo'] = 1;
         $GLOBALS['config']['ClasseParService'] = 0;
         $GLOBALS['config']['agentsIndispo'] = 0;
-        $GLOBALS['config']['Multisites-nombre'] = 1;
-        $GLOBALS['config']['Multisites-site1'] = 'site';
         $GLOBALS['config']['MSGraph-ClientID'] = '';
 
         $builder = new FixtureBuilder();
@@ -225,9 +223,7 @@ class PlanningJobControllerTest extends PLBWebTestCase
         $GLOBALS['config']['ClasseParService'] = 0;
         $GLOBALS['config']['agentsIndispo'] = 1;
         $GLOBALS['config']['toutlemonde'] = 0;
-        $GLOBALS['config']['Multisites-nombre'] = 1;
         $GLOBALS['config']['Planning-agents-volants'] = 0;
-        $GLOBALS['config']['Multisites-site1'] = 'site';
 
         $builder = new FixtureBuilder();
 
@@ -342,8 +338,6 @@ class PlanningJobControllerTest extends PLBWebTestCase
         $GLOBALS['config']['ClasseParService'] = 1;
         $GLOBALS['config']['agentsIndispo'] = 0;
         $GLOBALS['config']['toutlemonde'] = 0;
-        $GLOBALS['config']['Multisites-nombre'] = 1;
-        $GLOBALS['config']['Multisites-site1'] = 'site';
 
         $builder = new FixtureBuilder();
 
@@ -440,11 +434,10 @@ class PlanningJobControllerTest extends PLBWebTestCase
         $GLOBALS['config']['ClasseParService'] = 1;
         $GLOBALS['config']['agentsIndispo'] = 0;
         $GLOBALS['config']['toutlemonde'] = 0;
-        $GLOBALS['config']['Multisites-nombre'] = 2;
-        $GLOBALS['config']['Multisites-site1'] = 'site';
-        $GLOBALS['config']['Multisites-site2'] = 'site2';
 
         $builder = new FixtureBuilder();
+
+        $this->builder->build(Site::class, array('name' => 'Site N°2'));
 
         // Create post
         $builder->delete(Position::class);

@@ -3,6 +3,7 @@
 namespace Tests;
 
 use App\Entity\Config;
+use App\Entity\Site;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
@@ -93,6 +94,7 @@ class PLBWebTestCase extends PantherTestCase
         $crawler = $this->client->request('GET', '/login');
         $session = $this->client->getRequest()->getSession();
         $session->set('loginId', $agent->getId());
+        $this->setUpDefaultSite($session);
         $session->save();
     
         $cookie = new Cookie($session->getName(), $session->getId());
@@ -129,6 +131,7 @@ class PLBWebTestCase extends PantherTestCase
         $crawler = $this->client->submit($form);
 
         $this->client->waitForVisibility('html');
+        $this->setUpDefaultSite();
     }
 
     protected function logout()
@@ -182,6 +185,27 @@ class PLBWebTestCase extends PantherTestCase
         }
 
         return $values;
+    }
+
+    protected function setUpDefaultSite($session = null) {
+        $siteRepo = $this->entityManager->getRepository(Site::class);
+        $sites = $siteRepo->findAll();
+
+        if (empty($sites)) {
+            $defaultSite = new Site();
+            $defaultSite->setName('Site par défaut');
+            $this->entityManager->persist($defaultSite);
+            $this->entityManager->flush();
+            $sites = [$defaultSite];
+        }
+
+        if ($session) {
+            $sitesArray = array_map(function ($site) {
+                return ['id' => $site->getId(), 'name' => $site->getName()];
+            }, $sites);
+
+            $session->set('sites', $sitesArray);
+        }
     }
 
     protected function restore()

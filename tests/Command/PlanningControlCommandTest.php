@@ -3,6 +3,7 @@
 namespace App\Tests\Command;
 
 use App\Entity\Agent;
+use App\Entity\Site;
 use App\Entity\Config;
 use App\Entity\PlanningPosition;
 use App\Entity\PlanningPositionHours;
@@ -23,16 +24,12 @@ class PlanningControlCommandTest extends PLBWebTestCase
     {
         parent::setUp();
         parent::setData('data7');
+        $this->builder->delete(Site::class);
     }
 
     public function testPlanningImportModel(): void
     {
         $this->config->setParam('Rappels-Actifs', 1);
-        $this->config->setParam('Multisites-nombre', 1);
-        $this->config->setParam('Multisites-site1', 1);
-        $this->config->setParam('Multisites-site2', 0);
-        $this->config->setParam('Multisites-site3', 0);
-        $this->config->setParam('Multisites-site4', 0);
         $this->config->setParam('Rappels-Jours', 1);
         $this->config->setParam('Dimanche', 0);
         $this->config->setParam('Rappels-Renfort', 0);
