@@ -18,8 +18,8 @@ final class Version20260811150500 extends AbstractMigration
     {
         $dbprefix = $_ENV['DATABASE_PREFIX'];
 
-        $this->addSql("INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `technical`, `ordre`) VALUES ('PlanningGeneration-ApiUrl', 'text', '', 'Génération de planning', 'URL de l\'API externe de génération de planning', 1, '10');");
-        $this->addSql("INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `technical`, `ordre`) VALUES ('PlanningGeneration-ApiKey', 'text', '', 'Génération de planning', 'Clé d\'API (jeton Bearer) pour l\'API externe de génération de planning', 1, '20');");
+        $this->addSql("INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `technical`, `ordre`) VALUES ('PlanningGeneration-ApiUrl', 'text', 'https://algorithme-de-planification.onrender.com/', 'Génération de planning', 'URL de l\'API externe de génération de planning', 1, '10');");
+        $this->addSql("INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `technical`, `ordre`) VALUES ('PlanningGeneration-ApiKey', 'text', 'cle-test-1234', 'Génération de planning', 'Clé d\'API (jeton Bearer) pour l\'API externe de génération de planning', 1, '20');");
     }
 
     public function down(Schema $schema): void
