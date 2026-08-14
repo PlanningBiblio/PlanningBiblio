@@ -1,0 +1,98 @@
+{# planning-generation/wizard.html.twig #}
+
+<div class="modal" id="generation-wizard-modal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="generation-wizard-title" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="generation-wizard-title">Générer un planning</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+      </div>
+
+      <div class="modal-body">
+        <input type="hidden" name="CSRFToken" value="{{ CSRFSession }}" />
+        <input type="hidden" name="_token" value="{{ csrf_token('') }}" />
+
+        <div id="generation-step-1" class="generation-step">
+          <div class="row mb-3">
+            <label for="generation-date-debut" class="col-4 col-form-label">Date de début :</label>
+            <div class="col-8">
+              <input type="date" id="generation-date-debut" class="form-control" />
+            </div>
+          </div>
+          <div class="row mb-3">
+            <label for="generation-date-fin" class="col-4 col-form-label">Date de fin :</label>
+            <div class="col-8">
+              <input type="date" id="generation-date-fin" class="form-control" />
+            </div>
+          </div>
+          {% if sites | length > 1 %}
+            <div class="row mb-3">
+              <label for="generation-site" class="col-4 col-form-label">Bibliothèque :</label>
+              <div class="col-8">
+                <select id="generation-site" class="form-select">
+                  {% for site in sites %}
+                    <option value="{{ site.id }}">{{ site.nom }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+          {% else %}
+            <input type="hidden" id="generation-site" value="{{ sites | first ? sites | first.id : 1 }}" />
+          {% endif %}
+        </div>
+
+      <div id="generation-step-2" class="generation-step" style="display:none;">
+        <p>La génération du planning peut prendre plusieurs minutes.</p>
+        <p class="important">Assurez-vous :</p>
+        <ul class="important-list">
+          <li>d'avoir activé les tableaux sur l'intervalle <strong id="generation-step-2-range"></strong></li>
+          <li>d'avoir défini les bons quotas d'agents attendus pour chaque poste </li>
+          <li>d'avoir complété tous les attributs des agents dans leur fiche section "informations pour l'algorithme de génération de planning".</li>
+          <li>d'avoir correctement déclaré les sites de tous les agents dans leurs emploi du temps.</li>
+      </ul>
+</div>
+
+        <div id="generation-step-2b" class="generation-step" style="display:none;">
+          <p class="important">Comment souhaitez-vous fournir les données à l'algorithme de génération ?</p>
+          <div class="d-grid gap-2">
+            <button type="button" id="generation-mode-auto" class="btn btn-outline-primary text-start py-2">
+              <strong>Génération automatique</strong><br>
+              <small>Planno construit les données à partir des tableaux, agents et quotas configurés.</small>
+            </button>
+            <button type="button" id="generation-mode-manual" class="btn btn-outline-secondary text-start py-2" {% if not manual_json_enabled %}disabled title="Cette option est désactivée. Active-la dans Configuration technique > Génération de planning pour l'utiliser."{% endif %}>
+              <strong>JSON personnalisé</strong><br>
+              <small>Coller directement le JSON à envoyer à l'algorithme, sans passer par la génération automatique.</small>
+              {% if not manual_json_enabled %}
+                <br><small class="important">Désactivé : à activer dans Configuration technique &gt; Génération de planning.</small>
+              {% endif %}
+            </button>
+          </div>
+        </div>
+
+        <div id="generation-step-3" class="generation-step" style="display:none;">
+          <p>Tableaux actifs sur la période sélectionnée. Décochez les postes à exclure de la génération.</p>
+          <ul class="important-list">
+            <li>Il est fortement conseillé de décocher les postes n'ayant pas vocation à être planifiés (services interne par exemple)</li>
+            <li>Il est également conseillé de les postes "renforts"</li>
+          </ul>
+          <div id="generation-step-3-content"></div>
+        </div>
+
+        <div id="generation-step-manual" class="generation-step" style="display:none;">
+          <div class="mb-3">
+            <label for="generation-manual-json" class="form-label">JSON à envoyer à l'algorithme :</label>
+            <textarea id="generation-manual-json" class="form-control" rows="15" style="font-family: monospace;"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+        <button type="button" id="generation-next-1" class="btn btn-primary">Suivant</button>
+        <button type="button" id="generation-next-2" class="btn btn-primary" style="display:none;">Suivant</button>
+        <button type="button" id="generation-launch" class="btn btn-danger" style="display:none;">Lancer la génération</button>
+        <button type="button" id="generation-launch-manual" class="btn btn-danger" style="display:none;">Lancer la génération</button>
+      </div>
+    </div>
+  </div>
+</div>

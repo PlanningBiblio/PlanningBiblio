@@ -38,8 +38,10 @@ function timePickerChange(date, obj) {
     $(obj).val('');
     $(obj).focus();
   }
+
   if ($(obj).hasClass('checkdate')) {
     dateChange(obj);
+    validationStatusInvalidDisplay();
   }
 
   if ($(obj).hasClass('select')) {
@@ -77,7 +79,10 @@ function roundTimePiker(obj) {
   var times = time.split(':');
   var hours = parseInt(times[0]);
   var minutes = parseInt(times[1]);
-  var rounded = Math.round(minutes / tp.options.granularity) * tp.options.granularity;
+  // La granularité réelle (config admin) est relue directement plutôt que via tp.options.granularity,
+  // pour ne pas dépendre du pas d'affichage du menu déroulant (voir setTimePickerStep).
+  var granularity = parseInt($('form #granularity').val()) || 1;
+  var rounded = Math.round(minutes / granularity) * granularity;
 
   if (rounded == 60) {
     rounded = 0;
@@ -133,8 +138,10 @@ function formatHHmm(hour, minute) {
 }
 
 function setTimePickerStep(granularity) {
-  if (granularity == 1 || granularity == 15 || granularity == 5) {
-    return 30;
+  // "Libre" (1 minute) : un menu déroulant avec un choix par minute serait interminable (1440 entrées).
+  // On garde un pas d'affichage raisonnable ; la saisie manuelle, elle, reste libre à la minute près.
+  if (granularity == 1) {
+    return 15;
   }
 
   return granularity;

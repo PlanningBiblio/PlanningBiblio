@@ -1,0 +1,50 @@
+{# agents/algo_edit.html.twig #}
+
+<div class="tab-pane fade" id="algo" role="tabpanel" aria-labelledby="algo-tab" tabindex="0">
+  <table style="width:90%;">
+    <tr>
+      <td style="width:400px">Quota de service public total (pour 30% notez : 0,3) :</td>
+      <td>
+        <input type="number" step="0.01" min="0" max="1" name="quota_pct" id="quota_pct"
+               value="{{ agent.algorithmQuota }}" style="width:120px" />
+      </td>
+    </tr>
+
+    <tr>
+      <td style="width:400px">Taux maximum de service public toléré dans la journée (même format que quota) :</td>
+      <td>
+        <input type="number" step="0.01" min="0" max="1" name="max_sp_journee_pct"
+               value="{{ agent.algorithmMaxDailyQuota }}" style="width:120px" />
+      </td>
+    </tr>
+
+    <tr>
+      <td style="width:400px">Pause minimale entre deux shifts (minutes) :</td>
+      <td>
+        <input type="number" step="1" min="0" name="pause_inter_listes_min"
+               value="{{ agent.algorithmMinBreakBetweenLists }}" style="width:120px" />
+      </td>
+    </tr>
+  </table>
+
+  <h3 style="margin:20px 0 5px 0;">Répartition du quota par poste</h3>
+  <p>La somme des quotas ci-dessous doit être égale à 1. exemple : 0.5 signifie que l'agent a une cible de 50% de son quota de service public total sur ce poste. Si aucun quota n'est mentionné pour un poste, l'agent ne sera jamais planifié sur celui ci</p>
+
+  <table style="width:90%;" id="quotas_postes_table">
+    {% for position in positions_algo %}
+      <tr>
+        <td style="width:400px">dont quota {{ position.name }} :</td>
+        <td>
+          <input type="number" step="0.01" min="0" max="1" class="quota-poste-input" data-poste-id="{{ position.id }}"
+                 value="{{ agent.algorithmQuotasByPosition[position.id] ?? '' }}" style="width:120px" oninput="updateQuotasPostesJson()" />
+        </td>
+      </tr>
+    {% endfor %}
+    <tr>
+      <td style="width:400px"><b>Total :</b></td>
+      <td><span id="quotas_postes_total">0</span></td>
+    </tr>
+  </table>
+
+  <input type="hidden" name="quotas_postes" id="quotas_postes" value="{{ agent.algorithmQuotasByPosition | json_encode }}" />
+</div>

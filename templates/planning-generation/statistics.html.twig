@@ -1,0 +1,88 @@
+{# planning-generation/statistics.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block page %}
+
+  <table style="margin:20px 0;">
+    <tr valign="top">
+      <td style="width:270px">
+        <h3 style="margin-top:0px;">Statistiques de génération</h3>
+      </td>
+      <td>
+        <a href="{{ path('planning_generation.index') }}" class="btn btn-secondary">&laquo; Retour</a>
+      </td>
+    </tr>
+  </table>
+
+  {% if error_message %}
+    <p class="important">Échec de la génération : {{ error_message }}</p>
+  {% endif %}
+
+  {% if conflict_message %}
+    <p class="generation-conflict-message">{{ conflict_message }}</p>
+  {% endif %}
+
+  {% if not statistiques %}
+
+    <p class="important">Aucune statistique disponible pour cette génération.</p>
+
+  {% else %}
+
+    <table style="margin-bottom:20px;">
+      <tr>
+        <td style="width:250px"><b>Places attendues :</b></td>
+        <td>{{ statistiques.places_attendues }}</td>
+      </tr>
+      <tr>
+        <td><b>Places pourvues :</b></td>
+        <td>{{ statistiques.places_pourvues }}</td>
+      </tr>
+      {% if statistiques.equilibre is defined %}
+        <tr>
+          <td><b>Équilibre :</b></td>
+          <td>{{ statistiques.equilibre.statut }} (écart : {{ statistiques.equilibre.ecart }})</td>
+        </tr>
+      {% endif %}
+    </table>
+
+    {% if statistiques.equilibre.message is defined and statistiques.equilibre.message %}
+      <p class="important">{{ statistiques.equilibre.message }}</p>
+    {% endif %}
+
+    <table id="tableGenerationStatistiques" class="CJDataTable">
+      <thead>
+        <tr>
+          <th>Id agent</th>
+          <th>Agent</th>
+          <th>Temps EDT</th>
+          <th>Congés</th>
+          <th>Temps effectif</th>
+          <th>Quota</th>
+          <th>Quota cible</th>
+          <th>Quota réalisé</th>
+          <th>Reste</th>
+          <th>Statut</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for agent in statistiques.agents %}
+          <tr>
+            <td>{{ agent.agent_id ?? '' }}</td>
+            <td>{{ agent.nom_agent }}</td>
+            <td>{{ agent.temps_travail_edt }}</td>
+            <td>{{ agent.somme_conges }}</td>
+            <td>{{ agent.temps_travail_effectif }}</td>
+            <td>{{ agent.quota_pct }}</td>
+            <td>{{ agent.quota_cible.total ?? '' }}</td>
+            <td>{{ agent.quota_realise.total ?? '' }}</td>
+            <td>{{ agent.reste.valeur ?? '' }}</td>
+            <td>{{ agent.reste.statut ?? '' }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+  {% endif %}
+
+{% endblock %}

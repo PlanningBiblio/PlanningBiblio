@@ -72,6 +72,18 @@ class Agent
     #[ORM\Column]
     private ?float $heures_travail = 0;
 
+    #[ORM\Column(nullable: true)]
+    private ?float $quota_pct = null;
+
+    #[ORM\Column]
+    private ?array $quotas_postes = [];
+
+    #[ORM\Column(nullable: true)]
+    private ?float $max_sp_journee_pct = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $pause_inter_listes_min = null;
+
     #[ORM\Column]
     private ?array $sites = [];
 
@@ -419,6 +431,54 @@ class Agent
     public function setWeeklyWorkingHours(?float $weeklyWorkingHours): static
     {
         $this->heures_travail = $weeklyWorkingHours;
+
+        return $this;
+    }
+
+    public function getAlgorithmQuota(): ?float
+    {
+        return $this->quota_pct;
+    }
+
+    public function setAlgorithmQuota(?float $quota): static
+    {
+        $this->quota_pct = $quota;
+
+        return $this;
+    }
+
+    public function getAlgorithmQuotasByPosition(): ?array
+    {
+        return $this->quotas_postes;
+    }
+
+    public function setAlgorithmQuotasByPosition(?array $quotasByPosition): static
+    {
+        $this->quotas_postes = $quotasByPosition;
+
+        return $this;
+    }
+
+    public function getAlgorithmMaxDailyQuota(): ?float
+    {
+        return $this->max_sp_journee_pct;
+    }
+
+    public function setAlgorithmMaxDailyQuota(?float $maxDailyQuota): static
+    {
+        $this->max_sp_journee_pct = $maxDailyQuota;
+
+        return $this;
+    }
+
+    public function getAlgorithmMinBreakBetweenLists(): ?int
+    {
+        return $this->pause_inter_listes_min;
+    }
+
+    public function setAlgorithmMinBreakBetweenLists(?int $minBreak): static
+    {
+        $this->pause_inter_listes_min = $minBreak;
 
         return $this;
     }

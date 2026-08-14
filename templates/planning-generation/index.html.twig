@@ -1,0 +1,79 @@
+{# planning-generation/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block specificjs %}
+  <script type="text/JavaScript" src="{{ asset('js/planning-generation.js') }}"></script>
+{% endblock %}
+
+{% block page %}
+
+  {% include 'planning-generation/wizard.html.twig' %}
+
+  <table style="margin:20px 0;">
+    <tr valign="top">
+      <td style="width:270px">
+        <h3 style="margin-top:0px;">Générer un planning</h3>
+      </td>
+      <td>
+        <input type="button" value="Générer un planning" id="generer-planning-btn" class="btn btn-primary" {% if has_ongoing_job %}disabled title="Une génération est déjà en cours"{% endif %}/>
+      </td>
+    </tr>
+  </table>
+
+  <table id="tableGenerationPlanning" class="CJDataTable" data-sort='[[0, "desc"]]'>
+    <thead>
+      <tr>
+        <th>Date et heure de génération</th>
+        <th>Date de début</th>
+        <th>Date de fin</th>
+        <th>Json envoyé</th>
+        <th>Json reçu</th>
+        <th>Statistique</th>
+        <th>État</th>
+        <th class="dataTableNoSort">&nbsp;</th>
+        <th class="dataTableNoSort">&nbsp;</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for job in jobs %}
+        <tr>
+          <td>{{ job.dateGeneration ? job.dateGeneration | date('d/m/Y H:i') : '' }}</td>
+          <td>{{ job.dateDebut ? job.dateDebut | date('d/m/Y') : '' }}</td>
+          <td>{{ job.dateFin ? job.dateFin | date('d/m/Y') : '' }}</td>
+          <td><a href="{{ path('planning_generation.json', {id: job.id, type: 'sent'}) }}" target="_blank">Voir le JSON envoyé</a></td>
+          <td>
+            {% if job.jsonRecu %}
+              <a href="{{ path('planning_generation.json', {id: job.id, type: 'received'}) }}" target="_blank">Voir le JSON reçu</a>
+            {% endif %}
+          </td>
+          <td>
+            {% if job.jsonRecu or job.errorMessage %}
+              <a href="{{ path('planning_generation.statistics', {id: job.id}) }}" target="_blank">Voir les statistiques</a>
+            {% endif %}
+          </td>
+          <td>
+            {% if job.statut == 'succes' %}
+              Succès
+            {% elseif job.statut == 'echec' %}
+              Échec
+            {% elseif job.statut == 'conflit' %}
+              Conflit
+            {% else %}
+              En cours
+            {% endif %}
+          </td>
+          <td class="text-center">
+            <span class="generation-status-dot generation-status-{{ job.statut }}" title="{{ job.statut }}"></span>
+          </td>
+          <td class="text-center">
+            {% if job.statut != 'en_cours' %}
+              <span class="pl-icon pl-icon-trash generation-delete-btn pointer" data-id="{{ job.id }}" title="Supprimer"></span>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+{% endblock %}
