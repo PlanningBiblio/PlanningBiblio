@@ -1973,9 +1973,16 @@ class PlanningController extends BaseController
 
                         // function createCell(date,debut,fin,colspan,affichage,poste,site)
                         else {
-                            $overrideKey = "{$tab['nom']}_{$ligne['ligne']}_{$k}";
-                            $expectedStaff = $this->expectedStaffOverrides[$overrideKey] ?? ($tab['effectifs_attendus']["{$ligne['ligne']}_{$k}"] ?? null);
-                            $horaires['position_cell'] = $this->createCell($date, $horaires['debut'], $horaires['fin'], nb30($horaires['debut'], $horaires['fin']), 'noms', $ligne['poste'], $site, $numero, $tab['nom'], $ligne['ligne'], $k, $expectedStaff);
+                            // Cellule grisée ponctuellement pour cette date précise (import de modèle, "bataille navale"),
+                            // par opposition au grisage statique du gabarit (cellules_grises) déjà géré ci-dessus.
+                            // Comme pour ce dernier, aucune pastille d'effectif attendu n'est affichée dans ce cas.
+                            if ($this->isCellGreyedForDate($ligne['poste'], $horaires['debut'], $horaires['fin'])) {
+                                $horaires['position_cell'] = $this->createCell($date, $horaires['debut'], $horaires['fin'], nb30($horaires['debut'], $horaires['fin']), 'noms', $ligne['poste'], $site);
+                            } else {
+                                $overrideKey = "{$tab['nom']}_{$ligne['ligne']}_{$k}";
+                                $expectedStaff = $this->expectedStaffOverrides[$overrideKey] ?? ($tab['effectifs_attendus']["{$ligne['ligne']}_{$k}"] ?? null);
+                                $horaires['position_cell'] = $this->createCell($date, $horaires['debut'], $horaires['fin'], nb30($horaires['debut'], $horaires['fin']), 'noms', $ligne['poste'], $site, $numero, $tab['nom'], $ligne['ligne'], $k, $expectedStaff);
+                            }
                         }
                         $i++;
                         $k++;
@@ -2174,6 +2181,21 @@ class PlanningController extends BaseController
             $key = "{$override->getTableau()}_{$override->getLigne()}_{$override->getColonne()}";
             $this->expectedStaffOverrides[$key] = $override->getExpectedStaff();
         }
+    }
+
+    /**
+     * Grisage ponctuel d'une cellule poste/créneau pour la date affichée (pl_poste.grise), par opposition
+     * au grisage statique du gabarit (pl_poste_cellules). $this->cells est déjà chargé par getCells().
+     */
+    private function isCellGreyedForDate($poste, $debut, $fin): bool
+    {
+        foreach ($this->cells as $elem) {
+            if ($elem['poste'] == $poste and $elem['debut'] == $debut and $elem['fin'] == $fin and !empty($elem['grise'])) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function getCurrentFramework($date, $site)

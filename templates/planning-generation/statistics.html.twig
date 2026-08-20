@@ -63,6 +63,7 @@
           <th>Quota réalisé</th>
           <th>Reste</th>
           <th>Statut</th>
+          <th>Reste par poste</th>
         </tr>
       </thead>
       <tbody>
@@ -78,6 +79,11 @@
             <td>{{ agent.quota_realise.total ?? '' }}</td>
             <td>{{ agent.reste.valeur ?? '' }}</td>
             <td>{{ agent.reste.statut ?? '' }}</td>
+            <td>
+              {% for posteName, detail in agent.reste.par_poste ?? [] %}
+                <div title="Cible : {{ detail.cible ?? '' }}">{{ posteName }} : {{ detail.valeur ?? '' }} ({{ detail.statut ?? '' }})</div>
+              {% endfor %}
+            </td>
           </tr>
         {% endfor %}
       </tbody>

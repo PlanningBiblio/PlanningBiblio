@@ -90,8 +90,11 @@ class PlanningGenerationPayloadBuilder
                             }
 
                             // Une cellule grisée signifie que ce poste n'est pas à pourvoir sur ce créneau,
-                            // quel que soit l'effectif attendu configuré par ailleurs.
-                            if (in_array("{$ligne['ligne']}_{$colonne}", $sousTableau['cellules_grises'])) {
+                            // quel que soit l'effectif attendu configuré par ailleurs. Deux mécanismes de
+                            // grisage existent : statique au gabarit (cellules_grises) et ponctuel pour cette
+                            // date précise (pl_poste.grise, ex: import de modèle, "bataille navale").
+                            if (in_array("{$ligne['ligne']}_{$colonne}", $sousTableau['cellules_grises'])
+                                || $this->isCellGreyedForDate($current, (int) $ligne['poste'], $horaire['debut'], $horaire['fin'], $site)) {
                                 $attendu = 0;
                             } else {
                                 $overrideKey = "{$sousTableauId}_{$ligne['ligne']}_{$colonne}";
@@ -150,6 +153,31 @@ class PlanningGenerationPayloadBuilder
         }
 
         return $overrides;
+    }
+
+    /**
+     * Grisage ponctuel d'une cellule poste/créneau pour la date précise (pl_poste.grise), par opposition
+     * au grisage statique du gabarit (pl_poste_cellules) déjà géré via $sousTableau['cellules_grises'].
+     */
+    private function isCellGreyedForDate(\DateTime $date, int $posteId, string $debut, string $fin, ?int $site): bool
+    {
+        $qb = $this->entityManager->createQueryBuilder();
+        $qb->select('p')->from(PlanningPosition::class, 'p')
+            ->andWhere('p.date = :date')
+            ->andWhere('p.poste = :poste')
+            ->andWhere('p.debut = :debut')
+            ->andWhere('p.fin = :fin')
+            ->andWhere('p.grise = 1')
+            ->andWhere('p.supprime = 0 OR p.supprime IS NULL')
+            ->setParameter('date', $date->format('Y-m-d'))
+            ->setParameter('poste', $posteId)
+            ->setParameter('debut', \DateTime::createFromFormat('H:i:s', $debut))
+            ->setParameter('fin', \DateTime::createFromFormat('H:i:s', $fin));
+        if ($site) {
+            $qb->andWhere('p.site = :site')->setParameter('site', $site);
+        }
+
+        return $qb->getQuery()->getOneOrNullResult() !== null;
     }
 
     private function getExistingAssignments(\DateTime $date, int $posteId, string $debut, string $fin, ?int $site): array
