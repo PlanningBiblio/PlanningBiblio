@@ -73,3 +73,6 @@ services:
         arguments:
             $prefix: '%env(resolve:DATABASE_PREFIX)%'
         public: true
+
+    # Enables autowiring for the Doctrine Migrations DependencyFactory
+    Doctrine\Migrations\DependencyFactory: '@doctrine.migrations.dependency_factory'
