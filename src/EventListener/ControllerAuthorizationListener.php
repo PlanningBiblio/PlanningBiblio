@@ -33,6 +33,12 @@ class ControllerAuthorizationListener
     public function onKernelRequest(RequestEvent $event): void
     {
         $page = $event->getRequest()->getPathInfo();
+
+        // Blocks execution if it is an internal Profiler route
+        if (str_starts_with($page, '/_profiler') || str_starts_with($page, '/_wdt')) {
+            return;
+        }
+
         $page = preg_replace('/([a-z-\/]*).*/', "$1", $page);
         $page = rtrim($page, '/add');
         $page = rtrim($page, '/');
