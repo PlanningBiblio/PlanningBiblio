@@ -6,6 +6,7 @@ use App\Entity\Config;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
+use Facebook\WebDriver\WebDriverDimension;
 use Facebook\WebDriver\WebDriverSelect;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,9 +20,6 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
 use Symfony\Component\Security\Http\Authenticator\Token\PostAuthenticationToken;
 use Symfony\Component\Security\Http\Event\LoginSuccessEvent;
-
-
-
 
 
 class PLBWebTestCase extends PantherTestCase
@@ -193,6 +191,9 @@ class PLBWebTestCase extends PantherTestCase
                 '--headless'
             )
         );
+
+        $size = new WebDriverDimension(1920, 1080);
+        $this->client->manage()->window()->maximize()->setSize($size);
     }
 
     protected function jqueryAjaxFinished(): callable
