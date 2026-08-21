@@ -89,7 +89,6 @@ class PLBWebTestCase extends PantherTestCase
         $this->config = $entityManager->getRepository(Config::class);
 
         $_SESSION['oups']['Auth-Mode'] = 'SQL';
-        $_SESSION['login_id'] = 1;
         $_SESSION['oups']['CSRFToken'] = $CSRFToken;
         $GLOBALS['CSRFSession'] = $CSRFToken;
     }
@@ -99,7 +98,6 @@ class PLBWebTestCase extends PantherTestCase
     {
         global $entityManager;
 
-        // $_SESSION['login_id'] = $agent->getId();
         $GLOBALS['droits'] = $rights;
 
         $agent->setACL($rights);
