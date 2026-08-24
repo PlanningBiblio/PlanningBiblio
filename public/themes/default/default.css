@@ -21,10 +21,6 @@ Feuille de style principale du programme.
   --odd-grey: #F0F0F0;
 }
 
-html {
-  scroll-behavior: auto !important;
-}
-
 body,a,input,select,textarea,button {
 	color: var(--charcoal-blue);
 	font-family: Poppins;
