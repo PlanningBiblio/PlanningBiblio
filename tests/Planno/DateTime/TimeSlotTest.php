@@ -100,6 +100,11 @@ class TimeSlotTest extends TestCase
             $timeSlot->intersectsWith(new DateTime('2026-03-04 14:00'), new DateTime('2026-03-04 10:00')),
             'start is after, end is before'
         );
+
+        $this->assertFalse(
+            $timeSlot->intersectsWith(new DateTime('2026-03-04 12:00'), new DateTime('2026-03-04 12:30')),
+            'two consecutive time slots do not intersect'
+        );
     }
 
     public function testIncludes(): void
@@ -122,16 +127,22 @@ class TimeSlotTest extends TestCase
             TimeSlot::createFromFormat('Y-m-d H:i', '2026-04-25 12:00', '2026-04-25 13:59'),
             TimeSlot::createFromFormat('Y-m-d H:i', '2026-04-24 14:00', '2026-04-24 16:30'),
             TimeSlot::createFromFormat('Y-m-d H:i', '2026-04-24 12:30', '2026-04-24 14:30'),
+            TimeSlot::createFromFormat('Y-m-d H:i', '2026-04-26 09:30', '2026-04-26 12:30'),
+            TimeSlot::createFromFormat('Y-m-d H:i', '2026-04-26 14:30', '2026-04-26 16:30'),
+            TimeSlot::createFromFormat('Y-m-d H:i', '2026-04-26 08:30', '2026-04-26 09:30'),
+            TimeSlot::createFromFormat('Y-m-d H:i', '2026-04-26 12:30', '2026-04-26 14:30'),
         ];
 
         $mergedTimeSlots = TimeSlot::merge($timeSlots);
 
-        $this->assertCount(3, $mergedTimeSlots);
+        $this->assertCount(4, $mergedTimeSlots);
         $this->assertEquals('2026-04-24 09:30', $mergedTimeSlots[0]->start->format('Y-m-d H:i'));
         $this->assertEquals('2026-04-24 16:30', $mergedTimeSlots[0]->end->format('Y-m-d H:i'));
         $this->assertEquals('2026-04-25 14:00', $mergedTimeSlots[1]->start->format('Y-m-d H:i'));
         $this->assertEquals('2026-04-25 16:30', $mergedTimeSlots[1]->end->format('Y-m-d H:i'));
         $this->assertEquals('2026-04-25 12:00', $mergedTimeSlots[2]->start->format('Y-m-d H:i'));
         $this->assertEquals('2026-04-25 13:59', $mergedTimeSlots[2]->end->format('Y-m-d H:i'));
+        $this->assertEquals('2026-04-26 08:30', $mergedTimeSlots[3]->start->format('Y-m-d H:i'));
+        $this->assertEquals('2026-04-26 16:30', $mergedTimeSlots[3]->end->format('Y-m-d H:i'));
     }
 }

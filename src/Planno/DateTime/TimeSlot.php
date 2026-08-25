@@ -76,7 +76,12 @@ class TimeSlot
 
             // Find the first intersecting time slot
             foreach ($timeSlots as $timeSlot) {
-                if (!$intersectingTimeSlot && $initialTimeSlot->intersectsWith($timeSlot->start, $timeSlot->end)) {
+                if (!$intersectingTimeSlot && (
+                    $initialTimeSlot->intersectsWith($timeSlot->start, $timeSlot->end)
+                    || $initialTimeSlot->start == $timeSlot->end
+                    || $initialTimeSlot->end == $timeSlot->start
+                    )
+                ) {
                     $intersectingTimeSlot = $timeSlot;
                 } else {
                     $nextTimeSlots[] = $timeSlot;
@@ -115,7 +120,7 @@ class TimeSlot
             [$start, $end] = [$end, $start];
         }
 
-        return $start <= $this->end && $end >= $this->start;
+        return $start < $this->end && $end > $this->start;
     }
 
     /**
