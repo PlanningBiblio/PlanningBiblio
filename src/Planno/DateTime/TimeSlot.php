@@ -70,6 +70,6 @@ class TimeSlot
             [$start, $end] = [$end, $start];
         }
 
-        return $start <= $this->end && $end >= $this->start;
+        return $start < $this->end && $end > $this->start;
     }
 }
