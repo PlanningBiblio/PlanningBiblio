@@ -156,10 +156,32 @@ class CalendarControllerTest extends PLBWebTestCase
         $this->assertStringContainsString('Jeudi', $result->text('Node does not exist', false), 'Jeudi');
         $this->assertStringContainsString('Vendredi', $result->text('Node does not exist', false), 'Vendredi');
 
-        $result = $crawler->filterXPath('//div[@class="important"]');
+        $result = $crawler->filterXPath('//tbody/tr/td[1]');
+        $this->assertEquals(1, $result->count());
+        $text = $result->text();
 
-        $this->assertStringContainsString('Absence', $result->eq(0)->text('Node does not exist', false), 'Absence');
-        $this->assertStringContainsString('À partir de 08h00 : malade', $result->eq(0)->text('Node does not exist', false), 'À partir de 08h00 : malade');
+        $this->assertStringContainsString('26 septembre', $text, '26 septembre');
+        $this->assertStringContainsString('Absence', $text, 'Absence');
+        $this->assertStringContainsString('À partir de 08h00 : malade', $text, 'À partir de 08h00 : malade');
+        $this->assertStringNotContainsString('Présence', $text, 'Presence is not shown because agent is absent');
+
+        $result = $crawler->filterXPath('//tbody/tr/td[2]');
+        $this->assertEquals(1, $result->count());
+        $text = $result->text();
+
+        $this->assertStringContainsString('27 septembre', $text, '27 septembre');
+        $this->assertStringContainsString('Absence', $text, 'Absence');
+        $this->assertStringContainsString('Toute la journée : malade', $text, 'Toute la journée : malade');
+        $this->assertStringNotContainsString('Présence', $text, 'Presence is not shown because agent is absent');
+
+        $result = $crawler->filterXPath('//tbody/tr/td[3]');
+        $this->assertEquals(1, $result->count());
+        $text = $result->text();
+
+        $this->assertStringContainsString('28 septembre', $text, '28 septembre');
+        $this->assertStringContainsString('Absence', $text, 'Absence');
+        $this->assertStringContainsString('Jusqu\'à 19h00 : malade', $text, 'Jusqu\'à 19h00 : malade');
+        $this->assertStringNotContainsString('Présence', $text, 'Presence is not shown because agent is absent');
     }
 
     public function testFullCalendar(): void
