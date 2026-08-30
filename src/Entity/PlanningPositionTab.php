@@ -32,12 +32,12 @@ class PlanningPositionTab
         return $this->id;
     }
 
-    public function getTable(): ?string
+    public function getTable(): ?int
     {
         return $this->tableau;
     }
 
-    public function setTable(?string $tableau): static
+    public function setTable(?int $table): static
     {
         $this->tableau = $table;
 
