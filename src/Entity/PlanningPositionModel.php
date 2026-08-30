@@ -84,12 +84,12 @@ class PlanningPositionModel
 
     public function getComment(): ?string
     {
-        return $this->commentaires;
+        return $this->commentaire;
     }
 
     public function setComment(?string $comment): static
     {
-        $this->commentaires = $comment;
+        $this->commentaire = $comment;
 
         return $this;
     }
@@ -123,7 +123,7 @@ class PlanningPositionModel
         return $this->tableau;
     }
 
-    public function setTable(?string $tableau): static
+    public function setTable(?string $table): static
     {
         $this->tableau = $table;
 
