@@ -16,6 +16,7 @@ use App\Entity\SeparationLine;
 use App\Planno\Helper\PlanningPositionHistoryHelper;
 use App\Planno\Framework;
 use App\Planno\PresentSet;
+use App\Service\PublicHolidayService;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -2339,6 +2340,8 @@ class PlanningController extends BaseController
         $p->getNotes();
         $comments = $p->comments;
 
+        $publicHoliday = PublicHolidayService::getFrenchHolidays(new DateTime($date));
+
         // Parameters for planning's menu
         // (Calendar widget, days, week and action icons)
         $this->templateParams(array(
@@ -2349,7 +2352,7 @@ class PlanningController extends BaseController
             'dates'              => $dates,
             'day'                => $jour,
             'informationMessages'=> $messages_infos,
-            'public_holiday'     => jour_ferie($date),
+            'public_holiday'     => $publicHoliday,
             'site'               => $site,
             'week_view'          => $weekView,
         ));
