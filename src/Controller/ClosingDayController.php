@@ -2,41 +2,46 @@
 
 namespace App\Controller;
 
+use App\Planno\ClosingDay;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
-use App\Planno\ClosingDay;
-
 class ClosingDayController extends BaseController
 {
 
     #[Route(path: '/closingday', name: 'closingday.index', methods: ['GET'])]
-    public function index(Request $request){
+    public function index(Request $request, Session $session): Response
+    {
         // Initalisation des variables
-        $annee_courante = date("n") < 9 ? (date("Y")-1)."-".(date("Y")) : (date("Y"))."-".(date("Y")+1);
-        $annee_suivante = date("n") < 9 ? (date("Y"))."-".(date("Y")+1) : (date("Y")+1)."-".(date("Y")+2);
+        $yearCurrent = date('n') < 9 ? (date('Y')-1) . '-' . (date('Y')) : (date('Y')) . '-' . (date('Y')+1);
+        $yearNext = date('n') < 9 ? (date('Y')) . '-' . (date('Y')+1) : (date('Y')+1) . '-' . (date('Y')+2);
 
-        $annee_select = $request->get("annee") ?? (isset($_SESSION['oups']['anneeFeries']) ? $_SESSION['oups']['anneeFeries'] : $annee_courante);
-        $_SESSION['oups']['anneeFeries'] = $annee_select;
+        $yearSession = $session->get('ClosingDayYear') ?? $yearCurrent;
+        $yearSelected = $request->query->getString('annee', $yearSession);
+
+        preg_match('/(\d+)-(\d+)/', $yearSelected, $matches);
+        $yearSelected = $matches[0] ?? $yearCurrent;
+        $session->set('ClosingDayYear', $yearSelected);
 
         $j = new ClosingDay();
         $j->fetchYears();
         $annees = $j->elements;
 
-        if (!in_array($annee_suivante, $annees)) {
-            $annees[] = $annee_suivante;
+        if (!in_array($yearNext, $annees)) {
+            $annees[] = $yearNext;
         }
-        if (!in_array($annee_courante, $annees)) {
-            $annees[] = $annee_courante;
+        if (!in_array($yearCurrent, $annees)) {
+            $annees[] = $yearCurrent;
         }
 
         sort($annees);
 
         // Recherche des jours fériés enregistrés dans la base de données et avec la fonction jour_ferie
         $j = new ClosingDay();
-        $j->annee = $annee_select;
+        $j->annee = $yearSelected;
         $j->auto = false;;
         $j->fetch();
         $jours = $j->elements;
@@ -71,16 +76,22 @@ class ClosingDayController extends BaseController
             "holiday_enable"     => $holiday_enable,
             "nbDays"             => $nbDays,
             "nbExtra"            => $nbExtra,
-            "selectedYear"       => $annee_select,
+            'selectedYear'       => $yearSelected,
+            'title'              => 'Public holidays and closing days',
             "years"              => $annees
         ));
 
         return $this->output("closingdays/index.html.twig");
-
     }
 
     #[Route(path: '/closingday', name: 'closingday.save', methods: ['POST'])]
-    public function save(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse{
+    public function save(Request $request, Session $session): RedirectResponse
+    {
+        if (!$this->csrf_protection($request)) {
+            $session->set('AccessDeniedReason', 'CSRF');
+            return $this->redirectToRoute('access-denied');
+        }
+
         $post = $request->request->all();
         $CSRFToken = $request->get('CSRFToken');
 

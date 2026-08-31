@@ -793,3 +793,6 @@ msgstr "(nouvelle fenêtre)"
 
 msgid "Legal notice"
 msgstr "Mentions légales"
+
+msgid "Public holidays and closing days"
+msgstr "Jours fériés et jours de fermeture"
