@@ -48,36 +48,30 @@ si ce n'est pas le cas, consultez : https://www.gnu.org/licenses/agpl-3.0.html
 
 ### Ressources intégrées au code :
 
-- Dossier vendor/ics-parser
-	- Licence MIT : http://www.datatables.net/license/mit
- 	- https://github.com/johngrogg/ics-parser
- 	- Martin Thoma (programming, bug fixing, project management)
- 	- Frank Gregor (programming, feedback, testing)
- 	- John Grogg (programming, addition of event recurrence handling)
- 	- [Jonathan Goode](https://github.com/u01jmg3) (programming, bug fixing, enhancement, coding standard)
+- ics-parser
+  - Licence MIT
+  - https://github.com/u01jmg3/ics-parser
+  - Martin Thoma (programming, bug fixing, project management)
+  - Frank Gregor (programming, feedback, testing)
+  - John Grogg (programming, addition of event recurrence handling)
+  - [Jonathan Goode](https://github.com/u01jmg3) (programming, bug fixing, enhancement, coding standard)
 
-- Fichier include/feries.php
- 	- contient la fonction jour_ferie permettant de déterminer rapidement si un jour est férié (fêtes...
- 	- a été modifié pour prendre en paramètre la date au format YYYY-MM-DD et pour retourner le nom du jour ferié
- 	- URL            : http://www.phpsources.org/scripts382-PHP.htm
- 	- Auteur         : Olravet
- 	- Date édition   : 05 Mai 2008
- 	- Website auteur : http://olravet.fr/
+- Fonction getFrenchHolidays du fichier src/Service/PublicHolidayService.php
+  - permet de déterminer rapidement si un jour est férié
+  - inspirée de la fonction jour_ferie créée par Olravet
+  - Auteur         : Olravet
+  - Date édition   : 05 Mai 2008
+  - Website auteur : https://olravet.fr
 
-- Fichier public/js/jquery-*.min.js
- 	- Bibliothèques JQuery
- 	- About jQuery : http://learn.jquery.com/about-jquery
- 	- Licence MIT : https://jquery.org/license
+- Fichier public/vendor/js/jquery-*.min.js
+  - Bibliothèques JQuery
+  - About jQuery : https://learn.jquery.com/about-jquery
+  - Licence MIT : https://jquery.org/license
 
-- Fichiers et dossiers public/js/jquery-ui-*, themes/default/jquery-ui-min.css
- 	- Bibliothèques et thèmes JQuery-UI
- 	- About jQuery UI : http://jqueryui.com/about
- 	- Licence MIT : https://jquery.org/license
+- Dossier public/vendor/DataTables*
+  - Site Web : https://datatables.net
+  - Licence MIT : https://www.datatables.net/license/mit
 
-- Dossier DataTables*
- 	- Site Web : http://www.datatables.net/
- 	- Licence MIT : http://www.datatables.net/license/mit
-
-- JQuery-cookies
- 	- GitHub : https://github.com/carhartl/jquery-cookie
- 	- Licence MIT
+- Dossier public/vendor/*jquery-cookies*
+  - GitHub : https://github.com/carhartl/jquery-cookie
+  - Licence MIT

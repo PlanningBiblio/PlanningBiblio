@@ -1,23 +1,21 @@
 <?php
 /**
-Description :
-Fichier regroupant les fonctions utiles à la gestion des congés
-Inclus dans les autres fichiers PHP du dossier conges
-*/
-
-// pas de $version=acces direct aux pages de ce dossier => Accès refusé
+ * Description :
+ * Fichier regroupant les fonctions utiles à la gestion des congés
+ * Inclus dans les autres fichiers PHP du dossier conges
+ */
 
 require_once 'class.planningHebdo.php';
 require_once 'class.personnel.php';
 require_once 'class.absences.php';
 
-use App\Planno\WorkingHours;
-use App\Planno\ClosingDay;
-use App\Planno\Helper\HolidayHelper;
-use App\Planno\Helper\HourHelper;
 use App\Entity\Agent;
+use App\Entity\ClosingDay;
 use App\Entity\Cron;
 use App\Entity\Holiday;
+use App\Planno\Helper\HolidayHelper;
+use App\Planno\Helper\HourHelper;
+use App\Planno\WorkingHours;
 
 class conges
 {
@@ -107,19 +105,15 @@ class conges
         // Calcul du nombre d'heures correspondant aux congés demandés
         $current=$debut;
         $difference=0;
+
+        $closingDays = $entityManager->getRepository(ClosingDay::class)->findByDateRange($debut, $fin);
+
         // Pour chaque date
         while ($current<=$fin) {
-
-      // On ignore les jours de fermeture
-            $j = new ClosingDay();
-            $j->fetchByDate($current);
-            if (!empty($j->elements)) {
-                foreach ($j->elements as $elem) {
-                    if ($elem['fermeture']) {
-                        $current=date("Y-m-d", strtotime("+1 day", strtotime($current)));
-                        continue 2;
-                    }
-                }
+            // On ignore les jours de fermeture
+            if (isset($closingDays[$current]) and $closingDays[$current]->isClosed()) {
+                $current = date('Y-m-d', strtotime('+1 day', strtotime($current)));
+                continue;
             }
 
             // On consulte le planning de présence de l'agent

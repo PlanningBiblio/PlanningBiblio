@@ -5,7 +5,6 @@
 {% block page %}
   <div id="closingday">
     <div id="joursFeries">
-      <h3>Jours fériés et jours de fermeture</h3>
       <div class="admin-div">
       <form name="form1" method="get" action="{{ asset('closingday') }}">
         Sélectionnez l'année à paramétrer
@@ -23,8 +22,7 @@
 
       <!-- Tableau des jours fériés -->
       <form name="form" method="post" action="{{ asset('closingday') }}">
-        <input type="hidden" name="page" value="{{ asset('closingday') }}" />
-        <input type="hidden" name="CSRFToken" value="{{ CSRFSession }}" />
+        <input type="hidden" name="_token" id="_token" value="{{ csrf_token('') }}"/>
         <input type="hidden" name="annee" value="{{ selectedYear }}" />
         <table cellspacing="0">
           <tr class="th closingday-header">
@@ -35,39 +33,29 @@
             <td>Nom</td>
             <td>Commentaire</td>
           </tr>
+          {% set id = 0 %}
           {% for d in days %}
-            <tr id="tr{{ d.number }}">
+            {% set id = id + 1 %}
+            <tr id="tr{{ id }}">
               <td>
-                <a href="javascript:supprime_jourFerie({{ d.number }});">
+                <a href="javascript:supprime_jourFerie({{ id }});">
                   <span class="pl-icon pl-icon-dropblack" title="Supprimer"></span>
                 </a>
               </td>
               <td>
-                <input type="text" name="jour[{{ d.number }}]" value={{ d.date }} class="c100 datepicker" id="jour{{ d.number }}"/>
-              </td>
-              {% if d.holiday == true %}
-                <td>
-                  <input type="checkbox" name="ferie[{{ d.number }}]" value="1" checked />
-                </td>
-              {% else %}
-                <td>
-                  <input type="checkbox" name="ferie[{{ d.number }}]" value="1" />
-                </td>
-              {% endif %}
-              {% if d.closed == true %}
-                <td>
-                  <input type="checkbox" name="fermeture[{{ d.number }}]" value="1" checked />
-                </td>
-              {% else %}
-                <td>
-                  <input type="checkbox" name="fermeture[{{ d.number }}]" value="1" />
-                </td>
-              {% endif %}
-              <td>
-                <input type="text" name="nom[{{ d.number }}]" value="{{ d.name }}"  class="c350"/>
+                <input type="text" name="jour[{{ id }}]" value={{ d.date | date('d/m/Y') }} class="c100 datepicker" id="jour{{ id }}"/>
               </td>
               <td>
-                <input type="text" name="commentaire[{{ d.number }}]" value="{{ d.comment }}"  class="c350"/>
+                <input type="checkbox" name="ferie[{{ id }}]" value="1" {% if d.publicHoliday %} checked {% endif %}/>
+              </td>
+              <td>
+                <input type="checkbox" name="fermeture[{{ id }}]" value="1" {% if d.closed %} checked {% endif %}/>
+              </td>
+              <td>
+                <input type="text" name="nom[{{ id }}]" value="{{ d.name }}" class="c350"/>
+              </td>
+              <td>
+                <input type="text" name="commentaire[{{ id }}]" value="{{ d.comment }}" class="c350"/>
               </td>
             </tr>
           {% endfor %}
@@ -102,7 +90,7 @@
           </tr>
         </table>
       </form>
-      {% if holiday_enable == true %}
+      {% if config('Conges-Enable') %}
         <p><br/>Les jours de fermeture ne seront pas décomptés des congés.</p>
       {% endif %}
     </div>

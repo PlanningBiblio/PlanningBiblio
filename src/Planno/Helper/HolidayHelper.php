@@ -2,11 +2,12 @@
 
 namespace App\Planno\Helper;
 
+use App\Entity\Agent;
+use App\Entity\ClosingDay;
 use App\Planno\Helper\BaseHelper;
 use App\Planno\Helper\WeekPlanningHelper;
 use App\Planno\WorkingHours;
-use App\Planno\ClosingDay;
-use App\Entity\Agent;
+use DateTime;
 
 include_once __DIR__ . '/../../../legacy/Class/class.planningHebdo.php';
 include_once(__DIR__ . '/../../../legacy/Common/function.php');
@@ -88,6 +89,8 @@ class HolidayHelper extends BaseHelper
         $per_week = array();
         $regul_total = 0;
 
+        $closingDays = $this->entityManager->getRepository(ClosingDay::class)->findByDateRange($debut, $fin);
+
         // For each requested date.
         while ($current <= $fin) {
 
@@ -120,13 +123,12 @@ class HolidayHelper extends BaseHelper
 
             // We ignore closing day
             $closingday = false;
-            if ($this->isClosingDay($current)) {
+            if (isset($closingDays[$current]) and $closingDays[$current]->isClosed()) {
                 $closingday = true;
                 if ($week_helper->isWorkingDay($date_current)) {
                     $per_week[$week_id]['requested_days']--;
                 }
             }
-
 
             $debutConges = $current == $debut ? $hre_debut : "00:00:00";
             $finConges = $current == $fin ? $hre_fin : "23:59:59";
@@ -459,21 +461,6 @@ class HolidayHelper extends BaseHelper
          $nb_semaine = $p->elements[0]['nb_semaine'];
 
          return array('times' => $times, 'breaktimes' => $breaktimes, 'nb_semaine' => $nb_semaine);
-    }
-
-    private function isClosingDay($date): bool
-    {
-        $j = new ClosingDay();
-        $j->fetchByDate($date);
-        if (!empty($j->elements)) {
-            foreach ($j->elements as $elem) {
-                if ($elem['fermeture']) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
     }
 
     private function hasFixedBreak($times)
