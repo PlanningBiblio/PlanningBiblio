@@ -11,7 +11,6 @@ use Tests\FixtureBuilder;
 
 class OvertimeControllerTest extends PLBWebTestCase
 {
-
     public function testSave(): void
     {
         $entityManager = $this->entityManager;
@@ -60,7 +59,6 @@ class OvertimeControllerTest extends PLBWebTestCase
     public function testIndex(): void
     {
         $entityManager = $this->entityManager;
-        date_default_timezone_set('UTC');
 
         $builder = $this->builder;
         $builder->delete(Agent::class);

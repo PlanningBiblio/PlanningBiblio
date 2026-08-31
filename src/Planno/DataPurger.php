@@ -22,7 +22,7 @@ use App\Entity\PlanningPositionTab;
 use App\Entity\PlanningPositionTabAffectation;
 use App\Entity\Position;
 use App\Entity\PublicServiceHours;
-use App\Entity\PublicHoliday;
+use App\Entity\ClosingDay;
 use App\Entity\RecurringAbsence;
 use App\Entity\SaturdayWorkingHours;
 use App\Entity\Skill;
@@ -80,7 +80,7 @@ class DataPurger
         $this->simplePurge(PlanningPositionLock::class,           'date',      '<', $limit_date);
         $this->simplePurge(PlanningPositionTabAffectation::class, 'date',      '<', $limit_date);
         $this->simplePurge(PublicServiceHours::class,             'semaine',   '<', $end_of_week_limit_date);
-        $this->simplePurge(PublicHoliday::class,                  'jour',      '<', $three_years_limit_date);
+        $this->simplePurge(ClosingDay::class,                     'jour',      '<', $three_years_limit_date);
         $this->simplePurge(SaturdayWorkingHours::class,           'semaine',   '<', $end_of_week_limit_date);
         $this->simplePurge(WorkingHour::class,                    'fin',       '<', $limit_date);
 

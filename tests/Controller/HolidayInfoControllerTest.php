@@ -138,7 +138,6 @@ class HolidayInfoControllerTest extends PLBWebTestCase
     public function testHolidayInfoList(): void
     {
         $entityManager = $this->entityManager;
-        date_default_timezone_set('UTC');
 
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
