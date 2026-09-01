@@ -348,8 +348,9 @@ class CalendarController extends BaseController
                     }
                     return true;
                 });
+                $schedule = array_values($schedule);
 
-                if (!empty($schedule)){
+                if (!empty($schedule)) {
                     $schedule = array_map(fn ($s) => ['begin' => heure2($s['begin']), 'end' => heure2($s['end'])], $schedule);
                     $presence = array(
                         'site_name' => $site_name,
