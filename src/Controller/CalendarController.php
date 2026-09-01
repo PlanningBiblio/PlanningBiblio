@@ -338,6 +338,7 @@ class CalendarController extends BaseController
                 }
 
                 // Remove hours where the agent is away
+                $awayTimeSlots = TimeSlot::merge($awayTimeSlots);
                 $schedule = array_filter($schedule, function ($s) use ($current, $awayTimeSlots): bool {
                     $begin = new DateTime(sprintf('%s %s', $current, $s['begin']));
                     $end = new DateTime(sprintf('%s %s', $current, $s['end']));

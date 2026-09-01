@@ -189,6 +189,8 @@ class PresentSet
             $timeSlots[] = new TimeSlot($absence->getStart(), $absence->getEnd());
         }
 
+        $timeSlots = TimeSlot::merge($timeSlots);
+
         return $timeSlots;
     }
 }
