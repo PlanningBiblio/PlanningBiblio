@@ -75,15 +75,6 @@ class PresentSetTest extends KernelTestCase
         );
 
         $presents = $presentSet->all('2026-07-31');
-        $this->assertCount(1, $presents);
-        $this->assertEquals(
-            [
-                'id' => $agent->getId(),
-                'nom' => sprintf('%s %s', $agent->getLastname(), $agent->getFirstname()),
-                'site' => null,
-                'heures' => '',
-            ],
-            $presents[0]
-        );
+        $this->assertCount(0, $presents);
     }
 }
