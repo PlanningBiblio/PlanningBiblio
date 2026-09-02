@@ -273,19 +273,33 @@ class AgentTest extends KernelTestCase
         //Multi sites :
 
         $GLOBALS['config']['Mail-Planning'] = '';
-        $site2 = $builder->build(Site::class, array('name' => 'Site 2'));
-        $site3 = $builder->build(Site::class, array('name' => 'Site 3'));
-        $site4 = $builder->build(Site::class, array('name' => 'Site 4'));
-
-        $agent2 = $builder->build(Agent::class, array('login' => 'jmarc', 'sites' => ["1", "2", "3","4"]));
 
         global $entityManager;
-        $site1 = $entityManager->find(Site::class, 1);
 
-        $builder->build(SiteMail::class, array('site' => $site1->getId(), 'mail' => 'jmarc@mail.fr;jcharles@mail.fr;jdevoe@mail.com'));
-        $builder->build(SiteMail::class, array('site' => $site2->getId(), 'mail' => 'jcharles@mail.fr;jmarc@mail.fr;j.paul@mail.com'));
-        $builder->build(SiteMail::class, array('site' => $site3->getId(), 'mail' => 'j.claude@mail.com;jmarc@mail.fr;jcharles@mail.fr'));
-        $builder->build(SiteMail::class, array('site' => $site4->getId(), 'mail' => 'j.paul@mail.com;j.claude@mail.com'));
+        $site1 = $entityManager->find(Site::class, 1);
+        $site2 = $builder->build(Site::class, ['name' => 'Site 2']);
+        $site3 = $builder->build(Site::class, ['name' => 'Site 3']);
+        $site4 = $builder->build(Site::class, ['name' => 'Site 4']);
+
+        $siteMail1 = new SiteMail();
+        $siteMail1->setSite($site1)->setMail('jmarc@mail.fr;jcharles@mail.fr;jdevoe@mail.com'); 
+
+        $siteMail2 = new SiteMail();
+        $siteMail2->setSite($site2)->setMail('jcharles@mail.fr;jmarc@mail.fr;j.paul@mail.com');
+
+        $siteMail3 = new SiteMail();
+        $siteMail3->setSite($site3)->setMail('j.claude@mail.com;jmarc@mail.fr;jcharles@mail.fr');
+
+        $siteMail4 = new SiteMail();
+        $siteMail4->setSite($site4)->setMail('j.paul@mail.com;j.claude@mail.com');
+
+        $entityManager->persist($siteMail1);
+        $entityManager->persist($siteMail2);
+        $entityManager->persist($siteMail3);
+        $entityManager->persist($siteMail4);
+        $entityManager->flush();
+
+        $agent2 = $builder->build(Agent::class, array('login' => 'jmarc', 'sites' => [1, $site2->getId(), $site3->getId(),$site4->getId()]));
 
         $this->assertEquals(
             $agent2->get_planning_unit_mails(),
