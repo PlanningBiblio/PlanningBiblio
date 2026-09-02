@@ -39,7 +39,7 @@ class AgentRepository extends EntityRepository
 
     private function activeSites(): array
     {
-        $siteEntities = $this->getEntityManager()->getRepository(Site::class)->findBy(['deletedDate' => null]);
+        $siteEntities = $this->getEntityManager()->getRepository(Site::class)->findBy(['deleted_date' => null]);
         return array_map(function ($site) {
             return ['id' => $site->getId(), 'name' => $site->getName()];
         }, $siteEntities);

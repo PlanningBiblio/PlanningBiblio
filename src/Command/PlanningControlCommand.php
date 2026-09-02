@@ -64,7 +64,7 @@ class PlanningControlCommand extends Command
         }
 
         // Gestion des sites
-        $sites_array = $this->entityManager->getRepository(Site::class)->findBy(['deletedDate' => NULL]);
+        $sites_array = $this->entityManager->getRepository(Site::class)->findBy(['deleted_date' => NULL]);
 
         // Dates à controler
         $jours=$config['Rappels-Jours'];

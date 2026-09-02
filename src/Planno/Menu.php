@@ -52,7 +52,7 @@ class Menu
             }
         }
 
-        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(['deletedDate' => NULL]);
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(['deleted_date' => NULL]);
         if (count($sites_array)>1) {
             foreach ($sites_array as $site) {
                 $menu[30][$site->getId()]['titre']=$site->getName();

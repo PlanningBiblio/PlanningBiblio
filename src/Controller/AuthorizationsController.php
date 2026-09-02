@@ -142,7 +142,7 @@ class AuthorizationsController extends BaseController
                 // Symfony Session
                 $session = $request->getSession();
                 $session->set('loginId', $db->result[0]['id']);
-                $siteEntities = $this->entityManager->getRepository(Site::class)->findBy(["deletedDate" => null]);
+                $siteEntities = $this->entityManager->getRepository(Site::class)->findBy(['deleted_date' => null]);
                 $sitesData = array_map(function ($site) {
                     return ['id' => $site->getId(), 'name' => $site->getName()];
                 }, $siteEntities);
@@ -260,7 +260,7 @@ class AuthorizationsController extends BaseController
             // Symfony Session
             $session = $request->getSession();
             $session->set('loginId', $db->result[0]['id']);
-            $siteEntities = $this->entityManager->getRepository(Site::class)->findBy(["deletedDate" => null]);
+            $siteEntities = $this->entityManager->getRepository(Site::class)->findBy(['deleted_date' => null]);
             $sitesData = array_map(function ($site) {
                 return ['id' => $site->getId(), 'name' => $site->getName()];
             }, $siteEntities);

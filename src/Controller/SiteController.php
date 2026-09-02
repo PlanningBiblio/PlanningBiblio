@@ -20,7 +20,7 @@ class SiteController extends BaseController
     #[Route('/site', name: 'site.index', methods: ['GET'])]
     public function index(Session $session): Response
     {
-        $sitesEntities = $this->entityManager->getRepository(Site::class)->findBy(["deletedDate" => null]);
+        $sitesEntities = $this->entityManager->getRepository(Site::class)->findBy(['deleted_date' => null]);
         $sitesTab = [];
 
         foreach ($sitesEntities as $site) {
@@ -134,7 +134,7 @@ class SiteController extends BaseController
             $this->logger->error($e->getMessage());
         }
 
-        $siteEntities = $this->entityManager->getRepository(Site::class)->findBy(["deletedDate" => null]);
+        $siteEntities = $this->entityManager->getRepository(Site::class)->findBy(['deleted_date' => null]);
         $sitesData = array_map(function ($site) {
             return ['id' => $site->getId(), 'name' => $site->getName()];
         }, $siteEntities);
@@ -171,7 +171,7 @@ class SiteController extends BaseController
             return $this->json("Erreur lors de la suppression", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        $siteEntities = $this->entityManager->getRepository(Site::class)->findBy(["deletedDate" => null]);
+        $siteEntities = $this->entityManager->getRepository(Site::class)->findBy(['deleted_date' => null]);
         $sitesData = array_map(function ($site) {
             return ['id' => $site->getId(), 'name' => $site->getName()];
         }, $siteEntities);

@@ -378,7 +378,7 @@ class conges
         // array(0,1,2), default : array(0);
         $p->supprime = $this->agents_supprimes;
         $p->fetch('nom');
-        $sites_entities = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(['deletedDate' => NULL]);
+        $sites_entities = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(['deleted_date' => NULL]);
 
         foreach ($p->elements as $elem) {
             $keep = true;
@@ -748,7 +748,7 @@ class conges
         $responsables=array();
         $droitsConges=array();
         //	Si plusieurs sites, vérifions dans l'emploi du temps quels sont les sites concernés par le conges
-        $sites_entities = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(['deletedDate' => NULL]);
+        $sites_entities = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(['deleted_date' => NULL]);
         if (count($sites_entities) > 1) {
             $db=new db();
             $db->select("personnel", "temps", "id='$perso_id'");
