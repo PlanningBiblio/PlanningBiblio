@@ -19,7 +19,7 @@ class Site
     private ?string $name = '';
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTime $deletedDate = null;
+    private ?\DateTime $deleted_date = null;
 
     public function getId(): ?int
     {
@@ -38,11 +38,11 @@ class Site
 
     public function getDeletedDate(): ?\DateTime
     {
-        return $this->deletedDate;
+        return $this->deleted_date;
     }
 
     public function setDeletedDate(?\DateTime $deletedDate): void
     {
-        $this->deletedDate = $deletedDate;
+        $this->deleted_date = $deletedDate;
     }
 }

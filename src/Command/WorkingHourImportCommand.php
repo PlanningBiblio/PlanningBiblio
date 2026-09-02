@@ -91,7 +91,7 @@ class WorkingHourImportCommand extends Command
         // On place les éléments du fichiers dans le tableau $temps
         $temps = [];
 
-        $sites_array = $this->entityManager->getRepository(Site::class)->findBy(['deletedDate' => NULL]);
+        $sites_array = $this->entityManager->getRepository(Site::class)->findBy(['deleted_date' => NULL]);
 
         // Pour chaque ligne
         foreach ($lines as $line) {

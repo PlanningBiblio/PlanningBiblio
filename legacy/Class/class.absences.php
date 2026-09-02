@@ -735,7 +735,7 @@ class absences
 
         $all=array();
         $groupes=array();
-        $sites_entities = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(['deletedDate' => NULL]);
+        $sites_entities = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(['deleted_date' => NULL]);
         if ($db->result) {
             foreach ($db->result as $elem) {
       
@@ -1068,7 +1068,7 @@ class absences
         $responsables=array();
         $droitsAbsences=array();
         //	Si plusieurs sites et agents autorisés à travailler sur plusieurs sites, vérifions dans l'emploi du temps quels sont les sites concernés par l'absence
-        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(['deletedDate' => NULL]);
+        $sites = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(['deleted_date' => NULL]);
         if (count($sites) > 1) {
             $db=new db();
             $db->select("personnel", "temps", "id='$perso_id'");
@@ -1869,7 +1869,7 @@ class absences
         $postes=$p->elements;
     
         // Nom des sites
-        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(['deletedDate' => NULL]);
+        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(['deleted_date' => NULL]);
         $sites=array(1=>null);
         if (count($sites_array)>0){
             foreach ($sites_array as $s) {
