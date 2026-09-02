@@ -5,7 +5,6 @@ namespace App\Traits;
 use App\Entity\AbsenceReason;
 use App\Entity\PlanningPosition;
 use App\Entity\Position;
-use App\Entity\Site;
 use App\Planno\WorkingHours;
 
 trait PlanningJobTrait
@@ -81,8 +80,10 @@ trait PlanningJobTrait
         $sites_array = $session->get('sites', []);
 
         if (count($sites_array) > 1) {
-            $s = $GLOBALS['entityManager']->getRepository(Site::class)->find($site);
-            $siteNom = $s ? $s->getName() : null;
+            $db = new \db();
+            $db->select("site", "*", "`id` = ".$site);
+            $s = $db->result ? $db->result[0] : null;
+            $siteNom = $s ? $s['name'] : null;
         }
 
         // List all statuses related to

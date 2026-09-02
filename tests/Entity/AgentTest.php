@@ -3,7 +3,9 @@
 use App\Entity\Agent;
 use App\Entity\Access;
 use App\Entity\Holiday;
+use App\Entity\SiteMail;
 use App\Entity\Skill;
+use App\Entity\Site;
 use App\Entity\Position;
 use App\Entity\PlanningPosition;
 use App\Entity\WorkingHour;
@@ -271,19 +273,19 @@ class AgentTest extends KernelTestCase
         //Multi sites :
 
         $GLOBALS['config']['Mail-Planning'] = '';
-        $site2 = $this->builder->build(Site::class, array('name' => 'Site 2'));
-        $site3 = $this->builder->build(Site::class, array('name' => 'Site 3'));
-        $site4 = $this->builder->build(Site::class, array('name' => 'Site 4'));
+        $site2 = $builder->build(Site::class, array('name' => 'Site 2'));
+        $site3 = $builder->build(Site::class, array('name' => 'Site 3'));
+        $site4 = $builder->build(Site::class, array('name' => 'Site 4'));
 
         $agent2 = $builder->build(Agent::class, array('login' => 'jmarc', 'sites' => ["1", "2", "3","4"]));
 
         global $entityManager;
         $site1 = $entityManager->find(Site::class, 1);
 
-        $this->builder->build(SiteMail::class, array('site' => $site1->getId(), 'mail' => 'jmarc@mail.fr;jcharles@mail.fr;jdevoe@mail.com'));
-        $this->builder->build(SiteMail::class, array('site' => $site2->getId(), 'mail' => 'jcharles@mail.fr;jmarc@mail.fr;j.paul@mail.com'));
-        $this->builder->build(SiteMail::class, array('site' => $site3->getId(), 'mail' => 'j.claude@mail.com;jmarc@mail.fr;jcharles@mail.fr'));
-        $this->builder->build(SiteMail::class, array('site' => $site4->getId(), 'mail' => 'j.paul@mail.com;j.claude@mail.com'));
+        $builder->build(SiteMail::class, array('site' => $site1->getId(), 'mail' => 'jmarc@mail.fr;jcharles@mail.fr;jdevoe@mail.com'));
+        $builder->build(SiteMail::class, array('site' => $site2->getId(), 'mail' => 'jcharles@mail.fr;jmarc@mail.fr;j.paul@mail.com'));
+        $builder->build(SiteMail::class, array('site' => $site3->getId(), 'mail' => 'j.claude@mail.com;jmarc@mail.fr;jcharles@mail.fr'));
+        $builder->build(SiteMail::class, array('site' => $site4->getId(), 'mail' => 'j.paul@mail.com;j.claude@mail.com'));
 
         $this->assertEquals(
             $agent2->get_planning_unit_mails(),

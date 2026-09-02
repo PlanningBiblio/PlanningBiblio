@@ -36,7 +36,7 @@
                         {% if site.id != 1 %}
                             <a href="#">
                                 <span class='pl-icon pl-icon-dropblack delete-site' title='Supprimer'
-                                      data-id='{{ site.id }}' data-name='{{ site.name }}'></span>
+                                      data-id='{{ site.id }}' data-name='{{ site.name|e('html_attr') }}'></span>
                             </a>
                         {% endif %}
                     </div>

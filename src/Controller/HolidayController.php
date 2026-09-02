@@ -515,7 +515,7 @@ class HolidayController extends BaseController
             'displayRefus'          => $displayRefus,
             'action_path'           => 'holiday/edit',
             'holiday_info'          => $holiday_info,
-            'nbSites'               => count($site_array)
+            'nbSites'               => count($sites_array)
         );
 
         $this->templateParams($templateParams);

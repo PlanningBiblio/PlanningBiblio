@@ -16,11 +16,13 @@ class HolidayInfoController extends BaseController
     #[Route(path: '/holiday-info/{reset?}', name: 'holiday_info.index', methods: ['GET'], requirements: ['reset' => 'reset'])]
     public function index(Request $request, Session $session, EntityManagerInterface $em)
     {
+        $sites_array = $session->get('sites', []);
+
         if ($this->config('Conges-Enable') == 0 ) {
             return $this->redirectToRoute('access-denied');
         }
 
-        if (!$this->isAdmin()) {
+        if (!$this->isAdmin($sites_array)) {
             return $this->redirectToRoute('access-denied');
         }
 
@@ -59,7 +61,7 @@ class HolidayInfoController extends BaseController
     }
 
     #[Route(path: '/holiday-info/{id<\d+>}', name: 'holiday_info.edit', methods: ['GET'])]
-    public function edit(Request $request)
+    public function edit(Request $request, Session $session)
     {
         $sites_array = $session->get('sites', []);
         if(!$this->isAdmin($sites_array)){

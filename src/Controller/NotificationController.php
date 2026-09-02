@@ -74,7 +74,7 @@ class NotificationController extends BaseController {
                 $tmp = array();
                 if (!empty($agent['sites'])) {
                     foreach ($agent['sites'] as $site) {
-                        $s = $GLOBALS['entityManager']->getRepository(Site::class)->find($site);
+                        $s = $this->entityManager->getRepository(Site::class)->find($site);
                         if ($s !== null) {
                             $tmp[] = $s->getName();
                         }

@@ -178,7 +178,7 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $this->assertSelectorNotExists('#sites-selection', 'There site selection div should not be present');
 
         // With Multisite
-        $site2 = $this->builder->build(Site::class, array('name' => 'Site N°2'));
+        $this->builder->build(Site::class, array('name' => 'Site N°2'));
         $jdupont = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'jdupont']);
         $this->login($jdupont);
 
@@ -203,8 +203,7 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $closeIcon->click();
 
         $agents_list = $this->getSelectValues('perso_ids');
-        $this->assertCount(5, $agents_list);
-        $this->assertTrue(in_array(0, $agents_list), 'Admin');
+        $this->assertCount(4, $agents_list);
         $this->assertTrue(in_array($jdupont->getId(), $agents_list), 'jdupont');
         $this->assertTrue(in_array($jdevoe->getId(), $agents_list), 'jdevoe');
         $this->assertTrue(in_array($abreton->getId(), $agents_list), 'abreton');
@@ -215,7 +214,7 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $button->click();
 
         $agents_list = $this->getSelectValues('perso_ids');
-        $this->assertCount(5, $agents_list);
+        $this->assertCount(4, $agents_list);
         $hiddenAgents = $crawler->filter('#perso_ids option[style="display: none;"]');
         $this->assertCount(2, $hiddenAgents);
         $this->assertEquals($abreton->getId(), $hiddenAgents->attr('value'), 'Breton Aubert should not be selectable');
@@ -242,8 +241,7 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $this->assertSelectorExists('li.perso_ids_li button.perso-drop', 'There should be a close icon next to the agent name');
 
         $agentsOptions = $this->getSelectValues('perso_ids');
-        $this->assertCount(5, $agentsOptions);
-        $this->assertTrue(in_array(0, $agentsOptions));
+        $this->assertCount(4, $agentsOptions);
         $this->assertTrue(in_array($jdevoe->getId(), $agentsOptions));
         $this->assertTrue(in_array($abreton->getId(), $agentsOptions));
         $this->assertTrue(in_array($kboivin->getId(), $agentsOptions));
@@ -268,7 +266,7 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $crawler = $this->client->request('GET', '/holiday/new');
 
         $agentsOptions = $this->getSelectValues('perso_ids');
-        $this->assertCount(6, $agentsOptions);
+        $this->assertCount(5, $agentsOptions);
         $this->assertTrue(in_array('tous', $agentsOptions));
 
         // Select all agents

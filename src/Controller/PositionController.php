@@ -92,7 +92,7 @@ class PositionController extends BaseController
             }
 
             if ($nbSites>1) {
-                $s = $GLOBALS['entityManager']->getRepository(Site::class)->find($value->getSite());
+                $s = $this->entityManager->getRepository(Site::class)->find($value->getSite());
                 $site = $s->getName() ? $s->getName() :"-";
                 $new['site'] = $site;
             }

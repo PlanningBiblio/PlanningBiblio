@@ -51,7 +51,7 @@ class FrameworkController extends BaseController
                 $elem['tabAffect'] = $utilisation;
 
                 if ($nbSites > 1){
-                    $s = $GLOBALS['entityManager']->getRepository(Site::class)->find($elem['site']);
+                    $s = $this->entityManager->getRepository(Site::class)->find($elem['site']);
                     $elem['multisite'] = $s->getName();
                 }
             }
@@ -71,7 +71,7 @@ class FrameworkController extends BaseController
         if (is_array($groupes)) {
             foreach ($groupes as &$elem) {
                 if ($nbSites > 1) {
-                    $s = $GLOBALS['entityManager']->getRepository(Site::class)->find($elem['site']);
+                    $s = $this->entityManager->getRepository(Site::class)->find($elem['site']);
                     $elem['multisite'] = $s->getName();
                 }
             }

@@ -607,18 +607,3 @@ $sql[] = "CREATE TABLE `{$dbprefix}pl_position_history` (
   updated_by INT(11) NOT NULL,
   updated_at DATETIME NOT NULL
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
-
-$sql[] = "CREATE TABLE IF NOT EXISTS `{$dbprefix}site` (
-            id int(20) NOT NULL AUTO_INCREMENT,
-            name varchar(255) NOT NULL DEFAULT '',
-            deletedDate datetime NULL DEFAULT NULL,
-            PRIMARY KEY (`id`)
-        ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
-
-$sql[] = "CREATE TABLE IF NOT EXISTS `{$dbprefix}site_mail` (
-            id int(11) NOT NULL AUTO_INCREMENT,
-            site_id int(20) NOT NULL,
-            mail varchar(255) NOT NULL DEFAULT '',
-            PRIMARY KEY (`id`),
-             KEY `site_id` (`site_id`)
-        ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";

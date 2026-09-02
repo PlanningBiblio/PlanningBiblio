@@ -274,13 +274,13 @@ class CalendarController extends BaseController
             // Si l'agent n'est pas absent toute la journée : affiche ses heures de présences
             $presence = array();
             if (!$absent) {
-                $s = $GLOBALS['entityManager']->getRepository(Site::class)->find(1);
+                $s = $this->entityManager->getRepository(Site::class)->find(1);
                 $site_name = $s ? $s->getName() : '';
                 $site = 1;
                 if (count($sites_array) > 1 and isset($horaires[4])) {
                     $site = $horaires[4];
                     if ($site != '-1') {
-                        $s = $GLOBALS['entityManager']->getRepository(Site::class)->find($site);
+                        $s = $this->entityManager->getRepository(Site::class)->find($site);
                         $site_name = $s ? $s->getName() : '';
                     } else {
                         $site_name = '';

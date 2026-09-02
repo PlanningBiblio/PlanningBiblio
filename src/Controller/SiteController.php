@@ -6,6 +6,8 @@ use App\Entity\Agent;
 use App\Entity\Site;
 use App\Entity\SiteMail;
 use Exception;
+use Symfony\Component\HtmlSanitizer\HtmlSanitizer;
+use Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -78,6 +80,12 @@ class SiteController extends BaseController
     {
         $id = $request->request->get('id');
         $name = trim($request->request->get('name', ''));
+
+        $htmlSanitizer = new HtmlSanitizer(
+            (new HtmlSanitizerConfig())->allowSafeElements()
+        );
+        $name = $htmlSanitizer->sanitize($name);
+        $name = html_entity_decode($name);
 
         $mails = [];
         $i = 1;

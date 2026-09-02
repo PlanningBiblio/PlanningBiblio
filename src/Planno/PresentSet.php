@@ -41,7 +41,11 @@ class PresentSet
         }
 
         $presents = array();
-        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(['deletedDate' => NULL]);
+        $this->db->select("site", "*", "`deletedDate` IS NULL");
+        $sites_array = array();
+        foreach ($this->db->result as $elem) {
+            $sites_array[] = $elem;
+        }
         foreach ($this->db->result as $elem) {
             // Exclude agents who are not working on the request site
             if (count($sites_array) > 1 and $this->site != 0 ) {
@@ -79,8 +83,9 @@ class PresentSet
             if ($heures and !in_array($elem['id'], $absents)) {
                 if (count($sites_array)>1) {
                     if (!empty($heures[4])) {
-                        $s = $GLOBALS['entityManager']->getRepository(Site::class)->find($heures[4]);
-                        $siteAgent = $heures[4] == -1 ? "Tout site" : ($s ? $s->getName() : '');
+                        $this->db->select("site", "*", "`id` = ".$heures[4]);
+                        $s = $this->db->result ? $this->db->result[0] : null;
+                        $siteAgent = $heures[4] == -1 ? "Tout site" : ($s ? $s['name'] : '');
                     }
                 }
                 $siteAgent=$siteAgent?$siteAgent.", ":null;

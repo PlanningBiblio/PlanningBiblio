@@ -76,10 +76,11 @@ class PlanningExportUtils
 
         // Liste des sites
         $sites = [];
-        $sites_array = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(['deletedDate' => NULL]);
-        if (count($sites_array) > 1) {
-            foreach ($sites_array as $s) {
-                $sites[$s->getId()] = $s->getName();
+        $db = new \db();
+        $db->select("site", "*", "`deletedDate` IS NULL");
+        if (count($db->result) > 1) {
+            foreach ($db->result as $s) {
+                $sites[$s['id']] = $s['name'];
             }
         }
 

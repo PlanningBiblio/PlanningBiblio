@@ -181,16 +181,18 @@ class AgentValidationLevelTest extends PLBWebTestCase
 
     public function testgetValidationLevelForAbsencesMultiSites(): void
     {
-
         $this->config->setParam('Absences-notifications-agent-par-agent', 0);
 
-        $this->builder->build(Site::class, array('name' => 'Site 2'));
-        $sites = $this->entityManager->getRepository(Site::class)->findBy(['deletedDate' => null]);
+        $site2 = $this->builder->build(Site::class, array('name' => 'Site 2'));
+        $site2Id = (int) $site2->getId();
+
+        $site2Right200 = 200 + $site2Id;
+        $site2Right500 = 500 + $site2Id;
 
         $agent1 = $this->builder->build(Agent::class,
             array(
                 'login' => 'aaaaaaaaaaaaaaaaaa',
-                'droits' => array(201,502,99,100)
+                'droits' => array(201, $site2Right500, 99, 100)
             )
         );
 
@@ -203,7 +205,7 @@ class AgentValidationLevelTest extends PLBWebTestCase
 
         $agent2 = $this->builder->build(Agent::class,
             array(
-                'droits' => array(201, 202, 99,100)
+                'droits' => array(201, $site2Right200, 99, 100)
             )
         );
 
@@ -216,7 +218,7 @@ class AgentValidationLevelTest extends PLBWebTestCase
 
         $agent3 = $this->builder->build(Agent::class,
             array(
-                'droits' => array(501,502,99,100)
+                'droits' => array(501,$site2Right500,99,100)
             )
         );
 

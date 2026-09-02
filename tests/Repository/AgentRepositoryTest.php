@@ -7,6 +7,7 @@ use App\Entity\Agent;
 use App\Entity\Holiday;
 use App\Entity\Manager;
 use App\Entity\OverTime;
+use App\Entity\Site;
 use App\Entity\WorkingHour;
 use PHPStan\Type\Php\GettypeFunctionReturnTypeExtension;
 use Tests\PLBWebTestCase;
@@ -117,12 +118,14 @@ class AgentRepositoryTest extends PLBWebTestCase
 
     public function testGetSitesForAgents(): void{
         global $entityManager;
+        $site2 = $this->builder->build(Site::class, array('name' => 'Site 2'));
+        $site3 = $this->builder->build(Site::class, array('name' => 'Site 3'));
 
         $mike = $entityManager->getRepository(Agent::class)->findOneBy(['login' => 'Mike']);
-        $mike->setSites(["1","2"]);
+        $mike->setSites(["1",$site2->getId()]);
         $this->entityManager->persist($mike);
         $eric = $entityManager->getRepository(Agent::class)->findOneBy(['login' => 'Eric']);
-        $eric->setSites(["1","3"]);
+        $eric->setSites(["1",$site3->getId()]);
         $this->entityManager->persist($eric);
         $this->entityManager->flush();
         $this->entityManager->clear();
@@ -130,10 +133,7 @@ class AgentRepositoryTest extends PLBWebTestCase
         $perso_ids = array($mike->getId(), $eric->getId());
 
         $sites = $this->entityManager->getRepository(Agent::class)->getSitesForAgents($perso_ids);
-        $this->assertEquals($sites, array('1'));
-
-        $sites = $this->entityManager->getRepository(Agent::class)->getSitesForAgents($perso_ids);
-        $this->assertEquals($sites, array('1', '2', '3'));
+        $this->assertEquals($sites, array('1', $site2->getId(), $site3->getId()));
 
         $agent3 = $this->createAgent(array('login' => 'Melvin', 'prenom' => 'Melvin', 'supprime' => 0, 'actif' => 'Actif', 'sites' => []));
         $sites = $this->entityManager->getRepository(Agent::class)->getSitesForAgents(array($agent3->getId()));

@@ -72,7 +72,7 @@ class WorkingHourController extends BaseController
         $nbSites = count($sites_array);
         $multisites = array();
         foreach ($sites as $site) {
-            $s = $GLOBALS['entityManager']->getRepository(Site::class)->find($site);
+            $s = $this->entityManager->getRepository(Site::class)->find($site);
             $multisites[$site] = $s ? $s->getName() : "Site $site";
         }
 
