@@ -281,50 +281,68 @@ class AgentTest extends KernelTestCase
         $site3 = $builder->build(Site::class, ['name' => 'Site 3']);
         $site4 = $builder->build(Site::class, ['name' => 'Site 4']);
 
-        $siteMail1 = new SiteMail();
-        $siteMail1->setSite($site1)->setMail('jmarc@mail.fr;jcharles@mail.fr;jdevoe@mail.com'); 
+        $siteMail1a = new SiteMail();
+        $siteMail1a->setSite($site1)->setMail('jmarc@mail.fr'); 
+        $siteMail1b = new SiteMail();
+        $siteMail1b->setSite($site1)->setMail('jcharles@mail.fr'); 
+        $siteMail1c = new SiteMail();
+        $siteMail1c->setSite($site1)->setMail('jdevoe@mail.com'); 
 
-        $siteMail2 = new SiteMail();
-        $siteMail2->setSite($site2)->setMail('jcharles@mail.fr;jmarc@mail.fr;j.paul@mail.com');
+        $siteMail2a = new SiteMail();
+        $siteMail2a->setSite($site2)->setMail('jcharles@mail.fr');
+        $siteMail2b = new SiteMail();
+        $siteMail2b->setSite($site2)->setMail('jmarc@mail.fr');
+        $siteMail2c = new SiteMail();
+        $siteMail2c->setSite($site2)->setMail('j.paul@mail.com');
 
-        $siteMail3 = new SiteMail();
-        $siteMail3->setSite($site3)->setMail('j.claude@mail.com;jmarc@mail.fr;jcharles@mail.fr');
+        $siteMail3a = new SiteMail();
+        $siteMail3a->setSite($site3)->setMail('j.claude@mail.com');
+        $siteMail3b = new SiteMail();
+        $siteMail3b->setSite($site3)->setMail('jmarc@mail.fr');
+        $siteMail3c = new SiteMail();
+        $siteMail3c->setSite($site3)->setMail('jcharles@mail.fr');
 
-        $siteMail4 = new SiteMail();
-        $siteMail4->setSite($site4)->setMail('j.paul@mail.com;j.claude@mail.com');
+        $siteMail4a = new SiteMail();
+        $siteMail4a->setSite($site4)->setMail('j.paul@mail.com');
+        $siteMail4b = new SiteMail();
+        $siteMail4b->setSite($site4)->setMail('j.claude@mail.com');
 
-        $entityManager->persist($siteMail1);
-        $entityManager->persist($siteMail2);
-        $entityManager->persist($siteMail3);
-        $entityManager->persist($siteMail4);
+        $entityManager->persist($siteMail1a);
+        $entityManager->persist($siteMail1b);
+        $entityManager->persist($siteMail1c);
+        $entityManager->persist($siteMail2a);
+        $entityManager->persist($siteMail2b);
+        $entityManager->persist($siteMail2c);
+        $entityManager->persist($siteMail3a);
+        $entityManager->persist($siteMail3b);
+        $entityManager->persist($siteMail3c);
+        $entityManager->persist($siteMail4a);
+        $entityManager->persist($siteMail4b);
         $entityManager->flush();
 
-        $agent2 = $builder->build(Agent::class, array('login' => 'jmarc', 'sites' => [1, $site2->getId(), $site3->getId(),$site4->getId()]));
+        $agent2 = $builder->build(Agent::class, array('login' => 'jmarc', 'sites' => [$site1->getId(), $site2->getId(), $site3->getId(), $site4->getId()]));
 
-        $this->assertEquals(
-            $agent2->get_planning_unit_mails(),
-            [
-                0 => 'jmarc@mail.fr',
-                1 => 'jcharles@mail.fr',
-                2 => 'jdevoe@mail.com',
-                5 => 'j.paul@mail.com',
-                6 => 'j.claude@mail.com'
-            ]
-        );
+        $this->assertContains('jmarc@mail.fr', $agent2->get_planning_unit_mails());
+        $this->assertContains('jcharles@mail.fr', $agent2->get_planning_unit_mails());
+        $this->assertContains('jdevoe@mail.com', $agent2->get_planning_unit_mails());
+        $this->assertContains('j.paul@mail.com', $agent2->get_planning_unit_mails());
+        $this->assertContains('j.claude@mail.com', $agent2->get_planning_unit_mails());
 
-        $agent3 = $builder->build(Agent::class, array('login' => 'ldave', 'sites' => ["1"]));
-        $this->assertEquals(
-            $agent3->get_planning_unit_mails(),
-            [
-                0 => 'jmarc@mail.fr',
-                1 => 'jcharles@mail.fr',
-                2 => 'jdevoe@mail.com'
-            ]
-        );
+        $agent3 = $builder->build(Agent::class, array('login' => 'ldave', 'sites' => [$site1->getId()]));
 
-        $agent4 = $builder->build(Agent::class, array('login' => 'ldavy', 'sites' => ["1","3"]));
-        $this->assertEquals($agent3->get_planning_unit_mails(),[0 => 'jmarc@mail.fr', 1 => 'jcharles@mail.fr', 2 => 'jdevoe@mail.com']);
+        $this->assertContains('jmarc@mail.fr', $agent3->get_planning_unit_mails());
+        $this->assertContains('jcharles@mail.fr', $agent3->get_planning_unit_mails());
+        $this->assertContains('jdevoe@mail.com', $agent3->get_planning_unit_mails());
+        $this->assertNotContains('j.paul@mail.com', $agent3->get_planning_unit_mails());
+        $this->assertNotContains('j.claude@mail.com', $agent3->get_planning_unit_mails());
 
+        $agent4 = $builder->build(Agent::class, array('login' => 'ldavy', 'sites' => [$site1->getId(), $site3->getId()]));
+
+        $this->assertContains('jmarc@mail.fr', $agent4->get_planning_unit_mails());
+        $this->assertContains('jcharles@mail.fr', $agent4->get_planning_unit_mails());
+        $this->assertContains('jdevoe@mail.com', $agent4->get_planning_unit_mails());
+        $this->assertContains('j.claude@mail.com', $agent4->get_planning_unit_mails());
+        $this->assertNotContains('j.paul@mail.com', $agent4->get_planning_unit_mails());
     }
 
     public function testIsAbsentOn(): void

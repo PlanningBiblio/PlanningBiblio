@@ -645,19 +645,13 @@ class Agent
         $sites = $this->sites;
         if (is_array($sites)) {
             foreach ($sites as $site) {
-                // TODO: 
-                // 1. Use Entity/SiteMail
-                // 2. Change SiteMail->getMail() and SiteMail->setMail() to directly get and set an array
                 $db = new \db();
                 $db->select2("site_mail", "*", array("site_id" => $site));
                 if ($db->result) {
                     foreach ($db->result as $m) {
                         $mail = trim($m['mail']);
                         if ($mail !== '') {
-                            $tmp = explode(';', $mail);
-                            foreach ($tmp as $elem) {
-                                $unit_mails[] = $elem;
-                            }
+                            $unit_mails[] = $mail;
                         }
                     }
                 }
