@@ -178,7 +178,7 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $this->assertSelectorNotExists('#sites-selection', 'There site selection div should not be present');
 
         // With Multisite
-        $this->builder->build(Site::class, array('name' => 'Site N°2'));
+        $this->builder->build(Site::class, array('name' => 'Site N°1'));
         $jdupont = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'jdupont']);
         $this->login($jdupont);
 
@@ -196,7 +196,7 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $result = $crawler->filterXPath('//body');
         $this->assertStringContainsString('Sites :',$result->text('Node does not exist', true),'test sites');
         $this->assertStringContainsString('Site par défaut',$result->text('Node does not exist', true),'test sites');
-        $this->assertStringContainsString('Site N°2',$result->text('Node does not exist', true),'test sites');
+        $this->assertStringContainsString('Site N°1',$result->text('Node does not exist', true),'test sites');
 
         // Deselect Jean Dupont
         $closeIcon = $crawler->filter("#li" . $jdupont->getId()  . " button.perso-drop");
@@ -241,7 +241,7 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $this->assertSelectorExists('li.perso_ids_li button.perso-drop', 'There should be a close icon next to the agent name');
 
         $agentsOptions = $this->getSelectValues('perso_ids');
-        $this->assertCount(4, $agentsOptions);
+        $this->assertCount(5, $agentsOptions);
         $this->assertTrue(in_array($jdevoe->getId(), $agentsOptions));
         $this->assertTrue(in_array($abreton->getId(), $agentsOptions));
         $this->assertTrue(in_array($kboivin->getId(), $agentsOptions));

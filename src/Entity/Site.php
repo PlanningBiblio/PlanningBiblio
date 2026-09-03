@@ -18,6 +18,9 @@ class Site
     #[ORM\Column(type: Types::TEXT)]
     private ?string $name = '';
 
+    #[ORM\Column]
+    private ?array $mails = [];
+
     #[ORM\Column(nullable: true)]
     private ?\DateTime $deleted_date = null;
 
@@ -34,6 +37,16 @@ class Site
     public function setName(?string $name): void
     {
         $this->name = $name;
+    }
+
+    public function getMails(): ?array
+    {
+        return $this->mails ?? [];
+    }
+
+    public function setMails(?array $mails): void
+    {
+        $this->mails = $mails;
     }
 
     public function getDeletedDate(): ?\DateTime

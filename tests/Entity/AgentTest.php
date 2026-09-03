@@ -3,7 +3,6 @@
 use App\Entity\Agent;
 use App\Entity\Access;
 use App\Entity\Holiday;
-use App\Entity\SiteMail;
 use App\Entity\Skill;
 use App\Entity\Site;
 use App\Entity\Position;
@@ -276,49 +275,10 @@ class AgentTest extends KernelTestCase
 
         global $entityManager;
 
-        $site1 = $entityManager->find(Site::class, 1);
-        $site2 = $builder->build(Site::class, ['name' => 'Site 2']);
-        $site3 = $builder->build(Site::class, ['name' => 'Site 3']);
-        $site4 = $builder->build(Site::class, ['name' => 'Site 4']);
-
-        $siteMail1a = new SiteMail();
-        $siteMail1a->setSite($site1)->setMail('jmarc@mail.fr'); 
-        $siteMail1b = new SiteMail();
-        $siteMail1b->setSite($site1)->setMail('jcharles@mail.fr'); 
-        $siteMail1c = new SiteMail();
-        $siteMail1c->setSite($site1)->setMail('jdevoe@mail.com'); 
-
-        $siteMail2a = new SiteMail();
-        $siteMail2a->setSite($site2)->setMail('jcharles@mail.fr');
-        $siteMail2b = new SiteMail();
-        $siteMail2b->setSite($site2)->setMail('jmarc@mail.fr');
-        $siteMail2c = new SiteMail();
-        $siteMail2c->setSite($site2)->setMail('j.paul@mail.com');
-
-        $siteMail3a = new SiteMail();
-        $siteMail3a->setSite($site3)->setMail('j.claude@mail.com');
-        $siteMail3b = new SiteMail();
-        $siteMail3b->setSite($site3)->setMail('jmarc@mail.fr');
-        $siteMail3c = new SiteMail();
-        $siteMail3c->setSite($site3)->setMail('jcharles@mail.fr');
-
-        $siteMail4a = new SiteMail();
-        $siteMail4a->setSite($site4)->setMail('j.paul@mail.com');
-        $siteMail4b = new SiteMail();
-        $siteMail4b->setSite($site4)->setMail('j.claude@mail.com');
-
-        $entityManager->persist($siteMail1a);
-        $entityManager->persist($siteMail1b);
-        $entityManager->persist($siteMail1c);
-        $entityManager->persist($siteMail2a);
-        $entityManager->persist($siteMail2b);
-        $entityManager->persist($siteMail2c);
-        $entityManager->persist($siteMail3a);
-        $entityManager->persist($siteMail3b);
-        $entityManager->persist($siteMail3c);
-        $entityManager->persist($siteMail4a);
-        $entityManager->persist($siteMail4b);
-        $entityManager->flush();
+        $site1 = $builder->build(Site::class, ['name' => 'Site 1', 'mails' => ['jmarc@mail.fr', 'jcharles@mail.fr', 'jdevoe@mail.com']]);
+        $site2 = $builder->build(Site::class, ['name' => 'Site 2', 'mails' => ['jcharles@mail.fr', 'jmarc@mail.fr', 'j.paul@mail.com']]);
+        $site3 = $builder->build(Site::class, ['name' => 'Site 3', 'mails' => ['j.claude@mail.com', 'jmarc@mail.fr', 'jcharles@mail.fr']]);
+        $site4 = $builder->build(Site::class, ['name' => 'Site 4', 'mails' => ['j.paul@mail.com', 'j.claude@mail.com']]);
 
         $agent2 = $builder->build(Agent::class, array('login' => 'jmarc', 'sites' => [$site1->getId(), $site2->getId(), $site3->getId(), $site4->getId()]));
 

@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Entity\Agent;
 use App\Entity\Site;
-use App\Entity\SiteMail;
 use Exception;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizer;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig;
@@ -24,16 +23,14 @@ class SiteController extends BaseController
         $sitesTab = [];
 
         foreach ($sitesEntities as $site) {
-            $mails = $this->entityManager->getRepository(SiteMail::class)->findBy(['site' => $site->getId()]);
-
-            $mailsValues = array_map(fn($m) => $m->getMail(), $mails);
-            $mailsAffiches = array_slice($mailsValues, 0, 3);
+            $mails = $site->getMails();
+            $mailsAffiches = array_slice($mails, 0, 3);
 
             $sitesTab[] = [
                 'id' => $site->getId(),
                 'name' => $site->getName(),
-                'mails' => implode('; ', $mailsValues),
-                'mailsAffiches' => implode('; ', $mailsAffiches) . (count($mailsValues) > 3 ? ' ...' : ''),
+                'mails' => implode('; ', $mails),
+                'mailsAffiches' => implode('; ', $mailsAffiches) . (count($mails) > 3 ? ' ...' : ''),
             ];
         }
         $this->templateParams(['sites' => $sitesTab]);
@@ -61,15 +58,10 @@ class SiteController extends BaseController
             throw $this->createNotFoundException("Site introuvable");
         }
 
-        $mails = array_map(
-            fn($m) => $m->getMail(),
-            $this->entityManager->getRepository(SiteMail::class)->findBy(['site' => $id])
-        );
-
         $this->templateParams([
             'id' => $id,
             'site_name' => $site->getName(),
-            'mails' => $mails,
+            'mails' => $site->getMails(),
         ]);
 
         return $this->output('site/edit.html.twig');
@@ -106,11 +98,10 @@ class SiteController extends BaseController
             if (!$id) {
                 $site = new Site();
                 $site->setName($name);
+                $site->setMails($mails);
 
                 $this->entityManager->persist($site);
                 $this->entityManager->flush();
-
-                $this->saveMails($site, $mails);
 
                 $session->getFlashBag()->add('notice', "Le site a été ajouté avec succès");
             } else {
@@ -121,11 +112,10 @@ class SiteController extends BaseController
                 }
 
                 $site->setName($name);
+                $site->setMails($mails);
 
                 $this->entityManager->persist($site);
                 $this->entityManager->flush();
-
-                $this->saveMails($site, $mails);
 
                 $session->getFlashBag()->add('notice', "Le site a été modifié avec succès");
             }
@@ -177,22 +167,5 @@ class SiteController extends BaseController
         }, $siteEntities);
         $session->set('sites', $sitesData);
         return $this->json("Ok");
-    }
-
-    private function saveMails(Site $site, array $mails): void
-    {
-        $existing = $this->entityManager->getRepository(SiteMail::class)->findBy(['site' => $site]);
-        foreach ($existing as $m) {
-            $this->entityManager->remove($m);
-        }
-        $this->entityManager->flush();
-
-        foreach ($mails as $mail) {
-            $siteMail = new SiteMail();
-            $siteMail->setSite($site);
-            $siteMail->setMail($mail);
-            $this->entityManager->persist($siteMail);
-        }
-        $this->entityManager->flush();
     }
 }

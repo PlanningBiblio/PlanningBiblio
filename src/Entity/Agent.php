@@ -646,13 +646,12 @@ class Agent
         if (is_array($sites)) {
             foreach ($sites as $site) {
                 $db = new \db();
-                $db->select2("site_mail", "*", array("site_id" => $site));
+                $db->select2('site', 'mails', array('id' => $site));
                 if ($db->result) {
-                    foreach ($db->result as $m) {
-                        $mail = trim($m['mail']);
-                        if ($mail !== '') {
-                            $unit_mails[] = $mail;
-                        }
+                    $site_mails = json_decode($db->result[0]['mails'], true);
+
+                    if (is_array($site_mails)) {
+                        $unit_mails = array_merge($unit_mails, $site_mails);
                     }
                 }
             }

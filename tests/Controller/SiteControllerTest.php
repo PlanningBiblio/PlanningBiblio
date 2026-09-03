@@ -2,7 +2,6 @@
 
 use App\Entity\Agent;
 use App\Entity\Site;
-use App\Entity\SiteMail;
 use Tests\PLBWebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -12,7 +11,6 @@ class SiteControllerTest extends PLBWebTestCase
     {
         parent::setUp();
 
-        $this->builder->delete(SiteMail::class);
         $this->builder->delete(Agent::class);
         $this->builder->delete(Site::class);
     }
@@ -93,8 +91,7 @@ class SiteControllerTest extends PLBWebTestCase
         $site = $this->entityManager->getRepository(Site::class)->findOneBy(['name' => 'Nouveau Site']);
         $this->assertNotNull($site, 'The site should have been created in the database');
 
-        $mails = $this->entityManager->getRepository(SiteMail::class)->findBy(['site' => $site]);
-        $this->assertCount(2, $mails, 'The site should have 2 associated emails');
+        $this->assertEquals(['contact@nouveausite.fr', 'support@nouveausite.fr'], $site->getMails(), 'The site should have the correct associated emails');
     }
 
     public function testSaveExistingSite(): void
@@ -121,6 +118,7 @@ class SiteControllerTest extends PLBWebTestCase
         $this->entityManager->clear();
         $updatedSite = $this->entityManager->getRepository(Site::class)->find($site->getId());
         $this->assertEquals('Nom Modifié', $updatedSite->getName());
+        $this->assertEquals(['newmail@site.com'], $updatedSite->getMails());
     }
 
     public function testDeleteDefaultSiteForbidden(): void
