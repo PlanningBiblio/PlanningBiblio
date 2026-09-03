@@ -100,5 +100,10 @@ class TimeSlotTest extends TestCase
             $timeSlot->intersectsWith(new DateTime('2026-03-04 14:00'), new DateTime('2026-03-04 10:00')),
             'start is after, end is before'
         );
+
+        $this->assertFalse(
+            $timeSlot->intersectsWith(new DateTime('2026-03-04 12:00'), new DateTime('2026-03-04 12:30')),
+            'two consecutive time slots do not intersect'
+        );
     }
 }
