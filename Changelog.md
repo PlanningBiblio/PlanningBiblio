@@ -1,5 +1,12 @@
 # Changelog Planno
 
+## Version 25.10.25 (2026-09-03)
+
+### Fixes
+
+* MT53418: Fix validation level on deleted agents #1463
+* BugFix: Allow transition from validationN1 to requested state #1470
+
 ## Version 25.10.24 (2026-07-24)
 
 ### Security
