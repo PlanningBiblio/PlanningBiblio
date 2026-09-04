@@ -266,7 +266,7 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $crawler = $this->client->request('GET', '/holiday/new');
 
         $agentsOptions = $this->getSelectValues('perso_ids');
-        $this->assertCount(5, $agentsOptions);
+        $this->assertCount(6, $agentsOptions);
         $this->assertTrue(in_array('tous', $agentsOptions));
 
         // Select all agents

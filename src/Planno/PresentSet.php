@@ -41,7 +41,7 @@ class PresentSet
         }
 
         $presents = array();
-        $this->db->select("site", "*", "`deletedDate` IS NULL");
+        $this->db->select("site", "*", "`deleted_date` IS NULL");
         $sites_array = array();
         foreach ($this->db->result as $elem) {
             $sites_array[] = $elem;

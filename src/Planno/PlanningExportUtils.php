@@ -77,7 +77,7 @@ class PlanningExportUtils
         // Liste des sites
         $sites = [];
         $db = new \db();
-        $db->select("site", "*", "`deletedDate` IS NULL");
+        $db->select("site", "*", "`deleted_date` IS NULL");
         if (count($db->result) > 1) {
             foreach ($db->result as $s) {
                 $sites[$s['id']] = $s['name'];

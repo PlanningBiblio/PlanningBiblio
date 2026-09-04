@@ -1,6 +1,7 @@
 <?php
 
 use App\Entity\Agent;
+use App\Entity\Site;
 use Tests\FixtureBuilder;
 use Tests\PLBWebTestCase;
 
@@ -10,6 +11,7 @@ class AgentControllerLDIFTest extends PLBWebTestCase
     {
         parent::setUp();
         $this->builder->delete(Agent::class);
+        $this->builder->delete(Site::class);
     }
 
     public function testLDIFImport(): void
