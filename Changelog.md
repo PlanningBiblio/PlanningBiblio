@@ -1,5 +1,31 @@
 # Changelog Planno
 
+## Version 26.04.08 (2026-09-04)
+
+### Enhancement
+
+* MT52609: Add date filters to info list pages (admin, absences, holiday) #1434 / #1477
+* MT53885: Hide presences included in holiday/absence (calendar, planning, stats) #1478
+
+### Fixes
+
+* MT53418: Fix validation level on deleted agents #1463
+* BugFix: Allow transition from validationN1 to requested state #1470
+* MT44200: Send a notification when a holiday is deleted #1473
+* Notification d'absence par e-mail : Correction concernant les plannings affectés #1482
+
+### Security / Dependencies
+
+* MT54762: Security: Update league/commonmark
+  * Update league/commonmark, new version: 2.10.0
+  * Security advisories:
+    * https://packagist.org/security-advisories/GHSA-f8fg-pg57-v4j8
+    * https://packagist.org/security-advisories/PKSA-zyf5-hrxv-hrd7
+
+### Plumbing
+
+* Allow unit tests to be run on Sundays #1472
+
 ## Version 26.04.07 (2026-07-24)
 
 ### Fixes
