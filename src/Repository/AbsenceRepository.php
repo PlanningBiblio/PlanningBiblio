@@ -52,21 +52,6 @@ class AbsenceRepository extends EntityRepository
         return $qb->getQuery()->getScalarResult();
     }
 
-    public function get(?\DateTime $start = null, ?\DateTime $end = null): array
-    {
-        $start = $start ?? new \DateTime();
-        $end = $end ?? $start;
-
-        $qb = $this->createQueryBuilder('a')
-            ->select('a')
-            ->where('a.debut <= :end')
-            ->andWhere('a.fin >= :start')
-            ->setParameter('start', $start)
-            ->setParameter('end', $end);
-
-        return $qb->getQuery()->getResult();
-    }
-
     public function getByUserIds(array $userIds, string $calName): array
     {
         $qb = $this->createQueryBuilder('a')
@@ -101,18 +86,21 @@ class AbsenceRepository extends EntityRepository
     /**
      * @return Absence[]
      */
-    public function get(string $start, string $end, bool $valid = true, ?int $agentId = null): array
+    public function get(?\DateTime $start = null, ?\DateTime $end = null, bool $validatedOnly = false, ?int $agentId = null): array
     {
+        $start = $start ?? new \DateTime();
+        $end = $end ?? $start;
+
         $qb = $this->createQueryBuilder('a')
             ->andWhere('a.debut < :end')
             ->andWhere('a.fin > :start')
             ->setParameter('start', $start)
             ->setParameter('end', $end);
 
-        if ($valid) {
+        if ($validatedOnly) {
             $qb->andWhere('a.valide > 0');
         } else {
-            $qb->andWhere('a.valide = 0');
+            $qb->andWhere('a.valide >= 0');
         }
 
         if ($agentId !== null) {
@@ -120,8 +108,6 @@ class AbsenceRepository extends EntityRepository
             $qb->setParameter('agentId', $agentId);
         }
 
-        $absences = $qb->getQuery()->getResult();
-
-        return $absences;
+        return $qb->getQuery()->getResult();
     }
 }

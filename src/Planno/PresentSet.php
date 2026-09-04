@@ -175,16 +175,19 @@ class PresentSet
         if ($this->config['Conges-Enable']) {
             /** @var \App\Repository\HolidayRepository */
             $holidayRepository = $this->entityManager->getRepository(Holiday::class);
-            $holidays = $holidayRepository->get("$date 00:00:00", "$date 23:59:59", agentId: $agentId);
+            $holidays = $holidayRepository->get("$date 00:00:00", "$date 23:59:59", true, $agentId);
 
             foreach ($holidays as $holiday) {
                 $timeSlots[] = new TimeSlot($holiday->getStart(), $holiday->getEnd());
             }
         }
 
+        $start = DateTime::createFromFormat('Y-m-d H:i:s', $date . ' 00:00:00');
+        $end = DateTime::createFromFormat('Y-m-d H:i:s', $date . ' 23:59:59');
+
         /** @var \App\Repository\AbsenceRepository */
         $absenceRepository = $this->entityManager->getRepository(Absence::class);
-        $absences = $absenceRepository->get("$date 00:00:00", "$date 23:59:59", agentId: $agentId);
+        $absences = $absenceRepository->get($start, $end, true, $agentId);
         foreach ($absences as $absence) {
             $timeSlots[] = new TimeSlot($absence->getStart(), $absence->getEnd());
         }

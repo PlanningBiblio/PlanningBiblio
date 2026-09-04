@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 class HolidayRepository extends EntityRepository
 {
 
-    public function get($start, $end = null, $valid = true, ?int $agentId = null)
+    public function get($start, $end = null, bool $validatedOnly = false, ?int $agentId = null)
     {
         $end = $end ?? $start;
 
@@ -24,10 +24,10 @@ class HolidayRepository extends EntityRepository
                 ->setParameter('start', $start)
                 ->setParameter('end', $end);
 
-        if ($valid) {
+        if ($validatedOnly) {
             $builder->andWhere('h.valide > 0');
         } else {
-            $builder->andWhere('h.valide = 0');
+            $builder->andWhere('h.valide >= 0');
         }
 
         if ($agentId !== null) {

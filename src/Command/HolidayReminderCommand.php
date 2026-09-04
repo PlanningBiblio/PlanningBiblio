@@ -128,10 +128,14 @@ Exemple à ajouter en crontab :
         }
 
         // Recherche des congés non-validés
-        $holidays = $this->entityManager->getRepository(Holiday::class)->get("$debut 00:00:00", "$fin 23:59:59", false);
+        $holidays = $this->entityManager->getRepository(Holiday::class)->get("$debut 00:00:00", "$fin 23:59:59");
 
         // Assemble les informations des congés et des agents
         foreach ($holidays as $elem) {
+            if ($elem->getValidLevel2() != 0) {
+                continue;
+            }
+
             $agent = $agents[$elem->getUser()];
 
             $tmp = $elem;

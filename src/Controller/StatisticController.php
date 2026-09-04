@@ -191,7 +191,7 @@ class StatisticController extends BaseController
             // Look for holidays
             $holidays = array();
             if ($this->config('Conges-Enable')) {
-                $holidays = $this->entityManager->getRepository(Holiday::class)->get("$debutSQL 00:00:00", "$finSQL 23:59:59");
+                $holidays = $this->entityManager->getRepository(Holiday::class)->get("$debutSQL 00:00:00", "$finSQL 23:59:59", true);
             }
 
             //  Get information from planning (tables pl_poste and postes)
@@ -736,7 +736,7 @@ class StatisticController extends BaseController
             // Look for holidays
             $holidays = array();
             if ($this->config('Conges-Enable')) {
-                $holidays = $this->entityManager->getRepository(Holiday::class)->get("$debutSQL 00:00:00", "$finSQL 23:59:59");
+                $holidays = $this->entityManager->getRepository(Holiday::class)->get("$debutSQL 00:00:00", "$finSQL 23:59:59", true);
             }
 
             //	Recherche des infos dans pl_poste et postes pour tous les agents sélectionnés
@@ -1411,7 +1411,7 @@ class StatisticController extends BaseController
             // Look for holidays
             $holidays = array();
             if ($this->config('Conges-Enable')) {
-                $holidays = $this->entityManager->getRepository(Holiday::class)->get("$debutSQL 00:00:00", "$finSQL 23:59:59");
+                $holidays = $this->entityManager->getRepository(Holiday::class)->get("$debutSQL 00:00:00", "$finSQL 23:59:59", true);
             }
 
             $req = "SELECT `{$dbprefix}pl_poste`.`debut` as `debut`, `{$dbprefix}pl_poste`.`fin` as `fin`, 
@@ -1743,7 +1743,7 @@ class StatisticController extends BaseController
         // Look for holidays
         $holidays = array();
         if ($this->config('Conges-Enable')) {
-            $holidays = $this->entityManager->getRepository(Holiday::class)->get("$debut 00:00:00", "$fin 23:59:59");
+            $holidays = $this->entityManager->getRepository(Holiday::class)->get("$debut 00:00:00", "$fin 23:59:59", true);
         }
 
         $db = new \db();
@@ -2172,7 +2172,7 @@ class StatisticController extends BaseController
             // Look for holidays
             $holidays = array();
             if ($this->config('Conges-Enable')) {
-                $holidays = $this->entityManager->getRepository(Holiday::class)->get("$debutSQL 00:00:00", "$finSQL 23:59:59");
+                $holidays = $this->entityManager->getRepository(Holiday::class)->get("$debutSQL 00:00:00", "$finSQL 23:59:59", true);
             }
 
             //	Recherche des infos dans pl_poste et personnel pour tous les postes sélectionnés
@@ -2486,7 +2486,7 @@ class StatisticController extends BaseController
             // Look for holidays
             $holidays = array();
             if ($this->config('Conges-Enable')) {
-                $holidays = $this->entityManager->getRepository(Holiday::class)->get("$debutSQL 00:00:00", "$finSQL 23:59:59");
+                $holidays = $this->entityManager->getRepository(Holiday::class)->get("$debutSQL 00:00:00", "$finSQL 23:59:59", true);
             }
 
             //    Recherche des infos dans pl_poste et personnel pour tous les postes sélectionnés
