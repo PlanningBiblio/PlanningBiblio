@@ -44,7 +44,6 @@ class AbsenceControllerDeleteTest extends PLBWebTestCase
 
         $this->config->setParam('Absences-validation', 0);
         $this->config->setParam('Absences-notifications-agent-par-agent', 0);
-        $this->config->setParam('Multisites-nombre', 1);
 
         $acl = [6];
         $nbAgent = 1;

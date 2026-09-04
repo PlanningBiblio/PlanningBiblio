@@ -98,6 +98,7 @@ class AgentController extends BaseController
 
         // Get all agents
         $agents = $this->entityManager->getRepository(Agent::class)->get($active);
+        $sites_array = $session->get('sites', []);
 
         $this->templateParams([
             'active'            => $active,
@@ -112,7 +113,8 @@ class AgentController extends BaseController
             'services'          => $services,
             'skills'            => $skills,
             'skillsAllWithName' => json_encode($skillsAllWithName),
-            'status'            => $statuts
+            'status'            => $statuts,
+            'multisites'        => count($sites_array) > 1,
         ]);
 
         return $this->output('/agents/index.html.twig');
@@ -146,6 +148,7 @@ class AgentController extends BaseController
         $CSRFSession = $GLOBALS['CSRFSession'];
         $lang = $GLOBALS['lang'];
         $droits = $GLOBALS['droits'];
+        $sites_array = $session->get('sites', []);
 
         // PlanningHebdo et EDTSamedi étant incompatibles, EDTSamedi est désactivé si PlanningHebdo est activé
         if ($this->config('PlanningHebdo')) {
@@ -166,7 +169,7 @@ class AgentController extends BaseController
 
         // Find access filtered by group id and dispatch groups by sites ("groupe_id" value doesn't equal 99 or 100).
         $accessAll = $this->entityManager->getRepository(Access::class)->getAccessGroups(
-            $this->config['Multisites-nombre'],
+            count($sites_array),
         );
         extract($accessAll);
 
@@ -228,20 +231,12 @@ class AgentController extends BaseController
         $sites = $agent->getSites();
 
         $sitesSelect = [];
-
-        // Multi-sites
-        if ($this->config['Multisites-nombre'] > 1) {
-            for ($i = 1; $i <= $this->config['Multisites-nombre']; $i++) {
-
-                // Avoid displaying unamed or deleted sites
-                if (empty($this->config['Multisites-site' . $i])) {
-                    continue;
-                }
-
+        if (count($sites_array) > 1) {
+            foreach ($sites_array as $s) {
                 $sitesSelect[] = [
-                    'id' => $i,
-                    'name' => $this->config("Multisites-site$i"),
-                    'checked' => in_array($i, $sites) ? 1 : 0,
+                    'id' => $s['id'],
+                    'name' => $s['name'],
+                    'checked' => in_array($s['id'], $sites) ? 1 : 0,
                 ];
             }
         }
@@ -337,7 +332,13 @@ class AgentController extends BaseController
         $rights_sites = [];
 
         // Affichage des droits d'accès dépendant des sites (si plusieurs sites)
-        if ($this->config('Multisites-nombre') > 1) {
+        if (count($sites_array) > 1) {
+            $sites_for_rights = array();
+            foreach ($sites_array as $s) {
+                $sites_for_rights[] = array('site_name' => $s['name']);
+            }
+
+            $this->templateParams(array('sites_for_rights' => $sites_for_rights));
 
             foreach ($accessgroupsBySite as $elem) {
                 // N'affiche pas les droits de gérer les congés si le module n'est pas activé
@@ -357,13 +358,7 @@ class AgentController extends BaseController
                 }
 
                 $elem['sites'] = array();
-                for ($i = 1; $i < $this->config('Multisites-nombre') +1; $i++) {
-
-                    // Avoid displaying unamed or deleted sites
-                    if (empty($this->config['Multisites-site' . $i])) {
-                        continue;
-                    }
-
+                for ($i = 1; $i < count($sites_array) +1; $i++) {
                     $groupe_id = $elem['groupe_id'] - 1 + $i;
 
                     $checked = in_array($groupe_id, $access);
@@ -404,6 +399,7 @@ class AgentController extends BaseController
             'sitesSelect'               => $sitesSelect,
             'showAgendasAndSync'        => $showAgendasAndSync,
             'times'                     => $times,
+            'multisites'                 => count($sites_array) > 1,
         ]);
 
         if ($this->config('Conges-Enable')) {
@@ -496,7 +492,7 @@ class AgentController extends BaseController
     }
 
     #[Route(path: '/agent', name: 'agent.save', methods: ['POST'])]
-    public function save(Request $request): \Symfony\Component\HttpFoundation\RedirectResponse
+    public function save(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
@@ -559,7 +555,8 @@ class AgentController extends BaseController
             }
         }
 
-        for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
+        $sites_array = $session->get('sites', []);
+        for ($i = 1; $i <= count($sites_array); $i++) {
             // Modification des plannings Niveau 2 donne les droits Modification des plannings Niveau 1
             if (in_array((300+$i), $droits) and !in_array((1000+$i), $droits)) {
                 $droits[]=1000+$i;
@@ -567,7 +564,7 @@ class AgentController extends BaseController
         }
 
         // Le droit de gestion des absences (20x) donne le droit modifier ses propres absences (6) et le droit d'ajouter des absences pour plusieurs personnes (9)
-        for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
+        for ($i = 1; $i <= count($sites_array); $i++) {
             if (in_array((200+$i), $droits) or in_array((500+$i), $droits)) {
                 $droits[] = 6;
                 break;

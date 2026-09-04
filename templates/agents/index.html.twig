@@ -52,7 +52,7 @@
           <th>Statut</th>
           <th>Service</th>
         {% endif %}
-        {% if config('Multisites-nombre') > 1 %}
+        {% if multisites %}
           <th>Sites</th>
         {% endif %}
         <th class="dataTableDateFR">Arrivée</th>
@@ -84,7 +84,7 @@
             <td>{{ a.status }}</td>
             <td>{{ a.service }}</td>
           {% endif %}
-          {% if config('Multisites-nombre') > 1 %}
+          {% if multisites %}
             <td>{{ a.sites | sites }}</td>
           {% endif %}
           <td>{{ a.arrival | dateOrNull('d/m/Y') }}</td>

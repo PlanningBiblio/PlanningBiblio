@@ -1,6 +1,7 @@
 <?php
 
 use App\Entity\Agent;
+use App\Entity\Site;
 use Tests\FixtureBuilder;
 use Tests\PLBWebTestCase; 
 
@@ -11,13 +12,13 @@ class AgentControllerTest extends PLBWebTestCase
         parent::setUp();
         $this->config->setParam('Hamac-csv', '');
         $this->builder->delete(Agent::class);
+        $this->builder->delete(Site::class);
     }
 
     public function testAddPost(): void
     {
         global $entityManager;
 
-        $GLOBALS['config']['Multisites-nombre'] = 1;
         $GLOBALS['config']['Auth-LoginLayout'] = 'firstname.lastname';
 
         $builder = new FixtureBuilder();
@@ -99,7 +100,6 @@ class AgentControllerTest extends PLBWebTestCase
     }
 
     public function testAddFormElement(): void {
-        $GLOBALS['config']['Multisites-nombre'] = 1;
         $GLOBALS['config']['Granularite'] = 30;
         $GLOBALS['config']['LDAP-Host'] = '';
         $GLOBALS['config']['LDAP-Suffix'] = '';
@@ -132,7 +132,12 @@ class AgentControllerTest extends PLBWebTestCase
         $this->assertEmpty($result);
 
         //test multisites
-        $GLOBALS['config']['Multisites-nombre'] = 4;
+        $this->builder->build(Site::class, array('name' => 'Site 2'));
+        $this->builder->build(Site::class, array('name' => 'Site 3'));
+        $this->builder->build(Site::class, array('name' => 'Site 4'));
+
+        $this->logInAgent($kboivin, $kboivin->getACL());
+
         $GLOBALS['config']['Grannularite'] = 1;
         $GLOBALS['config']['LDAP-Host'] = '';
         $GLOBALS['config']['LDAP-Suffix'] = '';
@@ -146,7 +151,6 @@ class AgentControllerTest extends PLBWebTestCase
         $this->assertStringContainsString('Sites', $result->text('Node does not exist', false));
 
         //test LDAP host and suffix
-        $GLOBALS['config']['Multisites-nombre'] = 4;
         $GLOBALS['config']['Grannularite'] = 1;
         $GLOBALS['config']['LDAP-Host'] = '192.168.1.100';
         $GLOBALS['config']['LDAP-Suffix'] = 'dn: dc=my-domain,dc=com objectclass: dcObject objectclass: organization';
@@ -184,9 +188,6 @@ class AgentControllerTest extends PLBWebTestCase
 
     public function testEditFormElement(): void {
 
-        $GLOBALS['config']['Multisites-nombre'] = 2;
-        $GLOBALS['config']['Multisites-site1'] = 'Site 1';
-        $GLOBALS['config']['Multisites-site2'] = 'Site 2';
         $GLOBALS['config']['Granularite'] = 30;
         $GLOBALS['config']['LDAP-Host'] = '';
         $GLOBALS['config']['LDAP-Suffix'] = '';
@@ -203,6 +204,8 @@ class AgentControllerTest extends PLBWebTestCase
             'login' => 'kboivin', 'nom' => 'Boivin', 'prenom' => 'Karel',
             'sites' => ["1"], 'droits' => array(21,100,99,4)
         ));
+
+        $this->builder->build(Site::class, array('name' => 'Site 2'));
 
         $id = $jdupont->getId();
 
@@ -242,7 +245,7 @@ class AgentControllerTest extends PLBWebTestCase
         $this->assertStringContainsString('Informations :', $result->text('Node does not exist', false));
         $this->assertStringContainsString('Identifiant :', $result->text('Node does not exist', false));
         $this->assertStringContainsString('Identifiant :', $result->text('Node does not exist', false));
-        $this->assertStringContainsString('Site 1', $result->text('Node does not exist', false));
+        $this->assertStringContainsString('Site par défaut', $result->text('Node does not exist', false));
         $this->assertStringContainsString('Site 2', $result->text('Node does not exist', false));
 
         $result = $crawler->filterXPath('//input[@name="nom"]');
@@ -343,12 +346,14 @@ class AgentControllerTest extends PLBWebTestCase
 
 
         // Remove a site name
-        $GLOBALS['config']['Multisites-site2'] = '';
+        $this->builder->delete(Site::class);
+
+        $this->logInAgent($kboivin, $kboivin->getACL());
 
         $crawler = $this->client->request('GET', "/agent/$id");
         $result = $crawler->filterXPath('//table[@style="width:90%;"]');
 
-        $this->assertStringContainsString('Site 1', $result->text('Node does not exist', false));
+        $this->assertStringNotContainsString('Site par défaut', $result->text('Node does not exist', false));
         $this->assertStringNotContainsString('Site 2', $result->text('Node does not exist', false));
 
     }

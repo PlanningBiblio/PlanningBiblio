@@ -1,6 +1,7 @@
 <?php
 
 use App\Entity\Agent;
+use App\Entity\Site;
 use App\Entity\Absence;
 use App\Entity\WorkingHour;
 use Symfony\Component\DomCrawler\Crawler;
@@ -13,31 +14,30 @@ class CalendarControllerTest extends PLBWebTestCase
     {
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
+        $builder->delete(Site::class);
 
         $GLOBALS['config']['PlanningHebdo'] = 0;
+
+        $site2 = $this->builder->build(Site::class, array('name' => 'Site N°2'));
+        $site3 = $this->builder->build(Site::class, array('name' => 'Site N°3'));
+        $site4 = $this->builder->build(Site::class, array('name' => 'Site N°4'));
 
         $agent2 = $builder->build(
             Agent::class,
             array(
                 'login' => 'jdoenv', 'nom' => 'Doenv', 'prenom' => 'Jean', 'actif' => 'Actif',
                 'temps' => [
-                    '0' => ['09:00:00', '12:30:00', '13:15:00', '17:15:00', '2'],
-                    '1' => ['09:00:00', '12:30:00', '13:15:00', '17:15:00', '3'],
+                    '0' => ['09:00:00', '12:30:00', '13:15:00', '17:15:00', (string)$site2->getId()],
+                    '1' => ['09:00:00', '12:30:00', '13:15:00', '17:15:00', (string)$site3->getId()],
                     '2' => ['10:00:00', '13:30:00', '15:15:00', '18:15:00', '-1'],
                     '3' => ['11:00:00', '14:30:00', '15:15:00', '18:15:00', '-1'],
                     '4' => ['11:00:00', '14:30:00', '15:15:00', '18:15:00', '1'],
                 ],
-                'sites' => ['1', '2', '3','4']
+                'sites' => ['1', (string)$site2->getId(), (string)$site3->getId(), (string)$site4->getId()]
             )
         );
 
         $this->logInAgent($agent2, array(3,100));
-
-        $GLOBALS['config']['Multisites-nombre'] = 4;
-        $GLOBALS['config']['Multisites-site1'] = 'Site N°1';
-        $GLOBALS['config']['Multisites-site2'] = 'Site N°2';
-        $GLOBALS['config']['Multisites-site3'] = 'Site N°3';
-        $GLOBALS['config']['Multisites-site4'] = 'Site N°4';
         $crawler = $this->client->request('GET', "/calendar", array(
             'debut' => '26/09/2022',
             'fin' => '29/09/2022',

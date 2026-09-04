@@ -310,6 +310,7 @@ class HolidayController extends BaseController
         $confirm = $request->get('confirm');
         $dbprefix = $GLOBALS['dbprefix'];
         $this->droits = $GLOBALS['droits'];
+        $sites_array = $session->get('sites', []);
 
         // Elements du congé demandé
         $c = new \conges();
@@ -514,6 +515,7 @@ class HolidayController extends BaseController
             'displayRefus'          => $displayRefus,
             'action_path'           => 'holiday/edit',
             'holiday_info'          => $holiday_info,
+            'nbSites'               => count($sites_array)
         );
 
         $this->templateParams($templateParams);
@@ -588,6 +590,7 @@ class HolidayController extends BaseController
         }
 
         $session = $request->getSession();
+        $sites_array = $session->get('sites', []);
 
         // Initialisation des variables
         $perso_id = $request->get('perso_id');
@@ -714,6 +717,7 @@ class HolidayController extends BaseController
             'title'                 => 'Requesting holidays',
             'action_path'           => 'holiday',
             'save_button'           => true,
+            'nbSites'               => count($sites_array),
         );
 
         $this->templateParams($templateParams);
@@ -858,8 +862,9 @@ class HolidayController extends BaseController
         $droits = $GLOBALS['droits'];
         $admin = false;
         $sites = array();
+        $sites_array = $session->get('sites', []);
 
-        for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
+        for ($i = 1; $i <= count($sites_array); $i++) {
             if (in_array((400+$i), $droits) or in_array((600+$i), $droits)) {
                 $admin = true;
                 $sites[] = $i;

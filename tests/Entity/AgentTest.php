@@ -4,6 +4,7 @@ use App\Entity\Agent;
 use App\Entity\Access;
 use App\Entity\Holiday;
 use App\Entity\Skill;
+use App\Entity\Site;
 use App\Entity\Position;
 use App\Entity\PlanningPosition;
 use App\Entity\WorkingHour;
@@ -256,6 +257,7 @@ class AgentTest extends KernelTestCase
     {
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
+        $builder->delete(Site::class);
 
         $start = \DateTime::createFromFormat("H:i:s", '08:00:00');
         $end = \DateTime::createFromFormat("H:i:s", '17:00:00');
@@ -269,39 +271,38 @@ class AgentTest extends KernelTestCase
 
         //Multi sites :
 
-        $GLOBALS['config']['Multisites-nombre'] = 4;
         $GLOBALS['config']['Mail-Planning'] = '';
 
-        $agent2 = $builder->build(Agent::class, array('login' => 'jmarc', 'sites' => ["1", "2", "3","4"]));
-        $GLOBALS['config']['Multisites-site1-mail'] ='jmarc@mail.fr;jcharles@mail.fr;jdevoe@mail.com';
-        $GLOBALS['config']['Multisites-site2-mail'] ='jcharles@mail.fr;jmarc@mail.fr;j.paul@mail.com';
-        $GLOBALS['config']['Multisites-site3-mail'] ='j.claude@mail.com;jmarc@mail.fr;jcharles@mail.fr';
-        $GLOBALS['config']['Multisites-site4-mail'] ='j.paul@mail.com;j.claude@mail.com';
+        global $entityManager;
 
-        $this->assertEquals(
-            $agent2->get_planning_unit_mails(),
-            [
-                0 => 'jmarc@mail.fr',
-                1 => 'jcharles@mail.fr',
-                2 => 'jdevoe@mail.com',
-                5 => 'j.paul@mail.com',
-                6 => 'j.claude@mail.com'
-            ]
-        );
+        $site1 = $builder->build(Site::class, ['name' => 'Site 1', 'mails' => ['jmarc@mail.fr', 'jcharles@mail.fr', 'jdevoe@mail.com']]);
+        $site2 = $builder->build(Site::class, ['name' => 'Site 2', 'mails' => ['jcharles@mail.fr', 'jmarc@mail.fr', 'j.paul@mail.com']]);
+        $site3 = $builder->build(Site::class, ['name' => 'Site 3', 'mails' => ['j.claude@mail.com', 'jmarc@mail.fr', 'jcharles@mail.fr']]);
+        $site4 = $builder->build(Site::class, ['name' => 'Site 4', 'mails' => ['j.paul@mail.com', 'j.claude@mail.com']]);
 
-        $agent3 = $builder->build(Agent::class, array('login' => 'ldave', 'sites' => ["1"]));
-        $this->assertEquals(
-            $agent3->get_planning_unit_mails(),
-            [
-                0 => 'jmarc@mail.fr',
-                1 => 'jcharles@mail.fr',
-                2 => 'jdevoe@mail.com'
-            ]
-        );
+        $agent2 = $builder->build(Agent::class, array('login' => 'jmarc', 'sites' => [$site1->getId(), $site2->getId(), $site3->getId(), $site4->getId()]));
 
-        $agent4 = $builder->build(Agent::class, array('login' => 'ldavy', 'sites' => ["1","3"]));
-        $this->assertEquals($agent3->get_planning_unit_mails(),[0 => 'jmarc@mail.fr', 1 => 'jcharles@mail.fr', 2 => 'jdevoe@mail.com']);
+        $this->assertContains('jmarc@mail.fr', $agent2->get_planning_unit_mails());
+        $this->assertContains('jcharles@mail.fr', $agent2->get_planning_unit_mails());
+        $this->assertContains('jdevoe@mail.com', $agent2->get_planning_unit_mails());
+        $this->assertContains('j.paul@mail.com', $agent2->get_planning_unit_mails());
+        $this->assertContains('j.claude@mail.com', $agent2->get_planning_unit_mails());
 
+        $agent3 = $builder->build(Agent::class, array('login' => 'ldave', 'sites' => [$site1->getId()]));
+
+        $this->assertContains('jmarc@mail.fr', $agent3->get_planning_unit_mails());
+        $this->assertContains('jcharles@mail.fr', $agent3->get_planning_unit_mails());
+        $this->assertContains('jdevoe@mail.com', $agent3->get_planning_unit_mails());
+        $this->assertNotContains('j.paul@mail.com', $agent3->get_planning_unit_mails());
+        $this->assertNotContains('j.claude@mail.com', $agent3->get_planning_unit_mails());
+
+        $agent4 = $builder->build(Agent::class, array('login' => 'ldavy', 'sites' => [$site1->getId(), $site3->getId()]));
+
+        $this->assertContains('jmarc@mail.fr', $agent4->get_planning_unit_mails());
+        $this->assertContains('jcharles@mail.fr', $agent4->get_planning_unit_mails());
+        $this->assertContains('jdevoe@mail.com', $agent4->get_planning_unit_mails());
+        $this->assertContains('j.claude@mail.com', $agent4->get_planning_unit_mails());
+        $this->assertNotContains('j.paul@mail.com', $agent4->get_planning_unit_mails());
     }
 
     public function testIsAbsentOn(): void

@@ -1,6 +1,7 @@
 <?php
 
 use App\Entity\Agent;
+use App\Entity\Site;
 use Tests\FixtureBuilder;
 use Tests\PLBWebTestCase;
 
@@ -10,6 +11,7 @@ class AgentControllerLDIFTest extends PLBWebTestCase
     {
         parent::setUp();
         $this->builder->delete(Agent::class);
+        $this->builder->delete(Site::class);
     }
 
     public function testLDIFImport(): void
@@ -17,7 +19,6 @@ class AgentControllerLDIFTest extends PLBWebTestCase
         $this->config->setParam('LDIF-File', __DIR__ . '/../../data/ldif_sample.ldif');
         $this->config->setParam('LDIF-ID-Attribute', 'uid');
         $this->config->setParam('LDIF-Matricule', 'supannempid');
-        $this->config->setParam('Multisites-nombre', '1');
         $this->setUpPantherClient();
 
         $agent = $this->builder->build(Agent::class, array(

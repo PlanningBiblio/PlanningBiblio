@@ -50,7 +50,6 @@ class WorkingHourControllerListTest extends PLBWebTestCase
     public function testWeekPlanningList(): void
     {
         $this->config->setParam('Absences-notifications-agent-par-agent', 1);
-        $this->config->setParam('Multisites-nombre', 1);
         $this->config->setParam('PlanningHebdo', 1);
         $this->config->setParam('PlanningHebdo-notifications-agent-par-agent',1);
 
@@ -118,7 +117,6 @@ class WorkingHourControllerListTest extends PLBWebTestCase
     public function testStatuses(): void
     {
         $this->config->setParam('Absences-notifications-agent-par-agent', 1);
-        $this->config->setParam('Multisites-nombre', 1);
         $this->config->setParam('PlanningHebdo', 1);
         $this->config->setParam('PlanningHebdo-notifications-agent-par-agent',1);
 

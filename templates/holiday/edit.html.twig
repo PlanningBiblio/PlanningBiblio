@@ -25,7 +25,7 @@
 
         {% if request_type == 'holiday' and id == null %}
           <input type="hidden" id="agent_id" value="{{ loggedin_id }}" />
-          <input type="hidden" name="multisites" id="multisites" value="{{ config('Multisites-nombre') > 1 ? 1 : 0  }}" />
+          <input type="hidden" name="multisites" id="multisites" value="{{ nbSites > 1 ? 1 : 0  }}" />
           <input type="hidden" id="agents-multiples" value="{{ agents_multiples }}" />
         {% endif %}
 
@@ -56,7 +56,7 @@
           
           {% if request_type == 'holiday' %}
 
-            {% if admin and config('Multisites-nombre') > 1 %}
+            {% if admin and nbSites > 1 %}
               <fieldset class="row my-2 gx-5" id="sites-selection">
                 <legend class="col-auto offset-2 col-form-label pe-0" for="sites">Sites :</legend>
                 <div class="col-auto" style="margin-top: 6px;">

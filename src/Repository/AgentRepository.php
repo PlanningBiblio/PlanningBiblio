@@ -18,6 +18,7 @@ use App\Entity\PlanningPositionLock;
 use App\Entity\PlanningPositionModel;
 use App\Entity\RecurringAbsence;
 use App\Entity\SaturdayWorkingHours;
+use App\Entity\Site;
 use App\Entity\WorkingHour;
 use App\Entity\Config;
 use App\Planno\Helper\HourHelper;
@@ -35,6 +36,14 @@ class AgentRepository extends EntityRepository
     private $agent_id;
 
     private $check_by_site = true;
+
+    private function activeSites(): array
+    {
+        $siteEntities = $this->getEntityManager()->getRepository(Site::class)->findBy(['deleted_date' => null]);
+        return array_map(function ($site) {
+            return ['id' => $site->getId(), 'name' => $site->getName()];
+        }, $siteEntities);
+    }
 
     /**
      * @return mixed[]
@@ -169,19 +178,17 @@ class AgentRepository extends EntityRepository
      */
     public function getManagedSitesFor($loggedin_id): array
     {
+        $sites_array = $this->activeSites();
         $entityManager = $this->getEntityManager();
         $loggedin = $entityManager->find(Agent::class, $loggedin_id);
         $by_agent_param = $entityManager->getRepository(Config::class)
             ->findOneBy(['nom' => $this->by_agent_param]);
 
-        $sites_number = $entityManager->getRepository(Config::class)
-            ->findOneBy(['nom' => 'Multisites-nombre'])->getValue();
-
         // Param Absences-notifications-agent-par-agent
         // or PlanningHebdo-notifications-agent-par-agent
         // is enabled.
+        $managed_sites = array();
         if ($by_agent_param->getValue()) {
-            $managed_sites = array();
 
             foreach ($loggedin->getManaged() as $m) {
                 $sites = $m->getUser()->getSites();
@@ -195,21 +202,20 @@ class AgentRepository extends EntityRepository
         $rights = $loggedin->getACL();
 
         $sites_select = array();
-        for ($i = 1; $i <= $sites_number; $i++) {
-            $name = $entityManager->getRepository(Config::class)
-                ->findOneBy(['nom' => "Multisites-site$i"])->getValue();
+        foreach ($sites_array as $site) {
+            $siteId = $site['id'];
+            $name = $site['name'];
 
             if ($by_agent_param->getValue()) {
-                if (in_array($i, $managed_sites)) {
-                    $sites_select[] = array('id' => $i, 'name' => $name);
+                if (in_array($siteId, $managed_sites)) {
+                    $sites_select[] = ['id' => $siteId, 'name' => $name];
                 }
                 continue;
             }
+            if (in_array(($this->needed_level1 + $siteId), $rights)
+                or in_array(($this->needed_level2 + $siteId), $rights)) {
 
-            if (in_array(($this->needed_level1 + $i), $rights)
-                or in_array(($this->needed_level2 + $i), $rights)) {
-
-                $sites_select[] = array('id' => $i, 'name' => $name);
+                $sites_select[] = ['id' => $siteId, 'name' => $name];
             }
         }
 
@@ -218,13 +224,11 @@ class AgentRepository extends EntityRepository
 
     public function getManagedFor($loggedin_id, $deleted = 0)
     {
+        $sites_array = $this->activeSites();
         $entityManager = $this->getEntityManager();
         $loggedin = $entityManager->find(Agent::class, $loggedin_id);
         $by_agent_param = $entityManager->getRepository(Config::class)
             ->findOneBy(['nom' => $this->by_agent_param]);
-
-        $sites_number = $entityManager->getRepository(Config::class)
-            ->findOneBy(['nom' => 'Multisites-nombre'])->getValue();
 
         // Param Absences-notifications-agent-par-agent
         // or PlanningHebdo-notifications-agent-par-agent
@@ -245,7 +249,7 @@ class AgentRepository extends EntityRepository
         }
 
         $rights = $loggedin->getACL();
-        $managed_sites = $loggedin->managedSites($this->needed_level1, $this->needed_level2);
+        $managed_sites = $loggedin->managedSites($this->needed_level1, $this->needed_level2, $sites_array);
 
         if (!empty($managed_sites)) {
             $agents = $entityManager->getRepository(Agent::class)
@@ -256,7 +260,7 @@ class AgentRepository extends EntityRepository
                 // Only for absence and holidays.
                 // There is no rights by sites
                 // for working hours.
-                if ($this->check_by_site && $sites_number > 1) {
+                if ($this->check_by_site && count($sites_array) > 1) {
                     // Always keep logged in agent.
                     if ($agent->getId() == $loggedin->getId()) {
                         continue;
@@ -276,25 +280,24 @@ class AgentRepository extends EntityRepository
 
     public function getValidationLevelFor($loggedin_id, String $workflow = 'A'): array
     {
+        $sites_array = $this->activeSites();
 
         $entityManager = $this->getEntityManager();
         $loggedin = $entityManager->find(Agent::class, $loggedin_id);
         $by_agent_param = $entityManager->getRepository(Config::class)
             ->findOneBy(['nom' => $this->by_agent_param]);
 
-        $sites_number = $entityManager->getRepository(Config::class)
-            ->findOneBy(['nom' => 'Multisites-nombre'])->getValue();
 
         if ($this->agent_id) {
             $agent = $entityManager->find(Agent::class, $this->agent_id);
         }
 
         $sites = array(1);
-        if ($this->check_by_site && $sites_number > 1) {
+        if ($this->check_by_site && count($sites_array) > 1) {
             $sites = array();
 
-            for ($i = 1; $i <= $sites_number; $i++) {
-                $sites[] = $i;
+            foreach ($sites_array as $site) {
+                $sites[] = $site['id'];
             }
 
             if ($this->agent_id) {
@@ -398,11 +401,12 @@ class AgentRepository extends EntityRepository
      */
     public function getSitesForAgents($agent_ids = array()): array
     {
-        if ($GLOBALS['config']['Multisites-nombre'] == 1) {
+        $sites_array = $this->activeSites();
+        $entityManager = $this->getEntityManager();
+        if (count($sites_array) <= 1) {
             return array("1");
         }
 
-        $entityManager = $this->getEntityManager();
         $agents = $entityManager->getRepository(Agent::class)->findBy(array('id' => $agent_ids));
         $sites_array = array();
         foreach ($agents as $agent) {
@@ -414,6 +418,30 @@ class AgentRepository extends EntityRepository
         $sites_array = array_unique($sites_array);
         $sites_array = array_values($sites_array);
         return $sites_array;
+    }
+
+    public function getAgentsForSite($site_id = 1, $deleted = 0): array
+    {
+        $builder = $this->getEntityManager()->createQueryBuilder();
+        $builder->select('a')
+            ->from(Agent::class, 'a')
+            ->andWhere('a.id != 2')
+            ->addOrderBy('a.nom', 'ASC');
+
+        if (!$deleted) {
+            $builder->andWhere('a.supprime = 0');
+        }
+
+        $agents = $builder->getQuery()->getResult();
+
+        if ($site_id != 1) {
+            $agents = array_filter($agents, function (Agent $agent) use ($site_id) {
+                return $agent->inOneOfSites([$site_id]);
+            });
+            $agents = array_values($agents);
+        }
+
+        return $agents;
     }
 
     public function holidayCreditAndCompTimeToRemainder(): void

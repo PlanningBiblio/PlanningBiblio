@@ -42,7 +42,6 @@ class AbsenceControllerNotificationTest extends PLBWebTestCase
     public function testAbsenceList(): void
     {
         $this->config->setParam('Absences-notifications-agent-par-agent', 1);
-        $this->config->setParam('Multisites-nombre', 1);
 
         $client = static::createClient();
 

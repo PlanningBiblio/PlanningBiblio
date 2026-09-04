@@ -5,6 +5,7 @@ namespace App\Planno;
 use App\Entity\AbsenceReason;
 use App\Entity\Agent;
 use App\Entity\Config;
+use App\Entity\Site;
 
 require_once(__DIR__ . '/../../legacy/Class/class.conges.php');
 require_once(__DIR__ . '/../../legacy/Class/class.personnel.php');
@@ -75,9 +76,11 @@ class PlanningExportUtils
 
         // Liste des sites
         $sites = [];
-        if ($this->config['Multisites-nombre'] > 1) {
-            for ($i = 1; $i <= $this->config['Multisites-nombre']; $i++) {
-                $sites[$i] = $this->config['Multisites-site' . $i];
+        $db = new \db();
+        $db->select("site", "*", "`deleted_date` IS NULL");
+        if (count($db->result) > 1) {
+            foreach ($db->result as $s) {
+                $sites[$s['id']] = $s['name'];
             }
         }
 

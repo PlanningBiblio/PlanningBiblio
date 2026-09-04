@@ -1,6 +1,7 @@
 <?php
 
 use App\Entity\Agent;
+use App\Entity\Site;
 use App\Entity\Manager;
 use App\Entity\OverTime;
 use App\Entity\Cron;
@@ -38,6 +39,7 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $builder->delete(Manager::class);
         $builder->delete(WorkingHour::class);
         $builder->delete(Overtime::class);
+        $builder->delete(Site::class);
 
         $cron = $entityManager->getRepository(Cron::class)->findAll();
         foreach ($cron as $c){
@@ -126,6 +128,7 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $builder->delete(Manager::class);
         $builder->delete(WorkingHour::class);
         $builder->delete(Overtime::class);
+        $builder->delete(Site::class);
 
         $entityManager = static::getContainer()->get(EntityManagerInterface::class);
 
@@ -170,17 +173,14 @@ class HolidayControllerAddTest extends PLBWebTestCase
     {
         $this->setUpPantherClient();
 
-        // Without Multisite
-        $this->config->setParam('Multisites-nombre', 1);
-
         $crawler = $this->client->request('GET', '/holiday/new');
         $this->assertSelectorExists('#holiday-form');
         $this->assertSelectorNotExists('#sites-selection', 'There site selection div should not be present');
 
         // With Multisite
-        $this->config->setParam('Multisites-nombre', 2);
-        $this->config->setParam('Multisites-site1', 'Site N°1');
-        $this->config->setParam('Multisites-site2', 'Site N°2');
+        $this->builder->build(Site::class, array('name' => 'Site N°1'));
+        $jdupont = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'jdupont']);
+        $this->login($jdupont);
 
         $jdupont = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'jdupont']);
         $jdevoe = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'jdevoe']);
@@ -195,16 +195,15 @@ class HolidayControllerAddTest extends PLBWebTestCase
 
         $result = $crawler->filterXPath('//body');
         $this->assertStringContainsString('Sites :',$result->text('Node does not exist', true),'test sites');
+        $this->assertStringContainsString('Site par défaut',$result->text('Node does not exist', true),'test sites');
         $this->assertStringContainsString('Site N°1',$result->text('Node does not exist', true),'test sites');
-        $this->assertStringContainsString('Site N°2',$result->text('Node does not exist', true),'test sites');
 
         // Deselect Jean Dupont
         $closeIcon = $crawler->filter("#li" . $jdupont->getId()  . " button.perso-drop");
         $closeIcon->click();
 
         $agents_list = $this->getSelectValues('perso_ids');
-        $this->assertCount(5, $agents_list);
-        $this->assertTrue(in_array(0, $agents_list), 'Admin');
+        $this->assertCount(4, $agents_list);
         $this->assertTrue(in_array($jdupont->getId(), $agents_list), 'jdupont');
         $this->assertTrue(in_array($jdevoe->getId(), $agents_list), 'jdevoe');
         $this->assertTrue(in_array($abreton->getId(), $agents_list), 'abreton');
@@ -215,7 +214,7 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $button->click();
 
         $agents_list = $this->getSelectValues('perso_ids');
-        $this->assertCount(5, $agents_list);
+        $this->assertCount(4, $agents_list);
         $hiddenAgents = $crawler->filter('#perso_ids option[style="display: none;"]');
         $this->assertCount(2, $hiddenAgents);
         $this->assertEquals($abreton->getId(), $hiddenAgents->attr('value'), 'Breton Aubert should not be selectable');
@@ -243,7 +242,6 @@ class HolidayControllerAddTest extends PLBWebTestCase
 
         $agentsOptions = $this->getSelectValues('perso_ids');
         $this->assertCount(5, $agentsOptions);
-        $this->assertTrue(in_array(0, $agentsOptions));
         $this->assertTrue(in_array($jdevoe->getId(), $agentsOptions));
         $this->assertTrue(in_array($abreton->getId(), $agentsOptions));
         $this->assertTrue(in_array($kboivin->getId(), $agentsOptions));

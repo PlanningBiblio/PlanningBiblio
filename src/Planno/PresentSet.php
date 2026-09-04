@@ -2,6 +2,8 @@
 
 namespace App\Planno;
 
+use App\Entity\Site;
+
 class PresentSet
 {
     public $date;
@@ -39,9 +41,14 @@ class PresentSet
         }
 
         $presents = array();
+        $this->db->select("site", "*", "`deleted_date` IS NULL");
+        $sites_array = array();
+        foreach ($this->db->result as $elem) {
+            $sites_array[] = $elem;
+        }
         foreach ($this->db->result as $elem) {
             // Exclude agents who are not working on the request site
-            if ($config['Multisites-nombre'] > 1 and $this->site != 0 ) {
+            if (count($sites_array) > 1 and $this->site != 0 ) {
                 $agentSites = json_decode($elem['sites']);
                 if (!is_array($agentSites) or !in_array($this->site, $agentSites)) {
                     continue;
@@ -74,9 +81,11 @@ class PresentSet
             // S'il y a des horaires correctement renseignés
             $siteAgent=null;
             if ($heures and !in_array($elem['id'], $absents)) {
-                if ($config['Multisites-nombre']>1) {
+                if (count($sites_array)>1) {
                     if (!empty($heures[4])) {
-                        $siteAgent = $heures[4] == -1 ? "Tout site" : $config['Multisites-site'.$heures[4]];
+                        $this->db->select("site", "*", "`id` = ".$heures[4]);
+                        $s = $this->db->result ? $this->db->result[0] : null;
+                        $siteAgent = $heures[4] == -1 ? "Tout site" : ($s ? $s['name'] : '');
                     }
                 }
                 $siteAgent=$siteAgent?$siteAgent.", ":null;

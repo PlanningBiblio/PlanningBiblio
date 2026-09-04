@@ -1,0 +1,112 @@
+{# templates/site/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block page %}
+
+    <table style='margin:20px 0;'>
+        <tr style="vertical-align: top;">
+            <td style='width:270px'>
+                <h3 style='margin-top:0;'>Liste des sites</h3>
+            </td>
+            <td>
+                <input type="button" value="Ajouter" onclick="location.href='{{ asset('site/add') }}'"
+                       class='btn btn-primary'/>
+            </td>
+        </tr>
+    </table>
+
+    <table id='tableSites' class='CJDataTable' data-sort='[[1, "asc"]]'>
+        <thead>
+        <tr>
+            <th class='dataTableNoSort aLeft'>&nbsp;</th>
+            <th>Nom du site</th>
+            <th>Mails</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for site in sites %}
+            <tr>
+                <td style='white-space:nowrap;'>
+                    <div class="icon-div">
+                        <a href='{{ asset("site/") }}{{ site.id }}'>
+                            <span class='pl-icon pl-icon-edit' title='Modifier'></span>
+                        </a>
+                        &nbsp;
+                        {% if site.id != 1 %}
+                            <a href="#">
+                                <span class='pl-icon pl-icon-dropblack delete-site' title='Supprimer'
+                                      data-id='{{ site.id }}' data-name='{{ site.name|e('html_attr') }}'></span>
+                            </a>
+                        {% endif %}
+                    </div>
+                </td>
+                <td>{{ site.name }}</td>
+                <td title='{{ site.mails }}'>{{ site.mailsAffiches }}</td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan='3'>Aucun site enregistré.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="modal" id="delete-site-modal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="delete-site-modal-title" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="delete-site-modal-title">Suppression d'un site</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p id="delete-site-text"></p>
+                    <input type="hidden" id="delete-site-id" value="" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-danger" id="confirm-delete-site-btn">Supprimer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block specificjs %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.delete-site').on('click', function (e) {
+                e.preventDefault();
+
+                var siteId = $(this).data('id');
+                var siteName = $(this).data('name');
+
+                $('#delete-site-id').val(siteId);
+                $('#delete-site-text').text('Voulez-vous vraiment supprimer le site "' + siteName + '" ?');
+                $('#delete-site-modal').modal('show');
+            });
+
+            $('#confirm-delete-site-btn').on('click', function () {
+                var siteId = $('#delete-site-id').val();
+
+                $.ajax({
+                    url: '{{ asset("site") }}/' + siteId,
+                    type: 'DELETE',
+                    success: function () {
+                        window.location.reload();
+                    },
+                    error: function (xhr) {
+                        let message = "Une erreur est survenue";
+                        if (xhr.responseJSON) {
+                            message = xhr.responseJSON;
+                        }
+                        CJInfo(message, "error");
+                    }
+                });
+
+                $('#delete-site-modal').modal('hide');
+            });
+        });
+    </script>
+{% endblock %}

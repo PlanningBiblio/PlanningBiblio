@@ -39,7 +39,6 @@ class HolidayControllerListTest extends PLBWebTestCase
     public function testHolidayList(): void
     {
         $this->config->setParam('Absences-notifications-agent-par-agent', 1);
-        $this->config->setParam('Multisites-nombre', 1);
         $this->config->setParam('PlanningHebdo', 0);
 
         $client = static::createClient();
@@ -122,9 +121,7 @@ class HolidayControllerListTest extends PLBWebTestCase
     public function testStatuses(): void
     {
         $this->config->setParam('Absences-notifications-agent-par-agent', 1);
-        $this->config->setParam('Multisites-nombre', 1);
         $this->config->setParam('PlanningHebdo', 1);
-        $this->config->setParam('Multisites-nombre', 1);
         $this->config->setParam('Absences-notifications-agent-par-agent', 0);
         $this->config->setParam('PlanningHebdo', 0);
         $this->config->setParam('Conges-Enable', 1);

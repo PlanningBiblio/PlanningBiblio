@@ -18,6 +18,7 @@ use App\Planno\Helper\HourHelper;
 use App\Entity\Agent;
 use App\Entity\Cron;
 use App\Entity\Holiday;
+use App\Entity\Site;
 
 class conges
 {
@@ -377,11 +378,12 @@ class conges
         // array(0,1,2), default : array(0);
         $p->supprime = $this->agents_supprimes;
         $p->fetch('nom');
+        $sites_entities = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(['deleted_date' => NULL]);
 
         foreach ($p->elements as $elem) {
             $keep = true;
 
-            if ($GLOBALS['config']['Multisites-nombre'] > 1 and !empty($this->sites)) {
+            if (count($sites_entities) > 1 and !empty($this->sites)) {
                 $keep = false;
                 foreach ($this->sites as $site) {
                     if (is_array($elem['sites']) and in_array($site, $elem['sites'])) {
@@ -746,7 +748,8 @@ class conges
         $responsables=array();
         $droitsConges=array();
         //	Si plusieurs sites, vérifions dans l'emploi du temps quels sont les sites concernés par le conges
-        if ($GLOBALS['config']['Multisites-nombre']>1) {
+        $sites_entities = $GLOBALS['entityManager']->getRepository(Site::class)->findBy(['deleted_date' => NULL]);
+        if (count($sites_entities) > 1) {
             $db=new db();
             $db->select("personnel", "temps", "id='$perso_id'");
             $temps=json_decode(html_entity_decode($db->result[0]['temps'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
@@ -790,9 +793,9 @@ class conges
             }
             // Si les jours de conges ne concernent aucun site, on ajoute les responsables de tous les sites par sécurité
             if (empty($droitsConges)) {
-                for ($i=1;$i<=$GLOBALS['config']['Multisites-nombre'];$i++) {
-                    $droitsConges[]=400+$i;
-                    $droitsConges[]=600+$i;
+                foreach ($sites_entities as $site_entity) {
+                    $droitsConges[] = 400 + $site_entity->getId();
+                    $droitsConges[] = 600 + $site_entity->getId();
                 }
             }
         }

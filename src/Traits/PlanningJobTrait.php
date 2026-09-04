@@ -77,8 +77,13 @@ trait PlanningJobTrait
 
         // Site's name
         $siteNom = null;
-        if ($this->config('Multisites-nombre') > 1) {
-            $siteNom = $this->config("Multisites-site$site");
+        $sites_array = $session->get('sites', []);
+
+        if (count($sites_array) > 1) {
+            $db = new \db();
+            $db->select("site", "*", "`id` = ".$site);
+            $s = $db->result ? $db->result[0] : null;
+            $siteNom = $s ? $s['name'] : null;
         }
 
         // List all statuses related to
@@ -152,7 +157,7 @@ trait PlanningJobTrait
                 $start_with_journey = date('H:i:s', strtotime("-$j_time minutes", strtotime($debutSQL)));
                 $end_with_journey = date('H:i:s', strtotime("+$j_time minutes", strtotime($finSQL)));
 
-                if ($this->config('Multisites-nombre') > 1) {
+                if (count($sites_array) > 1) {
                     $req = "SELECT `{$dbprefix}pl_poste`.`perso_id` AS `perso_id` "
                         . "FROM `{$dbprefix}pl_poste` "
                         . "INNER JOIN `{$dbprefix}postes` ON `{$dbprefix}pl_poste`.`poste`=`{$dbprefix}postes`.`id` "
@@ -422,7 +427,7 @@ trait PlanningJobTrait
                 // This filter concerns every agents.
                 // An other filter will definitly exclude agents that
                 // are not in the requested site.
-                if ($this->config('Multisites-nombre') > 1) {
+                if (count($sites_array) > 1) {
                     // index 4 is the site on which
                     // agent is working on.
 
@@ -519,7 +524,7 @@ trait PlanningJobTrait
                 }
 
                 // Remove agent working on other site.
-                if ($this->config('Multisites-nombre') > 1) {
+                if (count($sites_array) > 1) {
                     $sites = json_decode(html_entity_decode($elem['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
                     if (!is_array($sites) or !in_array($site, $sites)) {
                         $exclusion[$elem['id']][] = 'sites';
@@ -591,7 +596,7 @@ trait PlanningJobTrait
             foreach ($autres_agents_tmp as $elem) {
                 // Remove agents that doesn't work on requested site.
                 // Same check than above, but definitly remove them.
-                if ($this->config('Multisites-nombre') > 1) {
+                if (count($sites_array) > 1) {
                     $sites = json_decode(html_entity_decode($elem['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
                     if (!is_array($sites) or !in_array($site, $sites)) {
                         continue;

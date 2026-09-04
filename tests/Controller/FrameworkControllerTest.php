@@ -2,6 +2,7 @@
 
 use App\Entity\Absence;
 use App\Entity\Agent;
+use App\Entity\Site;
 use App\Entity\PlanningPosition;
 use App\Entity\PlanningPositionTabAffectation;
 use App\Entity\PlanningPositionTab;
@@ -17,13 +18,13 @@ class FrameworkControllerTest extends PLBWebTestCase
         parent::setUp();
 
         $this->builder->delete(Agent::class);
+        $this->builder->delete(Site::class);
     }
 
     public function testListTable(): void
     {
         $_SESSION['oups']['CSRFToken'] = '00000';
         $this->CSRFToken = '00000';
-        $this->config->setParam('Multisites-nombre', 1);
 
         global $entityManager;
 
@@ -116,7 +117,6 @@ class FrameworkControllerTest extends PLBWebTestCase
     {
         $_SESSION['oups']['CSRFToken'] = '00000';
         $this->CSRFToken = '00000';
-        $this->config->setParam('Multisites-nombre', 1);
 
         global $entityManager;
 
@@ -180,7 +180,6 @@ class FrameworkControllerTest extends PLBWebTestCase
     {
         $_SESSION['oups']['CSRFToken'] = '00000';
         $this->CSRFToken = '00000';
-        $this->config->setParam('Multisites-nombre', 1);
 
         global $entityManager;
 
@@ -271,7 +270,6 @@ class FrameworkControllerTest extends PLBWebTestCase
     {
         $_SESSION['oups']['CSRFToken'] = '00000';
         $this->CSRFToken = '00000';
-        $this->config->setParam('Multisites-nombre', 1);
 
         global $entityManager;
 
@@ -320,7 +318,6 @@ class FrameworkControllerTest extends PLBWebTestCase
     {
         $_SESSION['oups']['CSRFToken'] = '00000';
         $this->CSRFToken = '00000';
-        $this->config->setParam('Multisites-nombre', 1);
 
         global $entityManager;
 
@@ -402,7 +399,6 @@ class FrameworkControllerTest extends PLBWebTestCase
     {
         $_SESSION['oups']['CSRFToken'] = '00000';
         $this->CSRFToken = '00000';
-        $this->config->setParam('Multisites-nombre', 1);
 
         global $entityManager;
 

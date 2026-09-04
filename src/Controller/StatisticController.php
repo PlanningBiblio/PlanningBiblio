@@ -52,11 +52,12 @@ class StatisticController extends BaseController
         $tab = array();
 
         $dbprefix = $GLOBALS['dbprefix'];
-        $nbSites = $this->config('Multisites-nombre');
+        $sites_array = $session->get('sites', []);
+        $nbSites = count($sites_array);
 
         if ($nbSites > 1) {
-            for ($i = 1 ; $i <= $nbSites; $i++) {
-                $multisites[$i] = $this->config("Multisites-site$i");
+            foreach ($sites_array as $site) {
+                $multisites[$site['id']] = $site['name'];
             }
         }
 
@@ -449,7 +450,7 @@ class StatisticController extends BaseController
     
             if ($type == 'agent') {
                 // Remove agents who are never selected and not in selected sites
-                if ($this->config('Multisites-nombre') > 1) {
+                if (count($sites_array) > 1) {
                     foreach($tab as $key => $value) {
                         if (empty($value[1])
                             and empty(array_intersect($selectedSites, $value[0]['assignedSites']))) {
@@ -630,7 +631,8 @@ class StatisticController extends BaseController
         $exists_absences = false;
         $exists_samedi = false;
 
-        $nbSites = $this->config('Multisites-nombre');
+        $sites_array = $session->get('sites', []);
+        $nbSites = count($sites_array);
 
         // Statistiques-Heures
         $heures_tab_global = array();
@@ -873,8 +875,8 @@ class StatisticController extends BaseController
         
         $multisites = array();
         if ($nbSites>1) {
-            for ($i=1;$i<=$nbSites;$i++) {
-                $multisites[$i] = $this->config("Multisites-site{$i}");
+            foreach ($sites_array as $site) {
+                $multisites[$site['id']] = $site['name'];
             }
         }
         // 		--------------------------		Affichage du tableau de résultat		--------------------
@@ -1081,10 +1083,10 @@ class StatisticController extends BaseController
         $debutSQL = dateSQL($debut);
         $finSQL = dateSQL($fin);
 
-        $sites = null;
-        $nbSites = $this->config('Multisites-nombre');;
+        $sites_array = $session->get('sites', []);
+        $nbSites = count($sites_array);
+        $sites = array();
         if ($nbSites > 1) {
-            $sites = array();
             if ($site == 0) {
                 for ($i = 1;$i <= $nbSites; $i++) {
                     $sites[] = $i;
@@ -1254,11 +1256,9 @@ class StatisticController extends BaseController
 
         // Affichage du tableau
         $multisites = array();
-        $selectedSites = array();
         if ($nbSites >1) {
-            for ($i = 1; $i <= $nbSites; $i++) {
-                $selectedSites[] = $i == $site ?? $i;
-                $multisites[] = $this->config("Multisites-site{$i}");
+            foreach ($sites_array as $s) {
+                $multisites[] = $s['name'];
             }
         }
 
@@ -1299,7 +1299,8 @@ class StatisticController extends BaseController
         $fin = $request->get("fin");
         $tri = $request->get("tri");
         $post = $request->request->all();
-        $nbSites = $this->config('Multisites-nombre');
+        $sites_array = $session->get('sites', []);
+        $nbSites = count($sites_array);
         $dbprefix = $GLOBALS['dbprefix'];
 
         $debut = filter_var($debut, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
@@ -1520,8 +1521,8 @@ class StatisticController extends BaseController
         $session->set('statisticsTab', $tab);
         $multisites = array();
         if ($nbSites > 1) {
-            for ($i=1;$i<=$nbSites;$i++) {
-                $multisites[$i] = $this->config("Multisites-site{$i}");
+            foreach ($sites_array as $site) {
+                $multisites[$site['id']] = $site['name'];
             }
         }
 
@@ -1876,10 +1877,11 @@ class StatisticController extends BaseController
             $groups = array();
         }
 
-        $nbSites = $this->config('Multisites-nombre');
+        $sites_array = $session->get('sites', []);
+        $nbSites = count($sites_array);
         if ($nbSites >1){
-            for($i = 1; $i <= $nbSites; $i++){
-                $multisites[] = $this->config("Multisites-site$i");
+            foreach ($sites_array as $site) {
+                $multisites[$site['id']] = $site['name'];
             }
         }
 
@@ -2062,8 +2064,9 @@ class StatisticController extends BaseController
         $fin = $request->get("fin");
         $tri = $request->get("tri");
         $post = $request->request->all();
-        
-        $nbSites = $this->config('Multisites-nombre');
+
+        $sites_array = $session->get('sites', []);
+        $nbSites = count($sites_array);
         $dbprefix = $GLOBALS['dbprefix'];
 
         $debut = filter_var($debut, FILTER_CALLBACK, array("options"=>"sanitize_dateFr"));
@@ -2298,8 +2301,8 @@ class StatisticController extends BaseController
         $multisites = array();
 
         if ($nbSites>1) {
-            for ($i = 1; $i <= $nbSites; $i++) {
-                $multisites[$i] = $this->config("Multisites-site{$i}");
+            foreach ($sites_array as $site) {
+                $multisites[$site['id']] = $site['name'];
             }
         }
         foreach ($tab as &$elem) {
@@ -2376,7 +2379,8 @@ class StatisticController extends BaseController
         $post_postes = isset($post['postes']) ? $post['postes'] : null;
         $post_sites = isset($post['selectedSites']) ? $post['selectedSites'] : null;
 
-        $nbSites = $this->config('Multisites-nombre');
+        $sites_array = $session->get('sites', []);
+        $nbSites = count($sites_array);
 
         if (!array_key_exists('stat_poste_postes', $_SESSION)) {
             $_SESSION['stat_poste_postes'] = null;
@@ -2450,8 +2454,8 @@ class StatisticController extends BaseController
 
         $multisites= [];
         if ($nbSites > 1){
-            for ($i = 1; $i <= $nbSites; $i++){
-                $multisites[$i] = $this->config("Multisites-site{$i}");
+            foreach ($sites_array as $site) {
+                $multisites[$site['id']] = $site['name'];
             }
         }
 
@@ -2626,9 +2630,9 @@ class StatisticController extends BaseController
             foreach($tab as $key => $elem){
                 $siteEtage = array();
                 if ($nbSites >1) {
-                    for ($i = 1; $i <= $nbSites; $i++) {
-                        if ($tab[$key]["sites"][$i] == $tab[$key][2]) {
-                            $siteEtage[] = $this->config("Multisites-site{$i}");
+                    foreach ($sites_array as $site) {
+                        if ($tab[$key]["sites"][$site['id']] == $tab[$key][2]) {
+                            $siteEtage[] = $site['name'];
                             continue;
                         }
                     }
