@@ -496,7 +496,7 @@ class AgentController extends BaseController
     }
 
     #[Route(path: '/agent', name: 'agent.save', methods: ['POST'])]
-    public function save(Request $request): \Symfony\Component\HttpFoundation\RedirectResponse
+    public function save(Request $request): RedirectResponse
     {
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
@@ -709,7 +709,7 @@ class AgentController extends BaseController
     }
 
     #[Route(path: '/agent/send-password', name: 'agent.send_password', methods: ['POST'])]
-    public function sendPassword(Request $request): \Symfony\Component\HttpFoundation\Response
+    public function sendPassword(Request $request): Response
     {
         // CSRF Protection
         if (!$this->csrf_protection($request)) {
@@ -760,8 +760,8 @@ class AgentController extends BaseController
         return $response;
     }
 
-    private function changeAgentPassword(Request $request, $agent_id, $password): \Symfony\Component\HttpFoundation\Response {
-
+    private function changeAgentPassword(Request $request, $agent_id, $password): Response
+    {
         $agent = $this->entityManager->find(Agent::class, $agent_id);
 
         $response = new Response();
@@ -798,7 +798,7 @@ class AgentController extends BaseController
     }
 
     #[Route(path: '/ajax/change-own-password', name: 'ajax.changeownpassword', methods: ['POST'])]
-    public function changeOwnPassword(Request $request): \Symfony\Component\HttpFoundation\Response
+    public function changeOwnPassword(Request $request): Response
     {
         if (!$this->csrf_protection($request)) {
             $response = new Response();
@@ -824,7 +824,7 @@ class AgentController extends BaseController
     }
 
     #[Route(path: '/ajax/check-password', name: 'ajax.checkpassword', methods: ['GET'])]
-    public function check_password(Request $request): \Symfony\Component\HttpFoundation\Response
+    public function check_password(Request $request): Response
     {
         $password = $request->get('password');
         $response = new Response();
@@ -862,7 +862,7 @@ class AgentController extends BaseController
     }
 
     #[Route(path: '/ajax/is-current-password', name: 'ajax.iscurrentpassword', methods: ['GET'])]
-    public function isCurrentPassword(Request $request): \Symfony\Component\HttpFoundation\Response
+    public function isCurrentPassword(Request $request): Response
     {
         $session = $request->getSession();
 
@@ -1042,7 +1042,7 @@ class AgentController extends BaseController
     }
 
     #[Route(path: '/agent/ldap', name: 'agent.ldap.import', methods: ['POST'])]
-    public function ldap_import(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
+    public function ldap_import(Request $request, Session $session): RedirectResponse
     {
         $CSRFToken = $request->get('CSRFToken');
         $actif = 'Actif';
@@ -1185,7 +1185,7 @@ class AgentController extends BaseController
 
 
     #[Route(path: '/agent/ldif', name: 'agent.ldif.import', methods: ['POST'])]
-    public function ldif_import(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
+    public function ldif_import(Request $request, Session $session): RedirectResponse
     {
         $CSRFToken = $request->get('CSRFToken');
         $erreurs = false;
@@ -1387,7 +1387,7 @@ class AgentController extends BaseController
      * Appelé par la fonction JS public/js/agent.js : agent_list
     */
     #[Route(path: '/agent/bulk/delete', name: 'agent.bulk.delete', methods: ['DELETE'])]
-    public function bulkDelete(Request $request, Session $session)
+    public function bulkDelete(Request $request, Session $session): RedirectResponse|Response
     {
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
@@ -1436,7 +1436,7 @@ class AgentController extends BaseController
      * Appelé par la fonction JS public/js/agent.js : agent_list
      */
     #[Route(path: '/agent/bulk/update', name: 'agent.bulk.update', methods: ['POST'])]
-    public function bulkUpdate(Request $request, Session $session)
+    public function bulkUpdate(Request $request, Session $session): RedirectResponse|Response
     {
         // CSFR Protection
         if (!$this->csrf_protection($request)) {
@@ -1515,7 +1515,7 @@ class AgentController extends BaseController
      * Appelé par $( "#ics-url-form" ).dialog({ Envoyer ]), public/js/agent.js
      */
     #[Route(path: '/agent/ics/send-url', name: 'agent.ics.send_url', methods: ['POST'])]
-    public function sendIcsUrl(Request $request)
+    public function sendIcsUrl(Request $request): RedirectResponse|Response
     {
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
@@ -1551,7 +1551,7 @@ class AgentController extends BaseController
     }
 
     #[Route('/agent/ics/reset-url', name: 'agent.ics.reset_url', methods: ['POST'])]
-    public function resetIcsUrl(Request $request): \Symfony\Component\HttpFoundation\Response
+    public function resetIcsUrl(Request $request): Response
     {
         if (!$this->csrf_protection($request)) {
             $response = new Response();
@@ -1580,7 +1580,7 @@ class AgentController extends BaseController
      * Appelé en Ajax via la fonction JS updateAgentsList à partir de la page voir.php
      */
     #[Route(path: '/agent/update-list', name: 'agent.update_list', methods: ['GET'])]
-    public function updateAgentList(Request $request): \Symfony\Component\HttpFoundation\Response
+    public function updateAgentList(Request $request): Response
     {
         if ($request->get('deleted') == 'yes') {
             $agents = $this->entityManager->getRepository(Agent::class)->getByDeletionStatus([0,1]);

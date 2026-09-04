@@ -5,18 +5,18 @@ namespace App\Controller;
 use App\Controller\BaseController;
 use App\Entity\AbsenceDocument;
 use App\Service\ClamAvScanner;
-
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class AbsenceDocumentController extends BaseController
 {
     #[Route(path: '/absences/document/{id}', name: 'absences.document.index', methods: ['GET'])]
-    public function index(Request $request, Session $session): \Symfony\Component\HttpFoundation\BinaryFileResponse
+    public function index(Request $request, Session $session): BinaryFileResponse
     {
         $id = $request->attributes->get('id');
         $ad = $this->entityManager->getRepository(AbsenceDocument::class)->find($id);
@@ -29,7 +29,7 @@ class AbsenceDocumentController extends BaseController
     }
 
     #[Route(path: '/absences/document/{id}', name: 'absences.document.delete', methods: ['DELETE'])]
-    public function delete(Request $request, Session $session)
+    public function delete(Request $request, Session $session): RedirectResponse|Response
     {
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
@@ -45,7 +45,7 @@ class AbsenceDocumentController extends BaseController
     }
 
    #[Route(path: '/absences/document/{id_absence}', name: 'absences.document.add', methods: ['POST'])]
-    public function add(Request $request, Session $session, ClamAvScanner $scanner)
+    public function add(Request $request, Session $session, ClamAvScanner $scanner): RedirectResponse|Response
     {
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
@@ -97,7 +97,7 @@ class AbsenceDocumentController extends BaseController
     }
 
    #[Route(path: '/absences/documents/{id_absence}', name: 'absences.document.list', methods: ['GET'])]
-    public function list(Request $request, Session $session): \Symfony\Component\HttpFoundation\Response
+    public function list(Request $request, Session $session): Response
     {
         $id = $request->attributes->get('id_absence');
         $absdocs = $this->entityManager->getRepository(AbsenceDocument::class)->findBy(['absence_id' => $id]);

@@ -13,12 +13,13 @@ use App\Service\ICalendar;
 
 use DateTime;
 
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\Response;
 
-// require_once(__DIR__ . '/../../init/init_ajax.php');
 require_once(__DIR__ . '/../../legacy/Common/function.php');
 require_once(__DIR__ . '/../../legacy/Class/class.absences.php');
 require_once(__DIR__ . '/../../legacy/Class/class.conges.php');
@@ -28,7 +29,7 @@ class AjaxController extends BaseController
 {
 
     #[Route(path: '/ajax/sanitize-html', name: 'ajax.sanitizehtml', methods: ['POST'])]
-    public function ajax_sanitize_html(Request $request): \Symfony\Component\HttpFoundation\Response
+    public function ajax_sanitize_html(Request $request): Response
     {
         $text = $request->get('text');
         $response = new Response();
@@ -40,7 +41,7 @@ class AjaxController extends BaseController
     }
 
     #[Route(path: '/ajax/agents-by-sites', name: 'ajax.agentsbysites', methods: ['GET'])]
-    public function agentsBySites(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
+    public function agentsBySites(Request $request): JsonResponse
     {
         $session = $request->getSession();
 
@@ -68,7 +69,7 @@ class AjaxController extends BaseController
     }
 
     #[Route(path: '/ajax/mail-test', name: 'ajax.mailtest', methods: ['POST'])]
-    public function mailTest(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
+    public function mailTest(Request $request): JsonResponse
     {
 
         include_once(__DIR__ . '/../../legacy/Common/config.php');
@@ -306,7 +307,7 @@ class AjaxController extends BaseController
      * TODO: Faire en sorte de conserver les ID dans la base de données et façon à les utiliser comme clé.
      */
     #[Route(path: '/ajax/update-select-options', name: 'ajax.update.select.options', methods: ['POST'])]
-    public function updateSelectOptions(Request $request)
+    public function updateSelectOptions(Request $request): RedirectResponse|Response
     {
         if (!$this->csrf_protection($request)) {
            return $this->redirectToRoute('access-denied');

@@ -154,7 +154,7 @@ class MSGraphClient
     private function isEventEmpty($login, $id): bool {
         $query = "/users/$login" . $this->login_suffix . '/events/' . $id;
         $response = $this->sendGet($query);
-        return !($response && $response->code == 200);
+        return !$response || $response->code != 200;
     }
 
     private function getLocalEvents(): void {

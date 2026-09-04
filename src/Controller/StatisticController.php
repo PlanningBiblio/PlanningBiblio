@@ -4,10 +4,11 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\Response;
 use App\Entity\AbsenceReason;
 use App\Entity\Holiday;
 use App\Entity\PlanningPosition;
@@ -2719,7 +2720,7 @@ class StatisticController extends BaseController
     *  les place dans les tableaux $cellules et $lignes, puis les écrit dans un fichier (data/stat_$_GET['nom'])
     */
     #[Route(path: '/statistics/export', name: 'statistics.export', methods: ['GET'])]
-    public function export(Request $request, Session $session)
+    public function export(Request $request, Session $session): RedirectResponse|Response
     {
         // Initialisation des variables
         $nom = $request->get('name');

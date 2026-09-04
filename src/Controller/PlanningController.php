@@ -15,6 +15,7 @@ use App\Entity\SeparationLine;
 use App\Planno\Helper\PlanningPositionHistoryHelper;
 use App\Planno\Framework;
 use App\Planno\PresentSet;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -248,7 +249,7 @@ class PlanningController extends BaseController
     }
 
     #[Route(path: '/deleteplanning', name: 'planning.delete', methods: ['POST'])]
-    public function delete_planning(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
+    public function delete_planning(Request $request, Session $session): RedirectResponse
     {
         $CSRFToken = $request->get('CSRFToken');
         $week = $request->get('week');
@@ -628,7 +629,7 @@ class PlanningController extends BaseController
     }
 
     #[Route(path: '/setFramework', name: 'planning.setFramework', methods: ['POST'])]
-    public function setFramework(Request $request): \Symfony\Component\HttpFoundation\RedirectResponse
+    public function setFramework(Request $request): RedirectResponse
     {
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
@@ -657,7 +658,7 @@ class PlanningController extends BaseController
     }
 
     #[Route(path: '/setFrameworkGroup', name: 'planning.setFrameworkGroup', methods: ['POST'])]
-    public function setFrameworkGroup(Request $request): \Symfony\Component\HttpFoundation\RedirectResponse
+    public function setFrameworkGroup(Request $request): RedirectResponse
     {
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
@@ -712,7 +713,7 @@ class PlanningController extends BaseController
      * Script appelé par $( "#pl-appelDispo-form" ).submit(), public/js/planning.js
      */
     #[Route(path: '/planning/call-for-help/send-mail', name: 'planning.call_for_help.send_mail', methods: ['POST'])]
-    public function callForHelpSendMail(Request $request)
+    public function callForHelpSendMail(Request $request): RedirectResponse|Response
     {
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
@@ -787,7 +788,7 @@ class PlanningController extends BaseController
      * lors du clic sur le lien "Appel à disponibilité" dans le menu permettant de placer les agents
      */
     #[Route(path: '/planning/call-for-help/get-message', name: 'planning.call_for_help.get_message', methods: ['GET'])]
-    public function callForHelpGetMessage(Request $request): \Symfony\Component\HttpFoundation\Response
+    public function callForHelpGetMessage(Request $request): Response
     {
         $mail = [
             $this->config['Planning-AppelDispoSujet'],

@@ -94,7 +94,7 @@ class Agent
     private ?string $matricule = '';
 
     #[ORM\Column]
-    private ?string $code_ics = '';
+    private ?string $code_ics;
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $url_ics = '';

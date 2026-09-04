@@ -8,10 +8,11 @@ use App\Entity\PlanningPositionHistory;
 
 use App\Planno\WorkingHours;
 
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 require_once(__DIR__ . '/../../legacy/Class/class.conges.php');
 require_once(__DIR__ . '/../../legacy/Common/function.php');
@@ -28,7 +29,7 @@ class PlanningJobController extends BaseController
     use \App\Traits\PlanningJobTrait;
 
     #[Route(path: '/planningjob/contextmenu', name: 'planningjob.contextmenu', methods: ['GET'])]
-    public function contextmenu(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
+    public function contextmenu(Request $request): JsonResponse
     {
         $session = $request->getSession();
 
@@ -47,7 +48,7 @@ class PlanningJobController extends BaseController
     }
 
     #[Route(path: '/ajax/planningjob/checkcopy', name: 'ajax.planningjobcheckcopy', methods: ['GET'])]
-    public function checkCopy(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
+    public function checkCopy(Request $request): JsonResponse
     {
         // Initilisation des variables
         $date = $request->get('date');
@@ -115,7 +116,7 @@ class PlanningJobController extends BaseController
     }
 
     #[Route(path: '/ajax/planningjob/undo', name: 'planningjob.undo', methods: ['POST'])]
-    public function undo(Request $request)
+    public function undo(Request $request): RedirectResponse|JsonResponse|Response
     {
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
@@ -189,7 +190,7 @@ class PlanningJobController extends BaseController
     }
 
     #[Route(path: '/ajax/planningjob/redo', name: 'planningjob.redo', methods: ['POST'])]
-    public function redo(Request $request)
+    public function redo(Request $request): RedirectResponse|JsonResponse|Response
     {
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');

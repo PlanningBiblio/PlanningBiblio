@@ -126,7 +126,7 @@ class PresentSet
                 );
 
                 if ($schedule) {
-                    $schedule = array_map(fn ($s) => sprintf('%s - %s', heure2($s[0]), heure2($s[1])), $schedule);
+                    $schedule = array_map(fn ($s): string => sprintf('%s - %s', heure2($s[0]), heure2($s[1])), $schedule);
                     $presents[] = [
                         "id" => $agentId,
                         "nom" => $agent->getLastname() . " " . $agent->getFirstname(),
