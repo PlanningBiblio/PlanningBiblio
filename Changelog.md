@@ -1,5 +1,14 @@
 # Changelog Planno
 
+## Version 25.10.26 (2026-09-04)
+
+### Security / Dependencies
+* MT54762: Security: Update league/commonmark
+  * Update league/commonmark, new version: 2.10.0
+  * Security advisories:
+    * https://packagist.org/security-advisories/GHSA-f8fg-pg57-v4j8
+    * https://packagist.org/security-advisories/PKSA-zyf5-hrxv-hrd7
+
 ## Version 25.10.25 (2026-09-03)
 
 ### Fixes
