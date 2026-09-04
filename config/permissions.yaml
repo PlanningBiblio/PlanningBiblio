@@ -257,6 +257,22 @@
     - 100
 "planning.hidden_tables.set":
     - 100
+"planning.expected_staff.set":
+    - 4
+"planning_generation.index":
+    - 4
+"planning_generation.json":
+    - 4
+"planning_generation.statistics":
+    - 4
+"planning_generation.active_tables":
+    - 4
+"planning_generation.generate":
+    - 4
+"planning_generation.status":
+    - 4
+"planning_generation.delete":
+    - 4
 "planning.notes":
     - 100
 "planning.notifications":

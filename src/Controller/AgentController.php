@@ -10,6 +10,7 @@ use App\Entity\Agent;
 use App\Entity\Holiday;
 use App\Entity\Manager;
 use App\Entity\PlanningPosition;
+use App\Entity\Position;
 use App\Entity\SaturdayWorkingHours;
 use App\Entity\SelectCategories;
 use App\Entity\SelectStatus;
@@ -180,6 +181,9 @@ class AgentController extends BaseController
             $skillsAllWithName[] = [$elem->getName(), $elem->getId()];
             $skillsAll[] = $elem->getId();
         }
+
+        // Postes actifs, pour les quotas par poste de l'onglet "informations pour l'algorithme"
+        $positionsForAlgo = $this->entityManager->getRepository(Position::class)->findBy(['supprime' => null]);
 
         // Get all categories, services and statuses
         $categories = $this->entityManager->getRepository(SelectCategories::class)->findAll();
@@ -378,9 +382,13 @@ class AgentController extends BaseController
             }
         }
 
+        $canEditAlgoTab = in_array(4, $droits) || in_array(21, $droits);
+
         $this->templateParams([
             'agent'                     => $agent,
             'can_manage_agent'          => in_array(21, $droits),
+            'can_edit_algo_tab'         => $canEditAlgoTab,
+            'positions_algo'            => $positionsForAlgo,
             'exportIcsUrl'              => $exportIcsUrl,
             'action'                    => $action,
             'id'                        => $id,
@@ -693,6 +701,14 @@ class AgentController extends BaseController
         $agent->setHolidayAnticipation($holidays['conges_anticipation']);
         $agent->setHolidayCredit($holidays['conges_credit']);
         $agent->setHolidayRemainder($holidays['conges_reliquat']);
+
+        $droits = $GLOBALS['droits'] ?? [];
+        if (in_array(4, $droits) or in_array(21, $droits)) {
+            $agent->setAlgorithmQuota(isset($params['quota_pct']) && $params['quota_pct'] !== '' ? (float) $params['quota_pct'] : null);
+            $agent->setAlgorithmQuotasByPosition(isset($params['quotas_postes']) ? json_decode($params['quotas_postes'], true) : []);
+            $agent->setAlgorithmMaxDailyQuota(isset($params['max_sp_journee_pct']) && $params['max_sp_journee_pct'] !== '' ? (float) $params['max_sp_journee_pct'] : null);
+            $agent->setAlgorithmMinBreakBetweenLists(isset($params['pause_inter_listes_min']) && $params['pause_inter_listes_min'] !== '' ? (int) $params['pause_inter_listes_min'] : null);
+        }
 
         if ($login) {
             $agent->setLogin($login);

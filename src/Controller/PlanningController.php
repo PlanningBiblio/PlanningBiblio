@@ -7,6 +7,8 @@ use App\Entity\AbsenceReason;
 use App\Entity\Agent;
 use App\Entity\HiddenTables;
 use App\Entity\Model;
+use App\Entity\PlanningPositionExpectedStaff;
+use App\Entity\PlanningPositionExpectedStaffDate;
 use App\Entity\PlanningPositionHistory;
 use App\Entity\PlanningPositionLock;
 use App\Entity\Position;
@@ -40,6 +42,7 @@ class PlanningController extends BaseController
     private $absences = [];
     private $cellId = 0;
     private $cells = [];
+    private $expectedStaffOverrides = [];
     private $date;
     private $dates = [];
     private $locked = 0;
@@ -879,6 +882,74 @@ class PlanningController extends BaseController
     }
 
     /*
+     * Enregistre le nombre d'agents attendus pour un poste/créneau donné (module de génération de planning)
+     */
+    #[Route(path: '/planning/update-expected-staff', name: 'planning.expected_staff.set', methods: ['POST'])]
+    public function setExpectedStaff(Request $request): Response
+    {
+        if (!$this->csrf_protection($request)) {
+            return new Response(json_encode(['error' => 'The CSRF token is invalid. Please try to resubmit the form.']));
+        }
+
+        $droits_agent = $_SESSION['droits'];
+        if (!in_array(4, $droits_agent)) {
+            return new Response(json_encode(['error' => 'Access denied.']));
+        }
+
+        $numero = filter_var($request->get('numero'), FILTER_SANITIZE_NUMBER_INT);
+        $tableau = filter_var($request->get('tableau'), FILTER_SANITIZE_NUMBER_INT);
+        $ligne = filter_var($request->get('ligne'), FILTER_SANITIZE_NUMBER_INT);
+        $colonne = filter_var($request->get('colonne'), FILTER_SANITIZE_NUMBER_INT);
+        $nbAttendu = filter_var($request->get('nb_attendu'), FILTER_SANITIZE_NUMBER_INT);
+        $date = \DateTime::createFromFormat('Y-m-d', $request->get('date'));
+
+        if ($date) {
+            // Modification pour une date précise : n'affecte que cette date, sans toucher au gabarit récurrent
+            // du tableau (partagé par toutes les dates utilisant ce même sous-tableau/créneau).
+            $date->setTime(0, 0, 0);
+
+            $entity = $this->entityManager->getRepository(PlanningPositionExpectedStaffDate::class)->findOneBy([
+                'numero' => $numero,
+                'tableau' => $tableau,
+                'ligne' => $ligne,
+                'colonne' => $colonne,
+                'date' => $date,
+            ]);
+
+            if (!$entity) {
+                $entity = new PlanningPositionExpectedStaffDate();
+                $entity->setNumero($numero);
+                $entity->setTableau($tableau);
+                $entity->setLigne($ligne);
+                $entity->setColonne($colonne);
+                $entity->setDate($date);
+                $this->entityManager->persist($entity);
+            }
+        } else {
+            $entity = $this->entityManager->getRepository(PlanningPositionExpectedStaff::class)->findOneBy([
+                'numero' => $numero,
+                'tableau' => $tableau,
+                'ligne' => $ligne,
+                'colonne' => $colonne,
+            ]);
+
+            if (!$entity) {
+                $entity = new PlanningPositionExpectedStaff();
+                $entity->setNumero($numero);
+                $entity->setTableau($tableau);
+                $entity->setLigne($ligne);
+                $entity->setColonne($colonne);
+                $this->entityManager->persist($entity);
+            }
+        }
+
+        $entity->setExpectedStaff((int) $nbAttendu);
+        $this->entityManager->flush();
+
+        return new Response(json_encode(['nb_attendu' => $entity->getExpectedStaff()]));
+    }
+
+    /*
      * Enregistre dans la base de donées les notes en bas des plannings
      */
     #[Route(path: '/planning/notes', name: 'planning.notes', methods: ['POST'])]
@@ -1493,7 +1564,7 @@ class PlanningController extends BaseController
         }
     }
 
-    private function createCell($date, $debut, $fin, $colspan, $output, $poste, $site): string
+    private function createCell($date, $debut, $fin, $colspan, $output, $poste, $site, $numero = null, $tableau = null, $ligne = null, $colonne = null, $expectedStaff = null): string
     {
         $resultats=array();
         $classe=array();
@@ -1648,7 +1719,7 @@ class PlanningController extends BaseController
 
         $this->cellId++;
 
-        $cellule = "<td id='td{$this->cellId}' colspan='$colspan' style='text-align:center;' class='menuTrigger' oncontextmenu='cellule={$this->cellId}'
+        $cellule = "<td id='td{$this->cellId}' colspan='$colspan' class='menuTrigger text-center' oncontextmenu='cellule={$this->cellId}'
             data-start='$debut' data-end='$fin' data-situation='$poste' data-cell='{$this->cellId}' data-perso-id='0'>";
 
         for ($i=0;$i<count($resultats);$i++) {
@@ -1657,6 +1728,11 @@ class PlanningController extends BaseController
         }
 
         $cellule .= '<a class="pl-icon arrow-right" role="button"></a>';
+
+        if ($numero !== null) {
+            $cellule .= "<span class='expected-staff-badge' data-numero='$numero' data-tableau='$tableau' data-ligne='$ligne' data-colonne='$colonne' data-date='$date'>" . ($expectedStaff ?? 1) . "</span>";
+        }
+
         $cellule .= "</td>\n";
 
         return $cellule;
@@ -1734,6 +1810,11 @@ class PlanningController extends BaseController
 
         $hiddenTables = $this->getHiddenTables($request, $tab);
 
+        // Cadre (numero), utilisé pour adresser les effectifs attendus. $tab est réutilisé juste après pour désigner le sous-tableau courant.
+        $numero = $tab;
+
+        $this->getExpectedStaffOverrides($numero, $date);
+
         // Positions
         $positions = $this->positions;
 
@@ -1799,7 +1880,7 @@ class PlanningController extends BaseController
             $masqueTableaux = null;
             if ($this->config('Planning-TableauxMasques')) {
                 // FIXME HTML
-                $masqueTableaux = "<span title='Masquer' class='pl-icon pl-icon-hide masqueTableau pointer noprint' data-id='$l' ></span>";
+                $masqueTableaux = "<span title='Masquer' class='pl-icon pl-icon-hide masqueTableau pointer d-print-none' data-id='$l' ></span>";
             }
             $tabs[$index]['masqueTableaux'] = $masqueTableaux;
 
@@ -1878,7 +1959,16 @@ class PlanningController extends BaseController
 
                         // function createCell(date,debut,fin,colspan,affichage,poste,site)
                         else {
-                            $horaires['position_cell'] = $this->createCell($date, $horaires['debut'], $horaires['fin'], nb30($horaires['debut'], $horaires['fin']), 'noms', $ligne['poste'], $site);
+                            // Cellule grisée ponctuellement pour cette date précise (import de modèle, "bataille navale"),
+                            // par opposition au grisage statique du gabarit (cellules_grises) déjà géré ci-dessus.
+                            // Comme pour ce dernier, aucune pastille d'effectif attendu n'est affichée dans ce cas.
+                            if ($this->isCellGreyedForDate($ligne['poste'], $horaires['debut'], $horaires['fin'])) {
+                                $horaires['position_cell'] = $this->createCell($date, $horaires['debut'], $horaires['fin'], nb30($horaires['debut'], $horaires['fin']), 'noms', $ligne['poste'], $site);
+                            } else {
+                                $overrideKey = "{$tab['nom']}_{$ligne['ligne']}_{$k}";
+                                $expectedStaff = $this->expectedStaffOverrides[$overrideKey] ?? ($tab['effectifs_attendus']["{$ligne['ligne']}_{$k}"] ?? null);
+                                $horaires['position_cell'] = $this->createCell($date, $horaires['debut'], $horaires['fin'], nb30($horaires['debut'], $horaires['fin']), 'noms', $ligne['poste'], $site, $numero, $tab['nom'], $ligne['ligne'], $k, $expectedStaff);
+                            }
                         }
                         $i++;
                         $k++;
@@ -1973,7 +2063,7 @@ class PlanningController extends BaseController
             $nonValidee = null;
             if ($this->config('Absences-non-validees') == 1) {
                 if ($elem['valide'] > 0) {
-                    $bold = 'bold';
+                    $bold = 'fw-bold';
                 } else {
                     $nonValidee = " (non validée)";
                 }
@@ -2058,6 +2148,40 @@ class PlanningController extends BaseController
         }
 
         $this->cells = $cellules;
+    }
+
+    /*
+     * Charge les surcharges ponctuelles (par date) de l'effectif attendu pour le cadre affiché, afin
+     * qu'une modification sur une date précise n'affecte pas les autres dates partageant le même
+     * sous-tableau/créneau récurrent (voir pl_poste_effectif_attendu_date).
+     */
+    private function getExpectedStaffOverrides($numero, $date): void
+    {
+        $overrides = $this->entityManager->getRepository(PlanningPositionExpectedStaffDate::class)->findBy([
+            'numero' => $numero,
+            'date' => \DateTime::createFromFormat('Y-m-d', $date),
+        ]);
+
+        $this->expectedStaffOverrides = [];
+        foreach ($overrides as $override) {
+            $key = "{$override->getTableau()}_{$override->getLigne()}_{$override->getColonne()}";
+            $this->expectedStaffOverrides[$key] = $override->getExpectedStaff();
+        }
+    }
+
+    /**
+     * Grisage ponctuel d'une cellule poste/créneau pour la date affichée (pl_poste.grise), par opposition
+     * au grisage statique du gabarit (pl_poste_cellules). $this->cells est déjà chargé par getCells().
+     */
+    private function isCellGreyedForDate($poste, $debut, $fin): bool
+    {
+        foreach ($this->cells as $elem) {
+            if ($elem['poste'] == $poste and $elem['debut'] == $debut and $elem['fin'] == $fin and !empty($elem['grise'])) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function getCurrentFramework($date, $site)

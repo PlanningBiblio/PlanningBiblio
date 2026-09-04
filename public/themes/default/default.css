@@ -2481,3 +2481,54 @@ table.dataTable th{
   }
 
 }
+
+.expected-staff-badge {
+  display: none;
+  vertical-align: top;
+  min-width: 16px;
+  margin: 2px;
+  padding: 0 3px;
+  border-radius: 8px;
+  background-color: var(--charcoal-blue);
+  color: white;
+  font-size: 0.7em;
+  text-align: center;
+  cursor: pointer;
+}
+
+body.show-expected-staff .expected-staff-badge {
+  display: inline-block;
+}
+
+.expected-staff-badge .expected-staff-input {
+  width: 30px;
+  font-size: 0.7em;
+}
+
+.generation-status-dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.generation-status-dot.generation-status-en_cours {
+  background-color: #2f6fd1;
+}
+
+.generation-status-dot.generation-status-succes {
+  background-color: #2e8b57;
+}
+
+.generation-status-dot.generation-status-echec {
+  background-color: #c0392b;
+}
+
+.generation-status-dot.generation-status-conflit {
+  background-color: #e67e22;
+}
+
+.generation-conflict-message {
+  color: #e67e22;
+  font-weight: bold;
+}
