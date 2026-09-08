@@ -191,30 +191,54 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
         $crawler = $this->client->request('GET', "/planningjob/contextmenu?CSRFToken={$this->CSRFToken}&cellule=84&date=2022-11-01&debut=08%3A00%3A00&fin=19%3A30%3A00&perso_id=$ida&site=1&poste=$id&perso_nom=Breton");
 
-        $response = $this->client->getResponse();
+        $json = $this->client->getResponse()->getContent();
+        $contextmenu = json_decode($json, true);
 
-        $result = explode('["callback":protected]', $response);
+        $this->assertSame($post->getName(), $contextmenu['position_name'], 'Position name');
+        $this->assertSame((string) $post->getId(), $contextmenu['position_id'], 'Position ID');
+        $this->assertSame('2022-11-01', $contextmenu['date'], 'Date is 2022-11-01');
+        $this->assertSame('08:00:00', $contextmenu['start'], 'Start is 08:00:00');
+        $this->assertSame('19:30:00', $contextmenu['end'], 'End is 19:30:00');
+        $this->assertSame('1', $contextmenu['site'], 'Site number is 1');
+        $this->assertSame(0, $contextmenu['group_tab_hide'], 'GroupTaHide:0');
+        $this->assertSame(0, $contextmenu['nb_agents'], 'nb_agents:0');
+        $this->assertSame('4', $contextmenu['max_agents'], 'max_agents:4');
+        $this->assertSame((string) $abreton->getId(), $contextmenu['agent_id'], 'agent_id contains abreton.id');
+        $this->assertSame($abreton->getLastname(), $contextmenu['agent_name'], 'agent_name contains abreton.lastname');
 
-        $this->assertStringContainsString('"position_name":"' . $post->getName() . '"', $result[0], 'Position name');
-        $this->assertStringContainsString('"position_id":"' . $post->getId() . '"', $result[0], 'Position ID');
-        $this->assertStringContainsString('"date":"2022-11-01"', $result[0], 'Date is 2022-11-01');
-        $this->assertStringContainsString('"start":"08:00:00"', $result[0], 'Start is 08:00:00');
-        $this->assertStringContainsString('"end":"19:30:00"', $result[0], 'End is 19:30:00');
-        $this->assertStringContainsString('"site":"1"', $result[0], 'Site number is 1');
-        $this->assertStringContainsString('"group_tab_hide":0', $result[0], 'GroupTaHide:0');
-        $this->assertStringContainsString('"nb_agents":0', $result[0], 'nb_agents:0');
-        $this->assertStringContainsString('"max_agents":"4"', $result[0], 'max_agents:4');
-        $this->assertStringContainsString('"agent_id":"' . $abreton->getId() . '"', $result[0], 'agent_id contains abreton.id');
-        $this->assertStringContainsString('"agent_name":"' . $abreton->getLastname() . '"', $result[0], 'agent_name contains abreton.lastname');
-        $this->assertStringContainsString('"name_title":"' . $kboivin->getLastname() . ' ' . $kboivin->getFirstname() . '"', $result[0], 'name_title contains kboivin info');
-        $this->assertStringContainsString('"name_title":"' . $jdevoe->getLastname() . ' ' . $jdevoe->getFirstname() . '"', $result[0], 'name_title contains jdevoe info');
-        // Check if the absent agent is in not in the context menu
-        $this->assertStringNotContainsString('"name_title":"' . $jdupont->getLastname() . ' ' . $jdupont->getFirstname() . '"', $result[0], 'name_title not contains jdupont because absent');
-        $this->assertStringContainsString('"name_title":"' . $jdoe->getLastname() . ' ' . $jdoe->getFirstname() . '"', $result[0], 'name_title contains jdoe info');
-        $this->assertStringNotContainsString('"name_title":"' . $mgeorges->getLastname() . ' ' . $mgeorges->getFirstname() . '"', $result[0], 'name_title not contains mgeorges info because not arrived');
-        $this->assertStringNotContainsString('"name_title":"' . $emartin->getLastname() . ' ' . $emartin->getFirstname() . '"', $result[0], 'name_title not contains emartin info because he leaved');
-        $this->assertStringContainsString('"name_title":"' . $jmarc->getLastname() . ' ' . $jmarc->getFirstname() . '"', $result[0], 'name_title contains jmarc info');
-        $this->assertStringContainsString('"name_title":"' . $bmarley->getLastname() . ' ' . $bmarley->getFirstname() . '"', $result[0], 'name_title contains bmarley info');
+        $this->assertCount(6, $contextmenu['menu1']['agents'], '6 available agents');
+        $this->assertSame(
+            $kboivin->getLastname() . ' ' . $kboivin->getFirstname(),
+            $contextmenu['menu1']['agents'][0]['name_title'],
+            'name_title contains kboivin info'
+        );
+        $this->assertSame(
+            $abreton->getLastname() . ' ' . $abreton->getFirstname(),
+            $contextmenu['menu1']['agents'][1]['name_title'],
+            'name_title contains abreton info'
+        );
+        $this->assertSame(
+            $jdevoe->getLastname() . ' ' . $jdevoe->getFirstname(),
+            $contextmenu['menu1']['agents'][2]['name_title'],
+            'name_title contains jdevoe info'
+        );
+        $this->assertSame(
+            $jdoe->getLastname() . ' ' . $jdoe->getFirstname(),
+            $contextmenu['menu1']['agents'][3]['name_title'],
+            'name_title contains jdoe info'
+        );
+        $this->assertSame(
+            $jmarc->getLastname() . ' ' . $jmarc->getFirstname(),
+            $contextmenu['menu1']['agents'][4]['name_title'],
+            'name_title contains jmarc info'
+        );
+        $this->assertSame(
+            $bmarley->getLastname() . ' ' . $bmarley->getFirstname(),
+            $contextmenu['menu1']['agents'][5]['name_title'],
+            'name_title contains bmarley info'
+        );
+
+        $this->assertCount(0, $contextmenu['menu2'], 'no unavailable agents');
     }
 
 
@@ -301,37 +325,32 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
         $crawler = $this->client->request('GET', "/planningjob/contextmenu?CSRFToken={$this->CSRFToken}&cellule=84&date=2022-11-01&debut=08%3A00%3A00&fin=19%3A30%3A00&perso_id=$ida&site=1&poste=$id&perso_nom=Breton");
 
-        $response = $this->client->getResponse();
+        $json = $this->client->getResponse()->getContent();
+        $contextmenu = json_decode($json, true);
 
-        $result = explode('["callback":protected]', $response);
+        $this->assertSame($post->getName(), $contextmenu['position_name']);
+        $this->assertSame((string) $post->getId(), $contextmenu['position_id']);
+        $this->assertSame('2022-11-01', $contextmenu['date']);
+        $this->assertSame('08:00:00', $contextmenu['start']);
+        $this->assertSame('19:30:00', $contextmenu['end']);
+        $this->assertSame('1', $contextmenu['site']);
+        $this->assertSame(0, $contextmenu['group_tab_hide']);
+        $this->assertSame(0, $contextmenu['nb_agents']);
+        $this->assertSame('4', $contextmenu['max_agents']);
+        $this->assertSame((string) $abreton->getId(), $contextmenu['agent_id']);
+        $this->assertSame($abreton->getLastname(), $contextmenu['agent_name']);
+        $this->assertSame(
+            $kboivin->getLastname() . ' ' . $kboivin->getFirstname(),
+            $contextmenu['menu1']['agents'][0]['name_title'],
+        );
+        $this->assertSame(
+            $jdevoe->getLastname() . ' ' . $jdevoe->getFirstname(),
+            $contextmenu['menu1']['agents'][2]['name_title'],
+        );
 
-        $this->assertStringContainsString('"position_name":"' . $post->getName() . '"', $result[0]);
-
-        $this->assertStringContainsString('"position_id":"' . $post->getId() . '"', $result[0]);
-
-        $this->assertStringContainsString('"date":"2022-11-01"', $result[0]);
-
-        $this->assertStringContainsString('"start":"08:00:00"', $result[0]);
-
-        $this->assertStringContainsString('"end":"19:30:00"', $result[0]);
-
-        $this->assertStringContainsString('"site":"1"', $result[0]);
-
-        $this->assertStringContainsString('"group_tab_hide":0', $result[0]);
-
-        $this->assertStringContainsString('"nb_agents":0', $result[0]);
-
-        $this->assertStringContainsString('"max_agents":"4"', $result[0]);
-
-        $this->assertStringContainsString('"agent_id":"' . $abreton->getId() . '"', $result[0]);
-
-        $this->assertStringContainsString('"agent_name":"' . $abreton->getLastname() . '"', $result[0]);
-
-        $this->assertStringContainsString('"name_title":"' . $kboivin->getLastname() . ' ' . $kboivin->getFirstname() . '"', $result[0]);
-
-        $this->assertStringContainsString('"name_title":"' . $jdevoe->getLastname() . ' ' . $jdevoe->getFirstname() . '"', $result[0]);
-
-        $this->assertStringContainsString('{"id":"' . $agentHoliday->getId() . '","nom":"' . $agentHoliday->getLastname() . '","prenom":"' . $agentHoliday->getFirstname() . '"', $result[0]);
+        $this->assertSame($agentHoliday->getId(), $contextmenu['menu2']['agents'][0]['id']);
+        $this->assertSame($agentHoliday->getLastname(), $contextmenu['menu2']['agents'][0]['nom']);
+        $this->assertSame($agentHoliday->getFirstname(), $contextmenu['menu2']['agents'][0]['prenom']);
     }
 
 
@@ -399,37 +418,45 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
         $crawler = $this->client->request('GET', "/planningjob/contextmenu?CSRFToken={$this->CSRFToken}&cellule=84&date=2022-11-01&debut=08%3A00%3A00&fin=19%3A30%3A00&perso_id=$ida&site=1&poste=$id&perso_nom=Breton");
 
-        $response = $this->client->getResponse();
+        $json = $this->client->getResponse()->getContent();
+        $contextmenu = json_decode($json, true);
 
-        $result = explode('["callback":protected]', $response);
+        $this->assertSame($post->getName(), $contextmenu['position_name']);
+        $this->assertSame((string) $post->getId(), $contextmenu['position_id']);
+        $this->assertSame('2022-11-01', $contextmenu['date']);
+        $this->assertSame('08:00:00', $contextmenu['start']);
+        $this->assertSame('19:30:00', $contextmenu['end']);
+        $this->assertSame('1', $contextmenu['site']);
+        $this->assertSame(1, $contextmenu['group_tab_hide']);
+        $this->assertSame(0, $contextmenu['nb_agents']);
+        $this->assertSame('4', $contextmenu['max_agents']);
+        $this->assertSame((string) $abreton->getId(), $contextmenu['agent_id']);
+        $this->assertSame($abreton->getLastname(), $contextmenu['agent_name']);
 
-        $this->assertStringContainsString('"position_name":"' . $post->getName() . '"', $result[0]);
+        $this->assertCount(0, $contextmenu['menu1']);
 
-        $this->assertStringContainsString('"position_id":"' . $post->getId() . '"', $result[0]);
-
-        $this->assertStringContainsString('"date":"2022-11-01"', $result[0]);
-
-        $this->assertStringContainsString('"start":"08:00:00"', $result[0]);
-
-        $this->assertStringContainsString('"end":"19:30:00"', $result[0]);
-
-        $this->assertStringContainsString('"site":"1"', $result[0]);
-
-        $this->assertStringContainsString('"group_tab_hide":1', $result[0]);
-
-        $this->assertStringContainsString('"nb_agents":0', $result[0]);
-
-        $this->assertStringContainsString('"max_agents":"4"', $result[0]);
-
-        $this->assertStringContainsString('"agent_id":"' . $abreton->getId() . '"', $result[0]);
-
-        $this->assertStringContainsString('"agent_name":"' . $abreton->getLastname() . '"', $result[0]);
-
-        $this->assertStringContainsString('"name_title":"' . $kboivin->getLastname() . ' ' . $kboivin->getFirstname() . '"', $result[0]);
-
-        $this->assertStringContainsString('"name_title":"' . $jdevoe->getLastname() . ' ' . $jdevoe->getFirstname() . '"', $result[0]);
-
-        $this->assertStringContainsString('"name_title":"' . $jdupont->getLastname() . ' ' . $jdupont->getFirstname() . '"', $result[0]);
+        $this->assertArrayHasKey('agents', $contextmenu['menu2']);
+        $this->assertCount(5, $contextmenu['menu2']['agents']);
+        $this->assertSame(
+            $kboivin->getLastname() . ' ' . $kboivin->getFirstname(),
+            $contextmenu['menu2']['agents'][0]['name_title'],
+        );
+        $this->assertSame(
+            $abreton->getLastname() . ' ' . $abreton->getFirstname(),
+            $contextmenu['menu2']['agents'][1]['name_title'],
+        );
+        $this->assertSame(
+            $jdevoe->getLastname() . ' ' . $jdevoe->getFirstname(),
+            $contextmenu['menu2']['agents'][2]['name_title'],
+        );
+        $this->assertSame(
+            $jdupont->getLastname() . ' ' . $jdupont->getFirstname(),
+            $contextmenu['menu2']['agents'][3]['name_title'],
+        );
+        $this->assertSame(
+            'Tout le monde ',
+            $contextmenu['menu2']['agents'][4]['name_title'],
+        );
     }
 
 
@@ -518,37 +545,36 @@ class PlanningJobControllerTest extends PLBWebTestCase
 
         $crawler = $this->client->request('GET', "/planningjob/contextmenu?CSRFToken={$this->CSRFToken}&cellule=84&date=2022-11-01&debut=08%3A00%3A00&fin=19%3A30%3A00&perso_id=$ida&site=1&poste=$id&perso_nom=Breton");
 
-        $response = $this->client->getResponse();
+        $json = $this->client->getResponse()->getContent();
+        $contextmenu = json_decode($json, true);
 
-        $result = explode('["callback":protected]', $response);
+        $this->assertSame($post->getName(), $contextmenu['position_name']);
+        $this->assertSame((string) $post->getId(), $contextmenu['position_id']);
+        $this->assertSame('2022-11-01', $contextmenu['date']);
+        $this->assertSame('08:00:00', $contextmenu['start']);
+        $this->assertSame('19:30:00', $contextmenu['end']);
+        $this->assertSame('1', $contextmenu['site']);
+        $this->assertSame(1, $contextmenu['group_tab_hide']);
+        $this->assertSame(0, $contextmenu['nb_agents']);
+        $this->assertSame('4', $contextmenu['max_agents']);
+        $this->assertSame((string) $abreton->getId(), $contextmenu['agent_id']);
+        $this->assertSame($abreton->getLastname(), $contextmenu['agent_name']);
 
-        $this->assertStringContainsString('"position_name":"' . $post->getName() . '"', $result[0]);
+        $this->assertCount(0, $contextmenu['menu1']);
 
-        $this->assertStringContainsString('"position_id":"' . $post->getId() . '"', $result[0]);
-
-        $this->assertStringContainsString('"date":"2022-11-01"', $result[0]);
-
-        $this->assertStringContainsString('"start":"08:00:00"', $result[0]);
-
-        $this->assertStringContainsString('"end":"19:30:00"', $result[0]);
-
-        $this->assertStringContainsString('"site":"1"', $result[0]);
-
-        $this->assertStringContainsString('"group_tab_hide":1', $result[0]);
-
-        $this->assertStringContainsString('"nb_agents":0', $result[0]);
-
-        $this->assertStringContainsString('"max_agents":"4"', $result[0]);
-
-        $this->assertStringContainsString('"agent_id":"' . $abreton->getId() . '"', $result[0]);
-
-        $this->assertStringContainsString('"agent_name":"' . $abreton->getLastname() . '"', $result[0]);
-
-        $this->assertStringContainsString('"name_title":"' . $kboivin->getLastname() . ' ' . $kboivin->getFirstname() . '"', $result[0]);
-
-        $this->assertStringContainsString('"name_title":"' . $jdupont->getLastname() . ' ' . $jdupont->getFirstname() . '"', $result[0]);
-
-        // Check if the agent with wrong site is int the context menu
-        $this->assertStringNotContainsString('"name_title":"' . $jdevoe->getLastname() . ' ' . $jdevoe->getFirstname() . '"', $result[0]);
+        $this->assertArrayHasKey('agents', $contextmenu['menu2']);
+        $this->assertCount(3, $contextmenu['menu2']['agents']);
+        $this->assertSame(
+            $kboivin->getLastname() . ' ' . $kboivin->getFirstname(),
+            $contextmenu['menu2']['agents'][0]['name_title'],
+        );
+        $this->assertSame(
+            $abreton->getLastname() . ' ' . $abreton->getFirstname(),
+            $contextmenu['menu2']['agents'][1]['name_title'],
+        );
+        $this->assertSame(
+            $jdupont->getLastname() . ' ' . $jdupont->getFirstname(),
+            $contextmenu['menu2']['agents'][2]['name_title'],
+        );
     }
 }
