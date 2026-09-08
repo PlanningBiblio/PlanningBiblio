@@ -582,12 +582,27 @@ trait PlanningJobTrait
             'agent.id NOT IN (:excluded_agent_ids)',
         );
 
+        $qb2 = $this->entityManager->createQueryBuilder();
+        $qb2->from(PlanningPosition::class, 'pp');
+        $qb2->select('pp.id');
+        $qb2->where(
+            'pp.perso_id = agent.id',
+            'pp.date = :date',
+            'pp.debut = :debut',
+            'pp.fin = :fin',
+            'pp.site = :site',
+        );
+        $qb->andWhere(sprintf('NOT EXISTS (%s)', $qb2->getDql()));
+
         $qb->orderBy('agent.nom');
         $qb->addOrderBy('agent.prenom');
 
         $qb->setParameter('actif', 'Actif');
         $qb->setParameter('date', $date);
         $qb->setParameter('excluded_agent_ids', array_merge($agents_qualif, $tab_deja_place, $absents));
+        $qb->setParameter('debut', $debut);
+        $qb->setParameter('fin', $fin);
+        $qb->setParameter('site', $site);
 
         $query = $qb->getQuery();
         $autres_agents_tmp = $query->getArrayResult();
