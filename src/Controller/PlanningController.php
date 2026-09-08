@@ -1094,7 +1094,7 @@ class PlanningController extends BaseController
                 $db->delete("pl_poste", $where);
             }
         }
-        // Remplacement
+        // Remplacement ou ajout
         else {
             // si ni barrer, ni ajouter : on remplace
             if ($barrer == 0 and !$ajouter) {
@@ -1126,37 +1126,30 @@ class PlanningController extends BaseController
                     }
                 }
             }
-            // Si barrer : on barre l'ancien et ajoute le nouveau
-            elseif ($barrer == 1) {
-                // On barre l'ancien
-                if ($logaction) {
-                    $history = new PlanningPositionHistoryHelper();
-                    $history->cross($date, $debut, $fin, $site, $poste, $login_id, $perso_id_origine);
+            // sinon, on ajoute
+            else {
+                $playBefore = false;
+
+                if ($barrer == 1) {
+                    // On barre l'ancien
+                    if ($logaction) {
+                        $history = new PlanningPositionHistoryHelper();
+                        $history->cross($date, $debut, $fin, $site, $poste, $login_id, $perso_id_origine);
+                    }
+                    $set=array("absent"=>"1", "chgt_login"=>$login_id, "chgt_time"=>$now);
+                    $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id_origine);
+                    $db=new \db();
+                    $db->CSRFToken = $CSRFToken;
+                    $db->update("pl_poste", $set, $where);
+
+                    $playBefore = true;
                 }
-                $set=array("absent"=>"1", "chgt_login"=>$login_id, "chgt_time"=>$now);
-                $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id_origine);
-                $db=new \db();
-                $db->CSRFToken = $CSRFToken;
-                $db->update("pl_poste", $set, $where);
 
                 // On ajoute le nouveau
                 if ($logaction) {
                     $history = new PlanningPositionHistoryHelper();
-                    $history->add($date, $debut, $fin, $site, $poste, $login_id, $perso_id, true);
+                    $history->add($date, $debut, $fin, $site, $poste, $login_id, $perso_id, $playBefore);
                 }
-                $insert=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id,
-                              "chgt_login"=>$login_id, "chgt_time"=>$now);
-                $db=new \db();
-                $db->CSRFToken = $CSRFToken;
-                $db->insert("pl_poste", $insert);
-            }
-            // Si Ajouter, on garde l'ancien et ajoute le nouveau
-            elseif ($ajouter) {
-                if ($logaction) {
-                    $history = new PlanningPositionHistoryHelper();
-                    $history->add($date, $debut, $fin, $site, $poste, $login_id, $perso_id);
-                }
-
                 $insert=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id,
                               "chgt_login"=>$login_id, "chgt_time"=>$now);
                 $db=new \db();
