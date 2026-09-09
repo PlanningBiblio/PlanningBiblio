@@ -7,6 +7,7 @@ use App\Entity\AbsenceReason;
 use App\Entity\Agent;
 use App\Entity\HiddenTables;
 use App\Entity\Model;
+use App\Entity\PlanningPosition;
 use App\Entity\PlanningPositionHistory;
 use App\Entity\PlanningPositionLock;
 use App\Entity\Position;
@@ -15,6 +16,8 @@ use App\Entity\SeparationLine;
 use App\Planno\Helper\PlanningPositionHistoryHelper;
 use App\Planno\Framework;
 use App\Planno\PresentSet;
+use DateTime;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -980,7 +983,7 @@ class PlanningController extends BaseController
      * Cette page est appelée par la function JavaScript "bataille_navale" utilisé par le fichier planning/poste/menudiv.php
      */
     #[Route(path: '/planning/update-cell', name: 'planning.update.cell', methods: ['POST'])]
-    public function updateCell(Request $request): Response
+    public function updateCell(Request $request, EntityManagerInterface $em): Response
     {
         if (!$this->csrf_protection($request)) {
             return new Response(json_encode(['error' => 'The CSRF token is invalid. Please try to resubmit the form.']));
@@ -1094,7 +1097,7 @@ class PlanningController extends BaseController
                 $db->delete("pl_poste", $where);
             }
         }
-        // Remplacement
+        // Remplacement ou ajout
         else {
             // si ni barrer, ni ajouter : on remplace
             if ($barrer == 0 and !$ajouter) {
@@ -1126,42 +1129,48 @@ class PlanningController extends BaseController
                     }
                 }
             }
-            // Si barrer : on barre l'ancien et ajoute le nouveau
-            elseif ($barrer == 1) {
-                // On barre l'ancien
-                if ($logaction) {
-                    $history = new PlanningPositionHistoryHelper();
-                    $history->cross($date, $debut, $fin, $site, $poste, $login_id, $perso_id_origine);
-                }
-                $set=array("absent"=>"1", "chgt_login"=>$login_id, "chgt_time"=>$now);
-                $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id_origine);
-                $db=new \db();
-                $db->CSRFToken = $CSRFToken;
-                $db->update("pl_poste", $set, $where);
+            // sinon, on ajoute
+            else {
+                $playBefore = false;
 
-                // On ajoute le nouveau
-                if ($logaction) {
-                    $history = new PlanningPositionHistoryHelper();
-                    $history->add($date, $debut, $fin, $site, $poste, $login_id, $perso_id, true);
-                }
-                $insert=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id,
-                              "chgt_login"=>$login_id, "chgt_time"=>$now);
-                $db=new \db();
-                $db->CSRFToken = $CSRFToken;
-                $db->insert("pl_poste", $insert);
-            }
-            // Si Ajouter, on garde l'ancien et ajoute le nouveau
-            elseif ($ajouter) {
-                if ($logaction) {
-                    $history = new PlanningPositionHistoryHelper();
-                    $history->add($date, $debut, $fin, $site, $poste, $login_id, $perso_id);
-                }
+                $alreadyExists = (bool) $em->getRepository(PlanningPosition::class)->count([
+                    'perso_id' => $perso_id,
+                    'date' => DateTime::createFromFormat('Y-m-d', $date),
+                    'debut' => DateTime::createFromFormat('H:i:s', $debut),
+                    'fin' => DateTime::createFromFormat('H:i:s', $fin),
+                    'poste' => $poste,
+                    'site' => $site,
+                ]);
 
-                $insert=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id,
-                              "chgt_login"=>$login_id, "chgt_time"=>$now);
-                $db=new \db();
-                $db->CSRFToken = $CSRFToken;
-                $db->insert("pl_poste", $insert);
+                if (!$alreadyExists) {
+                    if ($barrer == 1) {
+                        // On barre l'ancien
+                        if ($logaction) {
+                            $history = new PlanningPositionHistoryHelper();
+                            $history->cross($date, $debut, $fin, $site, $poste, $login_id, $perso_id_origine);
+                        }
+                        $set=array("absent"=>"1", "chgt_login"=>$login_id, "chgt_time"=>$now);
+                        $where=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id_origine);
+                        $db=new \db();
+                        $db->CSRFToken = $CSRFToken;
+                        $db->update("pl_poste", $set, $where);
+
+                        $playBefore = true;
+                    }
+
+                    // On ajoute le nouveau
+                    if ($logaction) {
+                        $history = new PlanningPositionHistoryHelper();
+                        $history->add($date, $debut, $fin, $site, $poste, $login_id, $perso_id, $playBefore);
+                    }
+                    $insert=array("date"=>$date, "debut"=>$debut, "fin"=>$fin, "poste"=>$poste, "site"=>$site, "perso_id"=>$perso_id,
+                                  "chgt_login"=>$login_id, "chgt_time"=>$now);
+                    $db=new \db();
+                    $db->CSRFToken = $CSRFToken;
+                    $db->insert("pl_poste", $insert);
+                } else {
+                    $responseError = $this->translator->trans('This agent is already in the cell');
+                }
             }
         }
 
@@ -1195,6 +1204,7 @@ class PlanningController extends BaseController
         // Partie 2 : Récupération de l'ensemble des éléments
         // Et transmission à la fonction JS bataille_navale pour mise à jour de l'affichage de la cellule
 
+        $db=new \db();
         $db->selectLeftJoin(
             array("pl_poste","perso_id"),
                             array("personnel","id"),
@@ -1224,6 +1234,10 @@ class PlanningController extends BaseController
 
         if (empty($redoables)) {
             $response['redoable'] = 0;
+        }
+
+        if (isset($responseError)) {
+            $response['error'] = $responseError;
         }
 
         if (!$db->result) {

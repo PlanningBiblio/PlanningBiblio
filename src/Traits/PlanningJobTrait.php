@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use App\Entity\AbsenceReason;
+use App\Entity\Agent;
 use App\Entity\PlanningPosition;
 use App\Entity\Position;
 use App\Planno\WorkingHours;
@@ -572,19 +573,39 @@ trait PlanningJobTrait
         foreach ($agents_dispo as $elem) {
             $agents_qualif[]=$elem['id'];
         }
-        $agents_qualif = implode(',', $agents_qualif);
-        $absents = implode(',', $absents);
-        $tab_deja_place = implode(',', $tab_deja_place);
 
-        $db = new \db();
-        $dateSQL = $db->escapeString($date);
+        $qb = $this->entityManager->getRepository(Agent::class)->createQueryBuilder('agent');
+        $qb->where(
+            'agent.actif LIKE :actif',
+            'agent.arrivee <= :date OR agent.arrivee IS NULL',
+            'agent.depart >= :date OR agent.depart IS NULL',
+            'agent.id NOT IN (:excluded_agent_ids)',
+        );
 
-        $req="SELECT * FROM `{$dbprefix}personnel` "
-          ."WHERE `actif` LIKE 'Actif' AND (`arrivee` <= '$dateSQL' OR `arrivee` IS NULL) AND (`depart` >= '$dateSQL' OR `depart` IS NULL) AND `id` NOT IN ($agents_qualif) "
-          ."AND `id` NOT IN ($tab_deja_place) AND `id` NOT IN ($absents)  ORDER BY `nom`,`prenom`;";
+        $qb2 = $this->entityManager->createQueryBuilder();
+        $qb2->from(PlanningPosition::class, 'pp');
+        $qb2->select('pp.id');
+        $qb2->where(
+            'pp.perso_id = agent.id',
+            'pp.date = :date',
+            'pp.debut = :debut',
+            'pp.fin = :fin',
+            'pp.site = :site',
+        );
+        $qb->andWhere(sprintf('NOT EXISTS (%s)', $qb2->getDql()));
 
-        $db->query($req);
-        $autres_agents_tmp = $db->result;
+        $qb->orderBy('agent.nom');
+        $qb->addOrderBy('agent.prenom');
+
+        $qb->setParameter('actif', 'Actif');
+        $qb->setParameter('date', $date);
+        $qb->setParameter('excluded_agent_ids', array_merge($agents_qualif, $tab_deja_place, $absents));
+        $qb->setParameter('debut', $debut);
+        $qb->setParameter('fin', $fin);
+        $qb->setParameter('site', $site);
+
+        $query = $qb->getQuery();
+        $autres_agents_tmp = $query->getArrayResult();
 
         $autres_agents = array();
         if ($autres_agents_tmp) {
@@ -592,7 +613,7 @@ trait PlanningJobTrait
                 // Remove agents that doesn't work on requested site.
                 // Same check than above, but definitly remove them.
                 if ($this->config('Multisites-nombre') > 1) {
-                    $sites = json_decode(html_entity_decode($elem['sites'], ENT_QUOTES|ENT_IGNORE, 'UTF-8'), true);
+                    $sites = $elem['sites'];
                     if (!is_array($sites) or !in_array($site, $sites)) {
                         continue;
                     }
