@@ -2,41 +2,48 @@
 
 namespace App\Tests\Command;
 
-use Symfony\Component\Console\Tester\CommandTester;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Symfony\Component\Console\Output\OutputInterface;
-use App\Entity\WorkingHour;
 use App\Entity\Agent;
-use DateTime;
 use App\Entity\Config;
-use Tests\PLBWebTestCase;
+use App\Entity\WorkingHour;
+use DateTime;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Tester\CommandTester;
+use Tests\FixtureBuilder;
 
-class WorkingHourImportCommandTest extends PLBWebTestCase
+class WorkingHourImportCommandTest extends KernelTestCase
 {
-    private string $lockFile;
+    private $entityManager;
 
-    protected function setUp(): void
+    public static function setUpBeforeClass(): void
     {
-        parent::setUp();
+        $builder = new FixtureBuilder();
 
-        $this->restore();
-
-        $this->lockFile = sys_get_temp_dir() . '/plannoCSV.lock';
-        if (file_exists($this->lockFile)) {
-            @unlink($this->lockFile);
+        $builder->delete(Agent::class);
+        $builder->delete(WorkingHours::class);
+        
+        $lockFile = sys_get_temp_dir() . '/plannoCSV.lock';
+        if (file_exists($lockFile)) {
+            @unlink($lockFile);
         }
-
-        $this->builder->delete(Agent::class);
 
         $alex = $this->builder->build(Agent::class, [
             'login' => 'alex', 'mail' => 'alex@example.com', 'nom' => 'alex', 'prenom' => 'Alice',
             'supprime' => 0,'matricule' => '0000000ff040'
-        ]);
+            ]);
 
         $aurelie = $this->builder->build(Agent::class, [
             'login' => 'aurelie', 'mail' => 'aurelie@example.com', 'nom' => 'aurelie', 'prenom' => 'Alice',
             'supprime' => 0,'matricule' => '0000000ee490'
-        ]);        
+            ]);        
+    }
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->entityManager = static::getContainer()->get(EntityManagerInterface::class);
     }
 
     public function testLogin(): void
@@ -48,19 +55,43 @@ class WorkingHourImportCommandTest extends PLBWebTestCase
         $alex = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'alex']);
         $aurelie = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'aurelie']);
 
+        $time = [
+            0 => ['', '', '', '', 0],
+            1 => ['09:00:00', '12:00:00', '13:00:00', '17:00:00', 1],
+            2 => ['09:00:00', '13:00:00', '', '', 1],
+            3 => ['10:00:00', '12:00:00', '13:00:00', '17:00:00', 1],
+            4 => ['10:35', '12:35', '13:00:00', '17:00:00', 1],
+            5 => ['09:00:00', '13:00:00', '', '', 1],
+        ];
+
+        $whAurelie = new WorkingHour();
+        $whAurelie->setUser($aurelie->getId())
+            ->setStart(new DateTime('2025-04-01'))
+            ->setEnd(new DateTime('2025-04-30'))
+            ->setWorkingHours($time);
+        $this->entityManager->persist($whAurelie);
+
+        $whAurelie = new WorkingHour();
+        $whAurelie->setUser($aurelie->getId())
+            ->setStart(new DateTime('2025-05-26'))
+            ->setEnd(new DateTime('2025-06-01'))
+            ->setWorkingHours($time);
+        $this->entityManager->persist($whAurelie);
+        $this->entityManager->flush();
+
         $whAlex = $this->entityManager->getRepository(WorkingHour::class)->findOneBy(['perso_id' => $alex->getId()]);
-        $whAurelie = $this->entityManager->getRepository(WorkingHour::class)->findOneBy(['perso_id' => $aurelie->getId()]);
+        $whAurelie = $this->entityManager->getRepository(WorkingHour::class)->findBy(['perso_id' => $aurelie->getId()]);
 
         $this->assertNull($whAlex, '');
-        $this->assertNull($whAurelie, '');
+        $this->assertCount(2, $whAurelie, 'Aurelie should have 2 workingHours');
 
         $this->execute();
 
         $whAlex = $this->entityManager->getRepository(WorkingHour::class)->findOneBy(['perso_id' => $alex->getId()]);
-        $whAurelie = $this->entityManager->getRepository(WorkingHour::class)->findOneBy(['perso_id' => $aurelie->getId()]);
+        $whAurelie = $this->entityManager->getRepository(WorkingHour::class)->findBy(['perso_id' => $aurelie->getId()]);
 
         $this->assertNotNull($whAlex, '');
-        $this->assertNotNull($whAurelie, '');
+        $this->assertCount(6, $whAurelie, 'Aurelie should have 6 workingHours');
     }
 
     public function testMail(): void
