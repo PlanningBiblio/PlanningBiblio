@@ -27,6 +27,17 @@ class WorkingHourRepository extends EntityRepository
 
     }
 
+    /**
+     * Returns all the entities that have been imported (cle is not null)
+     */
+    public function findImported(): array
+    {
+        return $this->createQueryBuilder('w')
+            ->andWhere('w.cle IS NOT NULL')
+            ->getQuery()
+            ->getResult();
+    }
+
     public function get($start, $end = null, $valid = true, $perso_id = null)
     {
         $end = $end ?? $start;
@@ -55,4 +66,5 @@ class WorkingHourRepository extends EntityRepository
 
         return $result;
     }
+
 }
