@@ -325,6 +325,18 @@ class PlanningJobControllerTest extends PLBWebTestCase
         $this->createWeekPlanningFor($abreton);
         $this->createWeekPlanningFor($kboivin);
 
+        $builder->build(PlanningPosition::class, [
+            'perso_id' => $jdevoe->getId(),
+            'date' => new DateTime('2022-11-01'),
+            'poste' => $post->getId(),
+            'absent' => 0,
+            'debut' => new DateTime('08:00:00'),
+            'fin' => new DateTime('19:30:00'),
+            'supprime' => 0,
+            'site' => 1,
+            'grise' => 0,
+        ]);
+
         $crawler = $this->client->request('GET', "/planningjob/contextmenu?CSRFToken={$this->CSRFToken}&cellule=84&date=2022-11-01&debut=08%3A00%3A00&fin=19%3A30%3A00&perso_id=$ida&site=1&poste=$id&perso_nom=Breton");
 
         $json = $this->client->getResponse()->getContent();
@@ -337,19 +349,21 @@ class PlanningJobControllerTest extends PLBWebTestCase
         $this->assertSame('19:30:00', $contextmenu['end']);
         $this->assertSame('1', $contextmenu['site']);
         $this->assertSame(0, $contextmenu['group_tab_hide']);
-        $this->assertSame(0, $contextmenu['nb_agents']);
+        $this->assertSame(1, $contextmenu['nb_agents']);
         $this->assertSame('4', $contextmenu['max_agents']);
         $this->assertSame((string) $abreton->getId(), $contextmenu['agent_id']);
         $this->assertSame($abreton->getLastname(), $contextmenu['agent_name']);
+        $this->assertCount(2, $contextmenu['menu1']['agents']);
         $this->assertSame(
             $kboivin->getLastname() . ' ' . $kboivin->getFirstname(),
             $contextmenu['menu1']['agents'][0]['name_title'],
         );
         $this->assertSame(
-            $jdevoe->getLastname() . ' ' . $jdevoe->getFirstname(),
-            $contextmenu['menu1']['agents'][2]['name_title'],
+            $abreton->getLastname() . ' ' . $abreton->getFirstname(),
+            $contextmenu['menu1']['agents'][1]['name_title'],
         );
 
+        $this->assertCount(1, $contextmenu['menu2']['agents']);
         $this->assertSame($agentHoliday->getId(), $contextmenu['menu2']['agents'][0]['id']);
         $this->assertSame($agentHoliday->getLastname(), $contextmenu['menu2']['agents'][0]['nom']);
         $this->assertSame($agentHoliday->getFirstname(), $contextmenu['menu2']['agents'][0]['prenom']);
