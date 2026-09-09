@@ -47,7 +47,9 @@ class PlanningJobControllerTest extends PLBWebTestCase
             'temps' => $workingHours,
             'valide_n1' => 0,
             'valide' => 1,
-            'nb_semaine' => 1
+            'nb_semaine' => 1,
+            'remplace' => 0,
+            'exception' => 0,
         ));
     }
 
