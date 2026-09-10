@@ -18,6 +18,7 @@ class AbsenceImportICSCommandTest extends PLBWebTestCase
         parent::setUp();
 
         $this->builder->delete(Agent::class);
+        $this->builder->delete(Absence::class);
 
         $this->builder->build(Agent::class, [
             'login' => 'alice',

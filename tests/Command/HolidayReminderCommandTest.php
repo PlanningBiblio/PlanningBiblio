@@ -394,7 +394,7 @@ class HolidayReminderCommandTest extends KernelTestCase
             $GLOBALS['config'][$k] = $v;
         }
 
-        $holiday = $entityManager->getRepository(Holiday::class)->find(1);
+        $holiday = $entityManager->getRepository(Holiday::class)->findAll()[0];
         $holiday->setValidLevel1($level1);
         $holiday->setValidLevel2($level2);
         $entityManager->persist($holiday);
