@@ -15,6 +15,7 @@ use Tests\FixtureBuilder;
 
 class WorkingHourImportCommandTest extends KernelTestCase
 {
+    private $config;
     private $entityManager;
 
     public static function setUpBeforeClass(): void
@@ -22,28 +23,48 @@ class WorkingHourImportCommandTest extends KernelTestCase
         $builder = new FixtureBuilder();
 
         $builder->delete(Agent::class);
-        $builder->delete(WorkingHours::class);
-        
+        $builder->delete(WorkingHour::class);
+
         $lockFile = sys_get_temp_dir() . '/plannoCSV.lock';
         if (file_exists($lockFile)) {
             @unlink($lockFile);
         }
 
-        $alex = $this->builder->build(Agent::class, [
+        $alex = $builder->build(Agent::class, [
             'login' => 'alex', 'mail' => 'alex@example.com', 'nom' => 'alex', 'prenom' => 'Alice',
             'supprime' => 0,'matricule' => '0000000ff040'
             ]);
 
-        $aurelie = $this->builder->build(Agent::class, [
+        $aurelie = $builder->build(Agent::class, [
             'login' => 'aurelie', 'mail' => 'aurelie@example.com', 'nom' => 'aurelie', 'prenom' => 'Alice',
             'supprime' => 0,'matricule' => '0000000ee490'
-            ]);        
+            ]);
+
+        $config = new Config();
+        $config->setName('PlanningHebdo-ImportAgentId')->setValue('');
+
+        $entityManager = static::getContainer()->get(EntityManagerInterface::class);
+        $entityManager->persist($config);
+        $entityManager->flush();
     }
 
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->entityManager = static::getContainer()->get(EntityManagerInterface::class);
+        $this->config = $this->entityManager->getRepository(Config::class);
+
+        $builder = new FixtureBuilder();
+        $builder->delete(WorkingHour::class);
+    }
+
+    public static function tearDownAfterClass(): void
+    {
+        $builder = new FixtureBuilder();
+
+        $builder->delete(Agent::class);
+        $builder->delete(WorkingHour::class);
     }
 
     public function testLogin(): void
@@ -96,10 +117,10 @@ class WorkingHourImportCommandTest extends KernelTestCase
 
     public function testMail(): void
     {
-        $this->addConfig('PlanningHebdo-ImportAgentId', 'mail');
+        $this->config->setParam('PlanningHebdo-ImportAgentId', 'mail');
         $this->config->setParam('PlanningHebdo-CSV', __DIR__ . '/../data/workingHourImport_mail.csv');
         $this->config->setParam('Multisites-nombre', 1);
-        
+
         $alex = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'alex']);
         $aurelie = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'aurelie']);
 
@@ -144,10 +165,10 @@ class WorkingHourImportCommandTest extends KernelTestCase
 
     public function testMatricule(): void
     {
-        $this->addConfig('PlanningHebdo-ImportAgentId', 'matricule');
+        $this->config->setParam('PlanningHebdo-ImportAgentId', 'matricule');
         $this->config->setParam('PlanningHebdo-CSV', __DIR__ . '/../data/workingHourImport_matricule.csv');
         $this->config->setParam('Multisites-nombre', 1);
-        
+
         $alex = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'alex']);
         $aurelie = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'aurelie']);
 
@@ -170,7 +191,7 @@ class WorkingHourImportCommandTest extends KernelTestCase
     {
         $kernel = self::bootKernel();
         $application = new Application($kernel);
- 
+
         $command = $application->find('app:workinghour:import');
 
         $commandTester = new CommandTester($command);
