@@ -30,21 +30,49 @@ class WorkingHourImportCommandTest extends KernelTestCase
             @unlink($lockFile);
         }
 
-        $alex = $builder->build(Agent::class, [
-            'login' => 'alex', 'mail' => 'alex@example.com', 'nom' => 'alex', 'prenom' => 'Alice',
-            'supprime' => 0,'matricule' => '0000000ff040'
-            ]);
+        $entityManager = static::getContainer()->get(EntityManagerInterface::class);
 
-        $aurelie = $builder->build(Agent::class, [
-            'login' => 'aurelie', 'mail' => 'aurelie@example.com', 'nom' => 'aurelie', 'prenom' => 'Alice',
-            'supprime' => 0,'matricule' => '0000000ee490'
-            ]);
+        $alex = new Agent();
+        $alex->setLogin('alex')
+            ->setMail('alex@example.com')
+            ->setEmployeeNumber('0000000ff040');
+        $entityManager->persist($alex);
+
+        $aurelie = new Agent();
+        $aurelie->setLogin('aurelie')
+            ->setMail('aurelie@example.com')
+            ->setEmployeeNumber('0000000ee490');
+        $entityManager->persist($aurelie);
+
+        $entityManager->flush();
 
         $config = new Config();
         $config->setName('PlanningHebdo-ImportAgentId')->setValue('');
-
-        $entityManager = static::getContainer()->get(EntityManagerInterface::class);
         $entityManager->persist($config);
+
+        $time = [
+            0 => ['', '', '', '', 0],
+            1 => ['09:00:00', '12:00:00', '13:00:00', '17:00:00', 1],
+            2 => ['09:00:00', '13:00:00', '', '', 1],
+            3 => ['10:00:00', '12:00:00', '13:00:00', '17:00:00', 1],
+            4 => ['10:35', '12:35', '13:00:00', '17:00:00', 1],
+            5 => ['09:00:00', '13:00:00', '', '', 1],
+        ];
+
+        $whAurelie = new WorkingHour();
+        $whAurelie->setUser($aurelie->getId())
+            ->setStart(new DateTime('2025-04-01'))
+            ->setEnd(new DateTime('2025-04-30'))
+            ->setWorkingHours($time);
+        $entityManager->persist($whAurelie);
+
+        $whAurelie = new WorkingHour();
+        $whAurelie->setUser($aurelie->getId())
+            ->setStart(new DateTime('2025-05-26'))
+            ->setEnd(new DateTime('2025-06-01'))
+            ->setWorkingHours($time);
+        $entityManager->persist($whAurelie);
+
         $entityManager->flush();
     }
 
@@ -55,8 +83,12 @@ class WorkingHourImportCommandTest extends KernelTestCase
         $this->entityManager = static::getContainer()->get(EntityManagerInterface::class);
         $this->config = $this->entityManager->getRepository(Config::class);
 
-        $builder = new FixtureBuilder();
-        $builder->delete(WorkingHour::class);
+        $importedHours = $this->entityManager->getRepository(WorkingHour::class)->findImported();
+        foreach ($importedHours as $hours) {
+            $this->entityManager->remove($hours);
+        }
+
+        $this->entityManager->flush();
     }
 
     public static function tearDownAfterClass(): void
@@ -75,30 +107,6 @@ class WorkingHourImportCommandTest extends KernelTestCase
 
         $alex = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'alex']);
         $aurelie = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'aurelie']);
-
-        $time = [
-            0 => ['', '', '', '', 0],
-            1 => ['09:00:00', '12:00:00', '13:00:00', '17:00:00', 1],
-            2 => ['09:00:00', '13:00:00', '', '', 1],
-            3 => ['10:00:00', '12:00:00', '13:00:00', '17:00:00', 1],
-            4 => ['10:35', '12:35', '13:00:00', '17:00:00', 1],
-            5 => ['09:00:00', '13:00:00', '', '', 1],
-        ];
-
-        $whAurelie = new WorkingHour();
-        $whAurelie->setUser($aurelie->getId())
-            ->setStart(new DateTime('2025-04-01'))
-            ->setEnd(new DateTime('2025-04-30'))
-            ->setWorkingHours($time);
-        $this->entityManager->persist($whAurelie);
-
-        $whAurelie = new WorkingHour();
-        $whAurelie->setUser($aurelie->getId())
-            ->setStart(new DateTime('2025-05-26'))
-            ->setEnd(new DateTime('2025-06-01'))
-            ->setWorkingHours($time);
-        $this->entityManager->persist($whAurelie);
-        $this->entityManager->flush();
 
         $whAlex = $this->entityManager->getRepository(WorkingHour::class)->findOneBy(['perso_id' => $alex->getId()]);
         $whAurelie = $this->entityManager->getRepository(WorkingHour::class)->findBy(['perso_id' => $aurelie->getId()]);
@@ -123,30 +131,6 @@ class WorkingHourImportCommandTest extends KernelTestCase
 
         $alex = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'alex']);
         $aurelie = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'aurelie']);
-
-        $time = [
-            0 => ['', '', '', '', 0],
-            1 => ['09:00:00', '12:00:00', '13:00:00', '17:00:00', 1],
-            2 => ['09:00:00', '13:00:00', '', '', 1],
-            3 => ['10:00:00', '12:00:00', '13:00:00', '17:00:00', 1],
-            4 => ['10:35', '12:35', '13:00:00', '17:00:00', 1],
-            5 => ['09:00:00', '13:00:00', '', '', 1],
-        ];
-
-        $whAurelie = new WorkingHour();
-        $whAurelie->setUser($aurelie->getId())
-            ->setStart(new DateTime('2025-04-01'))
-            ->setEnd(new DateTime('2025-04-30'))
-            ->setWorkingHours($time);
-        $this->entityManager->persist($whAurelie);
-
-        $whAurelie = new WorkingHour();
-        $whAurelie->setUser($aurelie->getId())
-            ->setStart(new DateTime('2025-05-26'))
-            ->setEnd(new DateTime('2025-06-01'))
-            ->setWorkingHours($time);
-        $this->entityManager->persist($whAurelie);
-        $this->entityManager->flush();
 
         $whAlex = $this->entityManager->getRepository(WorkingHour::class)->findOneBy(['perso_id' => $alex->getId()]);
         $whAurelie = $this->entityManager->getRepository(WorkingHour::class)->findBy(['perso_id' => $aurelie->getId()]);
@@ -173,18 +157,18 @@ class WorkingHourImportCommandTest extends KernelTestCase
         $aurelie = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'aurelie']);
 
         $whAlex = $this->entityManager->getRepository(WorkingHour::class)->findOneBy(['perso_id' => $alex->getId()]);
-        $whAurelie = $this->entityManager->getRepository(WorkingHour::class)->findOneBy(['perso_id' => $aurelie->getId()]);
+        $whAurelie = $this->entityManager->getRepository(WorkingHour::class)->findBy(['perso_id' => $aurelie->getId()]);
 
         $this->assertNull($whAlex, '');
-        $this->assertNull($whAurelie, '');
+        $this->assertCount(2, $whAurelie, 'Aurelie should have 2 workingHours');
 
         $this->execute();
 
         $whAlex = $this->entityManager->getRepository(WorkingHour::class)->findOneBy(['perso_id' => $alex->getId()]);
-        $whAurelie = $this->entityManager->getRepository(WorkingHour::class)->findOneBy(['perso_id' => $aurelie->getId()]);
+        $whAurelie = $this->entityManager->getRepository(WorkingHour::class)->findBy(['perso_id' => $aurelie->getId()]);
 
         $this->assertNotNull($whAlex, '');
-        $this->assertNotNull($whAurelie, '');
+        $this->assertCount(6, $whAurelie, 'Aurelie should have 6 workingHours');
     }
 
     private function execute(): void

@@ -66,5 +66,4 @@ class WorkingHourRepository extends EntityRepository
 
         return $result;
     }
-
 }
