@@ -226,7 +226,7 @@ class WorkingHourImportCommand extends Command
         // Recherche des éléments déjà importés
         $tab_db = [];
 
-        $workingHours = $this->entityManager->getRepository(Workinghour::class)->findBy(['cle' => 0]);
+        $workingHours = $this->entityManager->getRepository(Workinghour::class)->findImported();
         foreach ($workingHours as $wh) {
             $tab_db[$wh->getKey()] = $wh;
             $cles_db[] = $wh->getKey();

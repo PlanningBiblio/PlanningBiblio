@@ -214,8 +214,6 @@ class WorkingHourExportCommandTest extends PLBWebTestCase
                 $this->assertArrayNotHasKey(6, $cells, 'Alex works from 13:35 to 17:35 next saturday');
             }
         }
-
-        $this->restore();
     }
 
     protected function execute(): void

@@ -71,6 +71,6 @@ class ClassMenuTest extends TestCase
         $GLOBALS['config']['Multisites-site1'] = '';
         $GLOBALS['config']['Multisites-site2'] = '';
         $GLOBALS['config']['Multisites-site3'] = '';
-   }
+    }
 
 }

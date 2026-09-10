@@ -14,7 +14,7 @@ class HolidayResetCreditsCommandTest extends PLBWebTestCase
     {
         parent::setUp();
 
-        $this->restore();
+        $this->builder->delete(Agent::class);
 
         $this->builder->build(Agent::class, array(
             'login' => 'jdupont',
