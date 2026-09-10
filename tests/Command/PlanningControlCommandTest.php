@@ -19,10 +19,70 @@ use Tests\PLBWebTestCase;
 
 class PlanningControlCommandTest extends PLBWebTestCase
 {
-    protected function setUp(): void
+    public static function setUpBeforeClass(): void
     {
-        parent::setUp();
-        parent::setData('data7');
+        $config = $GLOBALS['config'];
+
+        $file = __DIR__ . "/../data/data7.sql";
+
+        if (file_exists($file)) {
+            $dblink= mysqli_init();
+            $dbconn = mysqli_real_connect($dblink, $config['dbhost'], $config['dbuser'], $config['dbpass'], 'mysql');
+
+            if ($dbconn) {
+                $handle = fopen($file, 'r');
+                $queries = "USE {$config['dbname']};";
+
+                if ($handle) {
+                    while (($line = fgets($handle)) !== false) {
+                        if (in_array(substr($line, 0, 1), ['-', '/', 'c', 's', 'L', 'U'])) {
+                            continue;
+                        }
+                        $queries .= $line;
+                    }
+                    fclose($handle);
+                }
+                mysqli_multi_query($dblink, $queries);
+                mysqli_close($dblink);       
+                sleep(3);
+
+                exec(__DIR__ . '/../../bin/console doctrine:migrations:migrate --env=test -q');
+            }
+        sleep(3);
+        }
+    }
+
+    public static function tearDownAfterClass(): void
+    {
+        $config = $GLOBALS['config'];
+
+        $file = __DIR__ . "/../data/default.sql";
+
+        if (file_exists($file)) {
+            $dblink= mysqli_init();
+            $dbconn = mysqli_real_connect($dblink, $config['dbhost'], $config['dbuser'], $config['dbpass'], 'mysql');
+
+            if ($dbconn) {
+                $handle = fopen($file, 'r');
+                $queries = "USE {$config['dbname']};";
+
+                if ($handle) {
+                    while (($line = fgets($handle)) !== false) {
+                        if (in_array(substr($line, 0, 1), ['-', '/', 'c', 's', 'L', 'U'])) {
+                            continue;
+                        }
+                        $queries .= $line;
+                    }
+                    fclose($handle);
+                }
+                mysqli_multi_query($dblink, $queries);
+                mysqli_close($dblink);       
+                sleep(3);
+
+                exec(__DIR__ . '/../../bin/console doctrine:migrations:migrate --env=test -q');
+            }
+        sleep(3);
+        }
     }
 
     public function testPlanningImportModel(): void
@@ -70,7 +130,7 @@ class PlanningControlCommandTest extends PLBWebTestCase
         // Load a model
         $linkModel = $crawler->filter('#planning-import');
 
-        $this->assertTrue($linkModel->count() == 1, 'Importer un modèle');
+        $this->assertCount(1, $linkModel, 'We should count 1 model');
 
         $linkModel->click();
         $crawler = $this->client->refreshCrawler();
@@ -104,8 +164,6 @@ class PlanningControlCommandTest extends PLBWebTestCase
         $this->testPlanningControlCommandPlanningValidated();
 
         $this->testPlanningControlCommandEmptyCells();
-
-        parent::setData();
     }
 
     private function testPlanningControlCommandPlanningNotCreated(): void // no import??

@@ -14,8 +14,6 @@ class HolidayResetCompTimeCommandTest extends PLBWebTestCase
     protected function setUp(): void
     {
         parent::setUp();
-
-        $this->restore();
     }
 
     public function testHolidayResetCompTimeCommand(): void
@@ -83,8 +81,6 @@ class HolidayResetCompTimeCommandTest extends PLBWebTestCase
         $this->assertEquals(0, $amyHoliday->getActualCompTime(), 'Amy: actualCompTime should be 0');
         $this->assertEquals(22.22, $amyHoliday->getActualRemainder(), 'Amy: actualRemainder should be 22.2');
         $this->assertEquals(23.33, $amyHoliday->getActualAnticipation(), 'Amy: actualAnticipation should be 23');
-
-        $this->restore();
     }
 
     private function execute(): void
