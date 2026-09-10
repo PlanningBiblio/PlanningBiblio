@@ -14,12 +14,12 @@ class HolidayResetRemainderCommandTest extends PLBWebTestCase
     protected function setUp(): void
     {
         parent::setUp();
-
-        $this->restore();
     }
 
     public function testResetRemainderCommand(): void
     {
+        $this->builder->delete(Agent::class);
+
         $alice = $this->builder->build(Agent::class, [
             'login' => 'alice', 'conges_credit' => 11, 'comp_time' => 22, 'conges_anticipation' => 33, 'conges_reliquat' => 1.11
         ]);
@@ -171,8 +171,6 @@ class HolidayResetRemainderCommandTest extends PLBWebTestCase
                 'Agent remainder should be reset to 0.'
             );
         }
-
-        $this->restore();
     }
 
     private function execute(): void

@@ -17,8 +17,6 @@ class AbsenceImportCSVCommandTest extends PLBWebTestCase
     {
         parent::setUp();
 
-        $this->restore();
-
         $this->lockFile = sys_get_temp_dir() . '/plannoAbsenceImportCSV.lock';
         if (file_exists($this->lockFile)) {
             @unlink($this->lockFile);
@@ -39,6 +37,8 @@ class AbsenceImportCSVCommandTest extends PLBWebTestCase
         $GLOBALS['config']['hamac_status_waiting'] = [3];
         $GLOBALS['config']['hamac_status_validated'] = [2,5];
         $GLOBALS['config']['hamac_days_before'] = $daysBefore;
+
+        $this->builder->delete(Absence::class);
     }
 
     public function testExitsWhenLockFileIsRecent(): void
@@ -111,8 +111,6 @@ class AbsenceImportCSVCommandTest extends PLBWebTestCase
 
         $countAfter = $this->entityManager->getConnection()->fetchOne("SELECT COUNT(*) FROM absences");
         $this->assertSame(214, $countAfter, "214 absences from 2025-10-14 with status 2 should be imported");
-
-        $this->restore();
     }
 
     private function execute(): void
