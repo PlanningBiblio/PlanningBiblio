@@ -72,19 +72,43 @@ class WorkingHourImportCommandTest extends PLBWebTestCase
         $alex = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'alex']);
         $aurelie = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'aurelie']);
 
+        $time = [
+            0 => ['', '', '', '', 0],
+            1 => ['09:00:00', '12:00:00', '13:00:00', '17:00:00', 1],
+            2 => ['09:00:00', '13:00:00', '', '', 1],
+            3 => ['10:00:00', '12:00:00', '13:00:00', '17:00:00', 1],
+            4 => ['10:35', '12:35', '13:00:00', '17:00:00', 1],
+            5 => ['09:00:00', '13:00:00', '', '', 1],
+        ];
+
+        $whAurelie = new WorkingHour();
+        $whAurelie->setUser($aurelie->getId())
+            ->setStart(new DateTime('2025-04-01'))
+            ->setEnd(new DateTime('2025-04-30'))
+            ->setWorkingHours($time);
+        $this->entityManager->persist($whAurelie);
+
+        $whAurelie = new WorkingHour();
+        $whAurelie->setUser($aurelie->getId())
+            ->setStart(new DateTime('2025-05-26'))
+            ->setEnd(new DateTime('2025-06-01'))
+            ->setWorkingHours($time);
+        $this->entityManager->persist($whAurelie);
+        $this->entityManager->flush();
+
         $whAlex = $this->entityManager->getRepository(WorkingHour::class)->findOneBy(['perso_id' => $alex->getId()]);
-        $whAurelie = $this->entityManager->getRepository(WorkingHour::class)->findOneBy(['perso_id' => $aurelie->getId()]);
+        $whAurelie = $this->entityManager->getRepository(WorkingHour::class)->findBy(['perso_id' => $aurelie->getId()]);
 
         $this->assertNull($whAlex, '');
-        $this->assertNull($whAurelie, '');
+        $this->assertCount(2, $whAurelie, 'Aurelie should have 2 workingHours');
 
         $this->execute();
 
         $whAlex = $this->entityManager->getRepository(WorkingHour::class)->findOneBy(['perso_id' => $alex->getId()]);
-        $whAurelie = $this->entityManager->getRepository(WorkingHour::class)->findOneBy(['perso_id' => $aurelie->getId()]);
+        $whAurelie = $this->entityManager->getRepository(WorkingHour::class)->findBy(['perso_id' => $aurelie->getId()]);
 
         $this->assertNotNull($whAlex, '');
-        $this->assertNotNull($whAurelie, '');
+        $this->assertCount(6, $whAurelie, 'Aurelie should have 6 workingHours');
     }
 
     public function testMatricule(): void
