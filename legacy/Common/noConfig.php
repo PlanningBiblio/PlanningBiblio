@@ -16,12 +16,6 @@ Affiche une page renvoyant vers le fichier setup/index.php si le fichier de conf
 Page appelée (include) par le fichier et index.php si le fichier include/config.php est absent
 */
 
-// Contrôle si ce script est appelé directement, dans ce cas, affiche Accès Refusé et quitte
-if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) {
-    include_once(__DIR__.'/../include/accessDenied.php');
-    exit;
-}
-
 // Construction du chemin relatif pour trouver les fichiers css
 $dir1=dirname(__DIR__);
 // Fichier demandé
@@ -40,11 +34,11 @@ for ($i=0;$i<$nb;$i++) {
 
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
 <title>Planning</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins">
+<link rel="stylesheet" href="<?php echo $path; ?>vendor/GoogleApis/poppins.css">
 <link rel='StyleSheet' href='<?php echo $path; ?>themes/default/default.css' type='text/css' media='all'/>
 </head>
 
@@ -54,10 +48,15 @@ for ($i=0;$i<$nb;$i++) {
 <center>
 <strong>
 Le fichier de configuration est manquant.<br/> 
-<a href='setup'>Cliquez ici pour commencer l'installation.</a>
 </strong>
 </center>
+
+<footer>
+    Planno (<?php echo $GLOBALS['version']; ?>) - 
+    <a href="https://www.planno.fr" target="_blank" rel="noopener">www.planno.fr<span class="visually-hidden"> (nouvelle fenêtre)</span></a>
+</footer>
+</body>
+</html>
+
 <?php
-include(__DIR__.'/footer.php');
 exit;
-?>
