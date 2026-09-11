@@ -43,7 +43,7 @@ $link="<a href='{$path}'>Retour à l'application</a>";
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
 <title>Planning</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -74,10 +74,10 @@ if (isset($IPBlocker)) {
 ?>
 </p>
 </center>
-<div class='footer'>
-Planno -
-<a href='https://www.planno.fr' target='_blank' style='font-size:9pt;'>www.planno.fr</a>
-</div>
+    <footer>
+        Planno - 
+        <a href="https://www.planno.fr" target="_blank" rel="noopener">www.planno.fr<span class="visually-hidden"> (nouvelle fenêtre)</span></a>
+    </footer>
 </body>
 </html>
 <?php

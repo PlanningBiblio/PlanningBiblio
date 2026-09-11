@@ -27,6 +27,32 @@ body,a,input,select,textarea,button {
 	font-size:13px;
 	}
 
+/* Skip link (RGAA 12.7)
+   Visually hidden, made visible upon keyboard focus.
+   Do not use display:none or visibility:hidden: the link must
+   remain in the tab order. */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 1080; /* above the Bootstrap menu bar */
+  padding: 0.5rem 1rem;
+  background: #fff;
+  color: #000;
+  border: 2px solid #000;
+  text-decoration: underline;
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  left: 0;
+}
+
+.header-spacer {
+  position: relative;
+  top: 30px;
+}
+
 .left-border{
   padding: 10px 19px 6px 19px;
   border-left:  1px solid black;
@@ -190,6 +216,16 @@ h4{
 
 #content-planning{
   padding: 0 0 0 0;
+}
+
+/* The skip link target must be able to receive focus.
+   `tabindex="-1"` is unnecessary here: `<main>` is focusable via a fragment identifier
+   in modern browsers. We simply ensure the visibility
+   of the focus indicator. */
+#content:focus,
+#content-planning:focus {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
 }
 
 .ferie {
@@ -1819,12 +1855,16 @@ div.dt-buttons button.dt-button.buttons-print:hover {
 }
 
 /*	Footer	*/
-.footer{
+footer {
   text-align:center;
-  margin:50px 30px 0 0;
+  margin:50px 30px 20px 30px;
   opacity:0.7;
   font-size:9pt;
   width:100%;
+}
+
+footer a {
+  font-size: inherit;
 }
 
 /*	Congés	*/
@@ -2553,6 +2593,21 @@ table.dataTable th{
     #DEE2E6 7px,
     #DEE2E6 10px
   );
+}
+
+/* Accessible hiding utility, in case Bootstrap is not
+   loaded on a page. Bootstrap 5 already provides .visually-hidden;
+   this rule has no effect if it is already defined. */
+.visually-hidden:not(:focus):not(:active) {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
 }
 
 @media only screen and (max-width: 1550px){
