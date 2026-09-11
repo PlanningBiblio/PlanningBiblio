@@ -585,3 +585,12 @@ msgstr "Afficher toutes les absences"
 
 msgid "Calendar view"
 msgstr "Vue calendaire"
+
+msgid "Skip to main content"
+msgstr "Aller au contenu principal"
+
+msgid "(new window)"
+msgstr "(nouvelle fenêtre)"
+
+msgid "Legal notice"
+msgstr "Mentions légales"
