@@ -81,7 +81,7 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $jdupont->setLastName('Dupont');
         $jdupont->setFirstName('Jean');
         $jdupont->setSites(['1', '2']);
-        $jdupont->setACL([3,4,5,6,9,17,20,21,22,23,25,99,100,201,202,301,302,401,402,501,502,701,801,802,901,1001,1002,1101,1201,1301]);
+        $jdupont->setACL(self::jdupontRights());
         $jdupont->setHolidayAnnualCredit(150);
         $jdupont->setHolidayCredit(40);
         $jdupont->setHolidayRemainder(9);
@@ -119,6 +119,32 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $entityManager->persist($overTime);
 
         $entityManager->flush();
+    }
+
+    private static function jdupontRights(int $secondSiteId = 2): array
+    {
+        $rights = [3, 4, 5, 6, 9, 17, 20, 21, 22, 23, 25, 99, 100, 201, 301, 401, 501, 701, 801, 901, 1001, 1101, 1201, 1301];
+        foreach ([200, 300, 400, 500, 800, 1000] as $level) {
+            $rights[] = $level + $secondSiteId;
+        }
+
+        return $rights;
+    }
+
+    private function attachSecondSite(Site $site): void
+    {
+        $siteId = $site->getId();
+
+        $kboivin = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'kboivin']);
+        $kboivin->setSites([(string)$siteId]);
+        $this->entityManager->persist($kboivin);
+
+        $jdupont = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'jdupont']);
+        $jdupont->setSites(['1', (string)$siteId]);
+        $jdupont->setACL(self::jdupontRights($siteId));
+        $this->entityManager->persist($jdupont);
+
+        $this->entityManager->flush();
     }
 
     public static function tearDownAfterClass(): void
@@ -178,7 +204,8 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $this->assertSelectorNotExists('#sites-selection', 'There site selection div should not be present');
 
         // With Multisite
-        $this->builder->build(Site::class, array('name' => 'Site N°1'));
+        $site = $this->builder->build(Site::class, array('name' => 'Site N°1'));
+        $this->attachSecondSite($site);
         $jdupont = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'jdupont']);
         $this->login($jdupont);
 
@@ -203,7 +230,7 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $closeIcon->click();
 
         $agents_list = $this->getSelectValues('perso_ids');
-        $this->assertCount(4, $agents_list);
+        $this->assertCount(5, $agents_list);
         $this->assertTrue(in_array($jdupont->getId(), $agents_list), 'jdupont');
         $this->assertTrue(in_array($jdevoe->getId(), $agents_list), 'jdevoe');
         $this->assertTrue(in_array($abreton->getId(), $agents_list), 'abreton');
@@ -214,7 +241,7 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $button->click();
 
         $agents_list = $this->getSelectValues('perso_ids');
-        $this->assertCount(4, $agents_list);
+        $this->assertCount(5, $agents_list);
         $hiddenAgents = $crawler->filter('#perso_ids option[style="display: none;"]');
         $this->assertCount(2, $hiddenAgents);
         $this->assertEquals($abreton->getId(), $hiddenAgents->attr('value'), 'Breton Aubert should not be selectable');
@@ -274,7 +301,7 @@ class HolidayControllerAddTest extends PLBWebTestCase
         $agent_select->selectByValue('tous');
 
         $selectedAgents = $crawler->filter('ul#perso_ul1 li');
-        $this->assertCount(4, $selectedAgents, 'All agents should be selected');
+        $this->assertCount(5, $selectedAgents, 'All agents should be selected');
     }
 
     public function testHolidayUniqueAgent(): void
@@ -466,10 +493,11 @@ class HolidayControllerAddTest extends PLBWebTestCase
 
         $jdupont = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'jdupont']);
         $abreton = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'abreton']);
-        $droits = array(3,4,5,6,9,17,20,21,22,23,25,99,100,201,202,301,302,401,402,501,502,701,801,802,901,1001,1002,1101,1201,1301);
+        $secondSiteId = $this->entityManager->getRepository(Site::class)->findOneBy(['name' => 'Site N°2'])->getId();
+        $droits = self::jdupontRights($secondSiteId);
 
         // Add level 2 validation rights on Holiday
-        array_push($droits, 601, 602);
+        array_push($droits, 601, 600 + $secondSiteId);
         $jdupont->setACL($droits);
 
         $this->login($jdupont);

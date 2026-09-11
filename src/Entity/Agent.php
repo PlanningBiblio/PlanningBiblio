@@ -754,15 +754,17 @@ class Agent
         // Module workinghour, no multisites.
         if ($needed_l1 == 1100) {
             $sites_number = 1;
+            $sites_array = [['id' => 1]];
         }
 
         $rights = $this->droits;
 
         $managed_sites = array();
-        for ($i = 1; $i <= $sites_number; $i++) {
-            if (in_array($needed_l1 + $i, $rights)
-                or in_array($needed_l2 + $i, $rights)) {
-                $managed_sites[] = $i;
+        foreach ($sites_array as $site) {
+            $site_id = $site['id'];
+            if (in_array($needed_l1 + $site_id, $rights)
+                or in_array($needed_l2 + $site_id, $rights)) {
+                $managed_sites[] = $site_id;
             }
         }
 
