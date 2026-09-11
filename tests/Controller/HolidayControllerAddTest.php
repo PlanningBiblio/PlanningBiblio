@@ -131,6 +131,18 @@ class HolidayControllerAddTest extends PLBWebTestCase
         return $rights;
     }
 
+    private function secondSite(): Site
+    {
+        $site = $this->entityManager->getRepository(Site::class)->findOneBy(['name' => 'Site N°1']);
+
+        if (!$site) {
+            $site = $this->builder->build(Site::class, array('name' => 'Site N°1'));
+            $this->attachSecondSite($site);
+        }
+
+        return $site;
+    }
+
     private function attachSecondSite(Site $site): void
     {
         $siteId = $site->getId();
@@ -299,9 +311,9 @@ class HolidayControllerAddTest extends PLBWebTestCase
         // Select all agents
         $agent_select = $this->getSelect('perso_ids');
         $agent_select->selectByValue('tous');
-
+        
         $selectedAgents = $crawler->filter('ul#perso_ul1 li');
-        $this->assertCount(5, $selectedAgents, 'All agents should be selected');
+        $this->assertCount(count($agentsOptions) - 2, $selectedAgents, 'All agents should be selected');
     }
 
     public function testHolidayUniqueAgent(): void
@@ -493,7 +505,7 @@ class HolidayControllerAddTest extends PLBWebTestCase
 
         $jdupont = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'jdupont']);
         $abreton = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'abreton']);
-        $secondSiteId = $this->entityManager->getRepository(Site::class)->findOneBy(['name' => 'Site N°2'])->getId();
+        $secondSiteId = $this->secondSite()->getId();
         $droits = self::jdupontRights($secondSiteId);
 
         // Add level 2 validation rights on Holiday

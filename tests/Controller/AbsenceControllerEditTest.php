@@ -253,7 +253,7 @@ class AbsenceControllerEditTest extends PLBWebTestCase
 
         $crawler = $this->client->request('GET', '/absence/add');
 
-        $stateValidation = $crawler->filter('#validation-state');
+        $stateValidation = $this->waitForValidationState('input');
         $this->assertEquals('input', $stateValidation->nodeName(), 'The validation state objetc is not an input');
         $this->assertNotNull($stateValidation->attr('readonly'), 'The validation state object should be readonly');
 
@@ -261,18 +261,16 @@ class AbsenceControllerEditTest extends PLBWebTestCase
         $agentOption = $crawler->filterXPath(".//select[@id='perso_ids']//option[@value='" . $bmarleyId  . "']");
         $agentOption->click();
 
+        $stateValidation = $this->waitForValidationState('select');
         $crawler = $this->client->refreshCrawler();
-        sleep(1);
-        $stateValidation = $crawler->filter('#validation-state');
         $this->assertEquals('select', $stateValidation->nodeName(), 'The validation state objetc is not a select');
 
         // Select non managed agent
         $agentOption = $crawler->filterXPath(".//select[@id='perso_ids']//option[@value='" . $jdoeId  . "']");
         $agentOption->click();
 
+        $stateValidation = $this->waitForValidationState('input');
         $crawler = $this->client->refreshCrawler();
-        sleep(1);
-        $stateValidation = $crawler->filter('#validation-state');
         $this->assertEquals('input', $stateValidation->nodeName(), 'The validation state object is not an input');
         $this->assertNotNull($stateValidation->attr('readonly'), 'The validation state object should be readonly');
 
@@ -290,7 +288,8 @@ class AbsenceControllerEditTest extends PLBWebTestCase
 
         $crawler = $this->client->request('GET', '/absence/add');
 
-        $stateValidation = $crawler->filter('#validation-state');
+        // The validation state is loaded by AJAX: wait for it
+        $stateValidation = $this->waitForValidationState('input');
         $this->assertEquals('input', $stateValidation->nodeName(), 'The validation state objetc is not an input');
         $this->assertNotNull($stateValidation->attr('readonly'), 'The validation state object should be readonly');
 
@@ -298,20 +297,25 @@ class AbsenceControllerEditTest extends PLBWebTestCase
         $agentOption = $crawler->filterXPath(".//select[@id='perso_ids']//option[@value='" . $bmarley->getId()  . "']");
         $agentOption->click();
 
+        $stateValidation = $this->waitForValidationState('input');
         $crawler = $this->client->refreshCrawler();
-        sleep(1);
-        $stateValidation = $crawler->filter('#validation-state');
         $this->assertEquals('input', $stateValidation->nodeName(), 'The validation state objetc is not an input');
 
         // Deselect admin
         $closeIcon = $crawler->filter("#li" . $admin->getId()  . " button.perso-drop");
         $closeIcon->click();
 
+        $stateValidation = $this->waitForValidationState('select');
         $crawler = $this->client->refreshCrawler();
-        sleep(1);
-        $stateValidation = $crawler->filter('#validation-state');
         $this->assertEquals('select', $stateValidation->nodeName(), 'The validation state objetc is not a select');
 
+    }
+
+    private function waitForValidationState(string $tag): \Symfony\Component\Panther\DomCrawler\Crawler
+    {
+        $this->client->getWebDriver()->wait()->until($this->jqueryAjaxFinished());
+
+        return $this->client->waitFor($tag . '#validation-state')->filter('#validation-state');
     }
 
     public function testRecurringAbsence():void 
