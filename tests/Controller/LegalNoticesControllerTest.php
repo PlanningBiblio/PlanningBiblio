@@ -31,7 +31,7 @@ class LegalNoticesControllerTest extends PLBWebTestCase
         $result = $crawler->filterXPath('//h3');
         $this->assertEquals($result->text(null,false),'Mentions légales','h3 is Mentions légales');
 
-        $result = $crawler->filterXPath('//div[@class="footer"]');
+        $result = $crawler->filterXPath('//footer');
         $this->assertStringContainsString("www.planno.fr",$result->text(null,false),'footer contains www.planno.fr');
         $this->assertStringNotContainsString("Mentions légales",$result->text(null,false),'footer does not contains Mentionns légales');
 
@@ -91,10 +91,10 @@ class LegalNoticesControllerTest extends PLBWebTestCase
 
         $crawler = $this->client->request('GET', "/legal-notices");
 
-        $result = $crawler->filterXPath('//div[@id="content"]');
+        $result = $crawler->filterXPath('//main[@id="content"]');
         $this->assertStringContainsString('Titre h1',$result->text(),'h1 is Titre h1');
 
-        $result = $crawler->filterXPath('//div[@class="footer"]');
+        $result = $crawler->filterXPath('//footer');
         $this->assertStringContainsString("Mentions légales",$result->text(),'Mention légales is in the footer');;
     }
 }
