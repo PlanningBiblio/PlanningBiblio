@@ -43,14 +43,14 @@
       <table class="CJDataTable" id="table-list" data-noExport="1" data-sort='[[1,"asc"]]'>
         <thead>
           <tr>
-            <th class="dataTableNoSort">
+            <th scope="col" class="dataTableNoSort">
               <input type="checkbox" class="CJCheckAll" />
             </th>
-            <th>Nom</th>
+            <th scope="col">Nom</th>
             {% if nbSites > 1 %}
-              <th>Site</th>
+              <th scope="col">Site</th>
             {% endif %}
-            <th class="dataTableDateFR">Dernière utilisation</th>
+            <th scope="col" class="dataTableDateFR">Dernière utilisation</th>
           </tr>
         </thead>
         <tbody>
@@ -102,10 +102,10 @@
     <table class="CJDataTable" id="table-groups" data-noExport="1" data-sort='[[1,"asc"]]'>
       <thead>
         <tr>
-          <th class="dataTableNoSort">&nbsp;</th>
-          <th>Nom</th>
+          <th scope="col" class="dataTableNoSort"></th>
+          <th scope="col">Nom</th>
           {% if nbSites > 1 %}
-            <th>Site</th>
+            <th scope="col">Site</th>
           {% endif %}
         </tr>
       </thead>
@@ -139,8 +139,8 @@
     <table class="CJDataTable" id="table-separations" data-noExport="1"  data-sort='[[1, "asc"]]'>
       <thead>
         <tr>
-          <th class="dataTableNoSort">&nbsp;</th>
-          <th>Nom</th>
+          <th scope="col" class="dataTableNoSort"></th>
+          <th scope="col">Nom</th>
         </tr>
       </thead>
       <tbody>

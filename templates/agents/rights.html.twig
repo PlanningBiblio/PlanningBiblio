@@ -20,9 +20,9 @@
     <table style='margin-top:50px;'>
       <thead>
         <tr>
-          <th>&nbsp;</th>
+          <th scope="col"></th>
           {% for s in sitesSelect %}
-            <th class="text-center px-3">{{ s.name }}</th>
+            <th scope="col" class="text-center px-3">{{ s.name }}</th>
           {% endfor %}
         </tr>
       </thead>

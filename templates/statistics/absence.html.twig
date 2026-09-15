@@ -31,7 +31,7 @@
               <select name="perso_id" class="form-select form-select-sm" id="site-search">
                 <option value="0" selected>Tous</option>
                 {% for i in 1..nbSites %}
-                  <option value="{{ i }}"  {% if i == site %} selected {% endif %}> {{ multisites[i-1] }}</option>
+                  <option value="{{ i }}" {% if i == site %} selected {% endif %}>{{ multisites[i-1] }}</option>
                 {% endfor %}
               </select>
             </div>
@@ -51,26 +51,26 @@
         <thead>
           <tr>
             {% if afficheHeures == true %}
-              <th rowspan="2">Agents</th>
-              <th rowspan="2">Total<br/>d'absences</th>
-              <th rowspan="2" class="dataTableHeureFR">Total<br/>d'heures</th>
+              <th scope="col" rowspan="2">Agents</th>
+              <th scope="col" rowspan="2">Total<br/>d'absences</th>
+              <th scope="col" rowspan="2" class="dataTableHeureFR">Total<br/>d'heures</th>
             {% else %}
-              <th rowspan="1">Agents</th>
-              <th rowspan="1">Total<br/>d'absences</th>
+              <th scope="col" rowspan="1">Agents</th>
+              <th scope="col" rowspan="1">Total<br/>d'absences</th>
             {% endif %}
             {% for elem in motifs %}
               {% if afficheHeures == true %}
-                <th colspan="2">{{ elem }}</th>
+                <th scope="col" colspan="2">{{ elem }}</th>
               {% else %}
-                <th colspan="1">{{ elem }}</th>  
+                <th scope="col" colspan="1">{{ elem }}</th>  
               {% endif %}
             {% endfor %}
             {% if afficheHeures == true %}
               </tr>
               <tr>
                 {% for elem in motifs %}
-                  <th>Nombre</th>
-                  <th class="dataTableHeureFR">Heures</th>
+                  <th scope="col">Nombre</th>
+                  <th scope="col" class="dataTableHeureFR">Heures</th>
                 {% endfor %}
             {% endif %}
           </tr>
@@ -109,23 +109,23 @@
           {% endfor %}
         </tbody>
         <tfoot>
-          <tr style="background:#DDDDDD;">
-            <th class="no-hover">Totaux</th>
-            <th class="text-nowrap no-hover">{{ totaux._general}}</th>
+          <tr>
+            <th scope="row">Totaux</th>
+            <td class="text-nowrap">{{ totaux._general}}</td>
             {% if afficheHeures == true %}
               {% if totaux._generalHeures == 'Erreur' %}
-                <th class="text-nowrap" title="Erreur de calcul. Vérifiez les heures de présence des agents (Emploi du temps)."> Erreur </th>
+                <td class="text-nowrap" title="Erreur de calcul. Vérifiez les heures de présence des agents (Emploi du temps).">Erreur</td>
               {% else %}
-                <th class="text-nowrap no-hover"> {{ totaux._generalHeures }} </th>
+                <td class="text-nowrap no-hover">{{ totaux._generalHeures }}</td>
               {% endif %}
             {% endif %}
             {% for motif in motifs %}
-              <th class="text-nowrap no-hover">{{ totaux[motif].frequence }}</th>
+              <td class="text-nowrap no-hover">{{ totaux[motif].frequence }}</td>
               {% if afficheHeures %}
                 {% if totaux[motif].heures == 'Erreur' %}
-                  <th class="text-nowrap no-hover" title="Erreur de calcul. Vérifiez les heures de présence de l'agent (Emploi du temps)."> Erreur </th>
+                  <td class="text-nowrap no-hover" title="Erreur de calcul. Vérifiez les heures de présence de l'agent (Emploi du temps)."> Erreur </td>
                 {% else %}
-                  <th class="text-nowrap no-hover">{{ totaux[motif].heures }}</th>
+                  <td class="text-nowrap no-hover">{{ totaux[motif].heures }}</td>
                 {% endif %}
               {% endif %}
             {% endfor %}

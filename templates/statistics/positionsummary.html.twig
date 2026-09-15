@@ -88,33 +88,33 @@
             <table id='tableStatSynthese' class='CJDataTable'>
               <thead>
                 <tr>
-                  <th>Postes</th>
-                  <th class='dataTableHeureFR'>Total d'heures</th>
-                  <th class='dataTableHeureFR'>Moyenne jour</th>
-                  <th class='dataTableHeureFR'>Moyenne hebdomadaire</th>
+                  <th scope="col">Postes</th>
+                  <th scope="col" class="dataTableHeureFR">Total d'heures</th>
+                  <th scope="col" class="dataTableHeureFR">Moyenne jour</th>
+                  <th scope="col" class="dataTableHeureFR">Moyenne hebdomadaire</th>
                 </tr>
               </thead>
               <tbody>
                 {% for elem in tab %}
                   <tr style='vertical-align:top;' class='{{ elem[0][3] == "Obligatoire" ? "td_obligatoire" : "td_renfort" }}'>
-                    <td class="no-hover">
+                    <td>
                         <b>{{ elem[0][1] }}</b>
                         <br/><i>{{ elem.siteEtage }}</i>
                     </td>
-                    <td class="no-hover">{{ elem[2] }}</td>
-                    <td class="no-hover">{{ elem.jour }}</td>
-                    <td class="no-hover">{{ elem.hebdo }}</td>
+                    <td>{{ elem[2] }}</td>
+                    <td>{{ elem.jour }}</td>
+                    <td>{{ elem.hebdo }}</td>
                   </tr>
                 {% endfor %}
               </tbody>
-              <tfooter>
+              <tfoot>
                 <tr>
-                  <th class="no-hover" style="border-right: 1px solid #000;"><b>Total</b></th>
-                  <th class="no-hover" style="border-right: 1px solid #000;">{{ total_heures }}</th>
-                  <th class="no-hover" style="border-right: 1px solid #000;">{{ total_jour }}</th>
-                  <th class="no-hover">{{ total_hebdo }}</th>
+                  <th scope="row"><b>Total</b></th>
+                  <td>{{ total_heures }}</td>
+                  <td>{{ total_jour }}</td>
+                  <td>{{ total_hebdo }}</td>
                 </tr>
-              </tfooter>
+              </tfoot>
             </table>
           {% endif %}
         </td>

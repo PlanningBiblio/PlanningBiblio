@@ -63,25 +63,25 @@
   <table id='tableAbsencesVoir' class='CJDataTable' data-sort='[[1, "asc"],[2, "asc"]]'>
     <thead>
        <tr>
-         <th class='dataTableNoSort'>&nbsp;</th>
-         <th>Début</th>
-         <th>Fin</th>
-         <th id='thNom'>Agents</th>
+         <th scope="col" class="dataTableNoSort"></th>
+         <th scope="col">Début</th>
+         <th scope="col">Fin</th>
+         <th scope="col" id="thNom">Agents</th>
          {% if config('Absences-validation') %}
-           <th id='thValidation'>État</th>
+           <th scope="col" id="thValidation">État</th>
          {% endif %}
-         <th>Motif</th>
-         <th>Commentaires</th>
-         <th>Demande</th>
+         <th scope="col">Motif</th>
+         <th scope="col">Commentaires</th>
+         <th scope="col">Demande</th>
          {% if can_manage_sup_doc %}
-           <th id='thPiecesJustif' class='dataTableNoSort'>
+           <th scope="col" id="thPiecesJustif" class="dataTableNoSort">
              <span class="text-nowrap">Pièces justificatives</span><br/>
              <div class='absences-pj'>PJ 1</div>
              <div class='absences-pj'>PJ 2</div>
              <div class='absences-pj'>SO</div>
            </th>
          {% endif %}
-         <th>Documents</th>
+         <th scope="col">Documents</th>
        </tr>
     </thead>
     <tbody>

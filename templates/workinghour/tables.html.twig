@@ -16,25 +16,25 @@
     <table id="tableau{{ j }}"  data-id="{{ j }}" >
       <thead>
         <tr>
-          <th>{{ cellule[j] }}</th>
-          <th>Heure d'arrivée</th>
+          <th scope="col">{{ cellule[j] }}</th>
+          <th scope="col">Heure d'arrivée</th>
           {% if pause2_enabled == true %}
-            <th>Début de pause 1</th>
-            <th>Fin de pause 1</th>
-            <th>Début de pause 2</th>
-            <th>Fin de pause 2</th>
+            <th scope="col">Début de pause 1</th>
+            <th scope="col">Fin de pause 1</th>
+            <th scope="col">Début de pause 2</th>
+            <th scope="col">Fin de pause 2</th>
           {% else %}
-            <th>Début de pause</th>
-            <th>Fin de pause</th>
+            <th scope="col">Début de pause</th>
+            <th scope="col">Fin de pause</th>
           {% endif %}
-          <th>Heure de départ</th>
+          <th scope="col">Heure de départ</th>
           {% if pauseLibre_enabled == true %}
-            <th>Temps de pause</th>
+            <th scope="col">Temps de pause</th>
           {% endif %}
           {% if nbSites > 1 %}
-            <th>Site</th>
+            <th scope="col">Site</th>
           {% endif %}
-          <th>Temps</th>
+          <th scope="col">Temps</th>
         </tr>
       </thead>
       <tbody>
