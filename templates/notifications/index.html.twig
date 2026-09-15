@@ -29,18 +29,18 @@
     <table id="tableAgents" class="CJDataTable" data-sort='[[1, "asc"],[2, "asc"]]'>
       <thead>
         <tr>
-          <th class="dataTableNoSort" >
+          <th scope="col" class="dataTableNoSort" >
             <input type="checkbox" class="CJCheckAll"/>
           </th>
-          <th>Nom</th>
-          <th>Prénom</th>
-          <th>Service</th>
-          <th>Statut</th>
+          <th scope="col">Nom</th>
+          <th scope="col">Prénom</th>
+          <th scope="col">Service</th>
+          <th scope="col">Statut</th>
           {% if config('Multisites-nombre') > 1 %}
-            <th>Sites</th>
+            <th scope="col">Sites</th>
           {% endif %}
-          <th>Validations / notifications niveau 1</th>
-          <th>Validations / notifications niveau 2</th>
+          <th scope="col">Validations / notifications niveau 1</th>
+          <th scope="col">Validations / notifications niveau 2</th>
         </tr>
       </thead>
       <tbody>

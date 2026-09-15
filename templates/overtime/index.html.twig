@@ -208,20 +208,20 @@
         <table id='tableRecup' class='CJDataTable' data-sort='[[1]]'>
           <thead>
             <tr>
-              <th rowspan='2' class='dataTableNoSort'>&nbsp;</th>
-              <th rowspan='2' class='dataTableDateFR'>Date</th>
+              <th scope="col" rowspan="2" class="dataTableNoSort"></th>
+              <th scope="col" rowspan="2" class="dataTableDateFR">Date</th>
               {% if admin %}
-                <th rowspan='2'>Agent</th>
+                <th scope="col" rowspan="2">Agent</th>
               {% endif %}
-              <th rowspan='2'>Heures</th>
-              <th colspan='2'>Validation</th>
-              <th rowspan='2'>Crédits</th>
-              <th rowspan='2'>Commentaires</th>
+              <th scope="col" rowspan="2">Heures</th>
+              <th scope="col" colspan="2">Validation</th>
+              <th scope="col" rowspan="2">Crédits</th>
+              <th scope="col" rowspan="2">Commentaires</th>
             </tr>
 
             <tr>
-              <th>&Eacute;tat</th>
-              <th class='dataTableDateFR' style="border-right: 1px solid #000;">Date</th>
+              <th scope="col">&Eacute;tat</th>
+              <th scope="col" class="dataTableDateFR" style="border-right: 1px solid #000;">Date</th>
             </tr>
           </thead>
           <tbody>

@@ -57,24 +57,24 @@ for ($j = 0; $j < $nb_semaine; $j++) {
     $hours_tab .= "<div id='workinghour_tables'>\n";
     $hours_tab .= "<table>\n";
     $hours_tab .= "<thead>\n";
-    $hours_tab .= "<tr><th>{$cellule[$j]}</th><th>Heure d'arrivée</th>";
+    $hours_tab .= '<tr><th scope="col">' . $cellule[$j] . '</th><th scope="col">Heure d\'arrivée</th>';
     if ($config['PlanningHebdo-Pause2']) {
-        $hours_tab .= "<th>Début de pause 1</th><th>Fin de pause 1</th>";
-        $hours_tab .= "<th>Début de pause 2</th><th>Fin de pause 2</th>";
+        $hours_tab .= '<th scope="col">Début de pause 1</th><th scope="col">Fin de pause 1</th>';
+        $hours_tab .= '<th scope="col">Début de pause 2</th><th scope="col">Fin de pause 2</th>';
     } else {
-        $hours_tab .= "<th>Début de pause</th><th>Fin de pause</th>";
+        $hours_tab .= '<th scope="col">Début de pause</th><th scope="col">Fin de pause</th>';
     }
-    $hours_tab .= "<th>Heure de départ</th>";
+    $hours_tab .= '<th scope="col">Heure de départ</th>';
 
     if ($config['PlanningHebdo-PauseLibre'] && $config['PlanningHebdo']) {
-        $hours_tab .= "<th>Temps de pause</th>";
+        $hours_tab .= '<th scope="col">Temps de pause</th>';
     }
 
     if ($config['Multisites-nombre']>1) {
-        $hours_tab .= "<th>Site</th>";
+        $hours_tab .= '<th scope="col">Site</th>';
     }
   
-    $hours_tab .= "<th>Temps</th>";
+    $hours_tab .= '<th scope="col">Temps</th>';
     $hours_tab .= "</tr>\n";
     $hours_tab .= "</thead>\n";
     $hours_tab .= "<tbody>\n";

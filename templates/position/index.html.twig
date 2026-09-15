@@ -22,18 +22,18 @@
   <table id="tablePostes" class="CJDataTable" data-sort='[[1, "asc"],[2, "asc"]]'>
     <thead>
       <tr>
-        <th class="dataTableNoSort">&nbsp;</th>
-        <th>Nom du poste</th>
+        <th scope="col" class="dataTableNoSort"></th>
+        <th scope="col">Nom du poste</th>
           {% if multisite > 1 %}
-            <th>Site</th>
+            <th scope="col">Site</th>
           {% endif %}
-        <th>Etage</th>
+        <th scope="col">Etage</th>
         {% if not config('Planook') %}
-          <th>Activités</th>
-          <th>Groupe</th>
-          <th>Obligatoire/renfort</th>
-          <th>Bloquant</th>
-          <th>Statistiques</th>
+          <th scope="col">Activités</th>
+          <th scope="col">Groupe</th>
+          <th scope="col">Obligatoire/renfort</th>
+          <th scope="col">Bloquant</th>
+          <th scope="col">Statistiques</th>
         {% endif %}
       </tr>
     </thead>

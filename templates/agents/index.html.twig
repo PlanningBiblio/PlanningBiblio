@@ -38,26 +38,26 @@
   <table id="tableAgents" class="CJDataTable" data-sort='[[1,"asc"],[2,"asc"]]'>
     <thead>
       <tr>
-        <th class="dataTableNoSort">
+        <th scope="col" class="dataTableNoSort">
           <div class="icon-div">
             {% if rights21 %}
               <input type="checkbox" class="CJCheckAll"/>
             {% endif %}
           </div>
         </th>
-        <th class="clear-string">Nom</th>
-        <th class="clear-string">Prénom</th>
-        <th class="dataTableHeureFR">Heures</th>
+        <th scope="col" class="clear-string">Nom</th>
+        <th scope="col" class="clear-string">Prénom</th>
+        <th scope="col" class="dataTableHeureFR">Heures</th>
         {% if not config('Planook') %}
-          <th>Statut</th>
-          <th>Service</th>
+          <th scope="col">Statut</th>
+          <th scope="col">Service</th>
         {% endif %}
         {% if config('Multisites-nombre') > 1 %}
-          <th>Sites</th>
+          <th scope="col">Sites</th>
         {% endif %}
-        <th class="dataTableDateFR">Arrivée</th>
-        <th class="dataTableDateFR">Départ</th>
-        <th class="dataTableDateFR">Accès</th>
+        <th scope="col" class="dataTableDateFR">Arrivée</th>
+        <th scope="col" class="dataTableDateFR">Départ</th>
+        <th scope="col" class="dataTableDateFR">Accès</th>
     </thead>
     <tbody>
       {% for a in agents %}

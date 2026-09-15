@@ -53,14 +53,6 @@ body,a,input,select,textarea,button {
   top: 30px;
 }
 
-.left-border{
-  padding: 10px 19px 6px 19px;
-  border-left:  1px solid black;
-  border-bottom: 0px;
-  border-top: 0px;
-  border-right: 0px;
-}
-
 input:disabled {
 	color:grey;
 }
@@ -1694,12 +1686,25 @@ div.dt-container .dt-paging .dt-paging-button:hover {
   background-color: white;
 }
 
-table.dataTable thead tr>.dtfc-fixed-left, table.dataTable thead tr>.dtfc-fixed-right, table.dataTable tfoot tr>.dtfc-fixed-left, table.dataTable tfoot tr>.dtfc-fixed-right {
+table.dataTable thead tr>.dtfc-fixed-left,
+table.dataTable thead tr>.dtfc-fixed-right,
+table.dataTable tfoot tr>.dtfc-fixed-left,
+table.dataTable tfoot tr>.dtfc-fixed-right,
+table.dataTable tfoot td
+{
   background-color: var(--blue-slate);
+  color: white;
+  font-weight: bold;
 }
 
 table.dataTable tbody tr.odd>.dtfc-fixed-left, table.dataTable tbody tr>.dtfc-fixed-right {
   background-color:var(--odd-grey);;
+}
+
+table.dataTable tfoot td
+{
+  text-align: center;
+  border-left: 1px solid black;
 }
 
 .dt-buttons {
