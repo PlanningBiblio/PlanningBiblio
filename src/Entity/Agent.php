@@ -137,7 +137,7 @@ class Agent
 
     public function __construct()
     {
-        $this->code_ics = md5(time().rand(100, 999));
+        $this->code_ics = bin2hex(random_bytes(32));
         $this->managed = new ArrayCollection();
         $this->managers = new ArrayCollection();
     }
