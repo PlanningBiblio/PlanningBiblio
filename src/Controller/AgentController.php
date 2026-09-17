@@ -1561,7 +1561,7 @@ class AgentController extends BaseController
         }
 
         $id = $request->get('id');
-        $newCode = md5(time().rand(100, 999));
+        $newCode = bin2hex(random_bytes(32));
 
         $agent = $this->entityManager->getRepository(Agent::class)->find($id);
         $agent->setICSCode($newCode);
