@@ -1,5 +1,30 @@
 # Changelog Planno
 
+## Version 26.05.11 (2026-09-18)
+
+### Fixes
+
+* MT53998: Prevent adding the same agent twice to the same cell #1485
+* MT53998: Fix random test failure in PlanningJobControllerTest #1485
+* MT54859: Fix WorkingHours import #1486
+
+### Security / Dependencies
+
+* MT54917: Use random_bytes to generate ICS codes #1490
+  * Enhances security; the old method generated a code that could be reconstructed.
+* MT54876: Security: Update composer/composer
+  * Update composer/composer from 2.10.2 to 2.10.3
+  * Security advisory: https://github.com/advisories/GHSA-rvx4-ffvw-m9q3
+
+### Accessibility
+
+* MT48942: A11y: RGAA: Regional structuring and bypass link #1487
+* MT48942: A11y: RGAA: Add th scope #1489
+
+### Plumbing
+
+* MT53998: Refactor PlanningController::updateCell before changes
+
 ## Version 26.05.10 (2026-09-04)
 
 ### Enhancement
