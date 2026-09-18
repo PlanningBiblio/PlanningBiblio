@@ -1,0 +1,144 @@
+{# accessibility/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block page %}
+  {% if not show_menu %}
+    <p class="text-center">
+      <div id='auth-logo'></div>
+    </p>
+  {% endif %}
+
+  <div id="content-form">
+    <div class="admin-div">
+
+      <h2>{{ 'Commitment' | trans }}</h2>
+      <p>
+        {{ '%entity% is committed to making its service accessible, in accordance with Article 47 of Act No. 2005-102 of 11 February 2005.'
+           | trans({'%entity%': config('a11yEntityName') ?: '[a11yEntityName]'}) }}
+      </p>
+      <p>
+        {{ 'This accessibility statement applies to the Planno software, version %version%.'
+           | trans({'%version%': version}) }}
+      </p>
+
+      {% if config('a11yMultiannualPlan') %}
+        <p>
+          <a href="{{ config('a11yMultiannualPlan') }}">
+            {{ 'Multiannual accessibility plan' | trans }}
+          </a>
+        </p>
+      {% endif %}
+
+      <h2>{{ 'Compliance status' | trans }}</h2>
+      <p>
+        {{ 'Planno is partially compliant with the RGAA version 4 accessibility standard, owing to the non-compliances listed below.' | trans }}
+      </p>
+
+      <h2>{{ 'Test results' | trans }}</h2>
+      <p>
+        {{ 'The compliance audit shows that %rate% of the RGAA version 4 criteria are met.'
+           | trans({'%rate%': '57 %'}) }}
+      </p>
+      <p>
+        {{ 'This audit was carried out by %auditor% on version %audited_version% of the software.'
+           | trans({'%auditor%': 'BibLibre SARL', '%audited_version%': '25.04.00'}) }}
+      </p>
+
+      <h2>{{ 'Non-accessible content' | trans }}</h2>
+
+      <h3>{{ 'Non-compliance' | trans }}</h3>
+      <ul>
+        <li>{{ "Des images porteuses d'information n'ont pas d'alternative ou d'alternative pertinente." | trans }}</li>
+        <li>{{ "Des composants d'interface ont des contrastes insuffisants." | trans }}</li>
+        <li>{{ "La différence de contraste entre la couleur du texte et la couleur de fond est insuffisante." | trans }}</li>
+        <li>{{ "Des tableaux de mise en forme n'ont pas de contenu linéarisé compréhensible." | trans }}</li>
+        <li>{{ "Certains tableaux de données n'ont pas de titre pertinent." | trans }}</li>
+        <li>{{ "Certains tableaux de données ont des en-têtes mal déclarés." | trans }}</li>
+        <li>{{ "Certains tableaux de données n'utilisent pas une technique appropriée pour associer chaque cellule avec les en-têtes associés." | trans }}</li>
+        <li>{{ "Des liens ne possèdent pas d'intitulés." | trans }}</li>
+        <li>{{ "Certains scripts ne sont pas contrôlables par le clavier." | trans }}</li>
+        <li>{{ "La langue par défaut n'est pas présente." | trans }}</li>
+        <li>{{ "Les titres de pages ne sont pas pertinents." | trans }}</li>
+        <li>{{ "L'information n'est pas structurée par l'utilisation de titres appropriés." | trans }}</li>
+        <li>{{ "La structure du document n'est pas cohérente." | trans }}</li>
+        <li>{{ "Les feuilles de style ne sont pas toujours utilisées pour contrôler la présentation de l'information." | trans }}</li>
+        <li>{{ "Les liens dont la nature n'est pas évidente ne sont pas visibles par rapport au texte environnant." | trans }}</li>
+        <li>{{ "Des contenus sont perdus lors de la réduction de la fenêtre à une largeur de 320 px." | trans }}</li>
+        <li>{{ "Des contenus additionnels apparaissant à la prise de focus ou au survol d'un composant d'interface ne sont pas contrôlables par l'utilisateur." | trans }}</li>
+        <li>{{ "Des formulaires ne possèdent pas d'étiquettes." | trans }}</li>
+        <li>{{ "Des champs de même nature ne sont pas regroupés." | trans }}</li>
+        <li>{{ "Les zones de regroupement de contenus présentes dans plusieurs pages ne peuvent pas être évitées." | trans }}</li>
+        <li>{{ "Absence d'accès rapide à la zone de contenu principal." | trans }}</li>
+        <li>{{ "La navigation contient des pièges au clavier." | trans }}</li>
+        <li>{{ "Des contenus apparaissant au survol, à la prise de focus ou à l'activation d'un composant d'interface ne sont pas atteignables au clavier." | trans }}</li>
+      </ul>
+
+      <h3>{{ 'Disproportionate burden' | trans }}</h3>
+      <p>{{ 'No disproportionate burden exemption is claimed.' | trans }}</p>
+
+      <h3>{{ 'Content not subject to the accessibility requirement' | trans }}</h3>
+      <p>{{ 'No content is excluded from the scope of this statement.' | trans }}</p>
+
+      <h2>{{ 'Preparation of this accessibility statement' | trans }}</h2>
+      <p>
+        {{ 'This statement was drawn up on %date%. It was last updated on %update_date%.'
+           | trans({'%date%': '2 mai 2025', '%update_date%': '18 septembre 2026'}) }}
+      </p>
+
+      <h3>{{ 'Technologies used' | trans }}</h3>
+      <ul>
+        <li>HTML 5</li>
+        <li>CSS 3</li>
+        <li>JavaScript</li>
+        <li>ARIA</li>
+      </ul>
+
+      <h3>{{ 'Test environment' | trans }}</h3>
+      <ul>
+        <li>Firefox</li>
+        <li>Orca</li>
+      </ul>
+
+      <h3>{{ 'Accessibility evaluation tools' | trans }}</h3>
+      <ul>
+        <li>HeadingsMap</li>
+        <li>WCAG Color Contrast Checker</li>
+        <li>WAVE Evaluation Tool</li>
+        <li>Asqatasun</li>
+        <li>Stylus</li>
+        <li>Web Developer</li>
+      </ul>
+
+      <h3>{{ 'Pages checked for compliance' | trans }}</h3>
+      <ul>
+        <li>{{ 'Planning' | trans }}</li>
+        <li>{{ 'Absence / voir les absences' | trans }}</li>
+        <li>{{ 'Absence / Ajouter une absence' | trans }}</li>
+        <li>{{ 'Agenda' | trans }}</li>
+        <li>{{ 'Statistiques / Feuille de temps' | trans }}</li>
+        <li>{{ 'Statistiques / Par agent' | trans }}</li>
+        <li>{{ 'Aide' | trans }}</li>
+      </ul>
+
+      <h2>{{ 'Feedback and contact' | trans }}</h2>
+      <p>
+        {{ 'If you are unable to access a content item or a feature, you may contact the department responsible for the service to be directed to an accessible alternative or to obtain the content in another form.' | trans }}
+      </p>
+
+      <div>{{ config('a11yContact') | markdown_to_html ?: '[a11yContact]' }}</div>
+
+      <h2>{{ 'Remedies' | trans }}</h2>
+
+      <div>{{ config('a11yRemedies') | markdown_to_html ?: '[a11yRemedies]'  }}</div>
+
+    </div>
+  </div>
+
+  {% if not show_menu %}
+    <p class="text-center header-spacer">
+      <a style="font-size:1.5em;" href="{{ asset('login') }}">{{ 'Back' | trans }}</a>
+    </p>
+  {% endif %}
+
+{% endblock %}
