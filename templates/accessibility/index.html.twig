@@ -18,24 +18,20 @@
          c'est elle qui porte l'obligation de publication. Le nom affiché
          est donc configurable ; à défaut, l'éditeur est mentionné.
          ------------------------------------------------------------------ #}
-      <h4>{{ 'Commitment' | trans }}</h4>
+      <h2>{{ 'Commitment' | trans }}</h2>
       <p>
-        {% if config('a11yEntityName') %}
-          {{ config('a11yEntityName') }}
-        {% else %}
-          BibLibre
-        {% endif %}
-        {{ "s'engage à rendre son service accessible, conformément à l'article 47 de la loi n° 2005-102 du 11 février 2005." | trans }}
+        {{ '%entity% is committed to making its service accessible, in accordance with Article 47 of Act No. 2005-102 of 11 February 2005.'
+           | trans({'%entity%': config('a11yEntityName') ?: '[a11yEntityName]'}) }}
       </p>
       <p>
-        {{ "Cette déclaration d'accessibilité s'applique au logiciel Planno, version" | trans }}
-        {{ version }}.
+        {{ 'This accessibility statement applies to the Planno software, version %version%.'
+           | trans({'%version%': version}) }}
       </p>
 
       {% if config('a11yMultiannualPlan') %}
         <p>
           <a href="{{ config('a11yMultiannualPlan') }}">
-            {{ "Schéma pluriannuel de mise en accessibilité" | trans }}
+            {{ 'Multiannual accessibility plan' | trans }}
           </a>
         </p>
       {% endif %}
@@ -43,80 +39,72 @@
       {# ------------------------------------------------------------------
          2. État de conformité
          ------------------------------------------------------------------ #}
-      <h4>{{ 'Compliance status' | trans }}</h4>
+      <h2>{{ 'Compliance status' | trans }}</h2>
       <p>
-        {{ "Planno est" | trans }}
-        <strong>{{ "partiellement conforme" | trans }}</strong>
-        {{ "avec le référentiel général d'amélioration de l'accessibilité (RGAA), version 4, en raison des non-conformités énumérées ci-dessous." | trans }}
+        {{ 'Planno is partially compliant with the RGAA version 4 accessibility standard, owing to the non-compliances listed below.' | trans }}
       </p>
 
       {# ------------------------------------------------------------------
          3. Résultats des tests
          ------------------------------------------------------------------ #}
-      <h4>{{ 'Test results' | trans }}</h4>
+      <h2>{{ 'Test results' | trans }}</h2>
       <p>
-        {{ "L'audit de conformité réalisé révèle que" | trans }}
-        <strong>57 %</strong>
-        {{ "des critères du RGAA version 4 sont respectés." | trans }}
+        {{ 'The compliance audit shows that %rate% of the RGAA version 4 criteria are met.'
+           | trans({'%rate%': '57 %'}) }}
       </p>
       <p>
-        {{ "Cet audit a été réalisé par" | trans }}
-        BibLibre SARL
-        {{ "sur la version" | trans }}
-        25.04.00
-        {{ "du logiciel." | trans }}
+        {{ 'This audit was carried out by %auditor% on version %audited_version% of the software.'
+           | trans({'%auditor%': 'BibLibre SARL', '%audited_version%': '25.04.00'}) }}
       </p>
 
       {# ------------------------------------------------------------------
          4. Contenus non accessibles
          ------------------------------------------------------------------ #}
-      <h4>{{ 'Non-accessible content' | trans }}</h4>
+      <h2>{{ 'Non-accessible content' | trans }}</h2>
 
-      <h5>{{ 'Non-compliance' | trans }}</h5>
+      <h3>{{ 'Non-compliance' | trans }}</h3>
       <ul>
-        <li>Des images porteuses d’information n’ont pas d’alternative ou d’alternative pertinente.</li>
-        <li>Des composants d’interface ont des contrastes insuffisants.</li>
-        <li>La différence de contraste entre la couleur du texte et la couleur de fond est insuffisante.</li>
-        <li>Des tableaux de mise en forme n’ont pas de contenu linéarisé compréhensible.</li>
-        <li>Certains tableaux de données n’ont pas de titre pertinent.</li>
-        <li>Certains tableaux de données ont des en-têtes mal déclarés.</li>
-        <li>Certains tableaux de données n’utilisent pas une technique appropriée pour associer chaque cellule avec les en-têtes associés.</li>
-        <li>Des liens ne possèdent pas d’intitulés.</li>
-        <li>Certains scripts ne sont pas contrôlables par le clavier.</li>
-        <li>La langue par défaut n’est pas présente.</li>
-        <li>Les titres de pages ne sont pas pertinents.</li>
-        <li>L’information n’est pas structurée par l’utilisation de titres appropriés.</li>
-        <li>La structure du document n’est pas cohérente.</li>
-        <li>Les feuilles de style ne sont pas toujours utilisées pour contrôler la présentation de l’information.</li>
-        <li>Les liens dont la nature n'est pas évidente ne sont pas visibles par rapport au texte environnant.</li>
-        <li>Des contenus sont perdus lors de la réduction de la fenêtre à une largeur de 320 px.</li>
-        <li>Des contenus additionnels apparaissant à la prise de focus ou au survol d’un composant d’interface ne sont pas contrôlables par l’utilisateur.</li>
-        <li>Des formulaires ne possèdent pas d’étiquettes.</li>
-        <li>Des champs de même nature ne sont pas regroupés.</li>
-        <li>Les zones de regroupement de contenus présentes dans plusieurs pages ne peuvent pas être évitées.</li>
-        <li>Absence d’accès rapide à la zone de contenu principal.</li>
-        <li>La navigation contient des pièges au clavier.</li>
-        <li>Des contenus apparaissant au survol, à la prise de focus ou à l’activation d’un composant d’interface ne sont pas atteignables au clavier.</li>
+        <li>{{ "Des images porteuses d'information n'ont pas d'alternative ou d'alternative pertinente." | trans }}</li>
+        <li>{{ "Des composants d'interface ont des contrastes insuffisants." | trans }}</li>
+        <li>{{ "La différence de contraste entre la couleur du texte et la couleur de fond est insuffisante." | trans }}</li>
+        <li>{{ "Des tableaux de mise en forme n'ont pas de contenu linéarisé compréhensible." | trans }}</li>
+        <li>{{ "Certains tableaux de données n'ont pas de titre pertinent." | trans }}</li>
+        <li>{{ "Certains tableaux de données ont des en-têtes mal déclarés." | trans }}</li>
+        <li>{{ "Certains tableaux de données n'utilisent pas une technique appropriée pour associer chaque cellule avec les en-têtes associés." | trans }}</li>
+        <li>{{ "Des liens ne possèdent pas d'intitulés." | trans }}</li>
+        <li>{{ "Certains scripts ne sont pas contrôlables par le clavier." | trans }}</li>
+        <li>{{ "La langue par défaut n'est pas présente." | trans }}</li>
+        <li>{{ "Les titres de pages ne sont pas pertinents." | trans }}</li>
+        <li>{{ "L'information n'est pas structurée par l'utilisation de titres appropriés." | trans }}</li>
+        <li>{{ "La structure du document n'est pas cohérente." | trans }}</li>
+        <li>{{ "Les feuilles de style ne sont pas toujours utilisées pour contrôler la présentation de l'information." | trans }}</li>
+        <li>{{ "Les liens dont la nature n'est pas évidente ne sont pas visibles par rapport au texte environnant." | trans }}</li>
+        <li>{{ "Des contenus sont perdus lors de la réduction de la fenêtre à une largeur de 320 px." | trans }}</li>
+        <li>{{ "Des contenus additionnels apparaissant à la prise de focus ou au survol d'un composant d'interface ne sont pas contrôlables par l'utilisateur." | trans }}</li>
+        <li>{{ "Des formulaires ne possèdent pas d'étiquettes." | trans }}</li>
+        <li>{{ "Des champs de même nature ne sont pas regroupés." | trans }}</li>
+        <li>{{ "Les zones de regroupement de contenus présentes dans plusieurs pages ne peuvent pas être évitées." | trans }}</li>
+        <li>{{ "Absence d'accès rapide à la zone de contenu principal." | trans }}</li>
+        <li>{{ "La navigation contient des pièges au clavier." | trans }}</li>
+        <li>{{ "Des contenus apparaissant au survol, à la prise de focus ou à l'activation d'un composant d'interface ne sont pas atteignables au clavier." | trans }}</li>
       </ul>
 
-      <h5>{{ 'Disproportionate burden' | trans }}</h5>
-      <p>{{ "Aucune dérogation pour charge disproportionnée n'est revendiquée." | trans }}</p>
+      <h3>{{ 'Disproportionate burden' | trans }}</h3>
+      <p>{{ 'No disproportionate burden exemption is claimed.' | trans }}</p>
 
-      <h5>{{ 'Content not subject to the accessibility requirement' | trans }}</h5>
-      <p>{{ "Aucun contenu n'est exclu du périmètre de la présente déclaration." | trans }}</p>
+      <h3>{{ 'Content not subject to the accessibility requirement' | trans }}</h3>
+      <p>{{ 'No content is excluded from the scope of this statement.' | trans }}</p>
 
       {# ------------------------------------------------------------------
          5. Établissement de la déclaration
          ------------------------------------------------------------------ #}
-      <h4>{{ 'Preparation of this accessibility statement' | trans }}</h4>
+      <h2>{{ 'Preparation of this accessibility statement' | trans }}</h2>
       <p>
-        {{ "Cette déclaration a été établie le" | trans }}
-        2 mai 2025
-        {{ "Elle a été mise à jour le" | trans }}
-        18 septembre 2025
+        {{ 'This statement was drawn up on %date%. It was last updated on %update_date%.'
+           | trans({'%date%': '2 mai 2025', '%update_date%': '18 septembre 2026'}) }}
       </p>
 
-      <h5>{{ 'Technologies used' | trans }}</h5>
+      <h3>{{ 'Technologies used' | trans }}</h3>
       <ul>
         <li>HTML 5</li>
         <li>CSS 3</li>
@@ -124,28 +112,31 @@
         <li>ARIA</li>
       </ul>
 
-      <h5>{{ 'Test environment' | trans }}</h5>
-      <p>Firefox et Orca</p>
+      <h3>{{ 'Test environment' | trans }}</h3>
+      <ul>
+        <li>Firefox</li>
+        <li>Orca</li>
+      </ul>
 
-      <h5>{{ 'Accessibility evaluation tools' | trans }}</h5>
+      <h3>{{ 'Accessibility evaluation tools' | trans }}</h3>
       <ul>
         <li>HeadingsMap</li>
-        <li>WCAG Color contraste checker</li>
+        <li>WCAG Color Contrast Checker</li>
         <li>WAVE Evaluation Tool</li>
         <li>Asqatasun</li>
         <li>Stylus</li>
         <li>Web Developer</li>
       </ul>
 
-      <h5>{{ 'Pages checked for compliance' | trans }}</h5>
+      <h3>{{ 'Pages checked for compliance' | trans }}</h3>
       <ul>
-        <li>Planning</li>
-        <li>Absence / voir les absences</li>
-        <li>Absence / Ajouter une absence</li>
-        <li>Agenda</li>
-        <li>Statistiques / Feuille de temps</li>
-        <li>Statistiques / Par agent</li>
-        <li>Aide</li>
+        <li>{{ 'Planning' | trans }}</li>
+        <li>{{ 'Absence / voir les absences' | trans }}</li>
+        <li>{{ 'Absence / Ajouter une absence' | trans }}</li>
+        <li>{{ 'Agenda' | trans }}</li>
+        <li>{{ 'Statistiques / Feuille de temps' | trans }}</li>
+        <li>{{ 'Statistiques / Par agent' | trans }}</li>
+        <li>{{ 'Aide' | trans }}</li>
       </ul>
 
       {# ------------------------------------------------------------------
@@ -154,24 +145,13 @@
          service à disposition de ses agents. Il est donc configurable,
          avec repli sur le support de l'éditeur.
          ------------------------------------------------------------------ #}
-      <h4>{{ 'Feedback and contact' | trans }}</h4>
+      <h2>{{ 'Feedback and contact' | trans }}</h2>
       <p>
-        {{ "Si vous n'arrivez pas à accéder à un contenu ou à une fonctionnalité, vous pouvez contacter le responsable du service pour être orienté vers une alternative accessible ou obtenir le contenu sous une autre forme." | trans }}
+        {{ 'If you are unable to access a content item or a feature, you may contact the department responsible for the service to be directed to an accessible alternative or to obtain the content in another form.' | trans }}
       </p>
 
       {% if config('a11yContact') %}
-        <div>{{ config('a11yContact') | markdown_to_html }}</div>
-      {% else %}
-        <ul>
-          <li>
-            {{ "Ouvrir un ticket sur la plateforme de suivi" | trans }} :
-            <a href="https://suivi.biblibre.com" target="_blank" rel="noopener">suivi.biblibre.com<span class="visually-hidden"> {{ '(new window)' | trans }}</span></a>
-          </li>
-          <li>
-            {{ "Contacter le support par courriel" | trans }} :
-            <a href="mailto:support@biblibre.com">support@biblibre.com</a>
-          </li>
-        </ul>
+        <div>{{ config('a11yContact') | markdown_to_html ?: '[a11yContact]' }}</div>
       {% endif %}
 
       {# ------------------------------------------------------------------
@@ -179,29 +159,29 @@
          Mentions imposées par l'arrêté du 20 septembre 2019 : texte
          normalisé, à ne pas modifier.
          ------------------------------------------------------------------ #}
-      <h4>{{ 'Remedies' | trans }}</h4>
+      <h2>{{ 'Remedies' | trans }}</h2>
       <p>
-        {{ "Si vous constatez un défaut d'accessibilité vous empêchant d'accéder à un contenu ou à une fonctionnalité du service, que vous nous le signalez et que vous ne parvenez pas à obtenir une réponse, vous êtes en droit de faire parvenir vos doléances ou une demande de saisine au Défenseur des droits." | trans }}
+        {{ 'If you notice an accessibility issue preventing you from accessing a content item or a feature, report it to us, and do not receive a reply, you are entitled to send your complaint or a request for referral to the Defender of Rights.' | trans }}
       </p>
-      <p>{{ "Plusieurs moyens sont à votre disposition :" | trans }}</p>
+      <p>{{ 'Several options are available to you:' | trans }}</p>
       <ul>
         <li>
-          {{ "Écrire un message au Défenseur des droits" | trans }} :
+          {{ 'Write to the Defender of Rights' | trans }} :
           <a href="https://formulaire.defenseurdesdroits.fr/" target="_blank" rel="noopener">formulaire.defenseurdesdroits.fr<span class="visually-hidden"> {{ '(new window)' | trans }}</span></a>
         </li>
         <li>
-          {{ "Contacter le délégué du Défenseur des droits dans votre région" | trans }} :
+          {{ 'Contact the Defender of Rights representative in your region' | trans }} :
           <a href="https://www.defenseurdesdroits.fr/carte-des-delegues" target="_blank" rel="noopener">defenseurdesdroits.fr/carte-des-delegues<span class="visually-hidden"> {{ '(new window)' | trans }}</span></a>
         </li>
         <li>
-          {{ "Envoyer un courrier par la poste, gratuitement, sans affranchissement" | trans }} :<br>
+          {{ 'Send a letter by post, free of charge, without a stamp' | trans }} :<br>
           Défenseur des droits<br>
           Libre réponse 71120<br>
           75342 Paris CEDEX 07
         </li>
         <li>
-          {{ "Appeler le" | trans }} <a href="tel:+33969390000">09 69 39 00 00</a>
-          ({{ "coût d'un appel local" | trans }})
+          {{ 'Call' | trans }} <a href="tel:+33969390000">09 69 39 00 00</a>
+          ({{ 'cost of a local call' | trans }})
         </li>
       </ul>
 

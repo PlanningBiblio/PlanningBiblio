@@ -1,3 +1,202 @@
+# Accessibility page Start
+
+msgid "Commitment"
+msgstr "Commitment"
+
+msgid "%entity% is committed to making its service accessible, in accordance with Article 47 of Act No. 2005-102 of 11 February 2005."
+msgstr "%entity% is committed to making its service accessible, in accordance with Article 47 of Act No. 2005-102 of 11 February 2005."
+
+msgid "This accessibility statement applies to the Planno software, version %version%."
+msgstr "This accessibility statement applies to the Planno software, version %version%."
+
+msgid "Multiannual accessibility plan"
+msgstr "Multiannual accessibility plan"
+
+msgid "Compliance status"
+msgstr "Compliance status"
+
+msgid "Planno is partially compliant with the RGAA version 4 accessibility standard, owing to the non-compliances listed below."
+msgstr "Planno is partially compliant with the RGAA version 4 accessibility standard, owing to the non-compliances listed below."
+
+msgid "Test results"
+msgstr "Test results"
+
+msgid "The compliance audit shows that %rate% of the RGAA version 4 criteria are met."
+msgstr "The compliance audit shows that %rate% of the RGAA version 4 criteria are met."
+
+msgid "This audit was carried out by %auditor% on version %audited_version% of the software."
+msgstr "This audit was carried out by %auditor% on version %audited_version% of the software."
+
+msgid "Non-accessible content"
+msgstr "Non-accessible content"
+
+msgid "Non-compliance"
+msgstr "Non-compliance"
+
+msgid "Disproportionate burden"
+msgstr "Disproportionate burden"
+
+msgid "No disproportionate burden exemption is claimed."
+msgstr "No disproportionate burden exemption is claimed."
+
+msgid "Content not subject to the accessibility requirement"
+msgstr "Content not subject to the accessibility requirement"
+
+msgid "No content is excluded from the scope of this statement."
+msgstr "No content is excluded from the scope of this statement."
+
+msgid "Preparation of this accessibility statement"
+msgstr "Preparation of this accessibility statement"
+
+msgid "This statement was drawn up on %date%. It was last updated on %update_date%."
+msgstr "This statement was drawn up on %date%. It was last updated on %update_date%."
+
+msgid "Technologies used"
+msgstr "Technologies used"
+
+msgid "Test environment"
+msgstr "Test environment"
+
+msgid "Accessibility evaluation tools"
+msgstr "Accessibility evaluation tools"
+
+msgid "Pages checked for compliance"
+msgstr "Pages checked for compliance"
+
+msgid "Feedback and contact"
+msgstr "Feedback and contact"
+
+msgid "If you are unable to access a content item or a feature, you may contact the department responsible for the service to be directed to an accessible alternative or to obtain the content in another form."
+msgstr "If you are unable to access a content item or a feature, you may contact the department responsible for the service to be directed to an accessible alternative or to obtain the content in another form."
+
+msgid "Open a ticket on the support platform"
+msgstr "Open a ticket on the support platform"
+
+msgid "Contact support by email"
+msgstr "Contact support by email"
+
+msgid "Remedies"
+msgstr "Remedies"
+
+msgid "If you notice an accessibility issue preventing you from accessing a content item or a feature, report it to us, and do not receive a reply, you are entitled to send your complaint or a request for referral to the Defender of Rights."
+msgstr "If you notice an accessibility issue preventing you from accessing a content item or a feature, report it to us, and do not receive a reply, you are entitled to send your complaint or a request for referral to the Defender of Rights."
+
+msgid "Several options are available to you:"
+msgstr "Several options are available to you:"
+
+msgid "Write to the Defender of Rights"
+msgstr "Write to the Defender of Rights"
+
+msgid "Contact the Defender of Rights representative in your region"
+msgstr "Contact the Defender of Rights representative in your region"
+
+msgid "Send a letter by post, free of charge, without a stamp"
+msgstr "Send a letter by post, free of charge, without a stamp"
+
+msgid "Call"
+msgstr "Call"
+
+msgid "cost of a local call"
+msgstr "cost of a local call"
+
+msgid "Accessibility statement"
+msgstr "Accessibility statement"
+
+msgid "Accessibility: partially compliant"
+msgstr "Accessibility: partially compliant"
+
+msgid "Absence / Ajouter une absence"
+msgstr "Absence / Ajouter une absence"
+
+msgid "Absence / voir les absences"
+msgstr "Absence / voir les absences"
+
+msgid "Absence d'accès rapide à la zone de contenu principal."
+msgstr "Absence d'accès rapide à la zone de contenu principal."
+
+msgid "Agenda"
+msgstr "Agenda"
+
+msgid "Aide"
+msgstr "Aide"
+
+msgid "Certains scripts ne sont pas contrôlables par le clavier."
+msgstr "Certains scripts ne sont pas contrôlables par le clavier."
+
+msgid "Certains tableaux de données n'ont pas de titre pertinent."
+msgstr "Certains tableaux de données n'ont pas de titre pertinent."
+
+msgid "Certains tableaux de données n'utilisent pas une technique appropriée pour associer chaque cellule avec les en-têtes associés."
+msgstr "Certains tableaux de données n'utilisent pas une technique appropriée pour associer chaque cellule avec les en-têtes associés."
+
+msgid "Certains tableaux de données ont des en-têtes mal déclarés."
+msgstr "Certains tableaux de données ont des en-têtes mal déclarés."
+
+msgid "Des champs de même nature ne sont pas regroupés."
+msgstr "Des champs de même nature ne sont pas regroupés."
+
+msgid "Des composants d'interface ont des contrastes insuffisants."
+msgstr "Des composants d'interface ont des contrastes insuffisants."
+
+msgid "Des contenus additionnels apparaissant à la prise de focus ou au survol d'un composant d'interface ne sont pas contrôlables par l'utilisateur."
+msgstr "Des contenus additionnels apparaissant à la prise de focus ou au survol d'un composant d'interface ne sont pas contrôlables par l'utilisateur."
+
+msgid "Des contenus apparaissant au survol, à la prise de focus ou à l'activation d'un composant d'interface ne sont pas atteignables au clavier."
+msgstr "Des contenus apparaissant au survol, à la prise de focus ou à l'activation d'un composant d'interface ne sont pas atteignables au clavier."
+
+msgid "Des contenus sont perdus lors de la réduction de la fenêtre à une largeur de 320 px."
+msgstr "Des contenus sont perdus lors de la réduction de la fenêtre à une largeur de 320 px."
+
+msgid "Des formulaires ne possèdent pas d'étiquettes."
+msgstr "Des formulaires ne possèdent pas d'étiquettes."
+
+msgid "Des images porteuses d'information n'ont pas d'alternative ou d'alternative pertinente."
+msgstr "Des images porteuses d'information n'ont pas d'alternative ou d'alternative pertinente."
+
+msgid "Des liens ne possèdent pas d'intitulés."
+msgstr "Des liens ne possèdent pas d'intitulés."
+
+msgid "Des tableaux de mise en forme n'ont pas de contenu linéarisé compréhensible."
+msgstr "Des tableaux de mise en forme n'ont pas de contenu linéarisé compréhensible."
+
+msgid "L'information n'est pas structurée par l'utilisation de titres appropriés."
+msgstr "L'information n'est pas structurée par l'utilisation de titres appropriés."
+
+msgid "La différence de contraste entre la couleur du texte et la couleur de fond est insuffisante."
+msgstr "La différence de contraste entre la couleur du texte et la couleur de fond est insuffisante."
+
+msgid "La langue par défaut n'est pas présente."
+msgstr "La langue par défaut n'est pas présente."
+
+msgid "La navigation contient des pièges au clavier."
+msgstr "La navigation contient des pièges au clavier."
+
+msgid "La structure du document n'est pas cohérente."
+msgstr "La structure du document n'est pas cohérente."
+
+msgid "Les feuilles de style ne sont pas toujours utilisées pour contrôler la présentation de l'information."
+msgstr "Les feuilles de style ne sont pas toujours utilisées pour contrôler la présentation de l'information."
+
+msgid "Les liens dont la nature n'est pas évidente ne sont pas visibles par rapport au texte environnant."
+msgstr "Les liens dont la nature n'est pas évidente ne sont pas visibles par rapport au texte environnant."
+
+msgid "Les titres de pages ne sont pas pertinents."
+msgstr "Les titres de pages ne sont pas pertinents."
+
+msgid "Les zones de regroupement de contenus présentes dans plusieurs pages ne peuvent pas être évitées."
+msgstr "Les zones de regroupement de contenus présentes dans plusieurs pages ne peuvent pas être évitées."
+
+msgid "Planning"
+msgstr "Planning"
+
+msgid "Statistiques / Feuille de temps"
+msgstr "Statistiques / Feuille de temps"
+
+msgid "Statistiques / Par agent"
+msgstr "Statistiques / Par agent"
+
+# Accessibility page End
+
 msgid "New request"
 msgstr "New request"
 
