@@ -1,5 +1,13 @@
 # Changelog Planno
 
+## Version 25.10.27 (2026-09-18)
+
+### Security / Dependencies
+
+* MT54876: Security: Update composer/composer
+  * Update composer/composer from 2.10.2 to 2.10.3
+  * Security advisory: https://github.com/advisories/GHSA-rvx4-ffvw-m9q3
+
 ## Version 25.10.26 (2026-09-04)
 
 ### Security / Dependencies
