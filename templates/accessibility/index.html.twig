@@ -12,12 +12,6 @@
   <div id="content-form">
     <div class="admin-div">
 
-      {# ------------------------------------------------------------------
-         1. Engagement de l'entité
-         Le service est mis à disposition des agents par la collectivité :
-         c'est elle qui porte l'obligation de publication. Le nom affiché
-         est donc configurable ; à défaut, l'éditeur est mentionné.
-         ------------------------------------------------------------------ #}
       <h2>{{ 'Commitment' | trans }}</h2>
       <p>
         {{ '%entity% is committed to making its service accessible, in accordance with Article 47 of Act No. 2005-102 of 11 February 2005.'
@@ -36,17 +30,11 @@
         </p>
       {% endif %}
 
-      {# ------------------------------------------------------------------
-         2. État de conformité
-         ------------------------------------------------------------------ #}
       <h2>{{ 'Compliance status' | trans }}</h2>
       <p>
         {{ 'Planno is partially compliant with the RGAA version 4 accessibility standard, owing to the non-compliances listed below.' | trans }}
       </p>
 
-      {# ------------------------------------------------------------------
-         3. Résultats des tests
-         ------------------------------------------------------------------ #}
       <h2>{{ 'Test results' | trans }}</h2>
       <p>
         {{ 'The compliance audit shows that %rate% of the RGAA version 4 criteria are met.'
@@ -57,9 +45,6 @@
            | trans({'%auditor%': 'BibLibre SARL', '%audited_version%': '25.04.00'}) }}
       </p>
 
-      {# ------------------------------------------------------------------
-         4. Contenus non accessibles
-         ------------------------------------------------------------------ #}
       <h2>{{ 'Non-accessible content' | trans }}</h2>
 
       <h3>{{ 'Non-compliance' | trans }}</h3>
@@ -95,9 +80,6 @@
       <h3>{{ 'Content not subject to the accessibility requirement' | trans }}</h3>
       <p>{{ 'No content is excluded from the scope of this statement.' | trans }}</p>
 
-      {# ------------------------------------------------------------------
-         5. Établissement de la déclaration
-         ------------------------------------------------------------------ #}
       <h2>{{ 'Preparation of this accessibility statement' | trans }}</h2>
       <p>
         {{ 'This statement was drawn up on %date%. It was last updated on %update_date%.'
@@ -139,51 +121,16 @@
         <li>{{ 'Aide' | trans }}</li>
       </ul>
 
-      {# ------------------------------------------------------------------
-         6. Retour d'information et contact
-         Le point de contact naturel est celui de l'organisme qui met le
-         service à disposition de ses agents. Il est donc configurable,
-         avec repli sur le support de l'éditeur.
-         ------------------------------------------------------------------ #}
       <h2>{{ 'Feedback and contact' | trans }}</h2>
       <p>
         {{ 'If you are unable to access a content item or a feature, you may contact the department responsible for the service to be directed to an accessible alternative or to obtain the content in another form.' | trans }}
       </p>
 
-      {% if config('a11yContact') %}
-        <div>{{ config('a11yContact') | markdown_to_html ?: '[a11yContact]' }}</div>
-      {% endif %}
+      <div>{{ config('a11yContact') | markdown_to_html ?: '[a11yContact]' }}</div>
 
-      {# ------------------------------------------------------------------
-         7. Voies de recours
-         Mentions imposées par l'arrêté du 20 septembre 2019 : texte
-         normalisé, à ne pas modifier.
-         ------------------------------------------------------------------ #}
       <h2>{{ 'Remedies' | trans }}</h2>
-      <p>
-        {{ 'If you notice an accessibility issue preventing you from accessing a content item or a feature, report it to us, and do not receive a reply, you are entitled to send your complaint or a request for referral to the Defender of Rights.' | trans }}
-      </p>
-      <p>{{ 'Several options are available to you:' | trans }}</p>
-      <ul>
-        <li>
-          {{ 'Write to the Defender of Rights' | trans }} :
-          <a href="https://formulaire.defenseurdesdroits.fr/" target="_blank" rel="noopener">formulaire.defenseurdesdroits.fr<span class="visually-hidden"> {{ '(new window)' | trans }}</span></a>
-        </li>
-        <li>
-          {{ 'Contact the Defender of Rights representative in your region' | trans }} :
-          <a href="https://www.defenseurdesdroits.fr/carte-des-delegues" target="_blank" rel="noopener">defenseurdesdroits.fr/carte-des-delegues<span class="visually-hidden"> {{ '(new window)' | trans }}</span></a>
-        </li>
-        <li>
-          {{ 'Send a letter by post, free of charge, without a stamp' | trans }} :<br>
-          Défenseur des droits<br>
-          Libre réponse 71120<br>
-          75342 Paris CEDEX 07
-        </li>
-        <li>
-          {{ 'Call' | trans }} <a href="tel:+33969390000">09 69 39 00 00</a>
-          ({{ 'cost of a local call' | trans }})
-        </li>
-      </ul>
+
+      <div>{{ config('a11yRemedies') | markdown_to_html ?: '[a11yRemedies]'  }}</div>
 
     </div>
   </div>
