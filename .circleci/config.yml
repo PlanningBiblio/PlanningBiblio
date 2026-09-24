@@ -64,10 +64,12 @@ workflows:
           name: php:8.4
           e:
             name: plb
+            php: 8.4
       - install-and-test:
           name: php:8.3
           e:
             name: plb
+            php: 8.3
       - install-and-test:
           name: php:8.2
           e:
