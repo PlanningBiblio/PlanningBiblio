@@ -13,7 +13,7 @@ executors:
         type: string
         default: '11.7'
     docker:
-      - image: jeromecombes/planno-circleci-php:<< parameters.php >>-chrome
+      - image: git.biblibre.com/biblibre/planno-circleci-php:<< parameters.php >>-chrome
       - image: cimg/mariadb:<< parameters.mariadb >>
         environment:
           MYSQL_ROOT_PASSWORD: rootplb
@@ -61,9 +61,15 @@ workflows:
   build:
     jobs:
       - install-and-test:
+          name: php:8.4
+          e:
+            name: plb
+            php: 8.4
+      - install-and-test:
           name: php:8.3
           e:
             name: plb
+            php: 8.3
       - install-and-test:
           name: php:8.2
           e:
