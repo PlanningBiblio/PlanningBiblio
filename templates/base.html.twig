@@ -66,12 +66,18 @@
     {% endif %}
 
     <!-- Symfony flashMessages -->
-    {% for flashMessage in app.session.flashbag.get('error') %}
-        <script type='text/JavaScript'>CJInfo('{{ flashMessage }}','error', 82, 15000);</script>
-    {% endfor %}
-    {% for flashMessage in app.session.flashbag.get('notice') %}
-        <script type='text/JavaScript'>CJInfo('{{ flashMessage }}','success', 82, 15000);</script>
-    {% endfor %}
+    <script type="application/json" id="flashbag">
+        {{ app.flashes | json_encode(constant('JSON_HEX_TAG')) | raw }}
+    </script>
+    <script>
+        const flashbag = JSON.parse(document.getElementById('flashbag').textContent);
+        for (const message of flashbag.error ?? []) {
+            CJInfo(message, 'error', 82, 15000);
+        }
+        for (const message of flashbag.notice ?? []) {
+            CJInfo(message, 'success', 82, 15000);
+        }
+    </script>
 
     <div style='position:relative;top:30px;' class='noprint'></div>
 

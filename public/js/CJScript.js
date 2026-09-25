@@ -115,10 +115,18 @@ function CJInfo(message,type,top,time,myClass){
     top=$(this).position().top+$(this).height()+5;
   });
 
-  message=message.replace(/#BR#/g,"<br/>");
-  message=message.replace(/\n/g,"<br/>");
+  // Replace the string '#BR#' and the newline character by a <br> element
+  const messageParts = message.split(/#BR#|\n/).flatMap(function (element, index) {
+    return index > 0 ? [document.createElement('br'), element] : element
+  });
 
-  $("body").append("<div class='CJInfo noprint "+myClass+"' id='CJInfo"+id+"' data-id='"+id+"'>"+message+"</div>");
+  const CJInfoDiv = document.createElement('div');
+  CJInfoDiv.classList.add('CJInfo', 'noprint', myClass);
+  CJInfoDiv.id = 'CJInfo' + id;
+  CJInfoDiv.dataset.id = id;
+  CJInfoDiv.append(...messageParts);
+
+  $("body").append(CJInfoDiv);
   CJErrorHighlight($("#CJInfo"+id),type);
   CJPosition($("#CJInfo"+id),top,"center");
 
