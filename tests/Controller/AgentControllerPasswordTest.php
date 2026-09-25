@@ -49,8 +49,7 @@ class AgentControllerPasswordTest extends PLBWebTestCase
         $agent = $entityManager->find(Agent::class, $agent->getId());
         $this->assertTrue(password_verify('Password_changed2', $agent->getPassword()));
 
-        $result = $crawler->filterXPath('//p');
-        $this->assertEquals($result->text('Node does not exist', false), 'Password successfully changed');
+        $this->assertEquals('Password successfully changed', $crawler->text());
 
     }
 
