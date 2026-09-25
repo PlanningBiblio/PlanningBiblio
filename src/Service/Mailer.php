@@ -32,7 +32,7 @@ class Mailer
         $cjmail->send();
 
         if ($cjmail->error) {
-            throw new Exception($cjmail->error_CJInfo);
+            throw new Exception(trim($cjmail->error));
         }
     }
 
@@ -42,18 +42,6 @@ class Mailer
         $configRepository = $entityManager->getRepository(Config::class);
 
         $agent = $entityManager->find(Agent::class, $holiday->getUser());
-
-        if ($configRepository->getValue('Conges-Recuperations') and $holiday->getDebit() == 'recuperation') {
-            $title = 'Compensatory time deletion';
-        } else {
-            $title = 'Holiday deletion';
-        }
-
-        $htmlBody = $this->twig->render('mail/deleted-holiday-notification.html.twig', [
-            'title' => $title,
-            'holiday' => $holiday,
-            'agent' => $agent,
-        ]);
 
         $start = $holiday->getStart()->format('Y-m-d H:i:s');
         $end = $holiday->getEnd()->format('Y-m-d H:i:s');
@@ -70,6 +58,21 @@ class Mailer
             $recipients = $a->recipients;
         }
 
+        if (empty($recipients)) {
+            return;
+        }
+
+        if ($configRepository->getValue('Conges-Recuperations') and $holiday->getDebit() == 'recuperation') {
+            $title = 'Compensatory time deletion';
+        } else {
+            $title = 'Holiday deletion';
+        }
+
+        $htmlBody = $this->twig->render('mail/deleted-holiday-notification.html.twig', [
+            'title' => $title,
+            'holiday' => $holiday,
+            'agent' => $agent,
+        ]);
         $subject = $this->translator->trans($title);
 
         $this->sendWithCJMail($subject, $htmlBody, $recipients);
