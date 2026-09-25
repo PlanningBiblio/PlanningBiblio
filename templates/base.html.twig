@@ -64,10 +64,10 @@
 
     <!-- Symfony flashMessages -->
     {% for flashMessage in app.session.flashbag.get('error') %}
-        <script type='text/JavaScript'>stackAlert('{{ flashMessage }}', 'error', 15000);</script>
+        <script type='text/JavaScript'>stackAlert({{ flashMessage | json_encode | raw }}, 'error', 15000);</script>
     {% endfor %}
     {% for flashMessage in app.session.flashbag.get('notice') %}
-        <script type='text/JavaScript'>stackAlert('{{ flashMessage }}', 'success', 15000);</script>
+        <script type='text/JavaScript'>stackAlert({{ flashMessage | json_encode | raw }}, 'success', 15000);</script>
     {% endfor %}
 
     <a href="#{% if content_planning | default %}content-planning{% else %}content{% endif %}" class="skip-link d-print-none">{{ 'Skip to main content' | trans }}</a>
