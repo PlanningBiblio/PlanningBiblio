@@ -127,7 +127,7 @@ class SkillControllerTest extends PLBWebTestCase
         $result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-edit"]');
         $this->assertEquals($result->attr('title'),'Modifier','Edit Icons');
 
-        $result = $crawler->filterXPath('//tbody/tr/td')->eq(1);
-        $this->assertEquals($result->text('Node does not exist', false), 'security','skill name');
+        $result = $crawler->filterXPath('//table[@class="CJDataTable"]/tbody/tr[1]/td[2]');
+        $this->assertEquals('security', $result->text('Node does not exist', false), 'skill name');
     }
 }
