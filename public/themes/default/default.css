@@ -1393,13 +1393,31 @@ td.cellule_grise {
 }
 
 /*	Messages d'informations		*/
-#messages_infos {
-	width: 90%;
-  margin: auto;
-	color:#cd1b19;	
-	font-weight:bold;
-	font-size:13pt;
-  padding: 5px 10px;
+#informationMessagesWrapper {
+  height: 50px;
+}
+
+#informationMessages {
+  overflow: hidden;
+  white-space: nowrap;
+  width: 100%;
+  z-index: -1;
+}
+
+#informationMessagesContent {
+  display: inline-block;
+  text-align: center;
+  animation: marquee-smooth linear infinite;
+  font-size: 1.5em;
+}
+
+#informationMessagesContent:hover {
+  animation-play-state: paused;
+}
+
+@keyframes marquee-smooth {
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
 }
 
 img{
@@ -1430,7 +1448,6 @@ img{
 
 #tableau, .tableau {
   text-align:center;
-  padding: 50px 0 0 0;
 }
 
 /*	Jours Fériés	*/
