@@ -1642,13 +1642,56 @@ var currentIndex = 0;
 function showInformationMessages(messages){
   if (messages.length < 1) return false;
 
-  var msg = messages[currentIndex];
-  stackAlert(msg);
-  var delay = 5000;
-  if (currentIndex === messages.length - 1) {
-    delay = 10000;
+  let msg = messages[currentIndex];
+  let delay = 6000;
+
+  $.ajax({
+    url: url('ajax/sanitize-html'),
+    type: 'POST',
+    dataType: 'html',
+    async: false,
+    data: {text: msg},
+    success: function(result) {
+      msg = result;
+    },
+    error: function() {
+      msg = '';
+    }
+  });
+
+  // TODO : A11y : aria display none + div aria only with all messages
+  // TODO: get the color from le DB
+  let color = '#CD1B19';
+
+  const $container = $('#informationMessages');
+  const $content = $('#informationMessagesContent');
+
+  $content.removeClass('animate-marquee').css({ 'animation-duration': '', 'transform': 'translateX(0)' });
+  
+  $content.attr('data-original', msg);
+  $content.html(msg).css({ 'color': color });
+
+  const containerWidth = $container[0].clientWidth;
+  let contentWidth = $content[0].scrollWidth;
+
+  if (contentWidth + 10 > containerWidth) {
+    const separator = ' &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ';
+
+    $content.html(msg + separator + msg);
+
+    const speed = 50;
+    const realContentWidth = $content[0].scrollWidth / 2;
+    const duration = realContentWidth / speed;
+
+    $content.css('transform', '');
+    $content.css('animation-duration', duration + 's');
+    $content.addClass('animate-marquee');
+
+    delay = delay + duration * 200;
   }
+
   currentIndex = (currentIndex + 1) % messages.length;
+
   setTimeout(function() {
     showInformationMessages(messages);
   }, delay);
