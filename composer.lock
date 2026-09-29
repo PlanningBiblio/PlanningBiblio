@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "33ff03238235565032f7a7ea35150bcc",
+    "content-hash": "727f50709a68bea52e36fe4d572c73ae",
     "packages": [
         {
             "name": "adriengras/php-clamav",
@@ -13636,7 +13636,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": "^8.2 || ^8.3"
+        "php": "^8.2 || ^8.3 || ^8.4"
     },
     "platform-dev": {},
     "platform-overrides": {
