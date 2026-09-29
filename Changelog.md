@@ -1,5 +1,20 @@
 # Changelog Planno
 
+## Version 26.05.12 (2026-09-29)
+
+### Enhancement
+
+* MT55116: Improve display of information messages #1495
+* MT48881: Add a command that allows skills to be deleted #1498
+
+### Dependencies
+
+* MT 55042: PHP 8.4 compatibility #1493
+
+### Accessibility
+
+* MT48942: A11y: Accessibility page #1491
+
 ## Version 26.05.11 (2026-09-18)
 
 ### Fixes
