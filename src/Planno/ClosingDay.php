@@ -89,15 +89,4 @@ class ClosingDay
         }
         $this->elements=$tab;
     }
-
-    public function fetchYears(): void
-    {
-        $db=new \db();
-        $db->select("jours_feries", "annee", null, "GROUP BY `annee` desc");
-        if ($db->result) {
-            foreach ($db->result as $elem) {
-                $this->elements[]=$elem['annee'];
-            }
-        }
-    }
 }

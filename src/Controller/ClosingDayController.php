@@ -27,18 +27,16 @@ class ClosingDayController extends BaseController
         $yearSelected = $matches[0] ?? $yearCurrent;
         $session->set('ClosingDayYear', $yearSelected);
 
-        $j = new ClosingDay();
-        $j->fetchYears();
-        $annees = $j->elements;
+        $years = $this->entityManager->getRepository(PublicHoliday::class)->findYears();
 
-        if (!in_array($yearNext, $annees)) {
-            $annees[] = $yearNext;
+        if (!in_array($yearNext, $years)) {
+            $years[] = $yearNext;
         }
-        if (!in_array($yearCurrent, $annees)) {
-            $annees[] = $yearCurrent;
+        if (!in_array($yearCurrent, $years)) {
+            $years[] = $yearCurrent;
         }
 
-        sort($annees);
+        sort($years);
 
         // Recherche des jours fériés enregistrés dans la base de données et avec la fonction jour_ferie
         $j = new ClosingDay();
@@ -78,7 +76,7 @@ class ClosingDayController extends BaseController
             "nbExtra"            => $nbExtra,
             'selectedYear'       => $yearSelected,
             'title'              => 'Public holidays and closing days',
-            "years"              => $annees
+            'years'              => $years
         ));
 
         return $this->output("closingdays/index.html.twig");
