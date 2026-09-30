@@ -23,8 +23,6 @@
       <!-- Tableau des jours fériés -->
       <form name="form" method="post" action="{{ asset('closingday') }}">
         <input type="hidden" name="_token" id="_token" value="{{ csrf_token('') }}"/>
-        <input type="hidden" name="page" value="{{ asset('closingday') }}" />
-        <input type="hidden" name="CSRFToken" value="{{ CSRFSession }}" />
         <input type="hidden" name="annee" value="{{ selectedYear }}" />
         <table cellspacing="0">
           <tr class="th closingday-header">

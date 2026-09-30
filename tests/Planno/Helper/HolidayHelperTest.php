@@ -1,18 +1,27 @@
 <?php
 
 use App\Entity\Agent;
-
+use App\Entity\PublicHoliday;
 use App\Planno\Helper\HolidayHelper;
-use App\Planno\ClosingDay;
-use PHPUnit\Framework\TestCase;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Tests\FixtureBuilder;
 
-class HolidayHelperTest extends TestCase
+class HolidayHelperTest extends KernelTestCase
 {
-    public function testgetCountedHoursWithCongesFulldayReferenceTime(): void {
+    public static function tearDownAfterClass(): void
+    {
+        $builder = new FixtureBuilder();
+        $builder->delete(PublicHoliday::class);
+    }
+
+    public function testgetCountedHoursWithCongesFulldayReferenceTime(): void
+    {
         $GLOBALS['config']['Conges-Mode'] = 'jours';
         $GLOBALS['config']['Conges-fullday-switching-time'] = 4.25;
         $GLOBALS['config']['Conges-fullday-reference-time'] = 7.5;
+
+        $entityManager = static::getContainer()->get(EntityManagerInterface::class);
 
         $builder = new FixtureBuilder();
         $agent = $builder->build(Agent::class, array('login' => 'me'));
@@ -138,16 +147,16 @@ class HolidayHelperTest extends TestCase
         $this->assertEquals(2.5, $result['days'], 'request 18h30 on 3 day');
 
         // Add a closing day on Thursday.
-        $j = new ClosingDay();
-        $j->CSRFToken = '00000';
-        $j->update(array(
-            'annee' => '2020-2021',
-            'jour' => array(0 => '03/06/2021'),
-            'ferie' => array(0 => 1),
-            'fermeture' => array(0 => 1),
-            'nom' => array(0 => 'Closed'),
-            'commentaire' => array(0 => "It's closed !"),
-        ));
+        $publicHoliday = new PublicHoliday();
+        $publicHoliday->setClosed(true)
+            ->setComment("It's closed !")
+            ->setDay(new DateTime('2021/06/03'))
+            ->setName('Closed')
+            ->setPublicHoliday(true)
+            ->setYear('2020-2021');
+
+        $entityManager->persist($publicHoliday);
+        $entityManager->flush();
 
         // Request holiday on a closing day.
         // Only regularization are returned.
@@ -169,7 +178,8 @@ class HolidayHelperTest extends TestCase
         $this->assertEquals(0, $result['days'], 'Closing day: 0 day');
     }
 
-    public function testgetCountedHoursHolidayModeDays(): void {
+    public function testgetCountedHoursHolidayModeDays(): void
+    {
         $GLOBALS['config']['Conges-Mode'] = 'jours';
         $GLOBALS['config']['Conges-fullday-switching-time'] = '';
         $GLOBALS['config']['Conges-fullday-reference-time'] = '';
@@ -225,7 +235,8 @@ class HolidayHelperTest extends TestCase
 
     }
 
-    public function testgetCountedHoursHolidayModeHours(): void {
+    public function testgetCountedHoursHolidayModeHours(): void
+    {
         $GLOBALS['config']['Conges-Mode'] = 'heures';
         $GLOBALS['config']['Conges-Recuperations'] = 0;
         $GLOBALS['config']['Conges-demi-journees'] = 0;
@@ -275,4 +286,3 @@ class HolidayHelperTest extends TestCase
         $this->assertEquals('56h40', $result['hr_hours']);
     }
 }
-

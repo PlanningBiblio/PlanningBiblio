@@ -100,30 +100,4 @@ class ClosingDay
             }
         }
     }
-
-    public function update($p): void
-    {
-        $error=false;
-        $data=array();
-        $keys=array_keys($p['jour']);
-        foreach ($keys as $elem) {
-            if ($p['jour'][$elem] and $p['jour'][$elem]!="0000-00-00") {
-                $ferie=isset($p['ferie'][$elem])?1:0;
-                $fermeture=isset($p['fermeture'][$elem])?1:0;
-                $data[]=array("annee"=>$p['annee'],"jour"=>dateSQL($p['jour'][$elem]),"ferie"=>$ferie,"fermeture"=>$fermeture,"nom"=>$p['nom'][$elem],"commentaire"=>$p['commentaire'][$elem]);
-            }
-        }
-        $db=new \db();
-        $db->CSRFToken = $this->CSRFToken;
-        $db->delete("jours_feries", array('annee' => $p['annee']));
-        $error=$db->error?true:$error;
-
-        if (!empty($data)) {
-            $db=new \db();
-            $db->CSRFToken = $this->CSRFToken;
-            $db->insert("jours_feries", $data);
-            $error=$db->error?true:$error;
-        }
-        $this->error=$error;
-    }
 }

@@ -4,10 +4,17 @@ use App\Entity\Agent;
 use App\Entity\PublicHoliday;
 use App\Planno\ClosingDay;
 use Doctrine\ORM\EntityManagerInterface;
+use Tests\FixtureBuilder;
 use Tests\PLBWebTestCase;
 
 class ClosingDayControllerTest extends PLBWebTestCase
 {
+    public static function tearDownAfterClass(): void
+    {
+        $builder = new FixtureBuilder();
+        $builder->delete(PublicHoliday::class);
+    }
+
     public function testListClosingDay(): void
     {
         $this->builder->delete(Agent::class);

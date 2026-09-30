@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\PublicHoliday;
 use App\Planno\ClosingDay;
+use DateTime;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -71,7 +72,6 @@ class ClosingDayController extends BaseController
         $holiday_enable = $this->config('Conges-Enable');
 
         $this->templateParams(array(
-            "CSRFSession"        => $GLOBALS['CSRFSession'],
             "days"               => $days,
             "holiday_enable"     => $holiday_enable,
             "nbDays"             => $nbDays,
@@ -93,17 +93,37 @@ class ClosingDayController extends BaseController
         }
 
         $post = $request->request->all();
-        $CSRFToken = $request->get('CSRFToken');
+        $year = $request->request->get('annee');
 
-        $j = new ClosingDay();
-        $j->CSRFToken = $CSRFToken;
-        $j->update($post);
-
-        if ($j->error){
-            $session->getFlashBag()->add('error',"Une erreur est survenue lors de la modification de la liste des jours fériés.");
-        } else {
-            $session->getFlashBag()->add('notice',"La liste des jours fériés a été modifiée avec succès.");
+        // Delete all entries for the corresponding year
+        $holidays = $this->entityManager->getRepository(PublicHoliday::class)->findByAnnee($year);
+        foreach($holidays as $holiday) {
+            $this->entityManager->remove($holiday);
         }
+
+        // Inserts the elements received from the form
+        $keys = array_keys($post['jour']);
+
+        foreach ($keys as $elem) {
+            if (empty($post['jour'][$elem]) or $post['jour'][$elem] == '0000-00-00') {
+                continue;
+            }
+
+            $holiday = new PublicHoliday();
+
+            $holiday->setClosed(isset($post['fermeture'][$elem]))
+                ->setComment($post['commentaire'][$elem])
+                ->setDay(DateTime::createFromFormat('d/m/Y', $post['jour'][$elem]))
+                ->setName($post['nom'][$elem])
+                ->setPublicHoliday(isset($post['ferie'][$elem]))
+                ->setYear($post['annee']);
+
+            $this->entityManager->persist($holiday);
+        }
+
+        $this->entityManager->flush();
+
+        $this->addFlash('notice', 'The list of public holidays has been successfully modified');
 
         return $this->redirectToRoute('closingday.index');
     }
