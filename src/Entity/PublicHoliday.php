@@ -36,4 +36,76 @@ class PublicHoliday
     {
         return $this->id;
     }
+
+    public function getComment(): ?string
+    {
+        return $this->commentaire;
+    }
+
+    public function setComment(?string $comment): static
+    {
+        $this->commentaire = $comment;
+
+        return $this;
+    }
+
+    public function getDay(): ?\DateTime
+    {
+        return $this->jour;
+    }
+
+    public function setDay(?\DateTime $day): static
+    {
+        $this->jour = $day;
+
+        return $this;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->nom;
+    }
+
+    public function setName(?string $name): static
+    {
+        $this->nom = $name;
+
+        return $this;
+    }
+
+    public function getYear(): ?string
+    {
+        return $this->annee;
+    }
+
+    public function setYear(?string $year): static
+    {
+        $this->annee = $year;
+
+        return $this;
+    }
+
+    public function isClosed(): bool
+    {
+        return $this->fermeture;
+    }
+
+    public function setClosed(?bool $closed): static
+    {
+        $this->fermeture = $closed;
+
+        return $this;
+    }
+
+    public function isPublicHoliday(): bool
+    {
+        return $this->ferie;
+    }
+
+    public function setPublicHoliday(?bool $holiday): static
+    {
+        $this->ferie = $holiday;
+
+        return $this;
+    }
 }

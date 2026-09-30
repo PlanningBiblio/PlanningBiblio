@@ -3,82 +3,63 @@
 use App\Entity\Agent;
 use App\Entity\PublicHoliday;
 use App\Planno\ClosingDay;
+use Doctrine\ORM\EntityManagerInterface;
 use Tests\PLBWebTestCase;
 
 class ClosingDayControllerTest extends PLBWebTestCase
 {
-
     public function testListClosingDay(): void
     {
         $this->builder->delete(Agent::class);
+        $this->builder->delete(PublicHoliday::class);
 
         $client = static::createClient();
 
-        $agent = $this->builder->build(
-            Agent::class,
-            array(
-                'login' => 'agent_test',
-            )
-        );
-        $this->logInAgent($agent, array(99, 25, 100));
+        $agent = $this->builder->build(Agent::class, ['login' => 'agent_test']);
+        $this->logInAgent($agent, [99, 25, 100]);
 
         $date1 = new DateTime('+3 days');
         $date2 = new DateTime('+6 days');
 
-        $y = date("Y");
-        if(date('n')<9){
-            $y1 = $y-1;
-            $y2 = $y+1;
-            $annee = "$y1-$y";
-            $annee2 = "$y-$y2";
-        } else{
-            $y1 = $y+1;
-            $y2 = $y+2;
-            $annee = "$y-$y1";
-            $annee2 = "$y1-$y2";
-        }
+        $year1 = (date('n') < 9) ? (date('Y') - 1) . '-' . date('Y') : date('Y') . '-' . (date('Y') + 1);
+        $year2 = (date('n') < 9) ? date('Y') . '-' . (date('Y') + 1) : (date('Y') + 1) . '-' . (date('Y') + 2);
 
-        $this->builder->delete(PublicHoliday::class);
+        $publicHoliday1 = $this->builder->build(PublicHoliday::class, [
+            'annee' => $year1,
+            'jour' => $date1,
+            'nom' => 'publicHoliday1',
+            'fermeture' => '0',
+            'ferie' => '1',
+            'commentaire' => 'test closing day',
+        ]);
 
-        $public_holiday_1 = $this->builder->build(
-            PublicHoliday::class,
-            array(
-                'annee' => $annee,
-                'jour' => $date1,
-                'nom' => 'public_holiday_1',
-                'fermeture' => '0',
-                'ferie' => '1',
-                'commentaire' => 'test closing day'
-            )
-        );
-        $id1 = $public_holiday_1->getId();
-        $public_holiday_2 = $this->builder->build(
-            PublicHoliday::class,
-            array(
-                'annee' => $annee,
-                'jour' => $date2,
-                'nom' => 'public_holiday_2',
-                'fermeture' => '0',
-                'ferie' => '1',
-                'commentaire' => 'test closing day 2'
-            )
-        );
-        $id2 = $public_holiday_2->getId();
+        $id1 = $publicHoliday1->getId();
 
-        $crawler = $client->request('GET', "/closingday");
+        $publicHoliday2 = $this->builder->build(PublicHoliday::class, [
+            'annee' => $year1,
+            'jour' => $date2,
+            'nom' => 'publicHoliday2',
+            'fermeture' => '0',
+            'ferie' => '1',
+            'commentaire' => 'test closing day 2',
+        ]);
 
-        $result = $crawler->filterXPath('//h3');
-        $this->assertEquals($result->text('Node does not exist', false),"Jours fériés et jours de fermeture");
+        $id2 = $publicHoliday2->getId();
+
+        $crawler = $client->request('GET', '/closingday');
+
+        $result = $crawler->filterXPath('//h1');
+        $this->assertEquals('Jours fériés et jours de fermeture', $result->text('Node does not exist', false));
 
         $result = $crawler->filterXPath('//form[@name="form1"]');
-        $this->assertStringContainsString("Sélectionnez l'année à paramétrer",$result->text('Node does not exist', false));
-        $this->assertStringContainsString($annee,$result->text('Node does not exist', false));
-        $this->assertStringContainsString($annee2,$result->text('Node does not exist', false));
+        $this->assertStringContainsString("Sélectionnez l'année à paramétrer", $result->text('Node does not exist', false));
+        $this->assertStringContainsString($year1, $result->text('Node does not exist', false));
+        $this->assertStringContainsString($year2, $result->text('Node does not exist', false));
 
-        $result = $crawler->filterXPath("//input[@value='public_holiday_1']");
+        $result = $crawler->filterXPath("//input[@value='publicHoliday1']");
         $this->assertNotEmpty($result);
 
-        $result = $crawler->filterXPath("//input[@value='public_holiday_2']");
+        $result = $crawler->filterXPath("//input[@value='publicHoliday2']");
         $this->assertNotEmpty($result);
 
         $result = $crawler->filterXPath("//input[@value='test closing day']");
@@ -89,6 +70,50 @@ class ClosingDayControllerTest extends PLBWebTestCase
 
         $result = $crawler->filterXPath("//input[@value='Valider']");
         $this->assertNotEmpty($result);
+    }
 
+    public function testUpdateClosingDay(): void
+    {
+        $entityManager = static::getContainer()->get(EntityManagerInterface::class);
+
+        $this->builder->delete(Agent::class);
+        $this->builder->delete(PublicHoliday::class);
+
+        $this->setUpPantherClient();
+
+        $agent = $this->builder->build(Agent::class, ['login' => 'agent_test', 'droits' => [99, 25, 100]]);
+        $this->login($agent);
+
+        $year = (date('n') < 9) ? (date('Y') - 1) . '-' . date('Y') : date('Y') . '-' . (date('Y') + 1);
+        $year1 = (date('n') < 9) ? (date('Y') - 1) : date('Y');
+
+        $crawler = $this->client->request('GET', '/closingday');
+        $this->client->waitFor('.btn-primary', 5);
+
+        $checkbox = $this->client->getCrawler()->filterXPath('(//input[@type="text" and @value="Pâques"]/ancestor::tr//input[@type="checkbox"])[1]');
+        $checkbox->click();
+        $checkbox = $this->client->getCrawler()->filterXPath('(//input[@type="text" and @value="Pâques"]/ancestor::tr//input[@type="checkbox"])[2]');
+        $checkbox->click();
+        $checkbox = $this->client->getCrawler()->filterXPath('(//input[@type="text" and @value="Fête du travail"]/ancestor::tr//input[@type="checkbox"])[2]');
+        $checkbox->click();
+        $checkbox = $this->client->getCrawler()->filterXPath('(//input[@type="text" and @value="Lundi Pentecôte"]/ancestor::tr//input[@type="checkbox"])[1]');
+        $checkbox->click();
+
+        $this->client->getCrawler()->filter('.btn-primary')->click();
+
+        $holidays = $entityManager->getRepository(PublicHoliday::class)->findBy(['annee' => $year], ['jour' => 'ASC']);
+
+        $this->assertCount(13, $holidays);
+        $this->assertEquals(new DateTime($year1 . '-11-01'), $holidays[0]->getDay());
+        $this->assertEquals('La Toussaint', $holidays[0]->getName());
+        $this->assertEquals('Ajouté automatiquement', $holidays[0]->getComment());
+        $this->assertTrue($holidays[0]->isPublicHoliday());
+        $this->assertFalse($holidays[0]->isClosed());
+        $this->assertFalse($holidays[4]->isPublicHoliday());
+        $this->assertTrue($holidays[4]->isClosed());
+        $this->assertTrue($holidays[6]->isPublicHoliday());
+        $this->assertTrue($holidays[6]->isClosed());
+        $this->assertFalse($holidays[10]->isPublicHoliday());
+        $this->assertFalse($holidays[10]->isClosed());
     }
 }

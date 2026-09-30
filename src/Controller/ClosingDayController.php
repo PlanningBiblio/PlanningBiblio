@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\PublicHoliday;
 use App\Planno\ClosingDay;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -11,7 +12,6 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ClosingDayController extends BaseController
 {
-
     #[Route(path: '/closingday', name: 'closingday.index', methods: ['GET'])]
     public function index(Request $request, Session $session): Response
     {
