@@ -195,4 +195,51 @@ class AbsenceInfoControllerTest extends PLBWebTestCase
         $rowCount = $crawler->filter('table > tbody > tr')->count();
         $this->assertEquals(1, $rowCount);
     }
+
+    public function testDelete(): void
+    {
+        $entityManager = $this->entityManager;
+
+        $builder = new FixtureBuilder();
+        $builder->delete(Agent::class);
+        $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
+        $builder->delete(AbsenceInfo::class);
+
+        $this->logInAgent($agent, array(201));
+
+        $start = new DateTime('+1 day');
+        $end = new DateTime('+1 month +1 day');
+
+        $info = new AbsenceInfo();
+        $info->setStart($start);
+        $info->setEnd($end);
+        $info->setComment('to be deleted');
+
+        $entityManager->persist($info);
+        $entityManager->flush();
+
+        $id = $info->getId();
+        $listUrl = sprintf('/absences/info?start=%s&end=%s', $start->format('d/m/Y'), $end->format('d/m/Y'));
+
+        $crawler = $this->client->request('GET', $listUrl);
+        $this->assertSelectorCount(1, '#AbsenceInfoTable tbody tr');
+
+        // Assert deletion fails without CSRF token
+        $this->client->request('POST', '/absences/info/delete', array('id' => $id));
+        $this->assertResponseStatusCodeSame(403);
+
+        $crawler = $this->client->request('GET', $listUrl);
+        $this->assertSelectorCount(1, '#AbsenceInfoTable tbody tr');
+        $token = $crawler->filter('#_token')->attr('value');
+
+        // Assert deletion succeeds with CSRF token
+        $this->client->request('POST', '/absences/info/delete', array('_token' => $token, 'id' => $id));
+        $this->assertResponseIsSuccessful();
+
+        $crawler = $this->client->request('GET', $listUrl);
+        $this->assertSelectorCount(0, '#AbsenceInfoTable tbody tr');
+
+        $entityManager->clear();
+        $this->assertNull($entityManager->getRepository(AbsenceInfo::class)->find($id), 'info is deleted');
+    }
 }

@@ -143,7 +143,7 @@ class ModelController extends BaseController
     }
 
 
-    #[Route(path: '/model/{id}', name: 'model.delete', methods: ['DELETE'])]
+    #[Route(path: '/model/{id}/delete', name: 'model.delete', methods: ['POST'])]
     public function delete(Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse
     {
         $id = $request->get('id');

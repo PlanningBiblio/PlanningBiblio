@@ -103,7 +103,7 @@ class AbsenceInfoController extends BaseController
         return $this->redirectToRoute('absences.info.index');
     }
 
-    #[Route(path: '/absences/info', name: 'absences.info.delete', methods: ['DELETE'])]
+    #[Route(path: '/absences/info/delete', name: 'absences.info.delete', methods: ['POST'])]
     public function delete(Request $request, Session $session): \Symfony\Component\HttpFoundation\Response
     {
         if (!$this->csrf_protection($request)) {
@@ -114,7 +114,7 @@ class AbsenceInfoController extends BaseController
             return $response;
         }
 
-        $id = $request->get('id');
+        $id = $request->request->get('id');
 
         $info = $this->entityManager->getRepository(AbsenceInfo::class)->find($id);
         $this->entityManager->remove($info);

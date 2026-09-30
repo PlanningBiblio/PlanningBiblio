@@ -270,4 +270,46 @@ class PositionControllerTest extends PLBWebTestCase
         $this->assertEquals($result->attr('title'),'Modifier','Edit Icons');
 
     }
+
+    public function testDelete(): void
+    {
+        $entityManager = $this->entityManager;
+
+        $builder = $this->builder;
+        $builder->delete(Agent::class);
+        $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
+        $builder->delete(Position::class);
+
+        $this->logInAgent($agent, array(5));
+
+        // Cannot use FixtureBuilder because we cannot set 'supprime' to NULL
+        $position = new Position();
+        $position->setName('to be deleted');
+        $position->setGroup('');
+        $position->setGroupId(0);
+        $position->setMandatory('Renfort');
+        $position->setFloor('');
+        $position->setSkills([]);
+
+        $entityManager->persist($position);
+        $entityManager->flush();
+
+        $id = $position->getId();
+
+        $crawler = $this->client->request('GET', '/position');
+        $this->assertSelectorCount(1, '#tablePostes tbody tr');
+        $token = $crawler->filter('#_token')->attr('value');
+
+        // Assert deletion succeeds with CSRF token
+        $this->client->request('POST', '/position/delete', array('_token' => $token, 'id' => $id));
+        $this->assertResponseIsSuccessful();
+
+        $crawler = $this->client->request('GET', '/position');
+        $this->assertSelectorCount(0, '#tablePostes tbody tr');
+
+        // position is only marked as deleted
+        $entityManager->clear();
+        $position = $entityManager->getRepository(Position::class)->find($id);
+        $this->assertNotNull($position->getDelete(), 'position is marked as deleted');
+    }
 }
