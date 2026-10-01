@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\PublicHoliday;
+use DateInterval;
 use DateTime;
 
 class PublicHolidayService
@@ -62,17 +63,16 @@ class PublicHolidayService
         }
 
         // fetes religieuses mobiles
-        $pak = easter_date($annee);
-        $jp = date("d", $pak);
-        $mp = date("m", $pak);
-        if ($jp == $jour && $mp == $mois) {
+        $date = new DateTime("$annee-03-21");
+        $days = easter_days($annee);
+        $date->add(new DateInterval("P{$days}D"));
+        $pak = $date->getTimestamp();
+
+        if ($date->format('m-d') == "$mois-$jour") {
             return "Pâques";
         }
 
-        $lpk = mktime(date("H", $pak), date("i", $pak), date("s", $pak), date("m", $pak), date("d", $pak) +1, date("Y", $pak));
-        $jp = date("d", $lpk);
-        $mp = date("m", $lpk);
-        if ($jp == $jour && $mp == $mois) {
+        if ($date->modify('+1 day')->format('m-d') == "$mois-$jour") {
             return "Lundi de Pâques";
         }
 
