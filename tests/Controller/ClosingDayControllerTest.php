@@ -110,6 +110,7 @@ class ClosingDayControllerTest extends PLBWebTestCase
         $holidays = $entityManager->getRepository(PublicHoliday::class)->findBy(['annee' => $year], ['jour' => 'ASC']);
 
         $this->assertCount(13, $holidays);
+        $this->assertEquals($year, $holidays[0]->getYear());
         $this->assertEquals(new DateTime($year1 . '-11-01'), $holidays[0]->getDay());
         $this->assertEquals('La Toussaint', $holidays[0]->getName());
         $this->assertEquals('Ajouté automatiquement', $holidays[0]->getComment());
