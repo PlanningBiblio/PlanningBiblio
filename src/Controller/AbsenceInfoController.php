@@ -114,7 +114,7 @@ class AbsenceInfoController extends BaseController
             return $response;
         }
 
-        $id = $request->request->get('id');
+        $id = $request->request->getInt('id');
 
         $info = $this->entityManager->getRepository(AbsenceInfo::class)->find($id);
         $this->entityManager->remove($info);
