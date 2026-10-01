@@ -11,6 +11,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
+// TODO / FIXME : Move this into a service
+require_once(__DIR__ . "/../../legacy/Common/feries.php");
+
 class ClosingDayController extends BaseController
 {
     #[Route(path: '/closingday', name: 'closingday.index', methods: ['GET'])]
@@ -38,46 +41,40 @@ class ClosingDayController extends BaseController
 
         sort($years);
 
-        // Recherche des jours fériés enregistrés dans la base de données et avec la fonction jour_ferie
-        $j = new ClosingDay();
-        $j->annee = $yearSelected;
-        $j->auto = false;;
-        $j->fetch();
-        $jours = $j->elements;
+        // Recherche des jours fériés enregistrés dans la base de données
+        $days = $this->entityManager->getRepository(PublicHoliday::class)->findBy(['annee' => $yearSelected], ['jour' => 'ASC']);
 
-        $nbDays = count($jours);
-        $nbExtra = $nbDays + 15;
-        $days = [];
-        // Affichage des jours fériés enregistrés
-        $i = 0;
-        foreach ($jours as $elem) {
-            $ferie = (bool) $elem['ferie'];
-            $fermeture = (bool) $elem['fermeture'];
-            $date = dateFr($elem['jour']);
-            $commentaire = $elem['commentaire'];
-            $nom = $elem['nom'];
-            $days[] = array(
-                "holiday" => $ferie,
-                "closed"  => $fermeture,
-                "date"    => $date,
-                "comment" => $commentaire,
-                "name"    => $nom,
-                "number"  => $i
-            );
-            $i++;
+        // Recherche des jours fériés avec la fonction "jour_ferie"
+        if (empty($days)) {
+            $days = [];
+            $year = substr($yearSelected, 0, 4);
+
+            $date = new DateTime($year . '-09-01');
+            $end = (clone $date)->modify('+1 year');
+
+            while ($date < $end) {
+                if (jour_ferie($date->format('Y-m-d'))) {
+                    $day = new PublicHoliday();
+                    $day->setComment('Ajouté automatiquement')
+                        ->setDay(clone $date)
+                        ->setClosed(false)
+                        ->setName(jour_ferie($date->format('Y-m-d')))
+                        ->setPublicHoliday(true);
+
+                    $days[] = $day;
+                }
+                $date->modify('+1 day');
+            }
         }
 
-        $holiday_enable = $this->config('Conges-Enable');
-
-        $this->templateParams(array(
-            "days"               => $days,
-            "holiday_enable"     => $holiday_enable,
-            "nbDays"             => $nbDays,
-            "nbExtra"            => $nbExtra,
-            'selectedYear'       => $yearSelected,
-            'title'              => 'Public holidays and closing days',
-            'years'              => $years
-        ));
+        $this->templateParams([
+            'days'           => $days,
+            'nbDays'         => count($days),
+            'nbExtra'        => count($days) + 15,
+            'selectedYear'   => $yearSelected,
+            'title'          => 'Public holidays and closing days',
+            'years'          => $years
+        ]);
 
         return $this->output("closingdays/index.html.twig");
     }
