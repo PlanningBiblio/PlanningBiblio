@@ -43,7 +43,7 @@
                 </a>
               </td>
               <td>
-                <input type="text" name="jour[{{ id }}]" value={{ d.day | date('d/m/Y') }} class="c100 datepicker" id="jour{{ id }}"/>
+                <input type="text" name="jour[{{ id }}]" value={{ d.date | date('d/m/Y') }} class="c100 datepicker" id="jour{{ id }}"/>
               </td>
               <td>
                 <input type="checkbox" name="ferie[{{ id }}]" value="1" {% if d.publicHoliday %} checked {% endif %}/>

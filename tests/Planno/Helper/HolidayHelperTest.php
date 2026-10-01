@@ -150,7 +150,7 @@ class HolidayHelperTest extends KernelTestCase
         $publicHoliday = new PublicHoliday();
         $publicHoliday->setClosed(true)
             ->setComment("It's closed !")
-            ->setDay(new DateTime('2021/06/03'))
+            ->setDate(new DateTime('2021/06/03'))
             ->setName('Closed')
             ->setPublicHoliday(true)
             ->setYear('2020-2021');

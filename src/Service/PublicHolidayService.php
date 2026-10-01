@@ -16,8 +16,7 @@ class PublicHolidayService
             if ($name = self::getFrenchHolidays($date->format('Y-m-d'))) {
                 $day = new PublicHoliday();
                 $day->setComment('Ajouté automatiquement')
-                    ->setDay(clone $date)
-                    ->setClosed(false)
+                    ->setDate(clone $date)
                     ->setName($name)
                     ->setPublicHoliday(true);
 

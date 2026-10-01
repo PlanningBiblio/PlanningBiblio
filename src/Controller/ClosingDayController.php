@@ -92,7 +92,7 @@ class ClosingDayController extends BaseController
 
             $holiday->setClosed(isset($post['fermeture'][$elem]))
                 ->setComment($post['commentaire'][$elem])
-                ->setDay(DateTime::createFromFormat('d/m/Y', $post['jour'][$elem]))
+                ->setDate(DateTime::createFromFormat('d/m/Y', $post['jour'][$elem]))
                 ->setName($post['nom'][$elem])
                 ->setPublicHoliday(isset($post['ferie'][$elem]))
                 ->setYear($post['annee']);

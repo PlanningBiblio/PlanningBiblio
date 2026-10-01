@@ -36,7 +36,7 @@ class PublicHolidayServiceTest extends KernelTestCase
         $this->assertCount(13, $days);
 
         foreach ($holidays as $k => $v) {
-            $this->assertEquals($v[0], $days[$k]->getDay()->format('d/m/Y'));
+            $this->assertEquals($v[0], $days[$k]->getDate()->format('d/m/Y'));
             $this->assertEquals($v[1], $days[$k]->getName());
             $this->assertEquals('Ajouté automatiquement', $days[$k]->getComment());
             $this->assertTrue($days[$k]->isPublicHoliday());

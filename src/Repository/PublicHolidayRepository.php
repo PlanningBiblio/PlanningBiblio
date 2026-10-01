@@ -18,7 +18,7 @@ class PublicHolidayRepository extends EntityRepository
 
         $result = [];
         foreach ($dBResult as $elem) {
-            $result[$elem->getDay()->format('Y-m-d')] = $elem;
+            $result[$elem->getDate()->format('Y-m-d')] = $elem;
         }
 
         return $result;

@@ -22,10 +22,10 @@ class PublicHoliday
     private ?\DateTime $jour = null;
 
     #[ORM\Column]
-    private ?int $ferie = null;
+    private ?bool $ferie = true;
 
     #[ORM\Column]
-    private ?int $fermeture = null;
+    private ?bool $fermeture = false;
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $nom = null;
@@ -50,12 +50,12 @@ class PublicHoliday
         return $this;
     }
 
-    public function getDay(): ?\DateTime
+    public function getDate(): ?\DateTime
     {
         return $this->jour;
     }
 
-    public function setDay(?\DateTime $day): static
+    public function setDate(?\DateTime $day): static
     {
         $this->jour = $day;
 
