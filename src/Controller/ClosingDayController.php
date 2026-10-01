@@ -4,15 +4,13 @@ namespace App\Controller;
 
 use App\Entity\PublicHoliday;
 use App\Planno\ClosingDay;
+use App\Service\PublicHolidayService;
 use DateTime;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
-
-// TODO / FIXME : Move this into a service
-require_once(__DIR__ . "/../../legacy/Common/feries.php");
 
 class ClosingDayController extends BaseController
 {
@@ -46,25 +44,12 @@ class ClosingDayController extends BaseController
 
         // Recherche des jours fériés avec la fonction "jour_ferie"
         if (empty($days)) {
-            $days = [];
             $year = substr($yearSelected, 0, 4);
 
-            $date = new DateTime($year . '-09-01');
-            $end = (clone $date)->modify('+1 year');
+            $start = new DateTime($year . '-09-01');
+            $end = (clone $start)->modify('+1 year');
 
-            while ($date < $end) {
-                if (jour_ferie($date->format('Y-m-d'))) {
-                    $day = new PublicHoliday();
-                    $day->setComment('Ajouté automatiquement')
-                        ->setDay(clone $date)
-                        ->setClosed(false)
-                        ->setName(jour_ferie($date->format('Y-m-d')))
-                        ->setPublicHoliday(true);
-
-                    $days[] = $day;
-                }
-                $date->modify('+1 day');
-            }
+            $days = PublicHolidayService::getFrenchHolidaysByDateRange($start, $end);
         }
 
         $this->templateParams([

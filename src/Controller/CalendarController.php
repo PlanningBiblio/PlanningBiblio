@@ -4,15 +4,13 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 use App\Entity\AbsenceReason;
-use App\Planno\ClosingDay;
+use App\Entity\PublicHoliday;
 use App\Planno\DateTime\TimeSlot;
 use DateTime;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
-
-require_once(__DIR__ . '/../../legacy/Class/class.personnel.php');
 
 class CalendarController extends BaseController
 {
@@ -56,12 +54,7 @@ class CalendarController extends BaseController
         }
 
         // Jours fériés
-        $j = new ClosingDay();
-        $j->debut = $startSQL;
-        $j->fin = $endSQL;
-        $j->index= "date";
-        $j->fetch();
-        $joursFeries=$j->elements;
+        $publicHolidays = $this->entityManager->getRepository(PublicHoliday::class)->findByDateRange($startSQL, $endSQL);
 
         //Sélection des horaires de travail
         //$temps = emploi du temps
@@ -199,9 +192,9 @@ class CalendarController extends BaseController
             $closed = false;
             $nom = null;
             // Jours fériés : affiche Bibliothèque fermée et passe au jour suivant
-            if (array_key_exists($current, $joursFeries) and $joursFeries[$current]['fermeture']) {
+            if (array_key_exists($current, $publicHolidays) and $publicHolidays[$current]->isClosed()) {
                 $closed = true;
-                $nom = $joursFeries[$current]['nom'];
+                $nom = $publicHolidays[$current]->getName();
             }
 
             // Si l'agent est absent : affiche s'il est absent toute la journée ou ses heures d'absence
