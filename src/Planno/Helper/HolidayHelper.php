@@ -2,11 +2,12 @@
 
 namespace App\Planno\Helper;
 
+use App\Entity\Agent;
+use App\Entity\PublicHoliday;
 use App\Planno\Helper\BaseHelper;
 use App\Planno\Helper\WeekPlanningHelper;
 use App\Planno\WorkingHours;
-use App\Planno\ClosingDay;
-use App\Entity\Agent;
+use DateTime;
 
 include_once __DIR__ . '/../../../legacy/Class/class.planningHebdo.php';
 include_once(__DIR__ . '/../../../legacy/Common/function.php');
@@ -126,7 +127,6 @@ class HolidayHelper extends BaseHelper
                     $per_week[$week_id]['requested_days']--;
                 }
             }
-
 
             $debutConges = $current == $debut ? $hre_debut : "00:00:00";
             $finConges = $current == $fin ? $hre_fin : "23:59:59";
@@ -463,13 +463,10 @@ class HolidayHelper extends BaseHelper
 
     private function isClosingDay($date): bool
     {
-        $j = new ClosingDay();
-        $j->fetchByDate($date);
-        if (!empty($j->elements)) {
-            foreach ($j->elements as $elem) {
-                if ($elem['fermeture']) {
-                    return true;
-                }
+        $publicHolidays = $this->entityManager->getRepository(PublicHoliday::class)->findBy(['jour' => new DateTime($date)]);
+        foreach ($publicHolidays as $elem) {
+            if ($elem->isClosed()) {
+                return true;
             }
         }
 

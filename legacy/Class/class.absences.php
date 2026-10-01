@@ -1,15 +1,11 @@
 <?php
 /**
-Description :
-Classe absences : contient les fonctions de recherches des absences
-
-Page appelée par les autres pages du dossier absences
-
-TODO : Il serait intéressant de sortir de la boucle la gestion des notifications de la méthode add() comme ce qui a été fait pour les modifications.
-TODO : Si modification des notifications : adapter le message (lister tous les agents), adapter les variables fournies à getRecipients2, refaire une boucle pour getRecipients ou adapter getRecipients
-*/
-
-// pas de $version=acces direct aux pages de ce dossier => Accès refusé
+ * Description :
+ * Classe absences : contient les fonctions de recherches des absences
+ * 
+ * TODO : Il serait intéressant de sortir de la boucle la gestion des notifications de la méthode add() comme ce qui a été fait pour les modifications.
+ * TODO : Si modification des notifications : adapter le message (lister tous les agents), adapter les variables fournies à getRecipients2, refaire une boucle pour getRecipients ou adapter getRecipients
+ */
 
 require_once 'class.ics.php';
 require_once 'class.personnel.php';
@@ -19,11 +15,10 @@ use App\Entity\AbsenceReason;
 use App\Entity\AbsenceDocument;
 use App\Entity\PlanningPosition;
 use App\Entity\PlanningPositionLock;
+use App\Entity\PublicHoliday;
 use App\Planno\WorkingHours;
-use App\Planno\ClosingDay;
 use App\Service\ICalendar;
 use App\Planno\DateTime\TimeSlot;
-
 
 class absences
 {
@@ -526,6 +521,7 @@ class absences
     */
     public function calculTemps2()
     {
+        $entityManager = $GLOBALS['entityManager'];
         $version=$GLOBALS['config']['Version'];
 
         $debut=$this->debut;
@@ -547,14 +543,11 @@ class absences
         while ($current<=$fin) {
             // On ignore les jours de fermeture
             if (!$this->ignoreFermeture) {
-                $j = new ClosingDay();
-                $j->fetchByDate($current);
-                if (!empty($j->elements)) {
-                    foreach ($j->elements as $elem) {
-                        if ($elem['fermeture']) {
-                            $current=date("Y-m-d", strtotime("+1 day", strtotime($current)));
-                            continue 2;
-                        }
+                $publicHolidays = $entityManager->getRepository(PublicHoliday::class)->findBy(['jour' => new DateTime($current)]);
+                foreach ($publicHolidays as $elem) {
+                    if ($elem->isClosed()) {
+                        $current = date('Y-m-d', strtotime('+1 day', strtotime($current)));
+                        continue 2;
                     }
                 }
             }

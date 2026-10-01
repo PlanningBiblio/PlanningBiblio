@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\PublicHoliday;
-use App\Planno\ClosingDay;
 use App\Service\PublicHolidayService;
 use DateTime;
 use Symfony\Component\HttpFoundation\RedirectResponse;

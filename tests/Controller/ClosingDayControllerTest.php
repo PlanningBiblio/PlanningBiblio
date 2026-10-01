@@ -2,7 +2,6 @@
 
 use App\Entity\Agent;
 use App\Entity\PublicHoliday;
-use App\Planno\ClosingDay;
 use Doctrine\ORM\EntityManagerInterface;
 use Tests\FixtureBuilder;
 use Tests\PLBWebTestCase;
