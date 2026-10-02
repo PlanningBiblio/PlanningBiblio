@@ -582,6 +582,11 @@ trait PlanningJobTrait
             'agent.id NOT IN (:excluded_agent_ids)',
         );
 
+        /* 
+         * Exlude agents already present in the selected cell.
+         * A necessary complement to the exclusion of agents already assigned ($tab_deja_place),
+         * which applies to all cells, but is not carried out for unavailable agents
+         */
         $qb2 = $this->entityManager->createQueryBuilder();
         $qb2->from(PlanningPosition::class, 'pp');
         $qb2->select('pp.id');
@@ -590,6 +595,7 @@ trait PlanningJobTrait
             'pp.date = :date',
             'pp.debut = :debut',
             'pp.fin = :fin',
+            'pp.poste = :position',
             'pp.site = :site',
         );
         $qb->andWhere(sprintf('NOT EXISTS (%s)', $qb2->getDql()));
@@ -602,6 +608,7 @@ trait PlanningJobTrait
         $qb->setParameter('excluded_agent_ids', array_merge($agents_qualif, $tab_deja_place, $absents));
         $qb->setParameter('debut', $debut);
         $qb->setParameter('fin', $fin);
+        $qb->setParameter('position', $poste);
         $qb->setParameter('site', $site);
 
         $query = $qb->getQuery();
