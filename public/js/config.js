@@ -3,33 +3,27 @@ Description : Fichier JS des pages de configurations
 */
 
 function ldaptest() {
-  var filter = $('#LDAP-Filter').val();
-  var host = $('#LDAP-Host').val();
-  var idAttribute = $('#LDAP-ID-Attribute').val();
-  var password = $('#LDAP-Password').val();
-  var port = $('#LDAP-Port').val();
-  var protocol = $('#LDAP-Protocol').val();
-  var rdn = $('#LDAP-RDN').val();
-  var suffix = $('#LDAP-Suffix').val();
-
-  if(port == ''){
-    port = '389';
-  }
-
-  if(filter == ''){
-    filter = '(objectclass=inetorgperson)';
-  }
-
-
   $('#alert-stack-top-center').remove();
 
   $.ajax({
     url: url('config/ldap-test'),
     type: 'post',
     dataType: 'json',
-    data: {filter: filter, host: host, idAttribute: idAttribute, password : password, port: port, protocol: protocol, rdn: rdn, suffix: suffix},
+    data: {
+      _token: $('input[name=_token]').val(),
+      filter: $('#LDAP-Filter').val() || '(objectclass=inetorgperson)',
+      host: $('#LDAP-Host').val(),
+      idAttribute: $('#LDAP-ID-Attribute').val(),
+      password : $('#LDAP-Password').val(),
+      port: $('#LDAP-Port').val() || 389,
+      protocol: $('#LDAP-Protocol').val(),
+      rdn: $('#LDAP-RDN').val(),
+      suffix: $('#LDAP-Suffix').val(),
+    },
     success: function(result) {
-      if (result == 'ok') {
+      if (result == 'CSRF') {
+        stackAlert(Translator.trans('The CSRF token is invalid. Please try to resubmit the form', {}, 'validators'), 'error');
+      } else if (result == 'ok') {
         stackAlert('Les paramètres LDAP sont corrects');
       } else if (result == 'bind') {
         stackAlert('Les paramètres Protocol, RDN et/ou Password sont incorrects', 'error');
@@ -72,57 +66,42 @@ function mail_config() {
 }
 
 function mailtest() {
-  var enabled = $('#Mail-IsEnabled').prop('checked');
-  var mailSmtp = $('#Mail-IsMail-IsSMTP').val();
-  var hostname = $('#Mail-Hostname').val();
-  var host = $('#Mail-Host').val();
-  var port = $('#Mail-Port').val();
-  var secure = $('#Mail-SMTPSecure').val();
-  var autoTLS = $('#Mail-SMTPAutoTLS').prop('checked') ? 1 : 0;
-  var auth = $('#Mail-SMTPAuth').prop('checked') ? 1 : 0;
-  var user = $('#Mail-Username').val();
-  var password = $('#Mail-Password').val();
-  var fromMail = $('#Mail-From').val();
-  var fromName = $('#Mail-FromName').val();
-  var signature = $('#Mail-Signature').val();
-  var planning = $('#Mail-Planning').val().trim();
-
-
   $('#alert-stack-top-center').remove();
 
-  if(enabled == 0) {
+  if(!$('#Mail-IsEnabled').prop('checked')) {
     stackAlert('Le paramètre "Mail-IsEnabled" est désactivé', 'error');
     return false;
   }
 
-  if( !planning) {
+  if(!$('#Mail-Planning').val().trim()) {
     stackAlert('Veuillez entrer une (ou plusieurs) adresse(s) valide(s) dans le champ "Mail-Planning"', 'error');
     return false;
   }
 
-  var data = {
-    mailSmtp: mailSmtp,
-    hostanme: hostname,
-    host: host,
-    port: port,
-    secure: secure,
-    autoTLS: autoTLS,
-    auth: auth,
-    user: user,
-    password: password,
-    fromMail: fromMail,
-    fromName: fromName,
-    signature: signature,
-    planning: planning,
-  }
-
   $.ajax({
-    url: url('ajax/mail-test'),
+    url: url('config/mail-test'),
     type: 'post',
     dataType: 'json',
-    data: data,
+    data: {
+      _token: $('input[name=_token]').val(),
+      mailSmtp: $('#Mail-IsMail-IsSMTP').val(),
+      hostanme: $('#Mail-Hostname').val(),
+      host: $('#Mail-Host').val(),
+      port: $('#Mail-Port').val(),
+      secure: $('#Mail-SMTPSecure').val(),
+      autoTLS: $('#Mail-SMTPAutoTLS').prop('checked') ? 1 : 0,
+      auth: $('#Mail-SMTPAuth').prop('checked') ? 1 : 0,
+      user: $('#Mail-Username').val(),
+      password: $('#Mail-Password').val(),
+      fromMail: $('#Mail-From').val(),
+      fromName: $('#Mail-FromName').val(),
+      signature: $('#Mail-Signature').val(),
+      planning: $('#Mail-Planning').val().trim(),
+    },
     success: function(result) {
-      if (result == 'ok') {
+      if (result == 'CSRF') {
+        stackAlert(Translator.trans('The CSRF token is invalid. Please try to resubmit the form', {}, 'validators'), 'error');
+      } else if (result == 'ok') {
         stackAlert('Le mail de test a été envoyé avec succès. Vérifiez votre messagerie.');
       } else if (result == 'socket') {
         stackAlert('Impossible de joindre le serveur de messagerie.', 'error');
