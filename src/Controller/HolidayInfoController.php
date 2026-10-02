@@ -126,6 +126,10 @@ class HolidayInfoController extends BaseController
             return $this->json('CSRF error', 403);
         }
 
+        if (!$this->isAdmin()) {
+            return $this->json('Access denied', 403);
+        }
+
         $id = $request->get('id');
 
         $info = $this->entityManager->getRepository(HolidayInfo::class)->find($id);
