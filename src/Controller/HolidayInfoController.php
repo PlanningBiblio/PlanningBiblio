@@ -119,23 +119,27 @@ class HolidayInfoController extends BaseController
         return $this->redirectToRoute('holiday_info.index');
     }
 
-    #[Route(path: '/holiday-info', name: 'holiday_info.delete', methods: ['DELETE'])]
-    public function delete(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
+    #[Route(path: '/holiday-info/delete', name: 'holiday_info.delete', methods: ['POST'])]
+    public function delete(Request $request, Session $session): \Symfony\Component\HttpFoundation\Response
     {
-        if(!$this->isAdmin()){
-            return $this->redirectToRoute('access-denied');
+        if (!$this->csrf_protection($request)) {
+            return $this->json('CSRF error', 403);
         }
 
-        $CSRFToken = $request->request->get('CSRFToken');
+        if (!$this->isAdmin()) {
+            return $this->json('Access denied', 403);
+        }
+
         $id = $request->get('id');
 
-        $db = new \db();
-        $db->CSRFToken = $CSRFToken;
-        $db->delete('conges_infos', array('id'=>$id));
-        $flash = "L'information a bien été supprimée.";
+        $info = $this->entityManager->getRepository(HolidayInfo::class)->find($id);
+        $this->entityManager->remove($info);
+        $this->entityManager->flush();
 
+        $flash = "L'information a bien été supprimée.";
         $session->getFlashBag()->add('notice', $flash);
-        return $this->redirectToRoute('holiday_info.index');
+
+        return $this->json('OK');
     }
 
     private function isAdmin(): bool

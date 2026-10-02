@@ -54,8 +54,8 @@
                       if (window.confirm('Voulez-vous vraiment supprimer ce poste ?')){
                         CSRFToken = $('#CSRFSession').val();
                         $.ajax({
-                          url : '{{ asset("position") }}',
-                          type : 'DELETE',
+                          url : '{{ asset("position/delete") }}',
+                          type : 'POST',
                           data : {id: id, CSRFToken: CSRFToken},
                           success: function(response){
                             if (response == 'Ok'){

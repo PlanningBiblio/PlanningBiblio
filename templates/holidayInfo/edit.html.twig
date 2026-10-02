@@ -46,9 +46,9 @@
                 <span>Annuler</span>
               </a>
               {% if id != 0 %}
-                <a href="javascript:deleteAdminInfo({{ id }});" class="btn btn-danger" style="margin-left:30px;" role="button">
+                <button id="holiday-info-delete-btn" class="btn btn-danger" style="margin-left:30px;" role="button" data-holiday-info-id="{{ id }}">
                   <span>Supprimer</span>
-                </a>
+                </button>
               {% endif %}
               <input role="button" type="submit" value="Valider" class="btn btn-primary"/>
             </td>
@@ -57,4 +57,10 @@
       </form>
     </div>
   </div>
+
+  <script>
+    document.getElementById('holiday-info-delete-btn')?.addEventListener('click', function () {
+        deleteHolidayInfo(this.dataset.holidayInfoId);
+    });
+  </script>
 {% endblock %}
