@@ -20,8 +20,32 @@ class Detached
     #[ORM\Column]
     private ?int $perso_id = null;
 
+    public function getDate(): ?\DateTime
+    {
+        return $this->date;
+    }
+
+    public function setDate(?\DateTime $date): static
+    {
+        $this->date = $date;
+
+        return $this;
+    }
+
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getUserId(): ?int
+    {
+        return $this->perso_id;
+    }
+
+    public function setUserId(?int $userId): static
+    {
+        $this->perso_id = $userId;
+
+        return $this;
     }
 }
