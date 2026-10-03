@@ -115,8 +115,6 @@
     - 100
 "ajax.planningjobcheckcopy":
     - 100
-"ajax.mailtest":
-    - 100
 "ajax.checkpassword":
     - 100
 "ajax.sanitizehtml":
@@ -130,6 +128,8 @@
 "config.index":
     - 20
 "config.ldap_test":
+    - 20
+"config.mailtest":
     - 20
 "config.technical":
     - 20

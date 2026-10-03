@@ -68,68 +68,6 @@ class AjaxController extends BaseController
         return $this->json($agents);
     }
 
-    #[Route(path: '/ajax/mail-test', name: 'ajax.mailtest', methods: ['POST'])]
-    public function mailTest(Request $request): JsonResponse
-    {
-
-        include_once(__DIR__ . '/../../legacy/Common/config.php');
-        include_once(__DIR__ . '/../../legacy/Common/function.php');
-
-        $mailSmtp = $request->get('mailSmtp');
-        $hostname = $request->get('hostname');
-        $host = $request->get('host');
-        $port = $request->get('port');
-        $secure = $request->get('secure');
-        $autoTLS = $request->get('autoTLS');
-        $auth = $request->get('auth');
-        $user = $request->get('user');
-        $password = $request->get('password');
-        $fromMail = $request->get('fromMail');
-        $fromName = $request->get('fromName');
-        $signature = $request->get('signature');
-        $planning = $request->get('planning');
-
-        if ($password == '') {
-            $configRepository = $this->entityManager->getRepository(Config::class);
-            $password = decrypt($configRepository->getValue('Mail-Password'));
-        }
-
-        // Connexion au serveur de messagerie
-        if ($fp=@fsockopen($host, $port, $errno, $errstr, 5)) {
-            $GLOBALS['config']['Mail-IsEnabled'] = 1;
-            $GLOBALS['config']['Mail-IsMail-IsSMTP'] = $mailSmtp;
-            $GLOBALS['config']['Mail-Hostname'] = $hostname;
-            $GLOBALS['config']['Mail-Host'] = $host;
-            $GLOBALS['config']['Mail-Port'] = $port;
-            $GLOBALS['config']['Mail-SMTPSecure'] = $secure;
-            $GLOBALS['config']['Mail-SMTPAutoTLS'] = $autoTLS;
-            $GLOBALS['config']['Mail-SMTPAuth'] = $auth;
-            $GLOBALS['config']['Mail-Username'] = $user;
-            $GLOBALS['config']['Mail-Password'] = encrypt($password);
-            $GLOBALS['config']['Mail-From'] = $fromMail;
-            $GLOBALS['config']['Mail-FromName'] = $fromName;
-            $GLOBALS['config']['Mail-Signature'] = $signature;
-            $GLOBALS['config']['Mail-Planning'] = $planning;
-
-            $m=new \CJMail();
-            $m->subject="Message de test";
-            $m->message="Message de test.<br/><br/>La messagerie de votre application Planno est correctement paramétrée.";
-            $m->to=$planning;
-            $m->send();
-
-            if ($m->error) {
-                return $this->json($m->error_CJInfo);
-                exit;
-            } else {
-                return $this->json('ok');
-                exit;
-            }
-        } else {
-            return $this->json('socket');
-            exit;
-        }
-    }
-
     #[Route(path: '/ajax/edit-absence-reasons', name: 'ajax.editabsencereasons', methods: ['POST'])]
     public function editAbsenceReasons(Request $request): Response
     {

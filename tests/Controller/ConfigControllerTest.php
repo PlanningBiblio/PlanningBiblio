@@ -42,4 +42,15 @@ class ConfigControllerTest extends PLBWebTestCase
             $response
         );
     }
+
+    public function testUpdateConfigWrongCSRF(): void
+    {
+        $this->builder->delete(Agent::class);
+
+        $agent = $this->builder->build(Agent::class, ['login' => 'agent_test', 'droits' => [20]]);
+        $this->logInAgent($agent, $agent->getACL());
+
+        $crawler = $this->client->request('POST', '/config', ['_token' => 'fake token']);
+        $this->assertEquals($this->client->getResponse()->getStatusCode(), 302, 'Wrong CSRF Token returns 302');
+    }    
 }
