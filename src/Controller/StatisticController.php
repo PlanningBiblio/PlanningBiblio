@@ -1206,7 +1206,7 @@ class StatisticController extends BaseController
                 $a->fin = $elem['fin'];
                 $a->perso_id = $elem['perso_id'];
                 $a->edt = $edt;
-                $a->ignoreFermeture = true;
+                $a->ignoreFermeture = false;
                 $a->calculTemps2();
                 $heures = $a->heures;
 

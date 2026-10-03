@@ -793,3 +793,9 @@ msgstr "(new window)"
 
 msgid "Legal notice"
 msgstr "Legal notice"
+
+msgid "Public holidays and closing days"
+msgstr "Public holidays and closing days"
+
+msgid "The list of public holidays has been successfully modified"
+msgstr "The list of public holidays has been successfully modified"
