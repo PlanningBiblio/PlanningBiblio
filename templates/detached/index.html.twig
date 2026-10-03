@@ -16,8 +16,8 @@
         <div>Sélection des agents volants</div>
         <div>Semaine {{ week_number }}, du {{ week }}</div>
         <ul class="days_ul">
-          <li><a href="{{ asset('detached') }}?date={{ previous_week }}"> Semaine précédente </a> / </li>
-          <li><a href="{{ asset('detached') }}?date={{ next_week }}"> Semaine suivante </a></li>
+          <li><a href="{{ asset('detached') }}/{{ previous_week }}"> Semaine précédente </a> / </li>
+          <li><a href="{{ asset('detached') }}/{{ next_week }}"> Semaine suivante </a></li>
         </ul>
       </div>
     </div>

@@ -6,6 +6,7 @@ use App\Controller\BaseController;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 require_once(__DIR__ . '/../../legacy/Class/class.volants.php');
@@ -13,20 +14,12 @@ require_once(__DIR__ . '/../../legacy/Common/function.php');
 
 class DetachedAgentsController extends BaseController
 {
-    #[Route(path: '/detached', name: 'detached.index', methods: ['GET'])]
+    #[Route(path: '/detached/{date?}', name: 'detached.index', methods: ['GET'])]
     public function index(Request $request)
     {
-        $date = $request->get('date');
+        $date = $this->initDate('date', 'DetatchedAgentDate', 'last monday', 'Y-m-d');
 
-        if (!$date) {
-            $date = date('Y-m-d');
-            if (!empty($_SESSION['oups']['volants_date'])) {
-                $date = $_SESSION['oups']['volants_date'];
-            }
-        }
-
-        $_SESSION['oups']['volants_date'] = $date;
-
+        $date = $date->format('Y-m-d');
         $d = new \datePl($date);
         $date = $d->dates[0];
         $w = $d->semaine;
@@ -37,7 +30,6 @@ class DetachedAgentsController extends BaseController
 
         // Next week
         $date2 = date('Y-m-d', strtotime($date.' +1 week'));
-
 
         // Agents disponibles et sélectionnés
         $v = new \volants();
@@ -62,9 +54,14 @@ class DetachedAgentsController extends BaseController
     #[Route(path: '/detached/add', name: 'detached.add', methods: ['POST'])]
     public function add(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
     {
-        $CSRFToken = $request->get('CSRFToken');
-        $date = $request->get('date');
-        $ids = $request->get('ids');
+        if (!$this->csrf_protection($request)) {
+            $session->set('AccessDeniedReason', 'CSRF');
+            return $this->redirectToRoute('access-denied');
+        }
+
+        $CSRFToken = $request->request->get('CSRFToken');
+        $date = $request->request->get('date');
+        $ids = $request->request->get('ids');
 
         $ids = html_entity_decode($ids, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
         $ids = json_decode($ids, true);

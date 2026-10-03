@@ -17,7 +17,7 @@ $(function() {
   // Calendar
   $("#pl-calendar").on('changeDate', function(e) {
     var date = $('#pl-calendar').datepicker('getFormattedDate','yyyy-mm-dd') ;
-    window.location.href= url('detached') + '?date=' + date;
+    window.location.href= url('detached') + '/' + date;
   });
 
   $('#pl-calendar').on('changeMonth', function() {
@@ -76,13 +76,16 @@ $(function() {
       ids.push($(this).val());
     });
 
-    ids = JSON.stringify(ids);
-
     $.ajax({
       url: url('detached/add'),
       type: 'post',
       dataType: 'json',
-      data: {ids: ids, date: $('#date').val(), CSRFToken: $('#CSRFSession').val(), },
+      data: {
+        _token: $('input[name=_token]').val(),
+        ids: JSON.stringify(ids),
+        date: $('#date').val(),
+        CSRFToken: $('#CSRFSession').val(),
+      },
       success: function(result){
         if(result.error){
           stackAlert('An error occurred while saving the information', 'error');
