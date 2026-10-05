@@ -60,7 +60,7 @@ class DetachedRepositoryTest extends KernelTestCase
 
         // Execute truncate query securely depending on the platform
         $platform = $connection->getDatabasePlatform();
-        
+
         if (method_exists($platform, 'getTruncateTableSQL')) {
             $connection->executeStatement('SET FOREIGN_KEY_CHECKS = 0;');
             $connection->executeStatement($platform->getTruncateTableSQL($tableName));
@@ -160,7 +160,7 @@ class DetachedRepositoryTest extends KernelTestCase
     public function testFindUserIdsAcceptsStringInput(): void
     {
         $targetMonday = new DateTimeImmutable('2026-10-05');
-        
+
         $detached = (new Detached())->setDate($targetMonday)->setUserId(500);
         $this->entityManager->persist($detached);
         $this->entityManager->flush();

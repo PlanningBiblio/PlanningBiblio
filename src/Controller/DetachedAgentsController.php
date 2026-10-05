@@ -6,17 +6,16 @@ use App\Controller\BaseController;
 use App\Entity\Agent;
 use App\Entity\Detached;
 use DateTimeImmutable;
+use Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
-require_once(__DIR__ . '/../../legacy/Class/class.volants.php');
-
 class DetachedAgentsController extends BaseController
 {
     #[Route(path: '/detached/{date?}', name: 'detached.index', methods: ['GET'])]
-    public function index(Request $request)
+    public function index(Request $request): Response
     {
         $date = $this->initDate('date', 'DetatchedAgentDate', 'monday this week', 'Y-m-d');
 
@@ -39,26 +38,38 @@ class DetachedAgentsController extends BaseController
         return $this->output('detached/index.html.twig');
     }
 
-    #[Route(path: '/detached/add', name: 'detached.add', methods: ['POST'])]
-    public function add(Request $request): \Symfony\Component\HttpFoundation\JsonResponse
+    #[Route(path: '/detached', name: 'detached.add', methods: ['POST'])]
+    public function add(Request $request): JsonResponse
     {
         if (!$this->csrf_protection($request)) {
-            $session->set('AccessDeniedReason', 'CSRF');
-            return $this->redirectToRoute('access-denied');
+            return $this->json('CSRF');
         }
 
-        $CSRFToken = $request->request->get('CSRFToken');
         $date = $request->request->get('date');
+        $dateTime = new DateTimeImmutable($date);
         $ids = $request->request->get('ids');
-
-        $ids = html_entity_decode($ids, ENT_QUOTES|ENT_IGNORE, 'UTF-8');
         $ids = json_decode($ids, true);
 
-        $v = new \volants();
-        $v->set($date, $ids, $CSRFToken);
+        try {
+            $detached = $this->entityManager->getRepository(Detached::class)->findByDate($dateTime);
+            foreach($detached as $d) {
+                $this->entityManager->remove($d);
+            }
+            $this->entityManager->flush();
+        } catch (\Exception $e) {
+            return $this->json(['error' => $e->getMessage()]);
+        }
 
-        if ($v->error) {
-            return $this->json(array('error' => $v->error));
+        try {
+            foreach ($ids as $id) {
+                $detached = new Detached();
+                $detached->setDate($dateTime);
+                $detached->setUserId($id);
+                $this->entityManager->persist($detached);
+            }
+            $this->entityManager->flush();
+        } catch (\Exception $e) {
+            return $this->json(['error' => $e->getMessage()]);
         }
 
         return $this->json('ok');

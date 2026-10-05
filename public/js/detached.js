@@ -68,7 +68,7 @@ $(function() {
       $(this).addClass('d-none');
     });
   });
-  
+
   // Validation
   $('#submit').click(function(){
     var ids = new Array();
@@ -77,27 +77,28 @@ $(function() {
     });
 
     $.ajax({
-      url: url('detached/add'),
+      url: url('detached'),
       type: 'post',
       dataType: 'json',
       data: {
         _token: $('input[name=_token]').val(),
         ids: JSON.stringify(ids),
         date: $('#date').val(),
-        CSRFToken: $('#CSRFSession').val(),
       },
-      success: function(result){
-        if(result.error){
-          stackAlert('An error occurred while saving the information', 'error');
+      success: function(result) {
+        if (result == 'CSRF') {
+          stackAlert(Translator.trans('The CSRF token is invalid. Please try to resubmit the form', {}, 'validators'), 'error');
+        } else if(result.error) {
+          stackAlert('An error occurred while saving the information\n' + result.error, 'error');
         } else {
           stackAlert('Vos modifications ont été enregistrées avec succès');
         }
       },
-      error: function(){
+      error: function() {
         stackAlert('An error occurred while saving the information', 'error');
       }
     });
-    
+
   });
 
 });

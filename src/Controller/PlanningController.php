@@ -31,7 +31,6 @@ require_once(__DIR__ . '/../../legacy/Class/class.conges.php');
 require_once(__DIR__ . '/../../legacy/Common/function.php');
 require_once(__DIR__ . '/../../legacy/Class/class.planning.php');
 require_once(__DIR__ . '/../../legacy/Class/class.planningFunctions.php');
-require_once(__DIR__ . '/../../legacy/Class/class.volants.php');
 require_once(__DIR__ . '/../../legacy/Class/class.planningHebdo.php');
 
 // TODO FIXME : hidden tables do not work correctly on week view
