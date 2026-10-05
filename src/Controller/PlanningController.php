@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Controller\BaseController;
 use App\Entity\AbsenceReason;
 use App\Entity\Agent;
+use App\Entity\Detached;
 use App\Entity\HiddenTables;
 use App\Entity\Model;
 use App\Entity\PlanningPosition;
@@ -30,7 +31,6 @@ require_once(__DIR__ . '/../../legacy/Class/class.conges.php');
 require_once(__DIR__ . '/../../legacy/Common/function.php');
 require_once(__DIR__ . '/../../legacy/Class/class.planning.php');
 require_once(__DIR__ . '/../../legacy/Class/class.planningFunctions.php');
-require_once(__DIR__ . '/../../legacy/Class/class.volants.php');
 require_once(__DIR__ . '/../../legacy/Class/class.planningHebdo.php');
 
 // TODO FIXME : hidden tables do not work correctly on week view
@@ -1290,9 +1290,7 @@ class PlanningController extends BaseController
 
         // Recherche des agents volants
         if ($this->config('Planning-agents-volants')) {
-            $v = new \volants($date);
-            $v->fetch($date);
-            $agents_volants = $v->selected;
+            $agents_volants = $this->entityManager->getRepository(Detached::class)->findUserIds($date);
         }
 
         for ($i=0;$i<count($tab);$i++) {
@@ -2047,9 +2045,7 @@ class PlanningController extends BaseController
 
         // Recherche des agents volants
         if ($this->config('Planning-agents-volants')) {
-            $v = new \volants($date);
-            $v->fetch($date);
-            $agents_volants = $v->selected;
+            $agents_volants = $this->entityManager->getRepository(Detached::class)->findUserIds($date);
 
             // Modification du statut pour les agents volants afin de personnaliser l'affichage
             foreach ($cellules as $k => $v) {

@@ -176,7 +176,7 @@ class AppExtension extends AbstractExtension
         // Handle Planning's menu
 
         // If URL ends with a date or /week check site 
-        if (preg_match('/(.+)(\/[0-9]{4}((-[0-9]{2}){2})|\/week)/', $requestedUrl)) {
+        if (preg_match('/([0-9]+)(\/[0-9]{4}((-[0-9]{2}){2})|\/week)/', $requestedUrl)) {
             return $url === ($config['URL'] . '/' . $site);
         }
 
@@ -232,7 +232,7 @@ class AppExtension extends AbstractExtension
             (preg_match('/^([^?]*)/', $requested_url, $match));
             $uri = substr($match[0], strlen($config['URL']));
 
-            return (bool) preg_match('/(\/[0-9]{4}((-[0-9]{2}){2})|\/week|\A\/$|\A\/[0-9]{1,2}$)/', $uri);
+            return (bool) preg_match('/^(\/([0-9]+\/)?[0-9]{4}(-[0-9]{2}){2}|\/week|\/|\/[0-9]+)$/', $uri);
         }
 
         if(strpos($requested_url, "{$config['URL']}/$menu") !== false){
