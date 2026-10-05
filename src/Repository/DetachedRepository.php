@@ -20,7 +20,7 @@ class DetachedRepository extends EntityRepository
         $date->modify('monday this week')->format('Y-m-d');
 
         return $this->createQueryBuilder('d')
-            ->select('d.perso_id')
+            ->select('d.userId')
             ->where('d.date = :date')
             ->setParameter('date', $date)
             ->getQuery()

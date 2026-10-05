@@ -15,23 +15,23 @@ class Detached
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTime $date = null;
+    #[ORM\Column(type: Types::DATE_IMMUTABLE)]
+    private ?\DateTimeImmutable $date = null;
 
-    #[ORM\Column]
-    private ?int $perso_id = null;
+    #[ORM\Column(name: 'perso_id')]
+    private ?int $userId = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getDate(): ?\DateTime
+    public function getDate(): ?\DateTimeImmutable
     {
         return $this->date;
     }
 
-    public function setDate(?\DateTime $date): static
+    public function setDate(?\DateTimeImmutable $date): static
     {
         $this->date = $date;
 
@@ -40,12 +40,12 @@ class Detached
 
     public function getUserId(): ?int
     {
-        return $this->perso_id;
+        return $this->userId;
     }
 
-    public function setUserId($userId): static
+    public function setUserId(?int $userId): static
     {
-        $this->perso_id = $userId;
+        $this->userId = $userId;
 
         return $this;
     }
