@@ -7,7 +7,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: DetachedRepository::class)]
-#[ORM\Table(name: 'volants')]
+#[ORM\Table(name: 'detached')]
 class Detached
 {
     #[ORM\Id]
@@ -18,8 +18,8 @@ class Detached
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
     private ?\DateTimeImmutable $date = null;
 
-    #[ORM\Column(name: 'perso_id')]
-    private ?int $userId = null;
+    #[ORM\Column(name: 'user_id')]
+    private int $userId = 0;
 
     public function getId(): ?int
     {
@@ -38,12 +38,12 @@ class Detached
         return $this;
     }
 
-    public function getUserId(): ?int
+    public function getUserId(): int
     {
         return $this->userId;
     }
 
-    public function setUserId(?int $userId): static
+    public function setUserId(int $userId): static
     {
         $this->userId = $userId;
 

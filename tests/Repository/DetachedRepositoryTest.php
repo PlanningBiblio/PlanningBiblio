@@ -83,7 +83,7 @@ class DetachedRepositoryTest extends KernelTestCase
 
         $this->assertNull($detached->getId());
         $this->assertNull($detached->getDate());
-        $this->assertNull($detached->getUserId());
+        $this->assertEquals(0, $detached->getUserId());
 
         $this->assertSame($detached, $detached->setDate($date));
         $this->assertSame($detached, $detached->setUserId($userId));

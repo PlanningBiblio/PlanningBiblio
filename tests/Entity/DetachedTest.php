@@ -42,7 +42,7 @@ class DetachedTest extends KernelTestCase
         // Verify initial state is null
         $this->assertNull($detached->getId());
         $this->assertNull($detached->getDate());
-        $this->assertNull($detached->getUserId());
+        $this->assertEquals(0, $detached->getUserId());
 
         // Test mutators and fluid interface
         $this->assertSame($detached, $detached->setDate($date));
