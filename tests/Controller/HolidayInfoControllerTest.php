@@ -100,7 +100,6 @@ class HolidayInfoControllerTest extends PLBWebTestCase
         $info->setEnd($end);
         $info->setComment('salut');
 
-
         $entityManager->persist($info);
         $entityManager->flush();
 
@@ -132,8 +131,8 @@ class HolidayInfoControllerTest extends PLBWebTestCase
         $result = $crawler->filterXPath('//a[@class="btn btn-secondary"]/span');
         $this->assertEquals($result->text('Node does not exist', false), 'Annuler','a/span button is Annuler');
 
-        $class = $crawler->filterXPath('//button[@class="btn btn-danger"]/span');
-        $this->assertEquals($class->text('Node does not exist', false), 'Supprimer','a button is Supprimer');
+        $class = $crawler->filterXPath('//input[@class="btn btn-danger"]');
+        $this->assertEquals('Supprimer', $class->attr('value'), 'input button is Supprimer');
     }
 
     public function testHolidayInfoList(): void
@@ -236,15 +235,12 @@ class HolidayInfoControllerTest extends PLBWebTestCase
 
         $crawler = $this->client->request('GET', $listUrl);
         $this->assertSelectorCount(1, '#HolidayInfoTable tbody tr');
-        $token = $crawler->filter('#_token')->attr('value');
+        $token = $crawler->filterXPath('//input[@name="_token"]')->attr('value');
 
         // Assert deletion succeeds with CSRF token
-        $this->client->request('POST', '/holiday-info/delete', array('_token' => $token, 'id' => $id));
-        $this->assertResponseIsSuccessful();
+        $this->client->request('POST', '/holiday-info/' . $id . '/delete', ['_token' => $token]);
 
-        $crawler = $this->client->request('GET', $listUrl);
-        $this->assertSelectorCount(0, '#HolidayInfoTable tbody tr');
-
+        $this->assertResponseStatusCodeSame(302);
         $entityManager->clear();
         $this->assertNull($entityManager->getRepository(HolidayInfo::class)->find($id), 'info is deleted');
     }

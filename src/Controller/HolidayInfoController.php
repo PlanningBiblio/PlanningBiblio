@@ -5,7 +5,9 @@ namespace App\Controller;
 use App\Controller\BaseController;
 use App\Entity\HolidayInfo;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -14,7 +16,7 @@ require_once(__DIR__ . '/../../legacy/Class/class.conges.php');
 class HolidayInfoController extends BaseController
 {
     #[Route(path: '/holiday-info/{reset?}', name: 'holiday_info.index', methods: ['GET'], requirements: ['reset' => 'reset'])]
-    public function index(Request $request, Session $session, EntityManagerInterface $em)
+    public function index(Request $request, Session $session, EntityManagerInterface $em): Response
     {
         if ($this->config('Conges-Enable') == 0 ) {
             return $this->redirectToRoute('access-denied');
@@ -39,7 +41,7 @@ class HolidayInfoController extends BaseController
     }
 
     #[Route(path: '/holiday-info/add', name: 'holiday_info.add', methods: ['GET'])]
-    public function add(Request $request)
+    public function add(Request $request): Response
     {
         if(!$this->isAdmin() || $this->config('Conges-Enable') == 0 ) {
             return $this->redirectToRoute('access-denied');
@@ -58,7 +60,7 @@ class HolidayInfoController extends BaseController
     }
 
     #[Route(path: '/holiday-info/{id<\d+>}', name: 'holiday_info.edit', methods: ['GET'])]
-    public function edit(Request $request)
+    public function edit(Request $request): Response
     {
         if(!$this->isAdmin()){
             return $this->redirectToRoute('access-denied');
@@ -85,7 +87,7 @@ class HolidayInfoController extends BaseController
     }
 
     #[Route(path: '/holiday-info', name: 'holiday_info.update', methods: ['POST'])]
-    public function save(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
+    public function save(Request $request, Session $session): RedirectResponse
     {
         if(!$this->isAdmin()){
             return $this->redirectToRoute('access-denied');
@@ -119,27 +121,27 @@ class HolidayInfoController extends BaseController
         return $this->redirectToRoute('holiday_info.index');
     }
 
-    #[Route(path: '/holiday-info/delete', name: 'holiday_info.delete', methods: ['POST'])]
-    public function delete(Request $request, Session $session): \Symfony\Component\HttpFoundation\Response
+    #[Route(path: '/holiday-info/{id<\d+>}/delete', name: 'holiday_info.delete', methods: ['POST'])]
+    public function delete(Request $request): RedirectResponse
     {
         if (!$this->csrf_protection($request)) {
-            return $this->json('CSRF error', 403);
+            $session->set('AccessDeniedReason', 'CSRF');
+            return $this->redirectToRoute('access-denied');
         }
 
         if (!$this->isAdmin()) {
-            return $this->json('Access denied', 403);
+            return $this->redirectToRoute('access-denied');
         }
 
-        $id = $request->get('id');
+        $id = $request->attributes->getInt('id');
 
         $info = $this->entityManager->getRepository(HolidayInfo::class)->find($id);
         $this->entityManager->remove($info);
         $this->entityManager->flush();
 
-        $flash = "L'information a bien été supprimée.";
-        $session->getFlashBag()->add('notice', $flash);
+        $this->addFlash('notice', "L'information a bien été supprimée.");
 
-        return $this->json('OK');
+        return $this->redirectToRoute('holiday_info.index');
     }
 
     private function isAdmin(): bool

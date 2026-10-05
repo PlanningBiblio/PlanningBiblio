@@ -46,9 +46,7 @@
                 <span>Annuler</span>
               </a>
               {% if id != 0 %}
-                <button id="holiday-info-delete-btn" class="btn btn-danger" style="margin-left:30px;" role="button" data-holiday-info-id="{{ id }}">
-                  <span>Supprimer</span>
-                </button>
+                <input type="button" id="holiday-info-delete-btn" class="btn btn-danger" style="margin: auto 10px auto 30px;" value="{{ 'Delete' | trans }}" />
               {% endif %}
               <input role="button" type="submit" value="Valider" class="btn btn-primary"/>
             </td>
@@ -58,9 +56,10 @@
     </div>
   </div>
 
-  <script>
-    document.getElementById('holiday-info-delete-btn')?.addEventListener('click', function () {
-        deleteHolidayInfo(this.dataset.holidayInfoId);
-    });
-  </script>
+  {% if id != 0 %}
+    <form id="holidayInfoDeleteForm" action="{{ path('holiday_info.delete', {id: id}) }}" method="POST">
+      <input type="hidden" name="_token" value="{{ csrf_token('') }}"/>
+    </form>
+  {% endif %}
+
 {% endblock %}

@@ -338,10 +338,6 @@ function deleteAdminInfo(id) {
     deleteAjax(id, 'admin/info/delete', 'Êtes vous sûr(e) de vouloir supprimer cette information ?', 'admin/info');
 }
 
-function deleteHolidayInfo(id) {
-    deleteAjax(id, 'holiday-info/delete', 'Êtes vous sûr(e) de vouloir supprimer cette information ?', 'holiday-info');
-}
-
 function deleteAjax(id, route, message, redirectTo) {
     if (confirm(message)) {
         $.ajax({
@@ -911,5 +907,12 @@ $(function(){
 
   // Tooltips
   initTooltips();
+
+  // HolidayInfo: delete button
+  document.getElementById('holiday-info-delete-btn')?.addEventListener('click', function () {
+    if (confirm('Êtes vous sûr(e) de vouloir supprimer cette information ?')) {
+      document.getElementById('holidayInfoDeleteForm').submit();
+    }
+  });
 
 });
