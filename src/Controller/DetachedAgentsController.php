@@ -3,50 +3,38 @@
 namespace App\Controller;
 
 use App\Controller\BaseController;
-
+use App\Entity\Agent;
+use App\Entity\Detached;
+use DateTimeImmutable;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 require_once(__DIR__ . '/../../legacy/Class/class.volants.php');
-require_once(__DIR__ . '/../../legacy/Common/function.php');
 
 class DetachedAgentsController extends BaseController
 {
     #[Route(path: '/detached/{date?}', name: 'detached.index', methods: ['GET'])]
     public function index(Request $request)
     {
-        $date = $this->initDate('date', 'DetatchedAgentDate', 'last monday', 'Y-m-d');
+        $date = $this->initDate('date', 'DetatchedAgentDate', 'monday this week', 'Y-m-d');
 
-        $date = $date->format('Y-m-d');
-        $d = new \datePl($date);
-        $date = $d->dates[0];
-        $w = $d->semaine;
-        $week = dateFr($d->dates[0])." au ".dateFr($d->dates[6]);
+        $allAgents = $this->entityManager->getRepository(Agent::class)->get('Actif');
+        $selectedAgents = $this->entityManager->getRepository(Detached::class)->findUserIds($date);
 
-        // Previous week.
-        $date1 = date('Y-m-d', strtotime($date.' -1 week'));
+        $date = DateTimeImmutable::createFromInterface($date);
 
-        // Next week
-        $date2 = date('Y-m-d', strtotime($date.' +1 week'));
-
-        // Agents disponibles et sélectionnés
-        $v = new \volants();
-        $v->fetch($date);
-        $selected = $v->selected;
-        $tous = $v->tous;
-
-        $this->templateParams(array(
-            'content_planning'  => true,
-            'week_number'       => $w,
-            'week'              => $week,
-            'date'              => $date,
-            'previous_week'     => $date1,
-            'next_week'         => $date2,
-            'detached_agents'   => $selected,
-            'all_agents'        => $tous
-        ));
+        $this->templateParams([
+            'content_planning' => true,
+            'date'             => $date,
+            'start'            => $date->modify('monday this week'),
+            'end'              => $date->modify('sunday this week'),
+            'previousWeek'     => $date->modify('monday previous week')->format('Y-m-d'),
+            'nextWeek'         => $date->modify('monday next week')->format('Y-m-d'),
+            'allAgents'        => $allAgents,
+            'selectedAgents'   => $selectedAgents,
+        ]);
 
         return $this->output('detached/index.html.twig');
     }

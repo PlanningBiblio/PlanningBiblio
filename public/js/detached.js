@@ -30,9 +30,9 @@ $(function() {
     $('.volants-dispo:visible:selected').each(function(){
 
       var id = $(this).attr('data-id');
-      $('.selected_'+id).show();
+      $('.selected_'+id).removeClass('d-none');
       $(this).removeAttr('selected');
-      $(this).hide();
+      $(this).addClass('d-none');
     });
   });
 
@@ -41,9 +41,9 @@ $(function() {
     $('.volants-dispo:visible').each(function(){
 
       var id = $(this).attr('data-id');
-      $('.selected_'+id).show();
+      $('.selected_'+id).removeClass('d-none');
       $(this).removeAttr('selected');
-      $(this).hide();
+      $(this).addClass('d-none');
     });
   });
 
@@ -52,9 +52,9 @@ $(function() {
     $('.volants-selectionnes:visible:selected').each(function(){
 
       var id = $(this).attr('data-id');
-      $('.dispo_'+id).show();
+      $('.dispo_'+id).removeClass('d-none');
       $(this).removeAttr('selected');
-      $(this).hide();
+      $(this).addClass('d-none');
     });
   });
 
@@ -63,9 +63,9 @@ $(function() {
     $('.volants-selectionnes:visible').each(function(){
 
       var id = $(this).attr('data-id');
-      $('.dispo_'+id).show();
+      $('.dispo_'+id).removeClass('d-none');
       $(this).removeAttr('selected');
-      $(this).hide();
+      $(this).addClass('d-none');
     });
   });
   

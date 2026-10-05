@@ -2,10 +2,11 @@
 
 namespace App\Entity;
 
+use App\Repository\DetachedRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: DetachedRepository::class)]
 #[ORM\Table(name: 'volants')]
 class Detached
 {
@@ -23,5 +24,29 @@ class Detached
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getDate(): ?\DateTime
+    {
+        return $this->date;
+    }
+
+    public function setDate(?\DateTime $date): static
+    {
+        $this->date = $date;
+
+        return $this;
+    }
+
+    public function getUserId(): ?int
+    {
+        return $this->perso_id;
+    }
+
+    public function setUserId($userId): static
+    {
+        $this->perso_id = $userId;
+
+        return $this;
     }
 }
