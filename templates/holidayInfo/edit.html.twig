@@ -46,9 +46,7 @@
                 <span>Annuler</span>
               </a>
               {% if id != 0 %}
-                <a href="javascript:deleteAdminInfo({{ id }});" class="btn btn-danger" style="margin-left:30px;" role="button">
-                  <span>Supprimer</span>
-                </a>
+                <input type="button" id="holiday-info-delete-btn" class="btn btn-danger" style="margin: auto 10px auto 30px;" value="{{ 'Delete' | trans }}" />
               {% endif %}
               <input role="button" type="submit" value="Valider" class="btn btn-primary"/>
             </td>
@@ -57,4 +55,11 @@
       </form>
     </div>
   </div>
+
+  {% if id != 0 %}
+    <form id="holidayInfoDeleteForm" action="{{ path('holiday_info.delete', {id: id}) }}" method="POST">
+      <input type="hidden" name="_token" value="{{ csrf_token('') }}"/>
+    </form>
+  {% endif %}
+
 {% endblock %}

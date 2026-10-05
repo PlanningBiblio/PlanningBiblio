@@ -313,8 +313,8 @@ function refreshAbsenceDocumentList(id) {
 function deleteAbsenceDocument(id) {
     if (confirm("Êtes vous sûr(e) de vouloir supprimer ce document ?")) {
         $.ajax({
-            url: url('absences/document/' + id),
-            type: 'DELETE',
+            url: url('absences/document/' + id + '/delete'),
+            type: 'POST',
             data: {_token: $('#_token').val()},
             success: function(id) {
                 $("#document_" + id).fadeOut("normal", function() {
@@ -327,26 +327,26 @@ function deleteAbsenceDocument(id) {
 }
 
 function deleteAbsenceInfo(id) {
-    deleteAjax(id, 'absences/info', 'Êtes vous sûr(e) de vouloir supprimer cette information ?');
+    deleteAjax(id, 'absences/info/delete', 'Êtes vous sûr(e) de vouloir supprimer cette information ?', 'absences/info');
 }
 
 function deleteAbsenceBlock(id) {
-    deleteAjax(id, 'absence/block', 'Êtes-vous sûr(e) de vouloir supprimer ce blocage ?');
+    deleteAjax(id, 'absence/block/delete', 'Êtes-vous sûr(e) de vouloir supprimer ce blocage ?', 'absence/block');
 }
 
 function deleteAdminInfo(id) {
-    deleteAjax(id, 'admin/info', 'Êtes vous sûr(e) de vouloir supprimer cette information ?');
+    deleteAjax(id, 'admin/info/delete', 'Êtes vous sûr(e) de vouloir supprimer cette information ?', 'admin/info');
 }
 
-function deleteAjax(id, route, message) {
+function deleteAjax(id, route, message, redirectTo) {
     if (confirm(message)) {
         $.ajax({
             url: url(route),
-            type: 'delete',
+            type: 'POST',
             dataType: 'json',
             data: {id: id, _token: $('#_token').val()},
             success: function(result) {
-                window.location.href=url(route);
+                window.location.href = url(redirectTo);
             },
             error: function(result){
               stackAlert('An error occurred during deletion', 'error');
@@ -907,5 +907,12 @@ $(function(){
 
   // Tooltips
   initTooltips();
+
+  // HolidayInfo: delete button
+  document.getElementById('holiday-info-delete-btn')?.addEventListener('click', function () {
+    if (confirm('Êtes vous sûr(e) de vouloir supprimer cette information ?')) {
+      document.getElementById('holidayInfoDeleteForm').submit();
+    }
+  });
 
 });
