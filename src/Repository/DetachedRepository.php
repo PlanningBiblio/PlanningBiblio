@@ -3,7 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Detached;
-use DateTime;
+use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\ORM\EntityRepository;
 
@@ -12,17 +12,17 @@ class DetachedRepository extends EntityRepository
     public function findUserIds(string|DateTimeInterface $dateInput): array
     {
         if (is_string($dateInput)) {
-            $date = new DateTime($dateInput);
+            $date = new DateTimeImmutable($dateInput);
         } else {
-            $date = clone $dateInput;
+            $date = DateTimeImmutable::createFromInterface($dateInput);
         }
 
-        $date->modify('monday this week')->format('Y-m-d');
+        $targetDate = $date->modify('monday this week')->setTime(0, 0, 0);
 
         return $this->createQueryBuilder('d')
             ->select('d.userId')
             ->where('d.date = :date')
-            ->setParameter('date', $date)
+            ->setParameter('date', $targetDate)
             ->getQuery()
             ->getSingleColumnResult();
     }
