@@ -3,27 +3,21 @@
 namespace App\Controller;
 
 use App\Controller\BaseController;
-
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
 class UnsubscribeController extends BaseController
 {
     #[Route(path: '/unsubscribe/{token}', name: 'unsubscribe.interactive', requirements: ['token' => '.+'], methods: ['GET'])]
-    public function interactiveUnsubscription(Request $request, String $token){
-
-        $session = $request->getSession();
-
-        $show_menu = empty($session->get('loginId')) ? 0 : 1;
-
-        $mail = decrypt($token);
-
-        $this->templateParams(array(
-            'show_menu' => $show_menu,
-            'mail' => $mail,
-        ));
+    public function interactiveUnsubscription(Request $request, Session $session, String $token): Response
+    {
+        $this->templateParams([
+            'hideMenu' => empty($session->get('loginId')),
+            'mail' => decrypt($token),
+            'title' => 'Unsubscribe',
+        ]);
 
         return $this->output('unsubscribe/index.html.twig');
     }

@@ -74,10 +74,13 @@
 
     <div class="header-spacer d-print-none"></div>
 
-    {% if show_menu %}
+    {% if hideMenu is not defined and loginPage is not defined %}
       {% include 'menu.html.twig' %}
     {% endif %}
 
+    {% if hideMenu is defined %}
+      <div id='auth-logo'></div>
+    {% endif %}
 
     <form name='Config' action='#' method='get'>
       <input type='hidden' name='granularity' id='granularity' value="{{ config('Granularite') }}" />
@@ -102,6 +105,12 @@
     {% endif %}
     {% block page %}{% endblock %}
     </main> <!-- content or content-planning -->
+
+    {% if hideMenu is defined %}
+      <p class="text-center" style="margin-top:30px;">
+        <a style="font-size:1.5em;" href="{{ path('home') }}">Retour</a>
+      </p>
+    {% endif %}
 
     <footer>
       Planno ({{ version }}) - 

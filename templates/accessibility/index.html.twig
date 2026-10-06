@@ -3,12 +3,6 @@
 {% extends 'base.html.twig' %}
 
 {% block page %}
-  {% if not show_menu %}
-    <p class="text-center">
-      <div id='auth-logo'></div>
-    </p>
-  {% endif %}
-
   <div id="content-form">
     <div class="admin-div">
 
@@ -134,11 +128,4 @@
 
     </div>
   </div>
-
-  {% if not show_menu %}
-    <p class="text-center header-spacer">
-      <a style="font-size:1.5em;" href="{{ asset('login') }}">{{ 'Back' | trans }}</a>
-    </p>
-  {% endif %}
-
 {% endblock %}

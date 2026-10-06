@@ -56,7 +56,7 @@ $link="<a href='{$path}'>Retour à l'application</a>";
 </head>
 
 <body>
-<div id='auth-logo' style='margin:30px auto;'></div>
+<div id="auth-logo"></div>
 <h2 id='h2-authentification'>Accès refusé</h2>
 <center>
 <p style='font-weight:bold;'>
