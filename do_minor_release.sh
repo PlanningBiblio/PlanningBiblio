@@ -82,6 +82,7 @@ mv Changelog.tmp Changelog.md
 vi Changelog.md
 
 sed -i "s/$from/$to/g" 'init/init.php'
+sed -i "s/version: '$from'/version: '$to'/g" 'config/packages/twig.yaml'
 
 git diff
 
@@ -109,7 +110,7 @@ lineDown=$(echo $lineDown | awk -F" " '{print $2}')
 sed -i $lineDown"i\        \$this->addSql(\x22UPDATE {\$dbprefix}config SET valeur = '$from' WHERE nom = 'Version';\x22);" $file
 sed -i $lineUp"i\        \$this->addSql(\x22UPDATE {\$dbprefix}config SET valeur = '$to' WHERE nom = 'Version';\x22);" $file
 
-git add Changelog.md init/init.php $file
+git add Changelog.md init/init.php config/packages/twig.yaml $file
 
 git status
 

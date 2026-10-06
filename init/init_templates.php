@@ -6,8 +6,6 @@ $m = new Menu();
 $menu = $m->get();
 
 $templates_params = array(
-    'version'             => $version,
-    'themeJQuery'         => $themeJQuery,
     'theme'               => $theme,
     'msg'                 => $request->get('msg'),
     'msgType'             => $request->get('msgType'),
@@ -18,7 +16,5 @@ $templates_params = array(
     'menu_entries'        => $menu['menu_entries'],
     'user_surname'        => $_SESSION['login_nom'],
     'user_firstname'      => $_SESSION['login_prenom'],
-    'planninghebdo'       => $config['PlanningHebdo'],
-    'ics_export'          => $config['ICS-Export'],
     'CSRFSession'         => $CSRFSession,
 );

@@ -47,7 +47,7 @@
         </div>
           
         <div id="myAccountDiv">
-          {% if planninghebdo or ics_export %}
+          {% if config('PlanningHebdo') or config('ICS-Export') %}
             <a href="{{ asset('myaccount') }}" class="myAccountLink {% if menuIsActive('myaccount', app.request.uri) %} active {% endif %}" {% if menuIsActive('myaccount', app.request.uri) %} aria-current="page" {% endif %} >Mon Compte</a>
           {% elseif config('Auth-Mode') == 'SQL' %}
             <a href="{{ asset('agent/password') }}" class="myAccountLink">Changer de mot de passe</a>
@@ -58,7 +58,7 @@
       <div id="accountDivReverse">
         <ul colspan="2" class="menu_ul navbar-nav me-auto mb-2 mb-lg-0 text-end">
           <li class="nav-item menu_li">
-          {% if planninghebdo or ics_export %}
+          {% if config('PlanningHebdo') or config('ICS-Export') %}
             <a href="{{ asset('myaccount') }}" class="nav-link {% if menuIsActive('myaccount', app.request.uri) %} active {% endif %}" {% if menuIsActive('myaccount', app.request.uri) %} aria-current="page" {% endif %} >Mon Compte</a>
           {% elseif config('Auth-Mode') == 'SQL' %}
             <a href="{{ asset('agent/password') }}" class="myAccountLink">Changer de mot de passe</a>
