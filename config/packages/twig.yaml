@@ -3,7 +3,7 @@ twig:
     debug: '%kernel.debug%'
     strict_variables: '%kernel.debug%'
     globals:
-        version: '26.05.12'
+        an_example_of_a_global_variable: 'TODO: Move the global variables from the init_templates file to this location.'
 
 when@test:
     twig:

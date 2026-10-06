@@ -113,7 +113,7 @@
     {% endif %}
 
     <footer>
-      Planno ({{ version }}) - 
+      Planno ({{ config('Version') }}) - 
       <a href="https://www.planno.fr" target="_blank" rel="noopener">www.planno.fr<span class="visually-hidden"> {{ '(new window)' | trans }}</span></a>
       {% if config('legalNotices') %}
         - <a href="{{ asset('legal-notices') }}">{{ 'Legal notice' | trans }}</a>

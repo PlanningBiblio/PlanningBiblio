@@ -13,7 +13,7 @@
       </p>
       <p>
         {{ 'This accessibility statement applies to the Planno software, version %version%.'
-           | trans({'%version%': version}) }}
+           | trans({'%version%': config('Version') }) }}
       </p>
 
       {% if config('a11yMultiannualPlan') %}
