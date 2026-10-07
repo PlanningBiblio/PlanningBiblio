@@ -53,7 +53,7 @@ class AuthorizationsController extends BaseController
         }
 
         $this->templateParams(array(
-            'show_menu' => 0,
+            'loginPage' => true,
             'redirect_url' => $redirect_url,
             'new_login' => $new_login,
             'demo_mode' => empty($this->config('demo')) ? 0 : 1,
@@ -155,7 +155,7 @@ class AuthorizationsController extends BaseController
         }
 
         $this->templateParams(array(
-            'show_menu' => 0,
+            'loginPage' => true,
             'error'     => $error,
             'auth_args' => $authArgs
         ));

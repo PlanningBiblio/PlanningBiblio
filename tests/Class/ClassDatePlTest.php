@@ -1,7 +1,6 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-use App\Planno\Menu;
 
 class ClassDatePlTest extends TestCase
 {

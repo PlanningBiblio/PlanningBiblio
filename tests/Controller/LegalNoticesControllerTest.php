@@ -28,8 +28,8 @@ class LegalNoticesControllerTest extends PLBWebTestCase
 
         $crawler = $client->request('GET', '/legal-notices');
 
-        $result = $crawler->filterXPath('//h3');
-        $this->assertEquals($result->text(null,false),'Mentions légales','h3 is Mentions légales');
+        $result = $crawler->filterXPath('//h1');
+        $this->assertEquals($result->text(null,false),'Mentions légales','h1 is Mentions légales');
 
         $result = $crawler->filterXPath('//footer');
         $this->assertStringContainsString("www.planno.fr",$result->text(null,false),'footer contains www.planno.fr');
@@ -50,11 +50,11 @@ class LegalNoticesControllerTest extends PLBWebTestCase
 
         $crawler = $client->request('GET', '/legal-notices');
 
-        $result = $crawler->filterXPath('//h3');
-        $this->assertEquals($result->text(null,false),'Mentions légales','h3 is Mentions légales');
-
         $result = $crawler->filterXPath('//h1');
-        $this->assertEquals($result->text(null,false),'Perseus et potat','input for post name value is nom');
+        $this->assertEquals('Mentions légales', $result->text(null,false), 'h1 is Mentions légales');
+
+        $result = $crawler->filterXPath('//h1')->eq(1);
+        $this->assertEquals('Perseus et potat', $result->text(null,false), 'input for post name value is nom');
 
         $lg = '<h1>Titre h1</h1>
         <h2>Titre h2</h2>
@@ -67,7 +67,7 @@ class LegalNoticesControllerTest extends PLBWebTestCase
 
         $crawler = $client->request('GET', '/legal-notices');
 
-        $result = $crawler->filterXPath('//h1');
+        $result = $crawler->filterXPath('//h1')->eq(1);
         $this->assertEquals('Titre h1',$result->text(null,false),'h1 is Titre h1');
 
         $result = $crawler->filterXPath('//h2');

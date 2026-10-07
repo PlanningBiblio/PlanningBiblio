@@ -2,3 +2,10 @@ twig:
     default_path: '%kernel.project_dir%/templates'
     debug: '%kernel.debug%'
     strict_variables: '%kernel.debug%'
+    globals:
+        menu: '@App\Service\MenuService'
+        theme: '@App\Service\ThemeChecker'
+
+when@test:
+    twig:
+        strict_variables: true

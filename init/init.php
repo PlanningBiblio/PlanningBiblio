@@ -44,7 +44,6 @@ if ($version!=$config['Version'] && $version != 'ajax') {
 $request = Request::createFromGlobals();
 
 $date = $request->get('date');
-$show_menu = $request->get('menu') != 'off';
 
 // To control access rights, we keep only the part of the URI before the numbers
 // e.g. : we keep /absences/info when the URI is /absences/info/11/edit
@@ -64,9 +63,4 @@ $_SESSION['droits'] = array_merge($droits, array(99));
 $theme=$config['Affichage-theme']?$config['Affichage-theme']:"default";
 if (!file_exists("themes/$theme/$theme.css")) {
     $theme="default";
-}
-
-$themeJQuery = $config['Affichage-theme'] ?$config['Affichage-theme'] : "default";
-if (!file_exists("themes/$themeJQuery/jquery-ui.min.css")) {
-    $themeJQuery="default";
 }

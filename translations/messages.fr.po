@@ -793,3 +793,6 @@ msgstr "(nouvelle fenêtre)"
 
 msgid "Legal notice"
 msgstr "Mentions légales"
+
+msgid "Unsubscribe"
+msgstr "Désinscription"

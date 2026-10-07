@@ -1,5 +1,7 @@
 {# base.html.twig #}
 
+{% set theme = theme.get %}
+
 <!DOCTYPE html>
 <html lang="{{ app.request.locale|split('_')[0] }}">
   <head>
@@ -74,10 +76,13 @@
 
     <div class="header-spacer d-print-none"></div>
 
-    {% if show_menu %}
+    {% if hideMenu is not defined and loginPage is not defined %}
       {% include 'menu.html.twig' %}
     {% endif %}
 
+    {% if hideMenu is defined %}
+      <div id='auth-logo'></div>
+    {% endif %}
 
     <form name='Config' action='#' method='get'>
       <input type='hidden' name='granularity' id='granularity' value="{{ config('Granularite') }}" />
@@ -103,8 +108,14 @@
     {% block page %}{% endblock %}
     </main> <!-- content or content-planning -->
 
+    {% if hideMenu is defined %}
+      <p class="text-center" style="margin-top:30px;">
+        <a style="font-size:1.5em;" href="{{ path('home') }}">Retour</a>
+      </p>
+    {% endif %}
+
     <footer>
-      Planno ({{ version }}) - 
+      Planno ({{ config('Version') }}) - 
       <a href="https://www.planno.fr" target="_blank" rel="noopener">www.planno.fr<span class="visually-hidden"> {{ '(new window)' | trans }}</span></a>
       {% if config('legalNotices') %}
         - <a href="{{ asset('legal-notices') }}">{{ 'Legal notice' | trans }}</a>
