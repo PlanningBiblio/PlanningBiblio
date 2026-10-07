@@ -3,8 +3,8 @@ twig:
     debug: '%kernel.debug%'
     strict_variables: '%kernel.debug%'
     globals:
-        an_example_of_a_global_variable: 'TODO: Move the global variables from the init_templates file to this location.'
         menu: '@App\Service\MenuService'
+        theme: '@App\Service\ThemeChecker'
 
 when@test:
     twig:
