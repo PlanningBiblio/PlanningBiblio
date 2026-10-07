@@ -9,6 +9,24 @@ use PHPUnit\Framework\TestCase;
 
 class TimeSlotTest extends TestCase
 {
+    private string $originalTimezone;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->originalTimezone = date_default_timezone_get();
+
+        date_default_timezone_set('UTC');
+    }
+
+    protected function tearDown(): void
+    {
+        date_default_timezone_set($this->originalTimezone);
+
+        parent::tearDown();
+    }
+
     public function testTimeSlotConstructor(): void
     {
         $timeSlot = new TimeSlot(new DateTime('2026-03-04 10:30'));

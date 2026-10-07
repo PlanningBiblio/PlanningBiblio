@@ -91,7 +91,7 @@ class ClassCongesTest extends KernelTestCase
         $builder->delete(Agent::class);
         $builder->delete(Holiday::class);
         $builder->delete(OverTime::class);
-   }
+    }
 
     protected function setUp(): void
     {
