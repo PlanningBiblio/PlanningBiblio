@@ -23,12 +23,34 @@
         <a href="{{ path('calendar-view.index', {changeDates: '+1 week'}) }}" role="button" class="btn btn-secondary m-2 bi bi-arrow-right"></a>
       </div>
 
+      {% if config('Multisites-nombre') > 1 and sites %}
+        <label class="col-xl-auto col-form-label mt-2" for="sites">{% trans %}Sites{% endtrans %} :</label>
+        <div class="col-xl-auto ps-0 m-2">
+          <select id="sites" name="sites[]" multiple>
+            {%for s in sites %}
+              <option value="{{ s.id }}" {% if s.id in selectedSites %}selected{% endif %}>{{ s.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      {% endif %}
+
+      {% if departments %}
+        <label class="col-xl-auto col-form-label mt-2" for="departments">{% trans %}Departments{% endtrans %} :</label>
+        <div class="col-xl-auto ps-0 m-2">
+          <select id="departments" name="departments[]" multiple>
+            {%for d in departments %}
+              <option value="{{ d.id }}" {% if d.id in selectedDepartments %}selected{% endif %}>{{ d.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      {% endif %}
+
       <label class="col-xl-auto col-form-label mt-2" for="all-absences">{% trans %}Display all absences{% endtrans %} :</label>
       <div class="col-xl-auto ps-0 m-2">
         <input type="checkbox" value="1" id="all-absences" name="all-absences" class="m-2" {{ displayAllAbsences }}/>
       </div>
 
-      <div class="col-xl-3 ps-0">
+      <div class="col-xl-auto ps-0">
         <input type="submit" role="button" value="{% trans %}Search{% endtrans %}" class="btn btn-primary m-2"/>
         <a role="button" class="btn btn-secondary m-2" href="{{ path('calendar-view.index') }}/reset">{% trans %}Clear{% endtrans %}</a>
       </div>

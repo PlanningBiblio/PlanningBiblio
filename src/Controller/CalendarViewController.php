@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Controller\BaseController;
 use App\Entity\Absence;
 use App\Entity\Agent;
+use App\Entity\Config;
 use App\Entity\Holiday;
 use App\Entity\WorkingHour;
 use App\Planno\WorkingHours;
@@ -12,11 +13,12 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 final class CalendarViewController extends BaseController
 {
     #[Route('/absence/calendar/view/{reset?}', name: 'calendar-view.index', methods: ['GET'], requirements: ['reset' => 'reset'])]
-    public function index(Request $request, Session $session): Response
+    public function index(Request $request, Session $session, TranslatorInterface $translator): Response
     {
         $changeDates = $request->query->get('changeDates');
 
@@ -31,14 +33,66 @@ final class CalendarViewController extends BaseController
             $session->set('calendarViewEnd', $end->format('d/m/Y'));
         }
 
-        $agents = $this->entityManager->getRepository(Agent::class)->get('Actif');
+        $allAgents = $this->entityManager->getRepository(Agent::class)->get('Actif');
         $absences = $this->entityManager->getRepository(Absence::class)->get($start, $end);
+        $config = $this->entityManager->getRepository(Config::class)->getAll();
         $holidays = $this->entityManager->getRepository(Holiday::class)->get($start, $end);
         $workingHours = $this->entityManager->getRepository(WorkingHour::class)->get($start, $end, true);
 
         $diff = date_diff($start, $end);
         $halfDays = $diff->format('%a') < 14;
 
+        // Get used departments and sites
+        $departments = [];
+        $sites = [];
+
+        foreach ($allAgents as $elem) {
+            $departments[] = ['id' => $elem->getService(), 'name' => $elem->getService()];
+            if (empty($elem->getService())) {
+                $departments[] = ['id' => '', 'name' => $translator->trans('No department')];  
+            }
+            foreach($elem->getSites() as $site) {
+                $sites[] = $site;
+            }
+            if (empty($elem->getSites())) {
+                $sites[] = 0;
+            }
+        }
+
+        $departments = array_unique($departments, SORT_REGULAR);
+        array_multisort(array_column($departments, 'name'), SORT_ASC, SORT_STRING, $departments);
+
+        $sites = array_unique($sites);
+        sort($sites);
+        foreach ($sites as &$site) {
+            $site = [
+                'id' => $site,
+                'name' => $site ? $config['Multisites-site' . $site] : $translator->trans('No site'),  
+            ];
+        }
+
+        $selectedDepartments = $this->initArray('departments', 'calendarViewDept', array_column($departments, 'id'));
+        $selectedSites = $this->initArray('sites', 'calendarViewSites', array_column($sites, 'id'));
+
+        // Get filtered agents
+        $agents = [];
+        foreach ($allAgents as $agent) {
+            $siteIsSelected = false;
+            if (empty($agent->getSites()) and in_array(0, $selectedSites)) {
+                $siteIsSelected = true;
+            }
+            foreach ($agent->getSites() as $agentSite) {
+                if (in_array($agentSite, $selectedSites)) {
+                    $siteIsSelected = true;
+                }
+            }
+
+            if ($siteIsSelected and in_array($agent->getService(), $selectedDepartments)) {
+                $agents[] = $agent;
+            }
+        }
+
+        // Dates and absences
         $allAbsences = [];
         $allDates = [];
 
@@ -49,7 +103,7 @@ final class CalendarViewController extends BaseController
         }
 
         // For each agents (for each line)
-        foreach($agents as $agent) {
+        foreach($agents as $key => $agent) {
             $line = &$allAbsences[$agent->getId()];
 
             // For each dates (for each column)
@@ -147,9 +201,13 @@ final class CalendarViewController extends BaseController
             'agents' => $agents,
             'allAbsences' => $allAbsences,
             'allDates' => $allDates,
+            'departments' => $departments,
             'displayAllAbsences' => $displayAllAbsences ? 'checked' : null,
             'end' => $end->format('d/m/Y'),
             'halfDays' => $halfDays,
+            'selectedDepartments' => $selectedDepartments,
+            'selectedSites' => $selectedSites,
+            'sites' => $sites,
             'start' => $start->format('d/m/Y'),
             'title' => 'Calendar view',
         ]);

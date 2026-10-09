@@ -793,3 +793,12 @@ msgstr "(nouvelle fenêtre)"
 
 msgid "Legal notice"
 msgstr "Mentions légales"
+
+msgid "Departments"
+msgstr "Services"
+
+msgid "No department"
+msgstr "Sans service"
+
+msgid "No site"
+msgstr "Sans site"
