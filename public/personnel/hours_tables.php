@@ -33,7 +33,7 @@ switch ($nb_semaine) {
     }
     break;
 }
-$fin = $config['Dimanche'] ? array(7, 14, 21, 28, 36, 42, 49, 56, 63, 70) : array(6, 13, 20, 27, 35, 41, 48, 55, 62, 69);
+$fin = $config['Dimanche'] ? array(7, 14, 21, 28, 35, 42, 49, 56, 63, 70) : array(6, 13, 20, 27, 34, 41, 48, 55, 62, 69);
 $debut = array(1, 8, 15, 22, 29, 36, 43, 50, 57, 64);
 
 // EDTSamedi works only if PlanningHebdo is disabled.
@@ -85,6 +85,7 @@ for ($j = 0; $j < $nb_semaine; $j++) {
     for ($i = $debut[$j]; $i <= $fin[$j]; $i++) {
         $k=$i-($j*7)-1;
         $t = $i - 1;
+
         $hours_tab .= "<tr><td>{$jours[$k]}</td>\n";
 
         if (isset($temps[$t])) {
