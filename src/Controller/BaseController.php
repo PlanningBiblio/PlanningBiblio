@@ -158,11 +158,40 @@ class BaseController extends AbstractController
         return $dt;
     }
 
-    protected function initBoolean(string $queryName, string $sessionName, bool $default = false): bool
+    protected function initArray(string $queryName, string $sessionName, array $default = []): array
     {
         $session = $this->request->getSession();
 
-        $value = $this->request->query->getBoolean($queryName) ?: (bool) $session->get($sessionName, $default);
+        $value = $this->request->query->all($queryName) ?: $session->get($sessionName, $default);
+        $reset = $this->request->attributes->get('reset') === 'reset';
+        $value = $reset ? $default : $value;
+
+        $this->request->getSession()->set($sessionName, $value);
+
+        return $value;
+    }
+
+    /*
+     * Initialize and return a Boolean using:
+     * - the query parameter named $queryName, or
+     * - the session parameter named $sessionName if the query parameter is absent.
+     *
+     * The reference field is a form field that is not a checkbox.
+     * It allows us to verify whether the form was submitted or loaded directly.
+     * In the event of a submission, it enables the checkboxes to be unchecked according to the user's selection.
+     * This check is necessary because `$this->request->query->getBoolean($queryName)` returns null 
+     * both when a form is submitted with an unchecked checkbox and when the page is loaded directly.
+     */
+    protected function initBoolean(string $queryName, string $sessionName, ?string $referenceField = null, bool $default = false): bool
+    {
+        $session = $this->request->getSession();
+
+        if ($referenceField and $this->request->query->has($referenceField)) {
+            $value = $this->request->query->getBoolean($queryName);
+        } else {
+            $value = $this->request->query->getBoolean($queryName) ?: (bool) $session->get($sessionName, $default);
+        }
+
         $reset = $this->request->attributes->get('reset') === 'reset';
         $value = $reset ? $default : $value;
 

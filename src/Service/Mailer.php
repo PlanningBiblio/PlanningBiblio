@@ -41,7 +41,7 @@ class Mailer
         global $entityManager;
         $configRepository = $entityManager->getRepository(Config::class);
 
-        $agent = $entityManager->find(Agent::class, $holiday->getUser());
+        $agent = $entityManager->find(Agent::class, $holiday->getUserId());
 
         $start = $holiday->getStart()->format('Y-m-d H:i:s');
         $end = $holiday->getEnd()->format('Y-m-d H:i:s');

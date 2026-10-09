@@ -23,7 +23,7 @@ class HolidayTest extends KernelTestCase
         $validationLevel2Date = new \DateTime(date('Y-m-d') . ' 12:30:00');
 
         $holiday = new Holiday();
-        $holiday->setUser(9);
+        $holiday->setUserId(9);
         $holiday->setStart($start);
         $holiday->setEnd($end);
         $holiday->setValidLevel1(12);
@@ -68,7 +68,7 @@ class HolidayTest extends KernelTestCase
         $holiday = $entityManager->getRepository(Holiday::class)->find($id);
 
         $this->assertGreaterThan(0, $holiday->getId());
-        $this->assertEquals(9, $holiday->getUser());
+        $this->assertEquals(9, $holiday->getUserId());
         $this->assertEquals($start, $holiday->getStart());
         $this->assertEquals($end, $holiday->getEnd());
         $this->assertEquals(12, $holiday->getValidLevel1());

@@ -802,3 +802,33 @@ msgstr "Jours fériés et jours de fermeture"
 
 msgid "The list of public holidays has been successfully modified"
 msgstr "La liste des jours fériés a été modifiée avec succès"
+
+msgid "Department"
+msgstr "Service"
+
+msgid "Departments"
+msgstr "Services"
+
+msgid "No department"
+msgstr "Sans service"
+
+msgid "No site"
+msgstr "Sans site"
+
+msgid "No status"
+msgstr "Sans statut"
+
+msgid "Statuses"
+msgstr "Statuts"
+
+msgid "Show departments"
+msgstr "Afficher les services"
+
+msgid "Show sites"
+msgstr "Afficher les sites"
+
+msgid "Show statuses"
+msgstr "Afficher les statuts"
+
+msgid "Holiday"
+msgstr "Congé"

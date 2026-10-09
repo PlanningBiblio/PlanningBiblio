@@ -2598,11 +2598,13 @@ table.dataTable th{
   background-color: #DEE2E6;
 }
 
-.calendar-view.absence-validated {
+.calendar-view.absence-validated,
+.calendar-view.holiday-validated {
   background-color: #720a05;
 }
 
-.calendar-view.absence-not-validated {
+.calendar-view.absence-not-validated,
+.calendar-view.holiday-not-validated {
   background-color: #d1ac07;
 }
 

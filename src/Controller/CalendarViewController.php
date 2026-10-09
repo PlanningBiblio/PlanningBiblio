@@ -5,40 +5,147 @@ namespace App\Controller;
 use App\Controller\BaseController;
 use App\Entity\Absence;
 use App\Entity\Agent;
+use App\Entity\Config;
 use App\Entity\Holiday;
 use App\Entity\WorkingHour;
 use App\Planno\WorkingHours;
+use DateTime;
+use DateTimeImmutable;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 final class CalendarViewController extends BaseController
 {
     #[Route('/absence/calendar/view/{reset?}', name: 'calendar-view.index', methods: ['GET'], requirements: ['reset' => 'reset'])]
-    public function index(Request $request, Session $session): Response
+    public function index(Request $request, Session $session, TranslatorInterface $translator): Response
     {
-        $changeDates = $request->query->get('changeDates');
+        $changeDates = $request->query->getInt('changeDates');
 
         $start = $this->initDate('start', 'calendarViewStart', 'last monday', 'd/m/Y');
         $end = $this->initDate('end', 'calendarViewEnd', 'second sunday', 'd/m/Y');
-        $displayAllAbsences = $this->initBoolean('all-absences', 'calendarViewAllAbsences');
+        $displayAllAbsences = $this->initBoolean('all-absences', 'calendarViewAllAbsences', 'start');
+        // FIXME: Whenever possible, replace the following conditions with the DataTable's Select Columns method. #}
+        $showDept = $this->initBoolean('show-dept', 'calendarViewShowDept', 'start') ? 'checked' : null;
+        $showSites = $this->initBoolean('show-sites', 'calendarViewShowSites', 'start') ? 'checked' : null;
+        $showStatus = $this->initBoolean('show-status', 'calendarViewShowStatus', 'start') ? 'checked' : null;
+
+        $start->modify('midnight');
+        $end->modify('+1 day midnight -1 second');
+        $diffDates = date_diff($start, $end)->format('%a');
 
         if ($changeDates) {
-            $start = $start->modify($changeDates);
-            $end = $end->modify($changeDates);
+            $scope = $diffDates > 1 ? 'week' : 'day';
+            $start = $start->modify($changeDates . " $scope");
+            $end = $end->modify($changeDates . " $scope");
             $session->set('calendarViewStart', $start->format('d/m/Y'));
             $session->set('calendarViewEnd', $end->format('d/m/Y'));
         }
 
-        $agents = $this->entityManager->getRepository(Agent::class)->get('Actif');
+        $allAgents = $this->entityManager->getRepository(Agent::class)->get('Actif');
         $absences = $this->entityManager->getRepository(Absence::class)->get($start, $end);
+        $config = $this->entityManager->getRepository(Config::class)->getAll();
         $holidays = $this->entityManager->getRepository(Holiday::class)->get($start, $end);
         $workingHours = $this->entityManager->getRepository(WorkingHour::class)->get($start, $end, true);
 
-        $diff = date_diff($start, $end);
-        $halfDays = $diff->format('%a') < 14;
+        if ($config['Conges-Enable']) {
+            $absences = array_merge($absences, $holidays);
+        }
 
+        // Get used departments, sites and status
+        $departments = [];
+        $sites = [];
+        $status = [];
+
+        foreach ($allAgents as $elem) {
+            $departments[] = ['id' => $elem->getService(), 'name' => $elem->getService()];
+            if (empty($elem->getService())) {
+                $departments[] = ['id' => '', 'name' => $translator->trans('No department')];  
+            }
+
+            $status[] = ['id' => $elem->getStatus(), 'name' => $elem->getStatus()];
+            if (empty($elem->getStatus())) {
+                $status[] = ['id' => '', 'name' => $translator->trans('No status')];  
+            }
+
+            foreach($elem->getSites() as $site) {
+                $sites[] = $site;
+            }
+            if (empty($elem->getSites())) {
+                $sites[] = 0;
+            }
+        }
+
+        $departments = array_unique($departments, SORT_REGULAR);
+        array_multisort(array_column($departments, 'name'), SORT_ASC, SORT_STRING, $departments);
+
+        $status = array_unique($status, SORT_REGULAR);
+        array_multisort(array_column($status, 'name'), SORT_ASC, SORT_STRING, $status);
+
+        $sites = array_unique($sites);
+        sort($sites);
+        foreach ($sites as &$site) {
+            $site = [
+                'id' => $site,
+                'name' => $site ? $config['Multisites-site' . $site] : $translator->trans('No site'),  
+            ];
+        }
+
+        $selectedDepartments = $this->initArray('departments', 'calendarViewDept', array_column($departments, 'id'));
+        $selectedSites = $this->initArray('sites', 'calendarViewSites', array_column($sites, 'id'));
+        $selectedStatus = $this->initArray('status', 'calendarViewStatus', array_column($status, 'id'));
+
+        // Get filtered agents
+        $agents = [];
+        foreach ($allAgents as $agent) {
+            $siteIsSelected = false;
+            if (empty($agent->getSites()) and in_array(0, $selectedSites)) {
+                $siteIsSelected = true;
+            }
+            foreach ($agent->getSites() as $agentSite) {
+                if (in_array($agentSite, $selectedSites)) {
+                    $siteIsSelected = true;
+                }
+            }
+
+            if ($siteIsSelected and in_array($agent->getService(), $selectedDepartments) and in_array($agent->getStatus(), $selectedStatus)) {
+                $agents[] = $agent;
+            }
+        }
+
+        // Preparing the display
+        // Daily display
+        $columns = [['display' => '', 'start' => '00:00:00', 'end' => '23:59:59']];
+
+        // Half-day display
+        if ($diffDates < 14) {
+            $columns = [
+                ['display' => 'A.M.', 'start' => '00:00:00', 'end' => '12:00:00'],
+                ['display' => 'P.M.', 'start' => '12:00:00', 'end' => '23:59:59'],
+            ];
+        }
+
+        // Hourly display
+        if ($diffDates < 1) {
+            $columns = [];
+            $columnStart = DateTime::createFromFormat('G', '6');
+            $columnEnd = DateTime::createFromFormat('G', '7');
+            for ($i = 0; $i < 17; $i++) {
+                $columns[] = [
+                    'display' => $columnStart->format('G') . 'h - ' . $columnEnd->format('G') .'h',
+                    'start' => $columnStart->format('H:i:s'),
+                    'end' => $columnEnd->format('H:i:s'),
+                ];
+                $columnStart->modify('+1 hour');
+                $columnEnd->modify('+1 hour');
+            }
+        }
+
+        $columnsPerDay = count($columns);
+
+        // Dates and absences
         $allAbsences = [];
         $allDates = [];
 
@@ -49,93 +156,114 @@ final class CalendarViewController extends BaseController
         }
 
         // For each agents (for each line)
-        foreach($agents as $agent) {
+        foreach($agents as $key => $agent) {
             $line = &$allAbsences[$agent->getId()];
 
-            // For each dates (for each column)
+            // For each date
             foreach ($allDates as $current) {
-                // cell0 = All day if halfDays = false, AM if halfDays = true
-                // cell1 = Empty if halfDays = false, PM if halfDays = true
-                $cell0 = &$line[$current->format('Y-m-d')][0];
-                $cell1 = &$line[$current->format('Y-m-d')][1];
+                $searchStart = (clone $current)->modify('midnight');
+                $searchEnd = (clone $current)->modify('+1 day midnight -1 second');
 
                 $day = $current->format('N');
                 $date = new \datePl($current->format('Y-m-d'));
                 $weekId = $date->semaine3;
                 $dayIndex = ($day + (7 * $weekId) -7) - 1;
-                $mediumHour = \DateTime::createFromFormat('Y-m-d H:i:s', $current->format('Y-m-d') . ' 12:00:00');
 
-                // Zebra on Sundays
-                if (!$this->config['Dimanche'] and $current->format('N') == 7) {
-                    $cell0 = 'zebra';
-                    $cell1 = 'zebra';
-                }
+                $holidayBadge = false;
 
-                // Mark attendees
-                foreach($workingHours as $wh) {
-                    if ($wh->getUser() == $agent->getId()
-                        and $wh->getStart() <= $current
-                        and $wh->getEnd() >= $current
-                    ) {
-                        $times = $wh->getWorkingHours();
-                        $hoursHelper = new WorkingHours($times);
-                        $hours = $hoursHelper->hoursOf($dayIndex);
+                // For each column
+                foreach ($columns as $key => $column) {
+                    $columnStart = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $current->format('Y-m-d') . ' ' . $column['start']);
+                    $columnEnd = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $current->format('Y-m-d') . ' ' . $column['end']);
 
-                        if (!empty($hours)) {
-                            // Half day check
-                            if ($halfDays) {
-                                foreach ($hours as $hour) {
-                                    if ($hour[0] < '12:00:00') {
-                                        $cell0 = 'attendee';
+                    $class[$key] = &$line[$current->format('Y-m-d')][$key]['class'];
+                    $content[$key] = &$line[$current->format('Y-m-d')][$key]['content'];
+
+                    // Zebra on Sundays
+                    if (!$this->config['Dimanche'] and $current->format('N') == 7) {
+                        $class[$key] = 'zebra';
+                    }
+
+                    // Mark attendees
+                    foreach($workingHours as $wh) {
+                        if ($wh->getUser() == $agent->getId()
+                            and $wh->getStart() <= $current
+                            and $wh->getEnd() >= $current
+                        ) {
+                            $times = $wh->getWorkingHours();
+                            $hoursHelper = new WorkingHours($times);
+                            $hours = $hoursHelper->hoursOf($dayIndex);
+
+                            if (!empty($hours)) {
+                                // Full day and half day: permissive search
+                                if ($columnsPerDay <= 2) {
+                                    foreach ($hours as $hour) {
+                                        if ($key == 0 and $hour[0] < $column['end']) {
+                                            $class[$key] = 'attendee';
+                                            break;
+                                        }
+                                        if ($key == 1 and $hour[1] > $column['start']) {
+                                            $class[$key] = 'attendee';
+                                            break;
+                                        }
                                     }
-                                    if ($hour[1] > '12:00:00') {
-                                        $cell1 = 'attendee';
+                                // Hourly: strict search
+                                } else {
+                                    foreach ($hours as $hour) {
+                                        if ($hour[0] <= $column['start'] and $hour[1] >= $column['end']) {
+                                            $class[$key] = 'attendee';
+                                            break;
+                                        }
                                     }
                                 }
-                            // Full day check
-                            } else {
-                                $cell0 = 'attendee';
                             }
                         }
                     }
-                }
 
-                // Mark absences
-                if ($cell0 == 'attendee' or $cell1 == 'attendee' or $displayAllAbsences) {
-                    foreach($absences as $absence) {
-                        // Mark validated absences
-                        if ($absence->getUserId() == $agent->getId()
-                            and $absence->getStart() <= $current
-                            and $absence->getEnd() >= $current
-                            and $absence->getValidLevel2() > 0
-                        ) {
-                            if ($halfDays) {
-                                if ($absence->getStart() < $mediumHour) {
-                                    $cell0 = 'absence-validated';
+                    // Mark absences
+                    if ($class[$key] == 'attendee' or $displayAllAbsences) {
+                        foreach($absences as $absence) {
+
+                            $prefix = $absence instanceof Holiday ? 'holiday' : 'absence';
+
+                            // Mark validated absences
+                            if ($absence->getUserId() == $agent->getId()
+                                and $absence->getStart() <= $searchEnd
+                                and $absence->getEnd() >= $searchStart
+                                and $absence->getValidLevel2() > 0
+                            ) {
+                                // Full day, half day and hourly: strict search
+                                if ($absence->getStart() < $columnEnd and $absence->getEnd() > $columnStart) {
+                                    $class[$key] = $prefix . '-validated';
+
+                                    if (!$holidayBadge and $absence instanceof Holiday) {
+                                        $content[$key] = 'Holiday';
+                                        $holidayBadge = true;
+                                    } elseif (!$absence instanceof Holiday) {
+                                        $content[$key] = '';
+                                        $holidayBadge = false;
+                                    }
                                 }
-                                if ($absence->getEnd() > $mediumHour) {
-                                    $cell1 = 'absence-validated';
-                                }
-                            } else {
-                                $cell0 = 'absence-validated';
                             }
-                        }
 
-                        // Mark not validated absences
-                        if ($absence->getUserId() == $agent->getId()
-                            and $absence->getStart() <= $current
-                            and $absence->getEnd() >= $current
-                            and $absence->getValidLevel2() <= 0
-                        ) {
-                            if ($halfDays) {
-                                if ($absence->getStart() < $mediumHour and $cell0 != 'absence-validated') {
-                                    $cell0 = 'absence-not-validated';
+                            // Mark not validated absences
+                            if ($absence->getUserId() == $agent->getId()
+                                and $absence->getStart() <= $searchEnd
+                                and $absence->getEnd() >= $searchStart
+                                and $absence->getValidLevel2() <= 0
+                            ) {
+                                // Full day, half day and hourly: strict search
+                                if ($absence->getStart() < $columnEnd and $absence->getEnd() > $columnStart and $class[$key] != 'absence-validated') {
+                                    $class[$key] = $prefix . '-not-validated';
+
+                                    if (!$holidayBadge and $absence instanceof Holiday) {
+                                        $content[$key] = 'Holiday';
+                                        $holidayBadge = true;
+                                    } elseif (!$absence instanceof Holiday) {
+                                        $content[$key] = '';
+                                        $holidayBadge = false;
+                                    }
                                 }
-                                if ($absence->getEnd() > $mediumHour and $cell1 != 'absence-validated') {
-                                    $cell1 = 'absence-not-validated';
-                                }
-                            } elseif ($cell0 != 'validated') {
-                                $cell0 = 'absence-not-validated';
                             }
                         }
                     }
@@ -147,9 +275,19 @@ final class CalendarViewController extends BaseController
             'agents' => $agents,
             'allAbsences' => $allAbsences,
             'allDates' => $allDates,
+            'columns' => $columns,
+            'columnsPerDay' => $columnsPerDay,
+            'departments' => $departments,
             'displayAllAbsences' => $displayAllAbsences ? 'checked' : null,
             'end' => $end->format('d/m/Y'),
-            'halfDays' => $halfDays,
+            'selectedDepartments' => $selectedDepartments,
+            'selectedSites' => $selectedSites,
+            'selectedStatus' => $selectedStatus,
+            'showDept' => $showDept,
+            'showSites' => $showSites,
+            'showStatus' => $showStatus,
+            'sites' => $sites,
+            'status' => $status,
             'start' => $start->format('d/m/Y'),
             'title' => 'Calendar view',
         ]);

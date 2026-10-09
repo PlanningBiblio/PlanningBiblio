@@ -16,19 +16,67 @@
       </div>
 
       <div class="col-xl-auto ps-0">
-        <a href="{{ path('calendar-view.index', {changeDates: '-1 week'}) }}" role="button" class="btn btn-secondary m-2 bi bi-arrow-left"></a>
+        <a href="{{ path('calendar-view.index', {changeDates: '-1'}) }}" role="button" class="btn btn-secondary m-2 bi bi-arrow-left"></a>
       </div>
 
       <div class="col-xl-auto ps-0">
-        <a href="{{ path('calendar-view.index', {changeDates: '+1 week'}) }}" role="button" class="btn btn-secondary m-2 bi bi-arrow-right"></a>
+        <a href="{{ path('calendar-view.index', {changeDates: '+1'}) }}" role="button" class="btn btn-secondary m-2 bi bi-arrow-right"></a>
       </div>
+
+      {% if config('Multisites-nombre') > 1 and sites %}
+        <label class="col-xl-auto col-form-label mt-2" for="sites">{% trans %}Sites{% endtrans %} :</label>
+        <div class="col-xl-auto ps-0 m-2">
+          <select id="sites" name="sites[]" multiple>
+            {%for s in sites %}
+              <option value="{{ s.id }}" {% if s.id in selectedSites %}selected{% endif %}>{{ s.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      {% endif %}
+
+      {% if departments %}
+        <label class="col-xl-auto col-form-label mt-2" for="departments">{% trans %}Departments{% endtrans %} :</label>
+        <div class="col-xl-auto ps-0 m-2">
+          <select id="departments" name="departments[]" multiple>
+            {%for d in departments %}
+              <option value="{{ d.id }}" {% if d.id in selectedDepartments %}selected{% endif %}>{{ d.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      {% endif %}
+
+      {% if status %}
+        <label class="col-xl-auto col-form-label mt-2" for="status">{% trans %}Statuses{% endtrans %} :</label>
+        <div class="col-xl-auto ps-0 m-2">
+          <select id="status" name="status[]" multiple>
+            {%for s in status %}
+              <option value="{{ s.id }}" {% if s.id in selectedStatus %}selected{% endif %}>{{ s.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      {% endif %}
 
       <label class="col-xl-auto col-form-label mt-2" for="all-absences">{% trans %}Display all absences{% endtrans %} :</label>
       <div class="col-xl-auto ps-0 m-2">
         <input type="checkbox" value="1" id="all-absences" name="all-absences" class="m-2" {{ displayAllAbsences }}/>
       </div>
 
-      <div class="col-xl-3 ps-0">
+      <label class="col-xl-auto col-form-label mt-2" for="show-sites">{% trans %}Show sites{% endtrans %} :</label>
+      <div class="col-xl-auto ps-0 m-2">
+        <input type="checkbox" value="1" id="show-sites" name="show-sites" class="m-2" {{ showSites }}/>
+      </div>
+
+      <label class="col-xl-auto col-form-label mt-2" for="show-dept">{% trans %}Show departments{% endtrans %} :</label>
+      <div class="col-xl-auto ps-0 m-2">
+        <input type="checkbox" value="1" id="show-dept" name="show-dept" class="m-2" {{ showDept }}/>
+      </div>
+
+      <label class="col-xl-auto col-form-label mt-2" for="show-status">{% trans %}Show statuses{% endtrans %} :</label>
+      <div class="col-xl-auto ps-0 m-2">
+        <input type="checkbox" value="1" id="show-status" name="show-status" class="m-2" {{ showStatus }}/>
+      </div>
+
+      <div class="col-xl-auto ps-0">
         <input type="submit" role="button" value="{% trans %}Search{% endtrans %}" class="btn btn-primary m-2"/>
         <a role="button" class="btn btn-secondary m-2" href="{{ path('calendar-view.index') }}/reset">{% trans %}Clear{% endtrans %}</a>
       </div>
@@ -41,20 +89,37 @@
   <table id="calendar-view-table" class="CJDataTable" data-responsive="false">
     <thead>
       <tr>
-        <th scope="col" {% if halfDays %} rowspan="2" {% endif %}>
+        <th scope="col" {% if columnsPerDay > 1 %} rowspan="2" {% endif %}>
           {% trans %}Agent{% endtrans %}
         </th>
+        {# TODO / FIXME: Whenever possible, replace the following conditions with the DataTable's Select Columns method. #}
+        {% if showSites %}
+          <th scope="col" {% if columnsPerDay > 1 %} rowspan="2" {% endif %}>
+            {% trans %}Sites{% endtrans %}
+          </th>
+        {% endif %}
+        {% if showDept %}
+          <th scope="col" {% if columnsPerDay > 1 %} rowspan="2" {% endif %}>
+            {% trans %}Department{% endtrans %}
+          </th>
+        {% endif %}
+        {% if showStatus %}
+          <th scope="col" {% if columnsPerDay > 1 %} rowspan="2" {% endif %}>
+            {% trans %}Status{% endtrans %}
+          </th>
+        {% endif %}
         {% for date in allDates %}
-          <th scope="col" class="dataTableNoSort" {% if halfDays %} colspan="2" {% endif %}>
+          <th scope="col" class="dataTableNoSort" colspan="{{ columnsPerDay }}">
             {{ date | date('D d/m') }}
           </th>
         {% endfor %}
       </tr>
-      {% if halfDays %}
+      {% if columnsPerDay > 1 %}
         <tr>
           {% for date in allDates %}
-            <th scope="col" class="dataTableNoSort">A.M.</th>
-            <th scope="col" class="dataTableNoSort">P.M.</th>
+            {% for c in columns %}
+              <th scope="col" class="dataTableNoSort">{{ c.display }}</th>
+            {% endfor %}
           {% endfor %}
         </tr>
       {% endif %}
@@ -65,16 +130,38 @@
           <td>
             {{ agent.firstname }} {{ agent.lastname }}
           </td>
-          {% for date in allDates %}
-            <td class="calendar-view {{ allAbsences[agent.id][date | date('Y-m-d')][0] }}">
-            {% if halfDays %}
-              <td class="calendar-view {{ allAbsences[agent.id][date | date('Y-m-d')][1] }}">
-            {% endif %}
+          {% if showSites %}
+            <td>
+              {{ agent.sites | json_encode }}
             </td>
+          {% endif %}
+          {% if showDept %}
+            <td>
+              {{ agent.service }}
+            </td>
+          {% endif %}
+          {% if showStatus %}
+            <td>
+              {{ agent.status }}
+            </td>
+          {% endif %}
+          {% for date in allDates %}
+            {% for a in allAbsences[agent.id][date | date('Y-m-d')] %}
+              <td class="calendar-view {{ a.class }}"><span class="badge bg-secondary">{{ a.content | trans }}</span></td>
+            {% endfor %}
           {% endfor %}
         </tr>
       {% endfor %}
     </tbody>
   </table>
+
+  <div class="row justify-content-center">
+    <div class="col-auto">
+      <div class="alert alert-danger" role="alert">
+        <i class="bi bi-exclamation-triangle-fill bi-danger me-2"></i> 
+          Ce module est actuellement en phase expérimentale. Nous l'avons conçu pour enrichir votre expérience, mais il reste perfectible et peut encore évoluer.<br/>
+          Votre soutien et vos retours sont essentiels pour nous aider à l'améliorer ! Si vous constatez un dysfonctionnement ou si vous avez des suggestions d'évolution, n'hésitez pas à nous en faire part afin que nous puissions le perfectionner ensemble.
+      </div>
+    </div>
 
 {% endblock %}

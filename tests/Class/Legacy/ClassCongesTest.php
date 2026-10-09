@@ -43,7 +43,7 @@ class ClassCongesTest extends KernelTestCase
         $end = date_create('next sunday');
 
         $holiday = new Holiday();
-        $holiday->setUser($userId);
+        $holiday->setUserId($userId);
         $holiday->setStart($start);
         $holiday->setEnd($end);
         $holiday->setDebit('Congés');
@@ -51,7 +51,7 @@ class ClassCongesTest extends KernelTestCase
         $entityManager->flush();
 
         $holiday = new Holiday();
-        $holiday->setUser($userId2);
+        $holiday->setUserId($userId2);
         $holiday->setStart($start);
         $holiday->setEnd($end);
         $holiday->setDebit('Congés');
@@ -62,7 +62,7 @@ class ClassCongesTest extends KernelTestCase
         $end = date_create('13 month ago');
 
         $holiday = new Holiday();
-        $holiday->setUser($userId);
+        $holiday->setUserId($userId);
         $holiday->setStart($start);
         $holiday->setEnd($end);
         $holiday->setDebit('Récupérations');

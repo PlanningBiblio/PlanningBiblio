@@ -111,7 +111,7 @@ class HolidayControllerEditTest extends PLBWebTestCase
         $end = new \DateTime('2026-07-17 23:59:59');
 
         $holiday = new Holiday();
-        $holiday->setUser($abreton->getId());
+        $holiday->setUserId($abreton->getId());
         $holiday->setStart($start);
         $holiday->setEnd($end);
         $holiday->setDebit('credit');
@@ -125,7 +125,7 @@ class HolidayControllerEditTest extends PLBWebTestCase
         $end = new \DateTime('2026-07-15 23:59:59');
 
         $comptime = new Holiday();
-        $comptime->setUser($jdevoe->getId());
+        $comptime->setUserId($jdevoe->getId());
         $comptime->setStart($start);
         $comptime->setEnd($end);
         $comptime->setDebit('recuperation');

@@ -87,7 +87,7 @@ class HolidayRepository extends EntityRepository
                 $holiday->setEnd(new \DateTime(date('Y-m-d 00:00:00')));
             }
 
-            $holiday->setUser($userId);
+            $holiday->setUserId($userId);
             $holiday->setPreviousCredit($old['conges_credit']);
             $holiday->setPreviousCompTime($old['comp_time']);
             $holiday->setPreviousRemainder($old['conges_reliquat']);
