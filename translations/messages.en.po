@@ -793,3 +793,12 @@ msgstr "(new window)"
 
 msgid "Legal notice"
 msgstr "Legal notice"
+
+msgid "Departments"
+msgstr "Departments"
+
+msgid "No department"
+msgstr "No department"
+
+msgid "No site"
+msgstr "No site"

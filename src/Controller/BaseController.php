@@ -154,6 +154,19 @@ class BaseController extends AbstractController
         return $dt;
     }
 
+    protected function initArray(string $queryName, string $sessionName, array $default = []): array
+    {
+        $session = $this->request->getSession();
+
+        $value = $this->request->query->all($queryName) ?: $session->get($sessionName, $default);
+        $reset = $this->request->attributes->get('reset') === 'reset';
+        $value = $reset ? $default : $value;
+
+        $this->request->getSession()->set($sessionName, $value);
+
+        return $value;
+    }
+
     protected function initBoolean(string $queryName, string $sessionName, bool $default = false): bool
     {
         $session = $this->request->getSession();
