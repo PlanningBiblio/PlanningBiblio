@@ -105,27 +105,26 @@ class DeleteSkillsCommand extends Command
                 $agentSkills = $a->getSkills();
 
                 if (($key = array_search($skill, $agentSkills)) !== false) {
-                    unset($agentSkills[$key]);
+                    array_splice($agentSkills, $key, 1);
                     $agent = $em->getRepository(Agent::class)->find($agentId);
                     $agent->setSkills($agentSkills);
                     $em->persist($agent);
-                    $em->flush();
                 }
             }
+            $em->flush();
 
             foreach ($positions as $p) {
                 $positionId = $p->getId();
                 $positionSkills = $p->getSkills();
 
                 if (($key = array_search($skill, $positionSkills)) !== false) {
-                    unset($positionSkills[$key]);
-
+                    array_splice($positionSkills, $key, 1);
                     $position = $em->getRepository(Position::class)->find($positionId);
                     $position->setSkills($positionSkills);
                     $em->persist($position);
-                    $em->flush();
                 }
             }
+            $em->flush();
 
             $skill = $em->getRepository(Skill::class)->find($skill);
             if ($skill) {
