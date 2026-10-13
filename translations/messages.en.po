@@ -802,3 +802,9 @@ msgstr "No department"
 
 msgid "No site"
 msgstr "No site"
+
+msgid "No status"
+msgstr "No status"
+
+msgid "Statuses"
+msgstr "Statuses"

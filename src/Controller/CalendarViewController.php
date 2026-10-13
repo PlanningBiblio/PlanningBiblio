@@ -42,15 +42,22 @@ final class CalendarViewController extends BaseController
         $diff = date_diff($start, $end);
         $halfDays = $diff->format('%a') < 14;
 
-        // Get used departments and sites
+        // Get used departments, sites and status
         $departments = [];
         $sites = [];
+        $status = [];
 
         foreach ($allAgents as $elem) {
             $departments[] = ['id' => $elem->getService(), 'name' => $elem->getService()];
             if (empty($elem->getService())) {
                 $departments[] = ['id' => '', 'name' => $translator->trans('No department')];  
             }
+
+            $status[] = ['id' => $elem->getStatus(), 'name' => $elem->getStatus()];
+            if (empty($elem->getStatus())) {
+                $status[] = ['id' => '', 'name' => $translator->trans('No status')];  
+            }
+
             foreach($elem->getSites() as $site) {
                 $sites[] = $site;
             }
@@ -61,6 +68,9 @@ final class CalendarViewController extends BaseController
 
         $departments = array_unique($departments, SORT_REGULAR);
         array_multisort(array_column($departments, 'name'), SORT_ASC, SORT_STRING, $departments);
+
+        $status = array_unique($status, SORT_REGULAR);
+        array_multisort(array_column($status, 'name'), SORT_ASC, SORT_STRING, $status);
 
         $sites = array_unique($sites);
         sort($sites);
@@ -73,6 +83,7 @@ final class CalendarViewController extends BaseController
 
         $selectedDepartments = $this->initArray('departments', 'calendarViewDept', array_column($departments, 'id'));
         $selectedSites = $this->initArray('sites', 'calendarViewSites', array_column($sites, 'id'));
+        $selectedStatus = $this->initArray('status', 'calendarViewStatus', array_column($status, 'id'));
 
         // Get filtered agents
         $agents = [];
@@ -87,7 +98,7 @@ final class CalendarViewController extends BaseController
                 }
             }
 
-            if ($siteIsSelected and in_array($agent->getService(), $selectedDepartments)) {
+            if ($siteIsSelected and in_array($agent->getService(), $selectedDepartments) and in_array($agent->getStatus(), $selectedStatus)) {
                 $agents[] = $agent;
             }
         }
@@ -207,7 +218,9 @@ final class CalendarViewController extends BaseController
             'halfDays' => $halfDays,
             'selectedDepartments' => $selectedDepartments,
             'selectedSites' => $selectedSites,
+            'selectedStatus' => $selectedStatus,
             'sites' => $sites,
+            'status' => $status,
             'start' => $start->format('d/m/Y'),
             'title' => 'Calendar view',
         ]);

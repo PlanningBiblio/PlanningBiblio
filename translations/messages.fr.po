@@ -802,3 +802,9 @@ msgstr "Sans service"
 
 msgid "No site"
 msgstr "Sans site"
+
+msgid "No status"
+msgstr "Sans statut"
+
+msgid "Statuses"
+msgstr "Statuts"

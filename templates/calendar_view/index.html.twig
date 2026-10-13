@@ -45,6 +45,17 @@
         </div>
       {% endif %}
 
+      {% if status %}
+        <label class="col-xl-auto col-form-label mt-2" for="status">{% trans %}Statuses{% endtrans %} :</label>
+        <div class="col-xl-auto ps-0 m-2">
+          <select id="status" name="status[]" multiple>
+            {%for s in status %}
+              <option value="{{ s.id }}" {% if s.id in selectedStatus %}selected{% endif %}>{{ s.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      {% endif %}
+
       <label class="col-xl-auto col-form-label mt-2" for="all-absences">{% trans %}Display all absences{% endtrans %} :</label>
       <div class="col-xl-auto ps-0 m-2">
         <input type="checkbox" value="1" id="all-absences" name="all-absences" class="m-2" {{ displayAllAbsences }}/>
