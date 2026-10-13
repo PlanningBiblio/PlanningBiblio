@@ -276,6 +276,7 @@ class AgentRepository extends EntityRepository
 
     public function getValidationLevelFor($loggedin_id, String $workflow = 'A'): array
     {
+        $planningHebdoNotificationsAgentParAgent = $this->getEntityManager()->getRepository(Config::class)->findOneBy(['nom' => 'PlanningHebdo-notifications-agent-par-agent'])->getValue();
 
         $entityManager = $this->getEntityManager();
         $loggedin = $entityManager->find(Agent::class, $loggedin_id);
@@ -304,7 +305,11 @@ class AgentRepository extends EntityRepository
 
         // Give rigths for deleted agents
         // Avoid "Access denied" when modifying absences with several agents and some of them are deleted
-        if (isset($agent) and $agent->getDeletion() == 2) {
+        if (isset($agent) and
+            ($agent->getDeletion() == 2 ||
+            ($planningHebdoNotificationsAgentParAgent == 1 && $agent->getDeletion() == 1)
+            )
+        ) {
             return array(true, true);
         }
         $l1 = false;
