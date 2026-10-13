@@ -61,6 +61,21 @@
         <input type="checkbox" value="1" id="all-absences" name="all-absences" class="m-2" {{ displayAllAbsences }}/>
       </div>
 
+      <label class="col-xl-auto col-form-label mt-2" for="show-sites">{% trans %}Show sites{% endtrans %} :</label>
+      <div class="col-xl-auto ps-0 m-2">
+        <input type="checkbox" value="1" id="show-sites" name="show-sites" class="m-2" {{ showSites }}/>
+      </div>
+
+      <label class="col-xl-auto col-form-label mt-2" for="show-dept">{% trans %}Show departments{% endtrans %} :</label>
+      <div class="col-xl-auto ps-0 m-2">
+        <input type="checkbox" value="1" id="show-dept" name="show-dept" class="m-2" {{ showDept }}/>
+      </div>
+
+      <label class="col-xl-auto col-form-label mt-2" for="show-status">{% trans %}Show statuses{% endtrans %} :</label>
+      <div class="col-xl-auto ps-0 m-2">
+        <input type="checkbox" value="1" id="show-status" name="show-status" class="m-2" {{ showStatus }}/>
+      </div>
+
       <div class="col-xl-auto ps-0">
         <input type="submit" role="button" value="{% trans %}Search{% endtrans %}" class="btn btn-primary m-2"/>
         <a role="button" class="btn btn-secondary m-2" href="{{ path('calendar-view.index') }}/reset">{% trans %}Clear{% endtrans %}</a>
@@ -77,6 +92,22 @@
         <th scope="col" {% if halfDays %} rowspan="2" {% endif %}>
           {% trans %}Agent{% endtrans %}
         </th>
+        {# TODO / FIXME: Whenever possible, replace the following conditions with the DataTable's Select Columns method. #}
+        {% if showSites %}
+          <th scope="col" {% if halfDays %} rowspan="2" {% endif %}>
+            {% trans %}Sites{% endtrans %}
+          </th>
+        {% endif %}
+        {% if showDept %}
+          <th scope="col" {% if halfDays %} rowspan="2" {% endif %}>
+            {% trans %}Department{% endtrans %}
+          </th>
+        {% endif %}
+        {% if showStatus %}
+          <th scope="col" {% if halfDays %} rowspan="2" {% endif %}>
+            {% trans %}Status{% endtrans %}
+          </th>
+        {% endif %}
         {% for date in allDates %}
           <th scope="col" class="dataTableNoSort" {% if halfDays %} colspan="2" {% endif %}>
             {{ date | date('D d/m') }}
@@ -98,6 +129,21 @@
           <td>
             {{ agent.firstname }} {{ agent.lastname }}
           </td>
+          {% if showSites %}
+            <td>
+              {{ agent.sites | json_encode }}
+            </td>
+          {% endif %}
+          {% if showDept %}
+            <td>
+              {{ agent.service }}
+            </td>
+          {% endif %}
+          {% if showStatus %}
+            <td>
+              {{ agent.status }}
+            </td>
+          {% endif %}
           {% for date in allDates %}
             <td class="calendar-view {{ allAbsences[agent.id][date | date('Y-m-d')][0] }}">
             {% if halfDays %}

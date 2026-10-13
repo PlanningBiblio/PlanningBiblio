@@ -24,7 +24,10 @@ final class CalendarViewController extends BaseController
 
         $start = $this->initDate('start', 'calendarViewStart', 'last monday', 'd/m/Y');
         $end = $this->initDate('end', 'calendarViewEnd', 'second sunday', 'd/m/Y');
-        $displayAllAbsences = $this->initBoolean('all-absences', 'calendarViewAllAbsences');
+        $displayAllAbsences = $this->initBoolean('all-absences', 'calendarViewAllAbsences', 'start');
+        $showDept = $this->initBoolean('show-dept', 'calendarViewShowDept', 'start') ? 'checked' : null;
+        $showSites = $this->initBoolean('show-sites', 'calendarViewShowSites', 'start') ? 'checked' : null;
+        $showStatus = $this->initBoolean('show-status', 'calendarViewShowStatus', 'start') ? 'checked' : null;
 
         if ($changeDates) {
             $start = $start->modify($changeDates);
@@ -219,6 +222,9 @@ final class CalendarViewController extends BaseController
             'selectedDepartments' => $selectedDepartments,
             'selectedSites' => $selectedSites,
             'selectedStatus' => $selectedStatus,
+            'showDept' => $showDept,
+            'showSites' => $showSites,
+            'showStatus' => $showStatus,
             'sites' => $sites,
             'status' => $status,
             'start' => $start->format('d/m/Y'),

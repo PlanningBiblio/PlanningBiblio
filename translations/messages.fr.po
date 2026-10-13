@@ -794,6 +794,9 @@ msgstr "(nouvelle fenêtre)"
 msgid "Legal notice"
 msgstr "Mentions légales"
 
+msgid "Department"
+msgstr "Service"
+
 msgid "Departments"
 msgstr "Services"
 
@@ -808,3 +811,12 @@ msgstr "Sans statut"
 
 msgid "Statuses"
 msgstr "Statuts"
+
+msgid "Show departments"
+msgstr "Afficher les services"
+
+msgid "Show sites"
+msgstr "Afficher les sites"
+
+msgid "Show statuses"
+msgstr "Afficher les statuts"

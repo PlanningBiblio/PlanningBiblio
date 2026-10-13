@@ -794,6 +794,9 @@ msgstr "(new window)"
 msgid "Legal notice"
 msgstr "Legal notice"
 
+msgid "Department"
+msgstr "Department"
+
 msgid "Departments"
 msgstr "Departments"
 
@@ -808,3 +811,12 @@ msgstr "No status"
 
 msgid "Statuses"
 msgstr "Statuses"
+
+msgid "Show departments"
+msgstr "Show departments"
+
+msgid "Show sites"
+msgstr "Show sites"
+
+msgid "Show statuses"
+msgstr "Show statuses"
