@@ -16,11 +16,11 @@
       </div>
 
       <div class="col-xl-auto ps-0">
-        <a href="{{ path('calendar-view.index', {changeDates: '-1 week'}) }}" role="button" class="btn btn-secondary m-2 bi bi-arrow-left"></a>
+        <a href="{{ path('calendar-view.index', {changeDates: '-1'}) }}" role="button" class="btn btn-secondary m-2 bi bi-arrow-left"></a>
       </div>
 
       <div class="col-xl-auto ps-0">
-        <a href="{{ path('calendar-view.index', {changeDates: '+1 week'}) }}" role="button" class="btn btn-secondary m-2 bi bi-arrow-right"></a>
+        <a href="{{ path('calendar-view.index', {changeDates: '+1'}) }}" role="button" class="btn btn-secondary m-2 bi bi-arrow-right"></a>
       </div>
 
       {% if config('Multisites-nombre') > 1 and sites %}
@@ -89,36 +89,37 @@
   <table id="calendar-view-table" class="CJDataTable" data-responsive="false">
     <thead>
       <tr>
-        <th scope="col" {% if halfDays %} rowspan="2" {% endif %}>
+        <th scope="col" {% if columnsPerDay > 1 %} rowspan="2" {% endif %}>
           {% trans %}Agent{% endtrans %}
         </th>
         {# TODO / FIXME: Whenever possible, replace the following conditions with the DataTable's Select Columns method. #}
         {% if showSites %}
-          <th scope="col" {% if halfDays %} rowspan="2" {% endif %}>
+          <th scope="col" {% if columnsPerDay > 1 %} rowspan="2" {% endif %}>
             {% trans %}Sites{% endtrans %}
           </th>
         {% endif %}
         {% if showDept %}
-          <th scope="col" {% if halfDays %} rowspan="2" {% endif %}>
+          <th scope="col" {% if columnsPerDay > 1 %} rowspan="2" {% endif %}>
             {% trans %}Department{% endtrans %}
           </th>
         {% endif %}
         {% if showStatus %}
-          <th scope="col" {% if halfDays %} rowspan="2" {% endif %}>
+          <th scope="col" {% if columnsPerDay > 1 %} rowspan="2" {% endif %}>
             {% trans %}Status{% endtrans %}
           </th>
         {% endif %}
         {% for date in allDates %}
-          <th scope="col" class="dataTableNoSort" {% if halfDays %} colspan="2" {% endif %}>
+          <th scope="col" class="dataTableNoSort" colspan="{{ columnsPerDay }}">
             {{ date | date('D d/m') }}
           </th>
         {% endfor %}
       </tr>
-      {% if halfDays %}
+      {% if columnsPerDay > 1 %}
         <tr>
           {% for date in allDates %}
-            <th scope="col" class="dataTableNoSort">A.M.</th>
-            <th scope="col" class="dataTableNoSort">P.M.</th>
+            {% for c in columns %}
+              <th scope="col" class="dataTableNoSort">{{ c }}</th>
+            {% endfor %}
           {% endfor %}
         </tr>
       {% endif %}
@@ -145,10 +146,9 @@
             </td>
           {% endif %}
           {% for date in allDates %}
-            <td class="calendar-view {{ allAbsences[agent.id][date | date('Y-m-d')][0] }}">
-            {% if halfDays %}
-              <td class="calendar-view {{ allAbsences[agent.id][date | date('Y-m-d')][1] }}">
-            {% endif %}
+            {% for a in allAbsences[agent.id][date | date('Y-m-d')] %}
+              <td class="calendar-view {{ a }}">
+            {% endfor %}
             </td>
           {% endfor %}
         </tr>
