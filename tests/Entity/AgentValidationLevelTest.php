@@ -292,6 +292,7 @@ class AgentValidationLevelTest extends PLBWebTestCase
         $this->assertFalse($adminN2, 'Manager is not admin L2 for agent 3');
 
         // Agent is deleted
+        // Test level 2 deletion
         $deletedagent = $this->builder->build(
             Agent::class,
             array(
@@ -312,8 +313,27 @@ class AgentValidationLevelTest extends PLBWebTestCase
             ->setModule('absence')
             ->forAgent($deletedagent->getId())
             ->getValidationLevelFor($agent_manager->getId());
-        $this->assertTrue($adminN1, 'Manager is admin L1 for deleted agent');
-        $this->assertTrue($adminN2, 'Manager is admin L2 for deleted agent');
+        $this->assertTrue($adminN1, 'Manager is admin L1 for deleted agent (level 2 deletion)');
+        $this->assertTrue($adminN2, 'Manager is admin L2 for deleted agent (level 2 deletion)');
+
+        // Test level 1 deletion
+        $deletedagent->setDeletion(1);
+
+        $manager = new Manager();
+        $manager->setUser($deletedagent);
+        $manager->setLevel1(0);
+        $manager->setLevel2(0);
+        $agent_manager->addManaged($manager);
+
+        $this->entityManager->persist($agent_manager);
+        $this->entityManager->flush();
+
+        list($adminN1, $adminN2) = $this->entityManager->getRepository(Agent::class)
+            ->setModule('absence')
+            ->forAgent($deletedagent->getId())
+            ->getValidationLevelFor($agent_manager->getId());
+        $this->assertTrue($adminN1, 'Manager is admin L1 for deleted agent (level 1 deletion)');
+        $this->assertTrue($adminN2, 'Manager is admin L2 for deleted agent (level 1 deletion)');
 
     }
 }
