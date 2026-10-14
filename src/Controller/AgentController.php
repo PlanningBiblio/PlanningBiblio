@@ -1365,15 +1365,16 @@ class AgentController extends BaseController
             // Updates the deletion flag for a user on a given date.
             $this->entityManager->getRepository(PlanningPosition::class)->updateAsDeleteByUserIdAndAfterDate([$id], $date);
 
-            // Mise à jour de la table responsables
-            // Deletes manager links by agent or responsible IDs.
-            $this->entityManager->getRepository(Manager::class)->deleteByPersoOrResponsable([$id]);
-
             $this->addFlash('notice', 'L\'agent a bien été supprimé.');
             return $this->redirectToRoute('agent.index');
 
         // If the date parameter is not given : deletion level 2
         } else {
+
+            // Mise à jour de la table responsables
+            // Deletes manager links by agent or responsible IDs.
+            $this->entityManager->getRepository(Manager::class)->deleteByPersoOrResponsable([$id]);
+
             $this->entityManager->getRepository(Agent::class)->delete($id);
 
             $this->addFlash('notice', 'L\'agent a été supprimé définitivement.');
@@ -1421,10 +1422,6 @@ class AgentController extends BaseController
             // Mise à jour de la table pl_poste
             // Updates users as deleted for a given user and after a given date.
             $this->entityManager->getRepository(PlanningPosition::class)->updateAsDeleteByUserIdAndAfterDate($tab, $date);
-
-            // Mise à jour de la table responsables
-            // Deletes manager links by agent or responsible IDs.
-            $this->entityManager->getRepository(Manager::class)->deleteByPersoOrResponsable($tab);
         }
 
         $return = ["ok"];
