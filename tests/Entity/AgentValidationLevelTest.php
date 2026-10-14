@@ -292,7 +292,7 @@ class AgentValidationLevelTest extends PLBWebTestCase
         $this->assertFalse($adminN2, 'Manager is not admin L2 for agent 3');
 
         // Agent is deleted
-        // Test level 2 deletion
+        // Test level 2 deletion (managers are unlinked, but validation still works)
         $deletedagent = $this->builder->build(
             Agent::class,
             array(
@@ -302,10 +302,10 @@ class AgentValidationLevelTest extends PLBWebTestCase
 
         $manager = new Manager();
         $manager->setUser($deletedagent);
-        $manager->setLevel1(0);
-        $manager->setLevel2(0);
+        $manager->setLevel1(1);
+        $manager->setLevel2(1);
         $agent_manager->addManaged($manager);
-
+        $this->entityManager->getRepository(Manager::class)->deleteByPersoOrResponsable($deletedagent->getId());
         $this->entityManager->persist($agent_manager);
         $this->entityManager->flush();
 
@@ -316,13 +316,12 @@ class AgentValidationLevelTest extends PLBWebTestCase
         $this->assertTrue($adminN1, 'Manager is admin L1 for deleted agent (level 2 deletion)');
         $this->assertTrue($adminN2, 'Manager is admin L2 for deleted agent (level 2 deletion)');
 
-        // Test level 1 deletion
+        // Test level 1 deletion (managers are not unlinked yet)
         $deletedagent->setDeletion(1);
-
         $manager = new Manager();
         $manager->setUser($deletedagent);
-        $manager->setLevel1(0);
-        $manager->setLevel2(0);
+        $manager->setLevel1(1);
+        $manager->setLevel2(1);
         $agent_manager->addManaged($manager);
 
         $this->entityManager->persist($agent_manager);
