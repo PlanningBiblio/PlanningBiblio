@@ -46,7 +46,7 @@ final class <className> extends AbstractMigration
     {
         $dbprefix = $_ENV['DATABASE_PREFIX'];
 
-        // $this->addSql("CREATE TABLE IF NOT EXISTS {$dbprefix}table_name (id int(11) NOT NULL AUTO_INCREMENT, ..., PRIMARY KEY (`id`)) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;");
+        // $this->addSql("CREATE TABLE IF NOT EXISTS {$dbprefix}table_name (id int(11) NOT NULL AUTO_INCREMENT, ..., PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;");
         // $this->addSql("INSERT IGNORE INTO {$dbprefix}table_name ...");
         // $this->addSql("ALTER TABLE {$dbprefix}table_name ADD COLUMN IF NOT EXISTS  ...");
     }
