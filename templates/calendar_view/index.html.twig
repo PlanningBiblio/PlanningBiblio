@@ -147,9 +147,8 @@
           {% endif %}
           {% for date in allDates %}
             {% for a in allAbsences[agent.id][date | date('Y-m-d')] %}
-              <td class="calendar-view {{ a }}">
+              <td class="calendar-view {{ a.class }}"><span class="badge bg-secondary">{{ a.content | trans }}</span></td>
             {% endfor %}
-            </td>
           {% endfor %}
         </tr>
       {% endfor %}

@@ -110,7 +110,7 @@ class HolidayReminderCommandTest extends KernelTestCase
         $end = new \DateTime('+5 day');
 
         $holiday = new Holiday();
-        $holiday->setUser($agent->getId());
+        $holiday->setUserId($agent->getId());
         $holiday->setStart($start);
         $holiday->setEnd($end);
         $holiday->setEntryDate($now);

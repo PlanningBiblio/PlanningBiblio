@@ -50,6 +50,8 @@ final class CalendarViewController extends BaseController
         $holidays = $this->entityManager->getRepository(Holiday::class)->get($start, $end);
         $workingHours = $this->entityManager->getRepository(WorkingHour::class)->get($start, $end, true);
 
+        $absences = array_merge($absences, $holidays);
+
         // Get used departments, sites and status
         $departments = [];
         $sites = [];
@@ -165,16 +167,19 @@ final class CalendarViewController extends BaseController
                 $weekId = $date->semaine3;
                 $dayIndex = ($day + (7 * $weekId) -7) - 1;
 
+                $holidayBadge = false;
+
                 // For each column
                 foreach ($columns as $key => $column) {
                     $columnStart = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $current->format('Y-m-d') . ' ' . $column['start']);
                     $columnEnd = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $current->format('Y-m-d') . ' ' . $column['end']);
 
-                    $cells[$key] = &$line[$current->format('Y-m-d')][$key];
+                    $class[$key] = &$line[$current->format('Y-m-d')][$key]['class'];
+                    $content[$key] = &$line[$current->format('Y-m-d')][$key]['content'];
 
                     // Zebra on Sundays
                     if (!$this->config['Dimanche'] and $current->format('N') == 7) {
-                        $cells[$key] = 'zebra';
+                        $class[$key] = 'zebra';
                     }
 
                     // Mark attendees
@@ -192,11 +197,11 @@ final class CalendarViewController extends BaseController
                                 if ($columnsPerDay <= 2) {
                                     foreach ($hours as $hour) {
                                         if ($key == 0 and $hour[0] < $column['end']) {
-                                            $cells[$key] = 'attendee';
+                                            $class[$key] = 'attendee';
                                             break;
                                         }
                                         if ($key == 1 and $hour[1] > $column['start']) {
-                                            $cells[$key] = 'attendee';
+                                            $class[$key] = 'attendee';
                                             break;
                                         }
                                     }
@@ -204,7 +209,7 @@ final class CalendarViewController extends BaseController
                                 } else {
                                     foreach ($hours as $hour) {
                                         if ($hour[0] <= $column['start'] and $hour[1] >= $column['end']) {
-                                            $cells[$key] = 'attendee';
+                                            $class[$key] = 'attendee';
                                             break;
                                         }
                                     }
@@ -214,8 +219,11 @@ final class CalendarViewController extends BaseController
                     }
 
                     // Mark absences
-                    if ($cells[$key] == 'attendee' or $displayAllAbsences) {
+                    if ($class[$key] == 'attendee' or $displayAllAbsences) {
                         foreach($absences as $absence) {
+
+                            $prefix = $absence instanceof Holiday ? 'holiday' : 'absence';
+
                             // Mark validated absences
                             if ($absence->getUserId() == $agent->getId()
                                 and $absence->getStart() <= $searchEnd
@@ -224,7 +232,15 @@ final class CalendarViewController extends BaseController
                             ) {
                                 // Full day, half day and hourly: strict search
                                 if ($absence->getStart() < $columnEnd and $absence->getEnd() > $columnStart) {
-                                    $cells[$key] = 'absence-validated';
+                                    $class[$key] = $prefix . '-validated';
+
+                                    if (!$holidayBadge and $absence instanceof Holiday) {
+                                        $content[$key] = 'Holiday';
+                                        $holidayBadge = true;
+                                    } elseif (!$absence instanceof Holiday) {
+                                        $content[$key] = '';
+                                        $holidayBadge = false;
+                                    }
                                 }
                             }
 
@@ -235,8 +251,16 @@ final class CalendarViewController extends BaseController
                                 and $absence->getValidLevel2() <= 0
                             ) {
                                 // Full day, half day and hourly: strict search
-                                if ($absence->getStart() < $columnEnd and $absence->getEnd() > $columnStart and $cells[$key] != 'absence-validated') {
-                                    $cells[$key] = 'absence-not-validated';
+                                if ($absence->getStart() < $columnEnd and $absence->getEnd() > $columnStart and $class[$key] != 'absence-validated') {
+                                    $class[$key] = $prefix . '-not-validated';
+
+                                    if (!$holidayBadge and $absence instanceof Holiday) {
+                                        $content[$key] = 'Holiday';
+                                        $holidayBadge = true;
+                                    } elseif (!$absence instanceof Holiday) {
+                                        $content[$key] = '';
+                                        $holidayBadge = false;
+                                    }
                                 }
                             }
                         }

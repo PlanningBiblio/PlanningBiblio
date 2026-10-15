@@ -769,7 +769,7 @@ class HolidayController extends BaseController
         $holiday = $this->entityManager->find(Holiday::class, $id);
 
         if ($holiday && $holiday->getDelete() == 0) {
-            $perso_id = $holiday->getUser();
+            $perso_id = $holiday->getUserId();
             $credit = $holiday->getPreviousCredit() - $holiday->getActualCredit();
             $compTime = $holiday->getPreviousCompTime() - $holiday->getActualCompTime();
             $remainder = $holiday->getPreviousRemainder() - $holiday->getActualRemainder();
@@ -797,7 +797,7 @@ class HolidayController extends BaseController
                 // Ajout d'une ligne d'information sur les crédits
 
                 $newHoliday = new Holiday;
-                $newHoliday->setUser($holiday->getUser());
+                $newHoliday->setUserId($holiday->getUserId());
                 $newHoliday->setStart($holiday->getStart());
                 $newHoliday->setEnd($holiday->getEnd());
                 $newHoliday->setValidLevel1($holiday->getValidLevel1());

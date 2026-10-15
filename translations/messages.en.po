@@ -820,3 +820,6 @@ msgstr "Show sites"
 
 msgid "Show statuses"
 msgstr "Show statuses"
+
+msgid "Holiday"
+msgstr "Holiday"

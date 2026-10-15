@@ -41,7 +41,7 @@ class Mailer
         global $entityManager;
         $configRepository = $entityManager->getRepository(Config::class);
 
-        $agent = $entityManager->find(Agent::class, $holiday->getUser());
+        $agent = $entityManager->find(Agent::class, $holiday->getUserId());
 
         if ($configRepository->getValue('Conges-Recuperations') and $holiday->getDebit() == 'recuperation') {
             $title = 'Compensatory time deletion';

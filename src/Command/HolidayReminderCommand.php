@@ -136,7 +136,7 @@ Exemple à ajouter en crontab :
                 continue;
             }
 
-            $agent = $agents[$elem->getUser()];
+            $agent = $agents[$elem->getUserId()];
 
             $tmp = $elem;
             $tmp->lastname = $agent->getLastname();
