@@ -44,7 +44,7 @@ $sql[]="CREATE TABLE `{$dbprefix}absences` (
   KEY `debut`(`debut`),
   KEY `fin`(`fin`),
   KEY `groupe`(`groupe`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
 $sql[]="CREATE TABLE `{$dbprefix}absence_blocks` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -52,7 +52,7 @@ $sql[]="CREATE TABLE `{$dbprefix}absence_blocks` (
   `end` date NOT NULL DEFAULT '0000-00-00',
   `comment` text COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
 
 $sql[]="CREATE TABLE `{$dbprefix}absences_infos` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -60,7 +60,7 @@ $sql[]="CREATE TABLE `{$dbprefix}absences_infos` (
   `fin` date NOT NULL DEFAULT '0000-00-00',
   `texte` text COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
 
 $sql[]="CREATE TABLE `{$dbprefix}absences_recurrentes` (
   `id` INT(11) NOT NULL AUTO_INCREMENT, 
@@ -76,7 +76,7 @@ $sql[]="CREATE TABLE `{$dbprefix}absences_recurrentes` (
   KEY `perso_id`(`perso_id`), 
   KEY `end`(`end`),
   KEY `last_check`(`last_check`)) 
-  ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+  ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
 $sql[]="CREATE TABLE `{$dbprefix}acces` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -87,14 +87,14 @@ $sql[]="CREATE TABLE `{$dbprefix}acces` (
   `ordre` INT(2) NOT NULL DEFAULT 0,
   `categorie` VARCHAR(30) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
 $sql[]="CREATE TABLE `{$dbprefix}activites` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `nom` text NOT NULL,
   `supprime` DATETIME NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
 $sql[]="CREATE TABLE `{$dbprefix}appel_dispo` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -108,7 +108,7 @@ $sql[]="CREATE TABLE `{$dbprefix}appel_dispo` (
   `message` TEXT,
   `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
 $sql[]="CREATE TABLE `{$dbprefix}config` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -123,7 +123,7 @@ $sql[]="CREATE TABLE `{$dbprefix}config` (
   `ordre` INT(2) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `nom` (`nom`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
 $sql[]="CREATE TABLE `{$dbprefix}heures_absences` (
   `id` INT(11) NOT NULL AUTO_INCREMENT, 
@@ -131,7 +131,7 @@ $sql[]="CREATE TABLE `{$dbprefix}heures_absences` (
   `update_time` INT(11),
   `heures` TEXT,
   PRIMARY KEY (`id`))
-  ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+  ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
 $sql[]="CREATE TABLE `{$dbprefix}heures_sp` (
   `id` INT(11) NOT NULL AUTO_INCREMENT, 
@@ -139,7 +139,7 @@ $sql[]="CREATE TABLE `{$dbprefix}heures_sp` (
   `update_time` INT(11),
   `heures` TEXT,
   PRIMARY KEY (`id`))
-  ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+  ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
 $sql[]="CREATE TABLE `{$dbprefix}hidden_tables` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -147,13 +147,13 @@ $sql[]="CREATE TABLE `{$dbprefix}hidden_tables` (
   `tableau` int(11) NOT NULL DEFAULT '0',
   `hidden_tables` TEXT NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
 $sql[]="CREATE TABLE `{$dbprefix}lignes` (
   `id` int AUTO_INCREMENT,
   nom text,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
 $sql[]="CREATE TABLE `{$dbprefix}log` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -161,7 +161,7 @@ $sql[]="CREATE TABLE `{$dbprefix}log` (
   `program` VARCHAR(30) NULL,
   `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
 $sql[]="CREATE TABLE `{$dbprefix}infos` (
   `id` INT AUTO_INCREMENT,
@@ -169,7 +169,7 @@ $sql[]="CREATE TABLE `{$dbprefix}infos` (
   `fin` DATE,
   texte TEXT,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
 // ip_blocker
 $sql[]="CREATE TABLE `{$dbprefix}ip_blocker` (
@@ -182,7 +182,7 @@ $sql[]="CREATE TABLE `{$dbprefix}ip_blocker` (
   KEY `ip` (`ip`),
   KEY `status` (`status`),
   KEY `timestamp` (`timestamp`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
 $sql[]="CREATE TABLE `{$dbprefix}pl_notes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -192,7 +192,7 @@ $sql[]="CREATE TABLE `{$dbprefix}pl_notes` (
   `perso_id` INT NOT NULL,
   `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
 $sql[]="CREATE TABLE `{$dbprefix}pl_notifications` (
   `id` INT(11) NOT NULL AUTO_INCREMENT, 
@@ -201,7 +201,7 @@ $sql[]="CREATE TABLE `{$dbprefix}pl_notifications` (
   `update_time` TIMESTAMP,
   `data` TEXT,
   PRIMARY KEY (`id`))
-  ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+  ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
   
 $sql[]="ALTER TABLE `{$dbprefix}pl_notifications` ADD KEY `date` (`date`), ADD KEY `site` (`site`);";
 
@@ -243,7 +243,7 @@ $sql[]="CREATE TABLE `{$dbprefix}personnel` (
   `conges_annuel` FLOAT(10),
   PRIMARY KEY (`id`),
   UNIQUE KEY `login` (`login`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
 $sql[]="CREATE TABLE `{$dbprefix}pl_poste` (
   `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
@@ -261,7 +261,7 @@ $sql[]="CREATE TABLE `{$dbprefix}pl_poste` (
   PRIMARY KEY (`id`),
   KEY `date` (`date`),
   KEY `site` (`site`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
 $sql[]="CREATE TABLE `{$dbprefix}pl_poste_cellules` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -270,7 +270,7 @@ $sql[]="CREATE TABLE `{$dbprefix}pl_poste_cellules` (
   `ligne` int(11) NOT NULL,
   `colonne` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
 $sql[]="CREATE TABLE `{$dbprefix}pl_poste_horaires` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -279,7 +279,7 @@ $sql[]="CREATE TABLE `{$dbprefix}pl_poste_horaires` (
   `tableau` int(11) NOT NULL,
   `numero` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
 $sql[]="CREATE TABLE `{$dbprefix}pl_poste_lignes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -289,7 +289,7 @@ $sql[]="CREATE TABLE `{$dbprefix}pl_poste_lignes` (
   `poste` varchar(30) NOT NULL,
   `type` VARCHAR(6) NOT NULL DEFAULT 'poste',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
 $sql[]="CREATE TABLE `{$dbprefix}pl_poste_modeles` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -303,7 +303,7 @@ $sql[]="CREATE TABLE `{$dbprefix}pl_poste_modeles` (
   `jour` varchar(10) NOT NULL,
   `site` INT(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
 $sql[]="CREATE TABLE `{$dbprefix}pl_poste_modeles_tab` (
   `id` INT NOT NULL AUTO_INCREMENT,
@@ -313,7 +313,7 @@ $sql[]="CREATE TABLE `{$dbprefix}pl_poste_modeles_tab` (
   `tableau` INT NOT NULL,
   `site` INT(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
 $sql[]="CREATE TABLE `{$dbprefix}pl_poste_tab` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -322,7 +322,7 @@ $sql[]="CREATE TABLE `{$dbprefix}pl_poste_tab` (
   `site` INT(2) NOT NULL DEFAULT 1,
   `supprime` TIMESTAMP NULL DEFAULT NULL ,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
 $sql[]="CREATE TABLE `{$dbprefix}pl_poste_tab_affect` (
   `id` INT NOT NULL AUTO_INCREMENT,
@@ -330,7 +330,7 @@ $sql[]="CREATE TABLE `{$dbprefix}pl_poste_tab_affect` (
   `tableau` INT NOT NULL,
   `site` INT(3) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
 $sql[]="CREATE TABLE `{$dbprefix}pl_poste_tab_grp` (
   `id` INT AUTO_INCREMENT,
@@ -345,7 +345,7 @@ $sql[]="CREATE TABLE `{$dbprefix}pl_poste_tab_grp` (
   `site` INT(2) NOT NULL DEFAULT 1,
   `supprime` TIMESTAMP NULL DEFAULT NULL ,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
 
 $sql[]="CREATE TABLE `{$dbprefix}pl_poste_verrou` (
@@ -360,7 +360,7 @@ $sql[]="CREATE TABLE `{$dbprefix}pl_poste_verrou` (
   `vivier` int(1) NOT NULL DEFAULT '0',
   `site` int(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
 $sql[]="CREATE TABLE `{$dbprefix}postes` (
   `id` int(8) NOT NULL AUTO_INCREMENT,
@@ -379,7 +379,7 @@ $sql[]="CREATE TABLE `{$dbprefix}postes` (
   `supprime` DATETIME NULL DEFAULT NULL,
   `quota_sp` TINYINT(1) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
 $sql[]="CREATE TABLE `{$dbprefix}responsables` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
@@ -390,7 +390,7 @@ $sql[]="CREATE TABLE `{$dbprefix}responsables` (
   `notification_level1` INT(1) NOT NULL DEFAULT '0',
   `notification_level2` INT(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`))
-  ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+  ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
 $sql[]="CREATE TABLE `{$dbprefix}select_abs` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -400,28 +400,28 @@ $sql[]="CREATE TABLE `{$dbprefix}select_abs` (
   `notification_workflow` CHAR(1) NULL DEFAULT NULL,
   `teleworking` INT(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
 $sql[]="CREATE TABLE `{$dbprefix}select_categories` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `valeur` text NOT NULL DEFAULT '',
   `rang` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
 $sql[]="CREATE TABLE `{$dbprefix}select_etages` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `valeur` text NOT NULL DEFAULT '',
   `rang` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
 $sql[]="CREATE TABLE `{$dbprefix}select_groupes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `valeur` text NOT NULL DEFAULT '',
   `rang` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
 $sql[]="CREATE TABLE `{$dbprefix}select_services` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -429,7 +429,7 @@ $sql[]="CREATE TABLE `{$dbprefix}select_services` (
   `rang` int(11) NOT NULL,
   `couleur` varchar(10) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
 $sql[]="CREATE TABLE `{$dbprefix}select_statuts` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -438,7 +438,7 @@ $sql[]="CREATE TABLE `{$dbprefix}select_statuts` (
   `couleur` varchar(7) NOT NULL,
   `categorie` INT(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
 $sql[]="CREATE TABLE `{$dbprefix}menu` (
   `id` INT(11) NOT NULL  AUTO_INCREMENT, 
@@ -448,7 +448,7 @@ $sql[]="CREATE TABLE `{$dbprefix}menu` (
   `url` VARCHAR(500) NOT NULL, 
   `condition` VARCHAR(100) NULL, 
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
 $sql[]="CREATE TABLE `{$dbprefix}cron` (
   `id` INT AUTO_INCREMENT, 
@@ -462,7 +462,7 @@ $sql[]="CREATE TABLE `{$dbprefix}cron` (
   `last` DATETIME NULL DEFAULT '0000-00-00 00:00:00', 
   `disabled` TINYINT(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
 $sql[]="CREATE TABLE `{$dbprefix}jours_feries` (
   `id` INT NOT NULL AUTO_INCREMENT, 
@@ -473,7 +473,7 @@ $sql[]="CREATE TABLE `{$dbprefix}jours_feries` (
   `nom` TEXT,
   `commentaire` TEXT,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
 $sql[]="CREATE TABLE `{$dbprefix}edt_samedi` (
   `id` INT NOT NULL AUTO_INCREMENT,
@@ -481,7 +481,7 @@ $sql[]="CREATE TABLE `{$dbprefix}edt_samedi` (
   `semaine` DATE,
   `tableau` INT(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
 
 // Module planningHebdo
@@ -506,7 +506,7 @@ $sql[]="CREATE TABLE `{$dbprefix}planning_hebdo` (
   `nb_semaine` INT(11) NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `cle` (`cle`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
 // Agents volants
 $sql[] = "CREATE TABLE `{$dbprefix}volants` (
@@ -514,7 +514,7 @@ $sql[] = "CREATE TABLE `{$dbprefix}volants` (
   `date` DATE NULL DEFAULT NULL, 
   `perso_id` INT(11) NOT NULL DEFAULT '0', 
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
 // Création de la table conges
 $sql[]="CREATE TABLE `{$dbprefix}conges` (
@@ -551,7 +551,7 @@ $sql[]="CREATE TABLE `{$dbprefix}conges` (
   `info_date` TIMESTAMP NULL DEFAULT NULL,
   `regul_id` INT(11) NULL DEFAULT NULL,
   `origin_id` INT(11) NULL DEFAULT NULL
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
 // Création de la table conges_infos
 $sql[]="CREATE TABLE `{$dbprefix}conges_infos` (
@@ -560,7 +560,7 @@ $sql[]="CREATE TABLE `{$dbprefix}conges_infos` (
   `fin` DATE NULL,
   `texte` TEXT NULL,
   `saisie` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
 // Création de la table récupérations
 $sql[]="CREATE TABLE `{$dbprefix}recuperations` (
@@ -582,7 +582,7 @@ $sql[]="CREATE TABLE `{$dbprefix}recuperations` (
   `refus` TEXT,
   `solde_prec` FLOAT(10),
   `solde_actuel` FLOAT(10)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
 // Création de la table absences_documents
 $sql[] = "CREATE TABLE `{$dbprefix}absences_documents` (
@@ -590,7 +590,7 @@ $sql[] = "CREATE TABLE `{$dbprefix}absences_documents` (
   absence_id int(11) NOT NULL,
   filename text NOT NULL,
   date DATETIME NOT NULL
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
 
 $sql[] = "CREATE TABLE `{$dbprefix}pl_position_history` (
   id INT(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
@@ -606,4 +606,4 @@ $sql[] = "CREATE TABLE `{$dbprefix}pl_position_history` (
   play_before TINYINT NOT NULL DEFAULT 0,
   updated_by INT(11) NOT NULL,
   updated_at DATETIME NOT NULL
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;";
