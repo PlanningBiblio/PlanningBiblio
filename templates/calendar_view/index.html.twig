@@ -118,7 +118,7 @@
         <tr>
           {% for date in allDates %}
             {% for c in columns %}
-              <th scope="col" class="dataTableNoSort">{{ c }}</th>
+              <th scope="col" class="dataTableNoSort">{{ c.display }}</th>
             {% endfor %}
           {% endfor %}
         </tr>

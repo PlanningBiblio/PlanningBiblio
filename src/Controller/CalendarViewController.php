@@ -113,21 +113,29 @@ final class CalendarViewController extends BaseController
 
         // Preparing the display
         // Daily display
-        $columns = [''];
+        $columns = [['display' => '', 'start' => '00:00:00', 'end' => '23:59:59']];
 
         // Half-day display
         if ($diffDates < 14) {
-            $columns = ['A.M.', 'P.M.'];
-            $medianTime = '12:00:00';
+            $columns = [
+                ['display' => 'A.M.', 'start' => '00:00:00', 'end' => '12:00:00'],
+                ['display' => 'P.M.', 'start' => '12:00:00', 'end' => '23:59:59'],
+            ];
         }
 
         // Hourly display
         if ($diffDates < 1) {
             $columns = [];
-            $columnHour = DateTime::createFromFormat('H', '06');
+            $columnStart = DateTime::createFromFormat('G', '6');
+            $columnEnd = DateTime::createFromFormat('G', '7');
             for ($i = 0; $i < 17; $i++) {
-                $columns[] = $columnHour->format('H:i:s');
-                $columnHour->modify('+1 hour');
+                $columns[] = [
+                    'display' => $columnStart->format('G') . 'h - ' . $columnEnd->format('G') .'h',
+                    'start' => $columnStart->format('H:i:s'),
+                    'end' => $columnEnd->format('H:i:s'),
+                ];
+                $columnStart->modify('+1 hour');
+                $columnEnd->modify('+1 hour');
             }
         }
 
@@ -157,13 +165,11 @@ final class CalendarViewController extends BaseController
                 $weekId = $date->semaine3;
                 $dayIndex = ($day + (7 * $weekId) -7) - 1;
 
-                // Defines the median time for the display of 2 columns per day
-                if ($columnsPerDay == 2) {
-                    $medianTimeDt = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $current->format('Y-m-d') . ' ' . $medianTime);
-                }
-
                 // For each column
-                foreach ($columns as $key => $columnStartStr) {
+                foreach ($columns as $key => $column) {
+                    $columnStart = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $current->format('Y-m-d') . ' ' . $column['start']);
+                    $columnEnd = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $current->format('Y-m-d') . ' ' . $column['end']);
+
                     $cells[$key] = &$line[$current->format('Y-m-d')][$key];
 
                     // Zebra on Sundays
@@ -182,26 +188,24 @@ final class CalendarViewController extends BaseController
                             $hours = $hoursHelper->hoursOf($dayIndex);
 
                             if (!empty($hours)) {
-                                // Full day check
-                                if ($columnsPerDay == 1) {
-                                    $cells[$key] = 'attendee';
-                                }
-                                // Half day check
-                                elseif ($columnsPerDay == 2) {
+                                // Full day and half day: permissive search
+                                if ($columnsPerDay <= 2) {
                                     foreach ($hours as $hour) {
-                                        if ($key == 0 and $hour[0] < $medianTime) {
+                                        if ($key == 0 and $hour[0] < $column['end']) {
                                             $cells[$key] = 'attendee';
+                                            break;
                                         }
-                                        if ($key == 1 and $hour[1] > $medianTime) {
+                                        if ($key == 1 and $hour[1] > $column['start']) {
                                             $cells[$key] = 'attendee';
+                                            break;
                                         }
                                     }
-                                // Hourly check
+                                // Hourly: strict search
                                 } else {
-                                    $columnEnd = DateTimeImmutable::createFromFormat('H:i:s', $columnStartStr)->modify('+ 1 hour')->format('H:i:s');
                                     foreach ($hours as $hour) {
-                                        if ($hour[0] <= $columnStartStr and $hour[1] >= $columnEnd) {
+                                        if ($hour[0] <= $column['start'] and $hour[1] >= $column['end']) {
                                             $cells[$key] = 'attendee';
+                                            break;
                                         }
                                     }
                                 }
@@ -218,25 +222,9 @@ final class CalendarViewController extends BaseController
                                 and $absence->getEnd() >= $searchStart
                                 and $absence->getValidLevel2() > 0
                             ) {
-                                // Full day check
-                                if ($columnsPerDay == 1) {
-                                    $cells[0] = 'absence-validated';
-                                }
-                                // Half day check
-                                elseif ($columnsPerDay == 2) {
-                                    if ($key == 0 and $absence->getStart() < $medianTimeDt) {
-                                        $cells[0] = 'absence-validated';
-                                    }
-                                    if ($key == 1 and $absence->getEnd() > $medianTimeDt) {
-                                        $cells[1] = 'absence-validated';
-                                    }
-                                // Hourly check
-                                } else {
-                                    $columnStart = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $current->format('Y-m-d') . ' ' . $columnStartStr);
-                                    $columnEnd = $columnStart->modify('+1 hour');
-                                    if ($absence->getStart() < $columnEnd and $absence->getEnd() > $columnStart) {
-                                        $cells[$key] = 'absence-validated';
-                                    }
+                                // Full day, half day and hourly: strict search
+                                if ($absence->getStart() < $columnEnd and $absence->getEnd() > $columnStart) {
+                                    $cells[$key] = 'absence-validated';
                                 }
                             }
 
@@ -246,25 +234,9 @@ final class CalendarViewController extends BaseController
                                 and $absence->getEnd() >= $searchStart
                                 and $absence->getValidLevel2() <= 0
                             ) {
-                                // Full day check
-                                if ($columnsPerDay == 1 and $cells[0] != 'validated') {
-                                    $cells[0] = 'absence-not-validated';
-                                }
-                                // Half day check
-                                elseif ($columnsPerDay == 2) {
-                                    if ($key == 0 and $absence->getStart() < $medianTimeDt and $cells[0] != 'absence-validated') {
-                                        $cells[0] = 'absence-not-validated';
-                                    }
-                                    if ($key == 1 and $absence->getEnd() > $medianTimeDt and $cells[1] != 'absence-validated') {
-                                        $cells[1] = 'absence-not-validated';
-                                    }
-                                // Hourly check
-                                } else {
-                                    $columnStart = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $current->format('Y-m-d') . ' ' . $columnStartStr);
-                                    $columnEnd = $columnStart->modify('+1 hour');
-                                    if ($absence->getStart() < $columnEnd and $absence->getEnd() > $columnStart and $cells[$key] != 'absence-validated') {
-                                        $cells[$key] = 'absence-not-validated';
-                                    }
+                                // Full day, half day and hourly: strict search
+                                if ($absence->getStart() < $columnEnd and $absence->getEnd() > $columnStart and $cells[$key] != 'absence-validated') {
+                                    $cells[$key] = 'absence-not-validated';
                                 }
                             }
                         }
