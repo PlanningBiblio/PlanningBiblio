@@ -36,6 +36,11 @@ class MenuService
                             return false;
                         }
                     }
+                } elseif (substr($condition, 0, 4) == 'acl=' and isset($GLOBALS['droits'])) {
+                    $acl = substr($condition, 4);
+                    if (!in_array($acl, $GLOBALS['droits'])) {
+                        return false;
+                    }
                 } else {
                     return false;
                 }
