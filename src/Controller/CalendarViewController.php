@@ -50,7 +50,9 @@ final class CalendarViewController extends BaseController
         $holidays = $this->entityManager->getRepository(Holiday::class)->get($start, $end);
         $workingHours = $this->entityManager->getRepository(WorkingHour::class)->get($start, $end, true);
 
-        $absences = array_merge($absences, $holidays);
+        if ($config['Conges-Enable']) {
+            $absences = array_merge($absences, $holidays);
+        }
 
         // Get used departments, sites and status
         $departments = [];
