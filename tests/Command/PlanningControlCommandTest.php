@@ -179,12 +179,12 @@ class PlanningControlCommandTest extends PLBWebTestCase
                     fclose($handle);
                 }
                 mysqli_multi_query($dblink, $queries);
-                mysqli_close($dblink);       
+                mysqli_close($dblink);
                 sleep(3);
 
                 exec(__DIR__ . '/../../bin/console doctrine:migrations:migrate --env=test -q');
             }
         sleep(3);
-        }        
+        }
     }
 }
