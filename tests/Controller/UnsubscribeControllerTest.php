@@ -25,8 +25,8 @@ class UnsubscribeControllerTest extends PLBWebTestCase
 
         $crawler = $client->request('GET', "/unsubscribe/$token");
 
-        $result = $crawler->filterXPath('//h3');
-        $this->assertEquals($result->text(null,false),'Désinscription','h3 is Désinscription unlogged');
+        $result = $crawler->filterXPath('//h1');
+        $this->assertEquals($result->text(null,false),'Désinscription','h1 is Désinscription unlogged');
         $result = $crawler->filterXPath('//p[@id="unsubscribe-text"]');
         $this->assertEquals($result->text(null,false),'Désinscrire johndoe@example.org?','mail is retrieved unlogged');
 
@@ -41,8 +41,8 @@ class UnsubscribeControllerTest extends PLBWebTestCase
 
         $crawler = $client->request('GET', "/unsubscribe/$token");
 
-        $result = $crawler->filterXPath('//h3');
-        $this->assertEquals($result->text(null,false),'Désinscription','h3 is Désinscription logged-in');
+        $result = $crawler->filterXPath('//h1');
+        $this->assertEquals($result->text(null,false),'Désinscription','h1 is Désinscription logged-in');
         $result = $crawler->filterXPath('//p[@id="unsubscribe-text"]');
         $this->assertEquals($result->text(null,false),'Désinscrire johndoe@example.org?','mail is retrieved logged-in');
 

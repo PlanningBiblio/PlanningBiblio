@@ -1,13 +1,16 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
-use App\Planno\Menu;
+use App\Service\MenuService;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
-class ClassMenuTest extends TestCase
+class MenuServiceTest extends KernelTestCase
 {
     public function testMenuContent(): void
     {
-        $menu = new Menu();
+        self::bootKernel();
+        $container = self::getContainer();
+        $menu = $container->get(MenuService::class);
+
         $this->assertEquals($menu->checkCondition('random string'), false, 'random string is false');
         $this->assertEquals($menu->checkCondition(null), true, 'null condition is true');
         $this->assertEquals($menu->checkCondition(''), true, 'empty condition is true');
@@ -47,22 +50,22 @@ class ClassMenuTest extends TestCase
         $GLOBALS['config']['Multisites-site2'] = 'Site 2';
         $GLOBALS['config']['Multisites-site3'] = 'Site 3';
 
-        $menu = new Menu();
+        $menu = $container->get(MenuService::class);
         $result = $menu->get();
 
-        $this->assertEquals(3, count($result['menu_js'][30]['items']), "Planning menu should count 3 entries.");
-        $this->assertEquals('Site 1', $result['menu_js'][30]['items'][0]['title'], "Planning menu 1 title should be 'Site 1'.");
-        $this->assertEquals('Site 2', $result['menu_js'][30]['items'][1]['title'], "Planning menu 2 title should be 'Site 2'.");
-        $this->assertEquals('Site 3', $result['menu_js'][30]['items'][2]['title'], "Planning menu 3 title should be 'Site 3'.");
+        $this->assertEquals(3, count($result['secondaryMenu'][30]['items']), "Planning menu should count 3 entries.");
+        $this->assertEquals('Site 1', $result['secondaryMenu'][30]['items'][0]['title'], "Planning menu 1 title should be 'Site 1'.");
+        $this->assertEquals('Site 2', $result['secondaryMenu'][30]['items'][1]['title'], "Planning menu 2 title should be 'Site 2'.");
+        $this->assertEquals('Site 3', $result['secondaryMenu'][30]['items'][2]['title'], "Planning menu 3 title should be 'Site 3'.");
 
         $GLOBALS['config']['Multisites-site2'] = '';
 
-        $menu = new Menu();
+        $menu = $container->get(MenuService::class);
         $result = $menu->get();
 
-        $this->assertEquals(2, count($result['menu_js'][30]['items']), "Planning menu should count 2 entries.");
-        $this->assertEquals('Site 1', $result['menu_js'][30]['items'][0]['title'], "Planning menu 1 title should be 'Site 1'.");
-        $this->assertEquals('Site 3', $result['menu_js'][30]['items'][1]['title'], "Planning menu 2 title should be 'Site 3'.");
+        $this->assertEquals(2, count($result['secondaryMenu'][30]['items']), "Planning menu should count 2 entries.");
+        $this->assertEquals('Site 1', $result['secondaryMenu'][30]['items'][0]['title'], "Planning menu 1 title should be 'Site 1'.");
+        $this->assertEquals('Site 3', $result['secondaryMenu'][30]['items'][1]['title'], "Planning menu 2 title should be 'Site 3'.");
     }
 
     public static function tearDownAfterClass(): void
@@ -72,5 +75,4 @@ class ClassMenuTest extends TestCase
         $GLOBALS['config']['Multisites-site2'] = '';
         $GLOBALS['config']['Multisites-site3'] = '';
     }
-
 }

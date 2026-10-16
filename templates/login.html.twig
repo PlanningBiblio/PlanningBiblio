@@ -5,14 +5,12 @@
 {% block page %}
   <div id='content-auth'>
     <div id='auth'>
-      <center>
-        <div id='auth-logo'></div>
-      </center>
-  
+      <div id='auth-logo'></div>
+
       <h1 id='title'>{{ config('Affichage-titre') }}</h1>
       <h2 id='h2-planning-authentification'>Planning - Authentification</h2>
       <h2 id='h2-authentification'>Authentification</h2>
-  
+
       {% if error is defined and error != '' %}
         <div class="text-center">
           <br/><br/>
@@ -28,7 +26,7 @@
           <div class="row justify-content-center">
             <div class="col-auto">
               <div class="alert alert-danger" role="alert">
-                <i class="bi bi-exclamation-triangle-fill bi-danger me-2"></i> 
+                <i class="bi bi-exclamation-triangle-fill bi-danger me-2"></i>
                 Vous avez été correctement identifié(e) mais vous n'êtes pas autorisé(e) à utiliser cette application.<br/>
                 <b>Veuillez fermer votre navigateur et recommencer avec un autre identifiant.</b>
               </div>
@@ -47,20 +45,20 @@
                 <input type='text' name='login' value="{{ new_login }}" />
               </td>
             </tr>
-  
+
             <tr>
               <td class="text-end">Mot de passe : </td>
               <td>
                 <input type='password' name='password' />
               </td>
             </tr>
-  
+
             <tr>
               <td colspan='2' align='center'><br/>
                 <input type="submit" role="button" class="btn btn-primary" value="Valider" />
               </td>
             </tr>
-  
+
             {% if sSOLink %}
               <tr>
                 <td colspan='2' align='center'><br/>
@@ -68,7 +66,7 @@
                 </td>
               </tr>
             {% endif %}
-  
+
             {% if demo_mode %}
               <tr>
                 <td colspan='2' align='center'>
@@ -78,7 +76,7 @@
                 </td>
               </tr>
             {% endif %}
-  
+
             {% if config("Auth-Anonyme") %}
               <tr>
                 <td colspan="2" align="center"><br/>
@@ -87,7 +85,7 @@
               </tr>
             {% endif %}
           </table>
-  
+
           <input type="hidden" name="width" />
         </form>
       {% endif %}

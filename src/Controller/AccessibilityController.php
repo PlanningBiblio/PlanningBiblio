@@ -4,19 +4,19 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
 class AccessibilityController extends BaseController
 {
     #[Route(path: '/accessibility', name: 'accessibility', methods: ['GET'])]
-    public function index(Request $request)
+    public function index(Request $request, Session $session): Response
     {
-        $session = $request->getSession();
-
-        $this->templateParams(array(
-            'show_menu' => empty($session->get('loginId')) ? 0 : 1,
-            'title'     => 'Accessibility statement',
-        ));
+        $this->templateParams([
+            'hideMenu' => empty($session->get('loginId')),
+            'title' => 'Accessibility statement',
+        ]);
 
         return $this->output('accessibility/index.html.twig');
     }

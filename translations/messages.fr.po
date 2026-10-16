@@ -794,6 +794,9 @@ msgstr "(nouvelle fenêtre)"
 msgid "Legal notice"
 msgstr "Mentions légales"
 
+msgid "Unsubscribe"
+msgstr "Désinscription"
+
 msgid "Public holidays and closing days"
 msgstr "Jours fériés et jours de fermeture"
 
