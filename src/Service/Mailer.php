@@ -58,15 +58,21 @@ class Mailer
         $start = $holiday->getStart()->format('Y-m-d H:i:s');
         $end = $holiday->getEnd()->format('Y-m-d H:i:s');
 
+        $notificationLevel = match (true) {
+            $holiday->getValidLevel2() > 0 => 4,
+            $holiday->getValidLevel1() > 0 => 3,
+            default => 2,
+        };
+
         if ($configRepository->getValue('Absences-notifications-agent-par-agent')) {
             $a = new \absences();
-            $a->getRecipients2(null, $agent->getId(), 2, 500, $start, $end);
+            $a->getRecipients2(null, $agent->getId(), $notificationLevel, 500, $start, $end);
             $recipients = $a->recipients;
         } else {
             $c = new \conges();
             $c->getResponsables($start, $end, $agent->getId());
             $a = new \absences();
-            $a->getRecipients("-A2", $c->responsables, $agent);
+            $a->getRecipients("-A$notificationLevel", $c->responsables, $agent);
             $recipients = $a->recipients;
         }
 
