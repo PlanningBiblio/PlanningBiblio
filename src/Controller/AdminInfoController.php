@@ -108,7 +108,7 @@ class AdminInfoController extends BaseController
         return $this->redirectToRoute('admin.info.index');
     }
 
-    #[Route(path: '/admin/info', name: 'admin.info.delete', methods: ['DELETE'])]
+    #[Route(path: '/admin/info/delete', name: 'admin.info.delete', methods: ['POST'])]
     public function delete(Request $request, Session $session): \Symfony\Component\HttpFoundation\Response
     {
         if (!$this->csrf_protection($request)) {

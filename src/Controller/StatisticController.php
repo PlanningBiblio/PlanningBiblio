@@ -16,8 +16,8 @@ use App\Entity\Position;
 use App\Entity\SelectFloor;
 use App\Entity\SelectGroup;
 use App\Planno\PresentSet;
-
-$version = 'symfony';
+use App\Service\PublicHolidayService;
+use DateTime;
 
 include_once __DIR__ . '/../../legacy/Class/class.conges.php';
 include_once __DIR__ . '/../../legacy/Common/function.php';
@@ -391,7 +391,9 @@ class StatisticController extends BaseController
                                 }
 
                                 // Public holidays. We store dates and total hours
-                                if (jour_ferie($elem['date'])) {
+                                $publicHoliday = PublicHolidayService::getFrenchHolidays(new DateTime($elem['date']));
+
+                                if ($publicHoliday) {
                                     if (!array_key_exists($elem['date'], $feries)) {
                                         $feries[$elem['date']][0] = $elem['date'];
                                         $feries[$elem['date']][1] = 0;
@@ -820,7 +822,9 @@ class StatisticController extends BaseController
                                 }
                                 $samedi[$elem['date']][1]+=diff_heures($elem['debut'], $elem['fin'], "decimal");
 
-                                if (jour_ferie($elem['date'])) {
+                                $publicHoliday = PublicHolidayService::getFrenchHolidays(new DateTime($elem['date']));
+
+                                if ($publicHoliday) {
                                     if (!array_key_exists($elem['date'], $feries)) {
                                         $feries[$elem['date']][0] = $elem['date'];
                                         $feries[$elem['date']][1] = 0;
@@ -1206,7 +1210,7 @@ class StatisticController extends BaseController
                 $a->fin = $elem['fin'];
                 $a->perso_id = $elem['perso_id'];
                 $a->edt = $edt;
-                $a->ignoreFermeture = true;
+                $a->ignoreFermeture = false;
                 $a->calculTemps2();
                 $heures = $a->heures;
 

@@ -2,97 +2,107 @@
 
 namespace App\Controller;
 
+use App\Entity\ClosingDay;
+use App\Service\PublicHolidayService;
+use DateTime;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
-use App\Planno\ClosingDay;
-
 class ClosingDayController extends BaseController
 {
-
     #[Route(path: '/closingday', name: 'closingday.index', methods: ['GET'])]
-    public function index(Request $request){
+    public function index(Request $request, Session $session): Response
+    {
         // Initalisation des variables
-        $annee_courante = date("n") < 9 ? (date("Y")-1)."-".(date("Y")) : (date("Y"))."-".(date("Y")+1);
-        $annee_suivante = date("n") < 9 ? (date("Y"))."-".(date("Y")+1) : (date("Y")+1)."-".(date("Y")+2);
+        $yearCurrent = date('n') < 9 ? (date('Y')-1) . '-' . (date('Y')) : (date('Y')) . '-' . (date('Y')+1);
+        $yearNext = date('n') < 9 ? (date('Y')) . '-' . (date('Y')+1) : (date('Y')+1) . '-' . (date('Y')+2);
 
-        $annee_select = $request->get("annee") ?? (isset($_SESSION['oups']['anneeFeries']) ? $_SESSION['oups']['anneeFeries'] : $annee_courante);
-        $_SESSION['oups']['anneeFeries'] = $annee_select;
+        $yearSession = $session->get('ClosingDayYear') ?? $yearCurrent;
+        $yearSelected = $request->query->getString('annee', $yearSession);
 
-        $j = new ClosingDay();
-        $j->fetchYears();
-        $annees = $j->elements;
+        preg_match('/(\d+)-(\d+)/', $yearSelected, $matches);
+        $yearSelected = $matches[0] ?? $yearCurrent;
+        $session->set('ClosingDayYear', $yearSelected);
 
-        if (!in_array($annee_suivante, $annees)) {
-            $annees[] = $annee_suivante;
+        $years = $this->entityManager->getRepository(ClosingDay::class)->findYears();
+
+        if (!in_array($yearNext, $years)) {
+            $years[] = $yearNext;
         }
-        if (!in_array($annee_courante, $annees)) {
-            $annees[] = $annee_courante;
-        }
-
-        sort($annees);
-
-        // Recherche des jours fériés enregistrés dans la base de données et avec la fonction jour_ferie
-        $j = new ClosingDay();
-        $j->annee = $annee_select;
-        $j->auto = false;;
-        $j->fetch();
-        $jours = $j->elements;
-
-        $nbDays = count($jours);
-        $nbExtra = $nbDays + 15;
-        $days = [];
-        // Affichage des jours fériés enregistrés
-        $i = 0;
-        foreach ($jours as $elem) {
-            $ferie = (bool) $elem['ferie'];
-            $fermeture = (bool) $elem['fermeture'];
-            $date = dateFr($elem['jour']);
-            $commentaire = $elem['commentaire'];
-            $nom = $elem['nom'];
-            $days[] = array(
-                "holiday" => $ferie,
-                "closed"  => $fermeture,
-                "date"    => $date,
-                "comment" => $commentaire,
-                "name"    => $nom,
-                "number"  => $i
-            );
-            $i++;
+        if (!in_array($yearCurrent, $years)) {
+            $years[] = $yearCurrent;
         }
 
-        $holiday_enable = $this->config('Conges-Enable');
+        sort($years);
 
-        $this->templateParams(array(
-            "CSRFSession"        => $GLOBALS['CSRFSession'],
-            "days"               => $days,
-            "holiday_enable"     => $holiday_enable,
-            "nbDays"             => $nbDays,
-            "nbExtra"            => $nbExtra,
-            "selectedYear"       => $annee_select,
-            "years"              => $annees
-        ));
+        // Recherche des jours fériés enregistrés dans la base de données
+        $days = $this->entityManager->getRepository(ClosingDay::class)->findBy(['annee' => $yearSelected], ['jour' => 'ASC']);
+
+        // Get public holidays
+        if (empty($days)) {
+            $year = substr($yearSelected, 0, 4);
+
+            $start = new DateTime($year . '-09-01');
+            $end = (clone $start)->modify('+1 year');
+
+            $days = PublicHolidayService::getFrenchHolidaysByDateRange($start, $end);
+        }
+
+        $this->templateParams([
+            'days'           => $days,
+            'nbDays'         => count($days),
+            'nbExtra'        => count($days) + 15,
+            'selectedYear'   => $yearSelected,
+            'title'          => 'Public holidays and closing days',
+            'years'          => $years
+        ]);
 
         return $this->output("closingdays/index.html.twig");
-
     }
 
     #[Route(path: '/closingday', name: 'closingday.save', methods: ['POST'])]
-    public function save(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse{
-        $post = $request->request->all();
-        $CSRFToken = $request->get('CSRFToken');
-
-        $j = new ClosingDay();
-        $j->CSRFToken = $CSRFToken;
-        $j->update($post);
-
-        if ($j->error){
-            $session->getFlashBag()->add('error',"Une erreur est survenue lors de la modification de la liste des jours fériés.");
-        } else {
-            $session->getFlashBag()->add('notice',"La liste des jours fériés a été modifiée avec succès.");
+    public function save(Request $request, Session $session): RedirectResponse
+    {
+        if (!$this->csrf_protection($request)) {
+            $session->set('AccessDeniedReason', 'CSRF');
+            return $this->redirectToRoute('access-denied');
         }
+
+        $post = $request->request->all();
+        $year = $request->request->get('annee');
+
+        // Delete all entries for the corresponding year
+        $holidays = $this->entityManager->getRepository(ClosingDay::class)->findByAnnee($year);
+        foreach($holidays as $holiday) {
+            $this->entityManager->remove($holiday);
+        }
+
+        // Inserts the elements received from the form
+        $keys = array_keys($post['jour']);
+
+        foreach ($keys as $elem) {
+            if (empty($post['jour'][$elem]) or $post['jour'][$elem] == '0000-00-00') {
+                continue;
+            }
+
+            $holiday = new ClosingDay();
+
+            $holiday->setClosed(isset($post['fermeture'][$elem]))
+                ->setComment($post['commentaire'][$elem])
+                ->setDate(DateTime::createFromFormat('d/m/Y', $post['jour'][$elem]))
+                ->setName($post['nom'][$elem])
+                ->setPublicHoliday(isset($post['ferie'][$elem]))
+                ->setYear($post['annee']);
+
+            $this->entityManager->persist($holiday);
+        }
+
+        $this->entityManager->flush();
+
+        $this->addFlash('notice', 'The list of public holidays has been successfully modified');
 
         return $this->redirectToRoute('closingday.index');
     }

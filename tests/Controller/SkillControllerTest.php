@@ -130,4 +130,40 @@ class SkillControllerTest extends PLBWebTestCase
         $result = $crawler->filterXPath('//table[@class="CJDataTable"]/tbody/tr[1]/td[2]');
         $this->assertEquals('security', $result->text('Node does not exist', false), 'skill name');
     }
+
+    public function testDelete(): void
+    {
+        $entityManager = $this->entityManager;
+
+        $builder = $this->builder;
+        $builder->delete(Agent::class);
+        $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
+        $builder->delete(Skill::class);
+
+        $this->logInAgent($agent, array(5));
+
+        $skill = new Skill();
+        $skill->setName('to be deleted');
+
+        $entityManager->persist($skill);
+        $entityManager->flush();
+
+        $id = $skill->getId();
+
+        $crawler = $this->client->request('GET', '/skill');
+        $this->assertSelectorCount(1, 'table.CJDataTable tbody tr');
+        $token = $crawler->filter('#_token')->attr('value');
+
+        // Assert deletion succeeds with CSRF token
+        $this->client->request('POST', '/skill/delete', array('_token' => $token, 'id' => $id));
+        $this->assertResponseIsSuccessful();
+
+        $crawler = $this->client->request('GET', '/skill');
+        $this->assertSelectorCount(0, 'table.CJDataTable tbody tr');
+
+        // skill is only marked as deleted
+        $entityManager->clear();
+        $skill = $entityManager->getRepository(Skill::class)->find($id);
+        $this->assertNotNull($skill->getDelete(), 'skill is marked as deleted');
+    }
 }

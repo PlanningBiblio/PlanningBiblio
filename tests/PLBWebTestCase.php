@@ -50,6 +50,8 @@ class PLBWebTestCase extends PantherTestCase
 
     protected function logInAgent($agent, $rights = array(99, 100)) {
         $_SESSION['login_id'] = $agent->getId();
+        $_SESSION['login_nom'] = $agent->getLastname();
+        $_SESSION['login_prenom'] = $agent->getFirstname();
 
         $agent->setACL($rights);
 

@@ -11,7 +11,6 @@ use Tests\FixtureBuilder;
 
 class OvertimeControllerTest extends PLBWebTestCase
 {
-
     public function testSave(): void
     {
         $entityManager = $this->entityManager;

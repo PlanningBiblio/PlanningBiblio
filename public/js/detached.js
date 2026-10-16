@@ -17,7 +17,7 @@ $(function() {
   // Calendar
   $("#pl-calendar").on('changeDate', function(e) {
     var date = $('#pl-calendar').datepicker('getFormattedDate','yyyy-mm-dd') ;
-    window.location.href= url('detached') + '?date=' + date;
+    window.location.href= url('detached') + '/' + date;
   });
 
   $('#pl-calendar').on('changeMonth', function() {
@@ -30,9 +30,9 @@ $(function() {
     $('.volants-dispo:visible:selected').each(function(){
 
       var id = $(this).attr('data-id');
-      $('.selected_'+id).show();
+      $('.selected_'+id).removeClass('d-none');
       $(this).removeAttr('selected');
-      $(this).hide();
+      $(this).addClass('d-none');
     });
   });
 
@@ -41,9 +41,9 @@ $(function() {
     $('.volants-dispo:visible').each(function(){
 
       var id = $(this).attr('data-id');
-      $('.selected_'+id).show();
+      $('.selected_'+id).removeClass('d-none');
       $(this).removeAttr('selected');
-      $(this).hide();
+      $(this).addClass('d-none');
     });
   });
 
@@ -52,9 +52,9 @@ $(function() {
     $('.volants-selectionnes:visible:selected').each(function(){
 
       var id = $(this).attr('data-id');
-      $('.dispo_'+id).show();
+      $('.dispo_'+id).removeClass('d-none');
       $(this).removeAttr('selected');
-      $(this).hide();
+      $(this).addClass('d-none');
     });
   });
 
@@ -63,12 +63,12 @@ $(function() {
     $('.volants-selectionnes:visible').each(function(){
 
       var id = $(this).attr('data-id');
-      $('.dispo_'+id).show();
+      $('.dispo_'+id).removeClass('d-none');
       $(this).removeAttr('selected');
-      $(this).hide();
+      $(this).addClass('d-none');
     });
   });
-  
+
   // Validation
   $('#submit').click(function(){
     var ids = new Array();
@@ -76,25 +76,29 @@ $(function() {
       ids.push($(this).val());
     });
 
-    ids = JSON.stringify(ids);
-
     $.ajax({
-      url: url('detached/add'),
+      url: url('detached'),
       type: 'post',
       dataType: 'json',
-      data: {ids: ids, date: $('#date').val(), CSRFToken: $('#CSRFSession').val(), },
-      success: function(result){
-        if(result.error){
-          stackAlert('An error occurred while saving the information', 'error');
+      data: {
+        _token: $('input[name=_token]').val(),
+        ids: JSON.stringify(ids),
+        date: $('#date').val(),
+      },
+      success: function(result) {
+        if (result == 'CSRF') {
+          stackAlert(Translator.trans('The CSRF token is invalid. Please try to resubmit the form', {}, 'validators'), 'error');
+        } else if(result.error) {
+          stackAlert('An error occurred while saving the information\n' + result.error, 'error');
         } else {
           stackAlert('Vos modifications ont été enregistrées avec succès');
         }
       },
-      error: function(){
+      error: function() {
         stackAlert('An error occurred while saving the information', 'error');
       }
     });
-    
+
   });
 
 });

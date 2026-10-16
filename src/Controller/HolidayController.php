@@ -3,10 +3,12 @@
 namespace App\Controller;
 
 use DateTime;
+use Exception;
 
 use App\Controller\BaseController;
 use App\Entity\Agent;
 use App\Entity\Holiday;
+use App\Entity\HolidayInfo;
 use App\Planno\Helper\HolidayHelper;
 use App\Planno\Helper\HourHelper;
 use App\Planno\Helper\WeekPlanningHelper;
@@ -415,18 +417,8 @@ class HolidayController extends BaseController
 
         }
 
-        $date = date("Y-m-d");
-        $db = new \db();
-        $db->query("SELECT * FROM `{$dbprefix}conges_infos` WHERE `fin`>='$date' ORDER BY `debut`,`fin`;");
-
-        $holiday_info = array();
-        if ($db->result) {
-            foreach ($db->result as $elem) {
-                $elem['start'] = dateFr($elem['debut']);
-                $elem['end'] = dateFr($elem['fin']);
-                $holiday_info[] = $elem;
-            }
-        }
+        $holiday_info = $this->entityManager->getRepository(HolidayInfo::class)
+            ->findByDateRange(new DateTime, (new DateTime)->modify('+1 year'));
 
         $templateParams = array(
             'id'                    => $id,
@@ -686,6 +678,9 @@ class HolidayController extends BaseController
             $show_allday = 1;
         }
 
+        $holiday_info = $this->entityManager->getRepository(HolidayInfo::class)
+            ->findByDateRange(new DateTime, (new DateTime)->modify('+1 year'));
+
         $lang = $GLOBALS['lang'];
         $templateParams = array(
             'admin'                 => $admin || $adminN2,
@@ -736,24 +731,10 @@ class HolidayController extends BaseController
             'show_allday'           => $show_allday,
             'title'                 => 'Requesting holidays',
             'save_button'           => true,
+            'holiday_info'          => $holiday_info,
         );
 
         $this->templateParams($templateParams);
-
-        $date = date("Y-m-d");
-        $db = new \db();
-        $db->query("SELECT * FROM `{$dbprefix}conges_infos` WHERE `fin`>='$date' ORDER BY `debut`,`fin`;");
-
-        $holiday_info = array();
-        if ($db->result) {
-            foreach ($db->result as $elem) {
-                $elem['start'] = dateFr($elem['debut']);
-                $elem['end'] = dateFr($elem['fin']);
-                $holiday_info[] = $elem;
-            }
-        }
-
-        $this->templateParams(array('holiday_info' => $holiday_info));
 
         return $this->output('holiday/edit.html.twig');
     }
@@ -862,7 +843,15 @@ class HolidayController extends BaseController
             $holiday->setDeleteDate($deletionDate);
             $this->entityManager->flush();
 
-            $mailer->sendDeletedHolidayNotification($holiday);
+            try {
+                $mailer->sendDeletedHolidayNotification($holiday);
+            } catch (Exception $e) {
+                $message = sprintf(
+                    $this->translator->trans("An error occured while sending notification:\n%s"),
+                    $e->getMessage()
+                );
+                $this->addFlash('error', $message);
+            }
         }
 
         return $this->redirectToRoute('holiday.index', ['recup' => $request->request->get('recup')]);

@@ -65,12 +65,18 @@
     {% endif %}
 
     <!-- Symfony flashMessages -->
-    {% for flashMessage in app.session.flashbag.get('error') %}
-        <script type='text/JavaScript'>stackAlert('{{ flashMessage }}', 'error', 15000);</script>
-    {% endfor %}
-    {% for flashMessage in app.session.flashbag.get('notice') %}
-        <script type='text/JavaScript'>stackAlert('{{ flashMessage }}', 'success', 15000);</script>
-    {% endfor %}
+    <script type="application/json" id="flashbag">
+        {{ app.flashes | json_encode(constant('JSON_HEX_TAG')) | raw }}
+    </script>
+    <script>
+        const flashbag = JSON.parse(document.getElementById('flashbag').textContent);
+        for (const message of flashbag.error ?? []) {
+            stackAlert(message, 'error', 15000);
+        }
+        for (const message of flashbag.notice ?? []) {
+            stackAlert(message, 'success', 15000);
+        }
+    </script>
 
     <a href="#{% if content_planning | default %}content-planning{% else %}content{% endif %}" class="skip-link d-print-none">{{ 'Skip to main content' | trans }}</a>
 

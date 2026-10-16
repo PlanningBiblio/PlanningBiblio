@@ -56,8 +56,12 @@ function stackAlert(message, type='success', timeout=7000, position='top-center'
 
   // Translate the message
   message = Translator.trans(message, translationOptions);
-  message = message.replace(/#BR#/g,"<br/>&emsp;&emsp;");
-  message = message.replace(/\n/g,"<br/>&emsp;&emsp;");
+
+  // Replace the string '#BR#' and the newline character by a <br> element
+  // followed by two EM SPACE (U+2003) characters for alignment
+  const messageParts = message.split(/#BR#|\n/).flatMap(function (element, index) {
+    return index > 0 ? [document.createElement('br'), "\u2003\u2003", element] : element
+  });
 
   const close_msg = Translator.trans('Close');
 
@@ -104,14 +108,15 @@ function stackAlert(message, type='success', timeout=7000, position='top-center'
   }
 
   // Builds the HTML for the alert and inserts it into the container
-  const alertHtml = `
-  <div id="${alertId}" class="alert alert-${type} alert-dismissible fade show mb-2" role="alert"">
-    <i class="bi ${icons[type]} me-2"></i> 
-      ${message}
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="${close_msg}"></button>
-    </div>`;
+  const div = document.createElement('div');
+  div.id = alertId;
+  div.className = `alert alert-${type} alert-dismissible fade show mb-2`;
+  div.role = 'alert';
+  div.insertAdjacentHTML('beforeend', `<i class="bi ${icons[type]} me-2"></i>`);
+  div.append(...messageParts);
+  div.insertAdjacentHTML('beforeend', `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="${close_msg}"></button>`);
 
-  $container.append(alertHtml);
+  $container.append(div);
 
   // Dismiss automatically the alert after the timeout if timeout > 0
   if (timeout > 0) {
