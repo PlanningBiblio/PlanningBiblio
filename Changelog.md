@@ -1,5 +1,19 @@
 # Changelog Planno
 
+## Version 25.10.28 (2026-10-16)
+
+### Fixes
+
+* Fix the personnel table: set the supprime field to 1 #1510
+* MT54891: Fix the display of working hours in the agent profile #1512
+
+### Security / Dependencies
+
+* Update league/commonmark from 2.10.0 to 2.10.3 #1508
+  * Security Advisories:
+    * https://github.com/advisories/GHSA-97jj-33gv-5xf9
+    * https://github.com/advisories/GHSA-3q6v-r5mr-hxv8
+
 ## Version 25.10.27 (2026-09-18)
 
 ### Security / Dependencies
