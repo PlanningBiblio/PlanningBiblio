@@ -1284,16 +1284,13 @@ class absences
             }
 
             break;
+        }
 
-            // Si l'absence est validée au niveau 2, envoi de la notification aux agents concernés par l'absence
-        case 4:
-
-            foreach ($agents as $agent) {
-                if (!in_array($agent['mail'], $destinataires)) {
-                    $destinataires[] = $agent['mail'];
-                }
+        // In all cases, send a notification to the involved agents
+        foreach ($agents as $agent) {
+            if (!in_array($agent['mail'], $destinataires)) {
+                $destinataires[] = $agent['mail'];
             }
-            break;
         }
 
         $this->recipients = array_unique(array_filter($destinataires));
