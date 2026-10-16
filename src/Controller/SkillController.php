@@ -170,7 +170,7 @@ class SkillController extends BaseController
         return $this->redirectToRoute('skill.index');
     }
 
-    #[Route(path: '/skill', name: 'skill.delete', methods: ['DELETE'])]
+    #[Route(path: '/skill/delete', name: 'skill.delete', methods: ['POST'])]
     public function delete_skill(Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse{
 
         $id = $request->get('id');

@@ -86,7 +86,7 @@ function agent_list() {
 
       $.ajax({
         url: url('agent/bulk/delete'),
-          type: 'delete',
+          type: 'POST',
           dataType: 'json',
           data: {
             _token: $('input[name=_token]').val(),

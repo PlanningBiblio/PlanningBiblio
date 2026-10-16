@@ -352,7 +352,7 @@ class PositionController extends BaseController
         return $this->redirectToRoute('position.index');
     }
 
-    #[Route(path: '/position', name: 'position.delete', methods: ['DELETE'])]
+    #[Route(path: '/position/delete', name: 'position.delete', methods: ['POST'])]
      public function delete_position(Request $request, Session $session): \Symfony\Component\HttpFoundation\JsonResponse{
 
         $id = $request->get('id');

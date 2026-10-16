@@ -28,7 +28,7 @@ class AbsenceDocumentController extends BaseController
         return $response;
     }
 
-    #[Route(path: '/absences/document/{id}', name: 'absences.document.delete', methods: ['DELETE'])]
+    #[Route(path: '/absences/document/{id}/delete', name: 'absences.document.delete', methods: ['POST'])]
     public function delete(Request $request, Session $session): RedirectResponse|Response
     {
         if (!$this->csrf_protection($request)) {

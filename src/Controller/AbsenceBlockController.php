@@ -96,7 +96,7 @@ class AbsenceBlockController extends BaseController
         return $this->redirectToRoute('absence.block.index');
     }
 
-    #[Route("/absence/block", name: "absence.block.delete", methods: ["DELETE"])]
+    #[Route("/absence/block/delete", name: "absence.block.delete", methods: ["POST"])]
     public function delete(Request $request, Session $session): \Symfony\Component\HttpFoundation\Response
     {
         if (!$this->csrf_protection($request)) {

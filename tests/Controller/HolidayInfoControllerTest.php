@@ -10,6 +10,13 @@ use Tests\FixtureBuilder;
 
 class HolidayInfoControllerTest extends PLBWebTestCase
 {
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->config->setParam('Conges-Enable', 1);
+    }
+
     public function testAdd(): void
     {
         $entityManager = $this->entityManager;
@@ -41,7 +48,6 @@ class HolidayInfoControllerTest extends PLBWebTestCase
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
         $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
-
 
         $this->logInAgent($agent, array(100,401,601));
 
@@ -94,7 +100,6 @@ class HolidayInfoControllerTest extends PLBWebTestCase
         $info->setEnd($end);
         $info->setComment('salut');
 
-
         $entityManager->persist($info);
         $entityManager->flush();
 
@@ -126,8 +131,8 @@ class HolidayInfoControllerTest extends PLBWebTestCase
         $result = $crawler->filterXPath('//a[@class="btn btn-secondary"]/span');
         $this->assertEquals($result->text('Node does not exist', false), 'Annuler','a/span button is Annuler');
 
-        $class = $crawler->filterXPath('//a[@class="btn btn-danger"]/span');
-        $this->assertEquals($class->text('Node does not exist', false), 'Supprimer','a button is Supprimer');
+        $class = $crawler->filterXPath('//input[@class="btn btn-danger"]');
+        $this->assertEquals('Supprimer', $class->attr('value'), 'input button is Supprimer');
     }
 
     public function testHolidayInfoList(): void
@@ -194,5 +199,49 @@ class HolidayInfoControllerTest extends PLBWebTestCase
         $crawler = $this->client->request('GET', sprintf('/holiday-info?start=%s&end=%s', $start->format('d/m/Y'), $end->format('d/m/Y')));
         $rowCount = $crawler->filter('table > tbody > tr')->count();
         $this->assertEquals(1, $rowCount);
+    }
+
+    public function testDelete(): void
+    {
+        $entityManager = $this->entityManager;
+
+        $builder = new FixtureBuilder();
+        $builder->delete(Agent::class);
+        $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
+        $builder->delete(HolidayInfo::class);
+
+        $this->logInAgent($agent, array(100,401,601));
+
+        $start = new DateTime('+1 day');
+        $end = new DateTime('+1 month +1 day');
+
+        $info = new HolidayInfo();
+        $info->setStart($start);
+        $info->setEnd($end);
+        $info->setComment('to be deleted');
+
+        $entityManager->persist($info);
+        $entityManager->flush();
+
+        $id = $info->getId();
+        $listUrl = sprintf('/holiday-info?start=%s&end=%s', $start->format('d/m/Y'), $end->format('d/m/Y'));
+
+        $crawler = $this->client->request('GET', $listUrl);
+        $this->assertSelectorCount(1, '#HolidayInfoTable tbody tr');
+
+        // Assert deletion fails without CSRF token
+        $this->client->request('POST', '/holiday-info/delete', array('id' => $id));
+        $this->assertResponseStatusCodeSame(403);
+
+        $crawler = $this->client->request('GET', $listUrl);
+        $this->assertSelectorCount(1, '#HolidayInfoTable tbody tr');
+        $token = $crawler->filterXPath('//input[@name="_token"]')->attr('value');
+
+        // Assert deletion succeeds with CSRF token
+        $this->client->request('POST', '/holiday-info/' . $id . '/delete', ['_token' => $token]);
+
+        $this->assertResponseStatusCodeSame(302);
+        $entityManager->clear();
+        $this->assertNull($entityManager->getRepository(HolidayInfo::class)->find($id), 'info is deleted');
     }
 }
