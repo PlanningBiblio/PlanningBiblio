@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use DateTime;
+use Exception;
 
 use App\Controller\BaseController;
 use App\Entity\Agent;
@@ -862,7 +863,15 @@ class HolidayController extends BaseController
             $holiday->setDeleteDate($deletionDate);
             $this->entityManager->flush();
 
-            $mailer->sendDeletedHolidayNotification($holiday);
+            try {
+                $mailer->sendDeletedHolidayNotification($holiday);
+            } catch (Exception $e) {
+                $message = sprintf(
+                    $this->translator->trans("An error occured while sending notification:\n%s"),
+                    $e->getMessage()
+                );
+                $this->addFlash('error', $message);
+            }
         }
 
         return $this->redirectToRoute('holiday.index', ['recup' => $request->request->get('recup')]);
