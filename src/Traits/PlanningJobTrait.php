@@ -4,6 +4,7 @@ namespace App\Traits;
 
 use App\Entity\AbsenceReason;
 use App\Entity\Agent;
+use App\Entity\Detached;
 use App\Entity\PlanningPosition;
 use App\Entity\Position;
 use App\Planno\WorkingHours;
@@ -121,9 +122,7 @@ trait PlanningJobTrait
 
         // Recherche des agents volants # FIXME Looking for a correct translation.
         if ($this->config('Planning-agents-volants')) {
-            $v = new \volants($date);
-            $v->fetch($date);
-            $agents_volants = $v->selected;
+            $agents_volants = $this->entityManager->getRepository(Detached::class)->findUserIds($date);
         }
 
         // Looking for agents already placed at this time slot.
