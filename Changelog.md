@@ -1,5 +1,22 @@
 # Changelog Planno
 
+## Version 26.04.11 (2026-10-16)
+
+### Fixes
+
+* MT54451: Prevent uncaught exception error when deleting a holiday
+* MT53998: Exclude from unavailable agents those that are already in cell #1502
+* Fix the personnel table: set the supprime field to 1 #1510
+* MT54891: Fix the display of working hours in the agent profile #1512
+* MT48881: Fix the command that allows skills to be deleted (app:skills:delete) #1513
+
+### Security / Dependencies
+
+* Update league/commonmark from 2.10.0 to 2.10.3 #1509
+  * Security Advisories:
+    * https://github.com/advisories/GHSA-97jj-33gv-5xf9
+    * https://github.com/advisories/GHSA-3q6v-r5mr-hxv8
+
 ## Version 26.04.10 (2026-09-29)
 
 ### Enhancement
