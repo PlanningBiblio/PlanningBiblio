@@ -55,9 +55,7 @@ class AdminInfoController extends BaseController
 
         $this->templateParams([
             'id'    => $id,
-            'start' => $info->getStart(),
-            'end'   => $info->getEnd(),
-            'text'  => $info->getComment(),
+            'info'  => $info,
             'sitesSelect' => $this->sitesSelect($info),
             'title' => 'Informational messages',
             'formTitle' => $formTitle,
@@ -125,7 +123,7 @@ class AdminInfoController extends BaseController
             $info = $this->entityManager->getRepository(AdminInfo::class)->find($id);
             $info->setStart($start);
             $info->setEnd($end);
-            $info->setComment($text);
+            $info->setText($text);
             $info->setSites($sites);
             $flash = $this->translator->trans('The information has been successfully modified.');
         } else {
@@ -133,7 +131,7 @@ class AdminInfoController extends BaseController
             $info = new AdminInfo();
             $info->setStart($start);
             $info->setEnd($end);
-            $info->setComment($text);
+            $info->setText($text);
             $info->setSites($sites);
             $flash = $this->translator->trans('The information has been successfully saved.');
         }

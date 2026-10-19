@@ -15,14 +15,14 @@
                 <tr>
                     <td><label>{{ 'Start date' | trans }}</label> </td>
                     <td>
-                    <input type="text" name="start" value="{{ start | dateOrNull('d/m/Y') }}" style="width:100%;" class="datepicker start-date form-control" required/>
+                    <input type="text" name="start" value="{{ info.start | dateOrNull('d/m/Y') }}" style="width:100%;" class="datepicker start-date form-control" required/>
                     </td>
                 </tr>
 
                 <tr>
                     <td><label>{{ 'End date' | trans }}</label></td>
                     <td>
-                    <input type="text" name="end" value="{{ end | dateOrNull('d/m/Y') }}" style="width:100%;" class="datepicker end-date form-control"/>
+                    <input type="text" name="end" value="{{ info.end | dateOrNull('d/m/Y') }}" style="width:100%;" class="datepicker end-date form-control"/>
                     </td>
                 </tr>
                 <tr>
@@ -33,7 +33,7 @@
                 <tr>
                     <td><label>{{ 'Text' | trans }}</label></td>
                     <td>
-                    <textarea name="text" rows="3" cols="25" class="emoji-picker-textarea form-control" required>{{ text }}</textarea>
+                    <textarea name="text" rows="3" cols="25" class="emoji-picker-textarea form-control" required>{{ info.text }}</textarea>
                     </td>
                 </tr>
 

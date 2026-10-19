@@ -7,7 +7,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AdminInfoRepository::class)]
-#[ORM\Table(name: 'infos')]
+#[ORM\Table(name: 'information')]
 class AdminInfo
 {
     #[ORM\Id]
@@ -16,13 +16,13 @@ class AdminInfo
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
-    private ?\DateTimeImmutable $debut = null;
+    private ?\DateTimeImmutable $start = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
-    private ?\DateTimeImmutable $fin = null;
+    private ?\DateTimeImmutable $end = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    protected ?string $texte = null;
+    protected string $text = '';
 
     /**
      * Sites on which the message is displayed.
@@ -40,36 +40,36 @@ class AdminInfo
 
     public function getStart(): ?\DateTimeImmutable
     {
-        return $this->debut;
+        return $this->start;
     }
 
     public function setStart(?\DateTimeImmutable $start): static
     {
-        $this->debut = $start;
+        $this->start = $start;
 
         return $this;
     }
 
     public function getEnd(): ?\DateTimeImmutable
     {
-        return $this->fin;
+        return $this->end;
     }
 
     public function setEnd(?\DateTimeImmutable $end): static
     {
-        $this->fin = $end;
+        $this->end = $end;
 
         return $this;
     }
 
-    public function getComment(): ?string
+    public function getText(): string
     {
-        return $this->texte;
+        return $this->text;
     }
 
-    public function setComment(?string $comment): static
+    public function setText(string $text): static
     {
-        $this->texte = $comment;
+        $this->text = $text;
 
         return $this;
     }

@@ -31,10 +31,10 @@ class AdminInfoRepository extends EntityRepository
         $end = $end ?? $start;
 
         $result = $this->createQueryBuilder('a')
-            ->andWhere('a.debut <= :end')
-            ->andWhere('a.fin >= :start')
-            ->orderBy('a.debut', 'ASC')
-            ->addOrderBy('a.fin', 'ASC')
+            ->andWhere('a.start <= :end')
+            ->andWhere('a.end >= :start')
+            ->orderBy('a.start', 'ASC')
+            ->addOrderBy('a.end', 'ASC')
             ->addOrderBy('a.id', 'ASC')
             ->setParameter('start', $start, Types::DATE_MUTABLE)
             ->setParameter('end', $end, Types::DATE_MUTABLE)

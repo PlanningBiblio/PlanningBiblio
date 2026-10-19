@@ -2166,7 +2166,7 @@ class PlanningController extends BaseController
             (int) $site
         );
 
-        return array_map(fn (AdminInfo $info) => $info->getComment(), $messages);
+        return array_map(fn (AdminInfo $info) => $info->getText(), $messages);
     }
 
     private function getLockData(String $date = null): void
@@ -2316,7 +2316,7 @@ class PlanningController extends BaseController
         list($d, $semaine, $semaine3, $jour, $dates) = $this->dates;
 
         // Selection des messages d'informations
-        $messages_infos = $this->getInfoMessages($dates, $date, $view, $site);
+        $informationMessages = $this->getInfoMessages($dates, $date, $view, $site);
 
         // Vérification des droits de modification (Autorisation)
         list($autorisationN1, $autorisationN2, $autorisationNotes) = $this->getPermissionsFor($site);
@@ -2345,7 +2345,7 @@ class PlanningController extends BaseController
             'date'               => $date,
             'dates'              => $dates,
             'day'                => $jour,
-            'informationMessages'=> $messages_infos,
+            'informationMessages'=> $informationMessages,
             'public_holiday'     => $publicHoliday,
             'site'               => $site,
             'week_view'          => $weekView,

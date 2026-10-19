@@ -20,13 +20,13 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $info = new AdminInfo();
         $info->setStart(new DateTimeImmutable('2022-10-05'));
         $info->setEnd(new DateTimeImmutable('2022-10-10'));
-        $info->setComment('Test comment');
+        $info->setText('Test comment');
         $this->entityManager->persist($info);
 
         $info2 = new AdminInfo();
         $info2->setStart(new DateTimeImmutable('2023-10-05'));
         $info2->setEnd(new DateTimeImmutable('2023-10-10'));
-        $info2->setComment('Test comment 2');
+        $info2->setText('Test comment 2');
         $this->entityManager->persist($info2);
 
         $this->entityManager->flush();
@@ -61,17 +61,17 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $extract_result = $crawler->filter('#admin-info-form input[name="_token"]')->extract(array('value'));
         $token = $extract_result[0];
 
-        $this->client->request('POST', '/admin/info', array('start' => '05/10/2021', 'end' => '10/10/2021', 'text' => 'salut', '_token' => $token));
+        $this->client->request('POST', '/admin/info', array('start' => '05/10/2021', 'end' => '10/10/2021', 'text' => 'Hello', '_token' => $token));
 
         $info = $this->entityManager->getRepository(AdminInfo::class)->findOneBy([
-            'debut' => new DateTimeImmutable('2021-10-05'),
-            'fin' => new DateTimeImmutable('2021-10-10'),
+            'start' => new DateTimeImmutable('2021-10-05'),
+            'end' => new DateTimeImmutable('2021-10-10'),
         ]);
 
-        $this->assertEquals('salut', $info->getComment(), 'info texte is salut');
+        $this->assertEquals('Hello', $info->getText(), 'info text is Hello');
 
-        $this->assertEquals('2021-10-05', $info->getStart()->format('Y-m-d'), 'debut is 2021-10-05');
-        $this->assertEquals('2021-10-10', $info->getEnd()->format('Y-m-d'), 'fin is 2021-10-10');
+        $this->assertEquals('2021-10-05', $info->getStart()->format('Y-m-d'), 'start is 2021-10-05');
+        $this->assertEquals('2021-10-10', $info->getEnd()->format('Y-m-d'), 'end is 2021-10-10');
         $this->assertSame([], $info->getSites(), 'mono-site: message is for all sites');
     }
 
@@ -133,7 +133,7 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $info = new AdminInfo();
         $info->setStart(new DateTimeImmutable('2022-10-05'));
         $info->setEnd(new DateTimeImmutable('2022-10-10'));
-        $info->setComment('salut');
+        $info->setText('Hello');
 
         $this->entityManager->persist($info);
         $this->entityManager->flush();
@@ -146,7 +146,7 @@ class AdminInfoControllerTest extends PLBWebTestCase
 
         $this->assertSelectorTextContains('h4', 'Modifier une information');
 
-        $this->assertSelectorTextContains('textarea', 'salut');
+        $this->assertSelectorTextContains('textarea', 'Hello');
 
         $result=$crawler->filter('label')->eq(0);
         $this->assertEquals($result->text('Node does not exist', false), 'Date de début','label 1 is Date de début');
@@ -191,7 +191,7 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $info = new AdminInfo();
         $info->setStart($start);
         $info->setEnd($end);
-        $info->setComment('to be deleted');
+        $info->setText('to be deleted');
 
         $entityManager->persist($info);
         $entityManager->flush();
@@ -298,7 +298,7 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $info = new AdminInfo();
         $info->setStart(new DateTimeImmutable('2022-10-05'));
         $info->setEnd(new DateTimeImmutable('2022-10-10'));
-        $info->setComment('salut');
+        $info->setText('Hello');
         $info->setSites([2]);
         $this->entityManager->persist($info);
         $this->entityManager->flush();
@@ -319,7 +319,7 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $info = new AdminInfo();
         $info->setStart(new DateTimeImmutable('2022-10-05'));
         $info->setEnd(new DateTimeImmutable('2022-10-10'));
-        $info->setComment('salut');
+        $info->setText('Hello');
         $info->setSites([2]);
         $this->entityManager->persist($info);
         $this->entityManager->flush();
@@ -342,13 +342,13 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $info = new AdminInfo();
         $info->setStart(new DateTimeImmutable('2022-10-05'));
         $info->setEnd(new DateTimeImmutable('2022-10-10'));
-        $info->setComment('for all sites');
+        $info->setText('for all sites');
         $this->entityManager->persist($info);
 
         $info2 = new AdminInfo();
         $info2->setStart(new DateTimeImmutable('2022-10-06'));
         $info2->setEnd(new DateTimeImmutable('2022-10-10'));
-        $info2->setComment('for sites B and C');
+        $info2->setText('for sites B and C');
         $info2->setSites([2, 3]);
         $this->entityManager->persist($info2);
 
@@ -380,7 +380,7 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $crawler = $this->client->request('GET', '/admin/info/add');
         $token = $crawler->filter('#admin-info-form input[name="_token"]')->attr('value');
 
-        $this->client->request('POST', '/admin/info', array('start' => 'invalid', 'end' => '', 'text' => 'salut', '_token' => $token));
+        $this->client->request('POST', '/admin/info', array('start' => 'invalid', 'end' => '', 'text' => 'Hello', '_token' => $token));
 
         $this->assertResponseRedirects('/admin/info/add');
         $this->assertSame(0, $this->entityManager->getRepository(AdminInfo::class)->count([]), 'info is not created');
@@ -430,8 +430,8 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $this->entityManager->clear();
 
         return $this->entityManager->getRepository(AdminInfo::class)->findOneBy([
-            'debut' => new DateTimeImmutable('2021-10-05'),
-            'fin' => new DateTimeImmutable('2021-10-10'),
+            'start' => new DateTimeImmutable('2021-10-05'),
+            'end' => new DateTimeImmutable('2021-10-10'),
         ]);
     }
 }

@@ -105,6 +105,11 @@ $tables = array (
         ),
     ),
     array(
+        'name' => 'detached',
+        'fields' => array(
+        ),
+    ),
+    array(
         'name' => 'edt_samedi',
         'fields' => array(
         ),
@@ -128,9 +133,9 @@ $tables = array (
         ),
     ),
     array(
-        'name' => 'infos',
+        'name' => 'information',
         'fields' => array(
-            'texte',
+            'text',
         ),
     ),
     array(
@@ -331,11 +336,6 @@ $tables = array (
         'fields' => array(
             'couleur',
             'valeur',
-        ),
-    ),
-    array(
-        'name' => 'volants',
-        'fields' => array(
         ),
     ),
 );

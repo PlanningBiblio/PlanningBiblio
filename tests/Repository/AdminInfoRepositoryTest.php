@@ -88,7 +88,7 @@ class AdminInfoRepositoryTest extends KernelTestCase
         $info = new AdminInfo();
         $info->setStart(new DateTimeImmutable($start));
         $info->setEnd(new DateTimeImmutable($end));
-        $info->setComment($text);
+        $info->setText($text);
         $info->setSites($sites);
         $this->entityManager->persist($info);
     }
@@ -102,11 +102,11 @@ class AdminInfoRepositoryTest extends KernelTestCase
     }
 
     /**
-     * @param AdminInfo[] $infos
+     * @param AdminInfo[] $information
      * @return string[]
      */
-    private function texts(array $infos): array
+    private function texts(array $information): array
     {
-        return array_map(fn (AdminInfo $info) => $info->getComment(), $infos);
+        return array_map(fn (AdminInfo $info) => $info->getText(), $information);
     }
 }
