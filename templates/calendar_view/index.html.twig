@@ -118,7 +118,12 @@
         <tr>
           {% for date in allDates %}
             {% for c in columns %}
-              <th scope="col" class="dataTableNoSort">{{ c.display }}</th>
+              <th scope="col" class="dataTableNoSort align-top text-center">
+                {{ c.display }}
+                {%if c.count %}
+                  <br/><span class="badge bg-secondary">{{ c.count }}</span>
+                {% endif %}
+              </th>
             {% endfor %}
           {% endfor %}
         </tr>
