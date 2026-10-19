@@ -4,31 +4,25 @@
 
 {% block page %}
     <div id="content-admin">
-        <h3>Messages d'information</h3>
-
         <div class="admin-div">
-            {% if id %}
-                <h4>Modifications des messages d'informations</h4>
-            {% else %}
-                <h4>Ajout d'une information</h4>
-            {% endif %}
-
-            <form id="form" method="post" action="{{ asset('admin/info') }}" name="form" novalidate>
+            <h4>{{ formTitle | trans }}</h4>
+    
+            <form id="admin-info-form" method="post" action="{{ asset('admin/info') }}" name="form" novalidate>
                 <input type="hidden" name="_token" value="{{ csrf_token('') }}"/>
                 <input type="hidden" name="id" value="{{ id }}"/>
 
                 <table class="tableauFiches">
                 <tr>
-                    <td><label>Date de début</label> </td>
+                    <td><label>{{ 'Start date' | trans }}</label> </td>
                     <td>
-                    <input type="text" name="start" value="{{ start }}" style="width:100%;" class="datepicker start-date form-control" required/>
+                    <input type="text" name="start" value="{{ info.start | dateOrNull('d/m/Y') }}" style="width:100%;" class="datepicker start-date form-control" required/>
                     </td>
                 </tr>
 
                 <tr>
-                    <td><label>Date de fin</label></td>
+                    <td><label>{{ 'End date' | trans }}</label></td>
                     <td>
-                    <input type="text" name="end" value="{{ end }}" style="width:100%;" class="datepicker end-date form-control"/>
+                    <input type="text" name="end" value="{{ info.end | dateOrNull('d/m/Y') }}" style="width:100%;" class="datepicker end-date form-control"/>
                     </td>
                 </tr>
                 <tr>
@@ -37,23 +31,37 @@
                 </tr>
 
                 <tr>
-                    <td><label>Texte</label></td>
+                    <td><label>{{ 'Text' | trans }}</label></td>
                     <td>
-                    <textarea name="text" rows="3" cols="25" class="emoji-picker-textarea form-control" required>{{ text }}</textarea>
+                    <textarea name="text" rows="3" cols="25" class="emoji-picker-textarea form-control" required>{{ info.text }}</textarea>
                     </td>
                 </tr>
 
+                {% if sitesSelect is not empty %}
                 <tr>
-                    <td>&nbsp;</td>
+                    <td colspan="2">
+                    <fieldset id="admin-info-sites" aria-describedby="admin-info-sites-help">
+                        <legend class="fs-6">{{ 'Sites' | trans }}</legend>
+                        {% for s in sitesSelect %}
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input mt-1 admin-info-site" name="sites[]" id="site-{{ s.id }}" value="{{ s.id }}" {% if s.checked %}checked{% endif %}/>
+                            <label class="form-check-label" for="site-{{ s.id }}">{{ s.name }}</label>
+                        </div>
+                        {% endfor %}
+                        <p id="admin-info-sites-help" class="form-text">{{ 'If all sites are checked, the message will also be displayed on sites created later.' | trans }}</p>
+                        <p id="admin-info-sites-feedback" class="invalid-feedback" role="alert">{{ 'Please select at least one site.' | trans }}</p>
+                    </fieldset>
+                    </td>
                 </tr>
+                {% endif %}
 
                 <tr>
                     <td colspan="2" class="text-center">
-                    <a href="{{ asset('admin/info') }}" role="button" class="btn btn-secondary" style="margin-left:30px;">Annuler</a>
+                    <a href="{{ asset('admin/info') }}" role="button" class="btn btn-secondary" style="margin-left:30px;">{{ 'Cancel' | trans }}</a>
                     {% if id %}
-                        <a href="javascript:deleteAdminInfo({{ id }});" role="button" class="btn btn-danger" style="margin-left:30px;" >Supprimer</a>
+                        <a href="javascript:deleteAdminInfo({{ id }});" role="button" class="btn btn-danger" style="margin-left:30px;" >{{ 'Delete' | trans }}</a>
                     {% endif %}
-                    <input type="submit" role="button" value="Valider" class="btn btn-primary" style="margin-left:30px;"/>
+                    <input type="submit" role="button" value="{{ 'Confirm' | trans }}" class="btn btn-primary" style="margin-left:30px;"/>
                     </td>
                 </tr>
                 </table>

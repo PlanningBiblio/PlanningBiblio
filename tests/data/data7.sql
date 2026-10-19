@@ -17,6 +17,7 @@
 /*M!100616 SET @OLD_NOTE_VERBOSITY=@@NOTE_VERBOSITY, NOTE_VERBOSITY=0 */;
 
 DROP TABLE IF EXISTS `detached`;
+DROP TABLE IF EXISTS `information`;
 
 --
 -- Table structure for table `absence_blocks`

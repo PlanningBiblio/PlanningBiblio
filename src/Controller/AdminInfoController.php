@@ -3,10 +3,11 @@
 namespace App\Controller;
 
 use App\Controller\BaseController;
-
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizer;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -17,7 +18,7 @@ use App\Entity\AdminInfo;
 class AdminInfoController extends BaseController
 {
     #[Route(path: '/admin/info/{reset?}', name: 'admin.info.index', methods: ['GET'], requirements: ['reset' => 'reset'])]
-    public function index(Request $request, Session $session, EntityManagerInterface $em)
+    public function index(Request $request, EntityManagerInterface $em): Response
     {
         $start = $this->initDate('start', 'AdminInfoStart');
         $end = $this->initDate('end', 'AdminInfoEnd', '+1 year');
@@ -28,51 +29,59 @@ class AdminInfoController extends BaseController
             'info' => $info,
             'start' => $start,
             'end' => $end,
+            'title' => 'Informational messages',
         ]);
 
         return $this->output('adminInfo/index.html.twig');
     }
 
     #[Route(path: '/admin/info/add', name: 'admin.info.add', methods: ['GET'])]
-    public function addform(Request $request)
-    {
-        $this->templateParams(array(
-            'id'    => null,
-            'start' => null,
-            'end'   => null,
-            'text'  => null,
-        ));
-
-        return $this->output('adminInfo/edit.html.twig');
-    }
-
     #[Route(path: '/admin/info/{id<\d+>}', name: 'admin.info.edit', methods: ['GET'])]
-    public function editform(Request $request)
+    public function edit(Request $request): Response | RedirectResponse
     {
-        $id = $request->get('id');
+        $id = $request->attributes->get('id');
 
-        $info = $this->entityManager->getRepository(AdminInfo::class)->find($id);
+        if ($id) {
+            $info = $this->entityManager->getRepository(AdminInfo::class)->find($id);
+            if (!$info) {
+                $this->addFlash('error', $this->translator->trans('The requested information does not exist.'));
+                return $this->redirectToRoute('admin.info.index');
+            }
+            $formTitle = 'Modify information';
+        } else {
+            $info = new AdminInfo();
+            $formTitle = 'Add a piece of information';
+        }
 
-        $this->templateParams(array(
+        $this->templateParams([
             'id'    => $id,
-            'start' => date('d/m/Y', strtotime($info->getStart())),
-            'end'   => date('d/m/Y', strtotime($info->getEnd())),
-            'text'  => $info->getComment(),
-        ));
+            'info'  => $info,
+            'sitesSelect' => $this->sitesSelect($info),
+            'title' => 'Informational messages',
+            'formTitle' => $formTitle,
+        ]);
 
         return $this->output('adminInfo/edit.html.twig');
     }
 
     #[Route(path: '/admin/info', name: 'admin.info.update', methods: ['POST'])]
-    public function update(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
+    public function update(Request $request): RedirectResponse
     {
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
         }
 
-        $id = $request->get('id');
-        $start = preg_replace('/(\d+)\/(\d+)\/(\d+)/', "$3$2$1", $request->get('start'));
-        $end = preg_replace('/(\d+)\/(\d+)\/(\d+)/', "$3$2$1", $request->get('end'));
+        $id = $request->request->get('id');
+        $start = DateTimeImmutable::createFromFormat('!d/m/Y', $request->request->getString('start'));
+        $end = DateTimeImmutable::createFromFormat('!d/m/Y', $request->request->getString('end'));
+
+        if (!$start) {
+            $this->addFlash('error', $this->translator->trans('Please enter a valid start date'));
+
+            return $id
+                ? $this->redirectToRoute('admin.info.edit', ['id' => $id])
+                : $this->redirectToRoute('admin.info.add');
+        }
         $text = trim($request->get('text'));
 
         $htmlSanitizer = new HtmlSanitizer(
@@ -86,30 +95,56 @@ class AdminInfoController extends BaseController
           $end = $start;
         }
 
+        // Sites: an empty array means "all sites"
+        $sites = [];
+        $availableSites = array_column($this->sitesSelect(), 'id');
+
+        if (!empty($availableSites)) {
+            $sites = array_values(array_intersect(
+                $availableSites,
+                array_map('intval', $request->request->all('sites'))
+            ));
+
+            if (empty($sites)) {
+                $this->addFlash('error', $this->translator->trans('Please select at least one site.'));
+
+                return $id
+                    ? $this->redirectToRoute('admin.info.edit', ['id' => $id])
+                    : $this->redirectToRoute('admin.info.add');
+            }
+
+            // All sites checked: the message will also be displayed on sites created later
+            if (count($sites) == count($availableSites)) {
+                $sites = [];
+            }
+        }
+
         if ($id) {
             $info = $this->entityManager->getRepository(AdminInfo::class)->find($id);
             $info->setStart($start);
             $info->setEnd($end);
-            $info->setComment($text);
-            $flash = "L'information a bien été modifiée.";
+            $info->setText($text);
+            $info->setSites($sites);
+            $flash = $this->translator->trans('The information has been successfully modified.');
         } else {
             // Store a new info
             $info = new AdminInfo();
             $info->setStart($start);
             $info->setEnd($end);
-            $info->setComment($text);
-            $flash = "L'information a bien été enregistrée.";
+            $info->setText($text);
+            $info->setSites($sites);
+            $flash = $this->translator->trans('The information has been successfully saved.');
         }
 
         $this->entityManager->persist($info);
         $this->entityManager->flush();
 
-        $session->getFlashBag()->add('notice', $flash);
+        $this->addFlash('notice', $flash);
         return $this->redirectToRoute('admin.info.index');
     }
 
     #[Route(path: '/admin/info/delete', name: 'admin.info.delete', methods: ['POST'])]
-    public function delete(Request $request, Session $session): \Symfony\Component\HttpFoundation\Response
+    public function delete(Request $request): Response
     {
         if (!$this->csrf_protection($request)) {
             $response = new Response();
@@ -125,13 +160,44 @@ class AdminInfoController extends BaseController
         $this->entityManager->remove($info);
         $this->entityManager->flush();
 
-        $flash = "L'information a bien été supprimée.";
-        $session->getFlashBag()->add('notice', $flash);
+        $this->addFlash('notice', $this->translator->trans('The information has been successfully deleted.'));
 
         $response = new Response();
         $response->setStatusCode(200);
         $response->setContent(json_encode('OK'));
 
         return $response;
+    }
+
+    /**
+     * Returns the sites that can be selected in the form (multi-sites only).
+     * Without $info (new message), all sites are checked.
+     * A message for all sites (empty array) has all its sites checked.
+     *
+     * @return array<int, array{id: int, name: string, checked: bool}>
+     */
+    private function sitesSelect(?AdminInfo $info = null): array
+    {
+        $sitesSelect = [];
+
+        if ($this->config('Multisites-nombre') < 2) {
+            return $sitesSelect;
+        }
+
+        for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
+
+            // Avoid displaying unamed or deleted sites
+            if (empty($this->config('Multisites-site' . $i))) {
+                continue;
+            }
+
+            $sitesSelect[] = [
+                'id' => $i,
+                'name' => $this->config('Multisites-site' . $i),
+                'checked' => $info === null || $info->isDisplayedOnSite($i),
+            ];
+        }
+
+        return $sitesSelect;
     }
 }

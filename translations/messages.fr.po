@@ -305,17 +305,20 @@ msgstr "Afficher les heures par groupe de postes"
 msgid "Sites"
 msgstr "Sites"
 
+msgid "All sites"
+msgstr "Tous les sites"
+
 msgid "Save changes"
 msgstr "Enregistrer les modifications"
 
 msgid "Please enter a valid start date"
-msgstr "Veillez saisir une date de début valide"
+msgstr "Veuillez saisir une date de début valide"
 
 msgid "Please enter a valid end date"
-msgstr "Veillez saisir une date de fin valide"
+msgstr "Veuillez saisir une date de fin valide"
 
 msgid "Please select an agent"
-msgstr "Veillez choisir un agent"
+msgstr "Veuillez choisir un agent"
 
 msgid "Search results are limited to a period of one year"
 msgstr "Les résultats de la recherche sont limités à une période d'un an"
@@ -832,3 +835,33 @@ msgstr "Afficher les statuts"
 
 msgid "Holiday"
 msgstr "Congé"
+
+msgid "Informational messages"
+msgstr "Messages d'information"
+
+msgid "Add a piece of information"
+msgstr "Ajouter une information"
+
+msgid "Modify information"
+msgstr "Modifier une information"
+
+msgid "The requested information does not exist."
+msgstr "L'information demandée n'existe pas."
+
+msgid "Please select at least one site."
+msgstr "Veuillez sélectionner au moins un site."
+
+msgid "The information has been successfully modified."
+msgstr "L'information a bien été modifiée."
+
+msgid "The information has been successfully saved."
+msgstr "L'information a bien été enregistrée."
+
+msgid "The information has been successfully deleted."
+msgstr "L'information a bien été supprimée."
+
+msgid "If all sites are checked, the message will also be displayed on sites created later."
+msgstr "Si tous les sites sont cochés, le message sera également affiché sur les sites créés ultérieurement."
+
+msgid "Are you sure you want to delete this information?"
+msgstr "Êtes-vous sûr(e) de vouloir supprimer cette information ?"

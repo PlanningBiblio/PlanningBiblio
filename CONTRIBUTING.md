@@ -114,6 +114,7 @@
 | status | etat, statut |
 | table | tableau |
 | teleworking | teleworking |
+| text | texte |
 | user | agent |
 | userId | perso_id or agent_id or agentId |
 | validLevel1 | valide_n1 |

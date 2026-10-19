@@ -3,8 +3,6 @@
 {% extends 'base.html.twig' %}
 
 {% block page %}
-    <h3>Messages d'informations</h3>
-
     <form method="get" action="{{ asset('admin/info') }}">
         <div class="row row-search">
             <label class="col-xl-auto col-form-label mt-2" for="start-date">{{ 'Start' | trans }} :</label>
@@ -41,6 +39,9 @@
                 <th scope="col" class="dataTableDateFR">{{ 'Start' | trans }}</th>
                 <th scope="col" class="dataTableDateFR">{{ 'End' | trans }}</th>
                 <th scope="col">{{ 'Text' | trans }}</th>
+                {% if config('Multisites-nombre') > 1 %}
+                    <th scope="col">{{ 'Sites' | trans }}</th>
+                {% endif %}
             </tr>
         </thead>
         <tbody>
@@ -53,7 +54,10 @@
                     </td>
                     <td>{{ elem.start | date('d/m/Y') }}</td>
                     <td>{{ elem.end | date('d/m/Y') }}</td>
-                    <td>{{ elem.comment | nl2br }}</td>
+                    <td>{{ elem.text | nl2br }}</td>
+                    {% if config('Multisites-nombre') > 1 %}
+                        <td>{{ elem.isForAllSites() ? 'All sites' | trans : elem.sites | sites }}</td>
+                    {% endif %}
                 </tr>
             {% endfor %}
         </tbody>

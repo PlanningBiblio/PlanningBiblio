@@ -18,20 +18,36 @@ class AdminInfoRepository extends EntityRepository
      *
      * $end defaults to $start if not passed
      *
+     * If $site is passed, only the messages displayed on this site are
+     * returned (messages for all sites included). Without $site, no filter
+     * is applied (administration list).
+     *
+     * Messages with the same dates are sorted by creation order (id).
+     *
      * @return AdminInfo[]
      */
-    public function findByDateRange(DateTimeInterface $start, ?DateTimeInterface $end = null): array
+    public function findByDateRange(DateTimeInterface $start, ?DateTimeInterface $end = null, ?int $site = null): array
     {
         $end = $end ?? $start;
 
-        return $this->createQueryBuilder('a')
-            ->andWhere('a.debut <= :end')
-            ->andWhere('a.fin >= :start')
-            ->orderBy('a.debut', 'ASC')
-            ->addOrderBy('a.fin', 'ASC')
+        $result = $this->createQueryBuilder('a')
+            ->andWhere('a.start <= :end')
+            ->andWhere('a.end >= :start')
+            ->orderBy('a.start', 'ASC')
+            ->addOrderBy('a.end', 'ASC')
+            ->addOrderBy('a.id', 'ASC')
             ->setParameter('start', $start, Types::DATE_MUTABLE)
             ->setParameter('end', $end, Types::DATE_MUTABLE)
             ->getQuery()
             ->getResult();
+
+        if ($site === null) {
+            return $result;
+        }
+
+        return array_values(array_filter(
+            $result,
+            fn (AdminInfo $info) => $info->isDisplayedOnSite($site)
+        ));
     }
 }
