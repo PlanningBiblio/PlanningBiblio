@@ -835,3 +835,12 @@ msgstr "Show statuses"
 
 msgid "Holiday"
 msgstr "Holiday"
+
+msgid "Informational messages"
+msgstr "Informational messages"
+
+msgid "Add a piece of information"
+msgstr "Add a piece of information"
+
+msgid "Modify information"
+msgstr "Modify information"

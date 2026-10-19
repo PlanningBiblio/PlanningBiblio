@@ -3,10 +3,11 @@
 namespace App\Controller;
 
 use App\Controller\BaseController;
-
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizer;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -17,7 +18,7 @@ use App\Entity\AdminInfo;
 class AdminInfoController extends BaseController
 {
     #[Route(path: '/admin/info/{reset?}', name: 'admin.info.index', methods: ['GET'], requirements: ['reset' => 'reset'])]
-    public function index(Request $request, Session $session, EntityManagerInterface $em)
+    public function index(Request $request, Session $session, EntityManagerInterface $em): Response
     {
         $start = $this->initDate('start', 'AdminInfoStart');
         $end = $this->initDate('end', 'AdminInfoEnd', '+1 year');
@@ -28,53 +29,49 @@ class AdminInfoController extends BaseController
             'info' => $info,
             'start' => $start,
             'end' => $end,
+            'title' => 'Informational messages',
         ]);
 
         return $this->output('adminInfo/index.html.twig');
     }
 
     #[Route(path: '/admin/info/add', name: 'admin.info.add', methods: ['GET'])]
-    public function addform(Request $request)
-    {
-        $this->templateParams(array(
-            'id'    => null,
-            'start' => null,
-            'end'   => null,
-            'text'  => null,
-            'sitesSelect' => $this->sitesSelect(),
-        ));
-
-        return $this->output('adminInfo/edit.html.twig');
-    }
-
     #[Route(path: '/admin/info/{id<\d+>}', name: 'admin.info.edit', methods: ['GET'])]
-    public function editform(Request $request)
+    public function edit(Request $request): Response | RedirectResponse
     {
-        $id = $request->get('id');
+        $id = $request->attributes->getInt('id');
 
-        $info = $this->entityManager->getRepository(AdminInfo::class)->find($id);
+        if ($id) {
+            $info = $this->entityManager->getRepository(AdminInfo::class)->find($id);
+            $formTitle = 'Modify information';
+        } else {
+            $info = new AdminInfo();
+            $formTitle = 'Add a piece of information';
+        }
 
-        $this->templateParams(array(
+        $this->templateParams([
             'id'    => $id,
-            'start' => date('d/m/Y', strtotime($info->getStart())),
-            'end'   => date('d/m/Y', strtotime($info->getEnd())),
+            'start' => $info->getStart(),
+            'end'   => $info->getEnd(),
             'text'  => $info->getComment(),
             'sitesSelect' => $this->sitesSelect($info),
-        ));
+            'title' => 'Informational messages',
+            'formTitle' => $formTitle,
+        ]);
 
         return $this->output('adminInfo/edit.html.twig');
     }
 
     #[Route(path: '/admin/info', name: 'admin.info.update', methods: ['POST'])]
-    public function update(Request $request, Session $session): \Symfony\Component\HttpFoundation\RedirectResponse
+    public function update(Request $request, Session $session): RedirectResponse
     {
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
         }
 
-        $id = $request->get('id');
-        $start = preg_replace('/(\d+)\/(\d+)\/(\d+)/', "$3$2$1", $request->get('start'));
-        $end = preg_replace('/(\d+)\/(\d+)\/(\d+)/', "$3$2$1", $request->get('end'));
+        $id = $request->request->getInt('id');
+        $start = DateTimeImmutable::createFromFormat('d/m/Y', $request->request->get('start'));
+        $end = DateTimeImmutable::createFromFormat('d/m/Y', $request->request->get('end'));
         $text = trim($request->get('text'));
 
         $htmlSanitizer = new HtmlSanitizer(
@@ -137,7 +134,7 @@ class AdminInfoController extends BaseController
     }
 
     #[Route(path: '/admin/info/delete', name: 'admin.info.delete', methods: ['POST'])]
-    public function delete(Request $request, Session $session): \Symfony\Component\HttpFoundation\Response
+    public function delete(Request $request, Session $session): Response
     {
         if (!$this->csrf_protection($request)) {
             $response = new Response();

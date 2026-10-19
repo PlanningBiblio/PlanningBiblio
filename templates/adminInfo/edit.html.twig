@@ -4,15 +4,9 @@
 
 {% block page %}
     <div id="content-admin">
-        <h3>Messages d'information</h3>
-
         <div class="admin-div">
-            {% if id %}
-                <h4>Modifications des messages d'informations</h4>
-            {% else %}
-                <h4>Ajout d'une information</h4>
-            {% endif %}
-
+            <h4>{{ formTitle | trans }}</h4>
+    
             <form id="form" method="post" action="{{ asset('admin/info') }}" name="form" novalidate>
                 <input type="hidden" name="_token" value="{{ csrf_token('') }}"/>
                 <input type="hidden" name="id" value="{{ id }}"/>
@@ -21,14 +15,14 @@
                 <tr>
                     <td><label>Date de début</label> </td>
                     <td>
-                    <input type="text" name="start" value="{{ start }}" style="width:100%;" class="datepicker start-date form-control" required/>
+                    <input type="text" name="start" value="{{ start | date('d/m/Y') }}" style="width:100%;" class="datepicker start-date form-control" required/>
                     </td>
                 </tr>
 
                 <tr>
                     <td><label>Date de fin</label></td>
                     <td>
-                    <input type="text" name="end" value="{{ end }}" style="width:100%;" class="datepicker end-date form-control"/>
+                    <input type="text" name="end" value="{{ end | date('d/m/Y') }}" style="width:100%;" class="datepicker end-date form-control"/>
                     </td>
                 </tr>
                 <tr>

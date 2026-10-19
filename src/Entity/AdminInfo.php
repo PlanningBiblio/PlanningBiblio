@@ -15,11 +15,11 @@ class AdminInfo
     #[ORM\Column(name: 'id')]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    protected ?string $debut = null;
+    #[ORM\Column(type: Types::DATE_IMMUTABLE)]
+    private ?\DateTimeImmutable $debut = null;
 
-    #[ORM\Column(length: 255)]
-    protected ?string $fin = null;
+    #[ORM\Column(type: Types::DATE_IMMUTABLE)]
+    private ?\DateTimeImmutable $fin = null;
 
     #[ORM\Column(type: Types::TEXT)]
     protected ?string $texte = null;
@@ -38,24 +38,24 @@ class AdminInfo
         return $this->id;
     }
 
-    public function getStart(): ?string
+    public function getStart(): ?\DateTimeImmutable
     {
         return $this->debut;
     }
 
-    public function setStart(?string $start): static
+    public function setStart(?\DateTimeImmutable $start): static
     {
         $this->debut = $start;
 
         return $this;
     }
 
-    public function getEnd(): ?string
+    public function getEnd(): ?\DateTimeImmutable
     {
         return $this->fin;
     }
 
-    public function setEnd(?string $end): static
+    public function setEnd(?\DateTimeImmutable $end): static
     {
         $this->fin = $end;
 
