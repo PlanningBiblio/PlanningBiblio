@@ -22,6 +22,8 @@ class AdminInfoRepository extends EntityRepository
      * returned (messages for all sites included). Without $site, no filter
      * is applied (administration list).
      *
+     * Messages with the same dates are sorted by creation order (id).
+     *
      * @return AdminInfo[]
      */
     public function findByDateRange(DateTimeInterface $start, ?DateTimeInterface $end = null, ?int $site = null): array
@@ -33,6 +35,7 @@ class AdminInfoRepository extends EntityRepository
             ->andWhere('a.fin >= :start')
             ->orderBy('a.debut', 'ASC')
             ->addOrderBy('a.fin', 'ASC')
+            ->addOrderBy('a.id', 'ASC')
             ->setParameter('start', $start, Types::DATE_MUTABLE)
             ->setParameter('end', $end, Types::DATE_MUTABLE)
             ->getQuery()
