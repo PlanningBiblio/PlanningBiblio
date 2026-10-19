@@ -5,6 +5,7 @@ namespace App\Tests\Repository;
 use App\Entity\AdminInfo;
 use App\Repository\AdminInfoRepository;
 use DateTime;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -85,8 +86,8 @@ class AdminInfoRepositoryTest extends KernelTestCase
     private function createInfo(string $start, string $end, string $text, array $sites): void
     {
         $info = new AdminInfo();
-        $info->setStart($start);
-        $info->setEnd($end);
+        $info->setStart(new DateTimeImmutable($start));
+        $info->setEnd(new DateTimeImmutable($end));
         $info->setComment($text);
         $info->setSites($sites);
         $this->entityManager->persist($info);

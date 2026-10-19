@@ -2,7 +2,6 @@
 
 use App\Entity\Agent;
 use App\Entity\AdminInfo;
-use DateTimeImmutable;
 use Symfony\Component\DomCrawler\Crawler;
 use Tests\PLBWebTestCase;
 use Tests\FixtureBuilder;
@@ -110,9 +109,11 @@ class AdminInfoControllerTest extends PLBWebTestCase
 
         $result = $crawler->filterXPath('//input[contains(@class, "start-date")]');
         $this->assertEquals($result->attr('name'),'start','input datepicker name is start');
+        $this->assertEquals('', $result->attr('value'), 'start date is empty when adding');
 
         $result = $crawler->filterXPath('//input[contains(@class, "end-date")]');
         $this->assertEquals($result->attr('name'),'end','input datepicker name is end');
+        $this->assertEquals('', $result->attr('value'), 'end date is empty when adding');
 
         $result = $crawler->filterXPath('//textarea');
         $this->assertEquals($result->attr('name'),'text','textarea name is texte');
@@ -361,6 +362,28 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $this->assertEquals(2, $rows->count());
         $this->assertContains($rows->eq(0)->filter('td')->eq(4)->text(), ['Tous les sites', 'All sites']);
         $this->assertEquals('Site B, Site C', $rows->eq(1)->filter('td')->eq(4)->text());
+    }
+
+    public function testEditUnknownIdReturns404(): void
+    {
+        $this->logInAdmin();
+
+        $this->client->request('GET', '/admin/info/999999');
+
+        $this->assertResponseStatusCodeSame(404);
+    }
+
+    public function testAddWithInvalidStartDate(): void
+    {
+        $this->logInAdmin();
+
+        $crawler = $this->client->request('GET', '/admin/info/add');
+        $token = $crawler->filter('#form input[name="_token"]')->attr('value');
+
+        $this->client->request('POST', '/admin/info', array('start' => 'invalid', 'end' => '', 'text' => 'salut', '_token' => $token));
+
+        $this->assertResponseRedirects('/admin/info/add');
+        $this->assertSame(0, $this->entityManager->getRepository(AdminInfo::class)->count([]), 'info is not created');
     }
 
     private function setSites(int $number): void

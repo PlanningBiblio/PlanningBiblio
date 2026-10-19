@@ -39,10 +39,13 @@ class AdminInfoController extends BaseController
     #[Route(path: '/admin/info/{id<\d+>}', name: 'admin.info.edit', methods: ['GET'])]
     public function edit(Request $request): Response | RedirectResponse
     {
-        $id = $request->attributes->getInt('id');
+        $id = $request->attributes->get('id');
 
         if ($id) {
             $info = $this->entityManager->getRepository(AdminInfo::class)->find($id);
+            if (!$info) {
+                throw $this->createNotFoundException();
+            }
             $formTitle = 'Modify information';
         } else {
             $info = new AdminInfo();
@@ -69,9 +72,18 @@ class AdminInfoController extends BaseController
             return $this->redirectToRoute('access-denied');
         }
 
-        $id = $request->request->getInt('id');
-        $start = DateTimeImmutable::createFromFormat('d/m/Y', $request->request->get('start'));
-        $end = DateTimeImmutable::createFromFormat('d/m/Y', $request->request->get('end'));
+        $id = $request->request->get('id');
+        // '!' resets the time to 00:00:00
+        $start = DateTimeImmutable::createFromFormat('!d/m/Y', $request->request->getString('start'));
+        $end = DateTimeImmutable::createFromFormat('!d/m/Y', $request->request->getString('end'));
+
+        if (!$start) {
+            $session->getFlashBag()->add('error', 'Veuillez saisir une date de début valide.');
+
+            return $id
+                ? $this->redirectToRoute('admin.info.edit', ['id' => $id])
+                : $this->redirectToRoute('admin.info.add');
+        }
         $text = trim($request->get('text'));
 
         $htmlSanitizer = new HtmlSanitizer(
