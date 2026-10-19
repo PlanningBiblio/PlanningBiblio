@@ -327,7 +327,7 @@ function deleteAbsenceDocument(id) {
 }
 
 function deleteAbsenceInfo(id) {
-    deleteAjax(id, 'absences/info/delete', 'Êtes vous sûr(e) de vouloir supprimer cette information ?', 'absences/info');
+    deleteAjax(id, 'absences/info/delete', Translator.trans('Are you sure you want to delete this information?'), 'absences/info');
 }
 
 function deleteAbsenceBlock(id) {
@@ -335,7 +335,7 @@ function deleteAbsenceBlock(id) {
 }
 
 function deleteAdminInfo(id) {
-    deleteAjax(id, 'admin/info/delete', 'Êtes vous sûr(e) de vouloir supprimer cette information ?', 'admin/info');
+    deleteAjax(id, 'admin/info/delete', Translator.trans('Are you sure you want to delete this information?'), 'admin/info');
 }
 
 function deleteAjax(id, route, message, redirectTo) {
@@ -910,7 +910,7 @@ $(function(){
 
   // HolidayInfo: delete button
   document.getElementById('holiday-info-delete-btn')?.addEventListener('click', function () {
-    if (confirm('Êtes vous sûr(e) de vouloir supprimer cette information ?')) {
+    if (confirm(Translator.trans('Are you sure you want to delete this information?'))) {
       document.getElementById('holidayInfoDeleteForm').submit();
     }
   });

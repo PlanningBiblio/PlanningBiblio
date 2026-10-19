@@ -862,3 +862,6 @@ msgstr "The information has been successfully deleted."
 
 msgid "If all sites are checked, the message will also be displayed on sites created later."
 msgstr "If all sites are checked, the message will also be displayed on sites created later."
+
+msgid "Are you sure you want to delete this information?"
+msgstr "Are you sure you want to delete this information?"

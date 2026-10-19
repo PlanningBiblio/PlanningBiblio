@@ -862,3 +862,6 @@ msgstr "L'information a bien été supprimée."
 
 msgid "If all sites are checked, the message will also be displayed on sites created later."
 msgstr "Si tous les sites sont cochés, le message sera également affiché sur les sites créés ultérieurement."
+
+msgid "Are you sure you want to delete this information?"
+msgstr "Êtes-vous sûr(e) de vouloir supprimer cette information ?"
