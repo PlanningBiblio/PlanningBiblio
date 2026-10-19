@@ -43,6 +43,24 @@
                     </td>
                 </tr>
 
+                {% if sitesSelect is not empty %}
+                <tr>
+                    <td colspan="2">
+                    <fieldset id="info-sites" aria-describedby="info-sites-help">
+                        <legend class="fs-6">{{ 'Sites' | trans }}</legend>
+                        {% for s in sitesSelect %}
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input mt-1 info-site" name="sites[]" id="site-{{ s.id }}" value="{{ s.id }}" {% if s.checked %}checked{% endif %}/>
+                            <label class="form-check-label" for="site-{{ s.id }}">{{ s.name }}</label>
+                        </div>
+                        {% endfor %}
+                        <p id="info-sites-help" class="form-text">Si tous les sites sont cochés, le message sera également affiché sur les sites créés ultérieurement.</p>
+                        <p id="info-sites-feedback" class="invalid-feedback" role="alert">Veuillez sélectionner au moins un site.</p>
+                    </fieldset>
+                    </td>
+                </tr>
+                {% endif %}
+
                 <tr>
                     <td>&nbsp;</td>
                 </tr>
@@ -60,4 +78,25 @@
             </form>
         </div>
     </div>
+{% endblock %}
+
+{% block specificjs %}
+    <script type="text/JavaScript">
+    $(function() {
+        // At least one site must be checked (multi-sites)
+        $('#form').on('submit', function(e) {
+            var sites = $('.info-site');
+            if (sites.length && !sites.filter(':checked').length) {
+                e.preventDefault();
+                $('#info-sites-feedback').addClass('d-block');
+                sites.first().trigger('focus');
+            }
+        });
+        $('.info-site').on('change', function() {
+            if ($('.info-site:checked').length) {
+                $('#info-sites-feedback').removeClass('d-block');
+            }
+        });
+    });
+    </script>
 {% endblock %}

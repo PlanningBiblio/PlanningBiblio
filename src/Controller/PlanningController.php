@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 use App\Entity\AbsenceReason;
+use App\Entity\AdminInfo;
 use App\Entity\Agent;
 use App\Entity\Detached;
 use App\Entity\HiddenTables;
@@ -2141,9 +2142,12 @@ class PlanningController extends BaseController
     }
 
     /**
-     * @return mixed[]
+     * Returns the texts of the information messages to display on the
+     * planning of the current site (day or week view)
+     *
+     * @return string[]
      */
-    private function getInfoMessages($dates, $date, $view): array
+    private function getInfoMessages($dates, $date, $view, $site): array
     {
         switch ($view) {
             case 'week' :
@@ -2156,19 +2160,13 @@ class PlanningController extends BaseController
                 break;
         }
 
-        $messages_infos = array();
+        $messages = $this->entityManager->getRepository(AdminInfo::class)->findByDateRange(
+            new \DateTime($start),
+            new \DateTime($end),
+            (int) $site
+        );
 
-        $db = new \db();
-        $start = $db->escapeString($start);
-        $end = $db->escapeString($end);
-        $db->select2('infos', '*', array('debut'=>"<={$end}", 'fin'=>">={$start}"), 'ORDER BY `debut`,`fin`');
-
-        if ($db->result) {
-            foreach ($db->result as $elem) {
-                $messages_infos[] = $elem['texte'];
-            }
-        }
-        return $messages_infos;
+        return array_map(fn (AdminInfo $info) => $info->getComment(), $messages);
     }
 
     private function getLockData(String $date = null): void
@@ -2318,7 +2316,7 @@ class PlanningController extends BaseController
         list($d, $semaine, $semaine3, $jour, $dates) = $this->dates;
 
         // Selection des messages d'informations
-        $messages_infos = $this->getInfoMessages($dates, $date, $view);
+        $messages_infos = $this->getInfoMessages($dates, $date, $view, $site);
 
         // Vérification des droits de modification (Autorisation)
         list($autorisationN1, $autorisationN2, $autorisationNotes) = $this->getPermissionsFor($site);

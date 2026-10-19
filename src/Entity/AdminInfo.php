@@ -24,6 +24,15 @@ class AdminInfo
     #[ORM\Column(type: Types::TEXT)]
     protected ?string $texte = null;
 
+    /**
+     * Sites on which the message is displayed.
+     * An empty array means "all sites", including sites created later.
+     *
+     * @var int[]
+     */
+    #[ORM\Column]
+    protected array $sites = [];
+
     public function getId(): ?int
     {
         return $this->id;
@@ -63,5 +72,35 @@ class AdminInfo
         $this->texte = $comment;
 
         return $this;
+    }
+
+    /**
+     * @return int[]
+     */
+    public function getSites(): array
+    {
+        return array_map('intval', $this->sites ?? []);
+    }
+
+    /**
+     * @param array<int|string> $sites
+     */
+    public function setSites(array $sites): static
+    {
+        $sites = array_unique(array_map('intval', $sites));
+        sort($sites);
+        $this->sites = array_values($sites);
+
+        return $this;
+    }
+
+    public function isForAllSites(): bool
+    {
+        return empty($this->sites);
+    }
+
+    public function isDisplayedOnSite(int $site): bool
+    {
+        return $this->isForAllSites() || in_array($site, $this->getSites(), true);
     }
 }

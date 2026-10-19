@@ -41,6 +41,7 @@ class AdminInfoController extends BaseController
             'start' => null,
             'end'   => null,
             'text'  => null,
+            'sitesSelect' => $this->sitesSelect(),
         ));
 
         return $this->output('adminInfo/edit.html.twig');
@@ -58,6 +59,7 @@ class AdminInfoController extends BaseController
             'start' => date('d/m/Y', strtotime($info->getStart())),
             'end'   => date('d/m/Y', strtotime($info->getEnd())),
             'text'  => $info->getComment(),
+            'sitesSelect' => $this->sitesSelect($info),
         ));
 
         return $this->output('adminInfo/edit.html.twig');
@@ -86,11 +88,36 @@ class AdminInfoController extends BaseController
           $end = $start;
         }
 
+        // Sites: an empty array means "all sites"
+        $sites = [];
+        $availableSites = array_column($this->sitesSelect(), 'id');
+
+        if (!empty($availableSites)) {
+            $sites = array_values(array_intersect(
+                $availableSites,
+                array_map('intval', $request->request->all('sites'))
+            ));
+
+            if (empty($sites)) {
+                $session->getFlashBag()->add('error', 'Veuillez sélectionner au moins un site.');
+
+                return $id
+                    ? $this->redirectToRoute('admin.info.edit', ['id' => $id])
+                    : $this->redirectToRoute('admin.info.add');
+            }
+
+            // All sites checked: the message will also be displayed on sites created later
+            if (count($sites) == count($availableSites)) {
+                $sites = [];
+            }
+        }
+
         if ($id) {
             $info = $this->entityManager->getRepository(AdminInfo::class)->find($id);
             $info->setStart($start);
             $info->setEnd($end);
             $info->setComment($text);
+            $info->setSites($sites);
             $flash = "L'information a bien été modifiée.";
         } else {
             // Store a new info
@@ -98,6 +125,7 @@ class AdminInfoController extends BaseController
             $info->setStart($start);
             $info->setEnd($end);
             $info->setComment($text);
+            $info->setSites($sites);
             $flash = "L'information a bien été enregistrée.";
         }
 
@@ -133,5 +161,37 @@ class AdminInfoController extends BaseController
         $response->setContent(json_encode('OK'));
 
         return $response;
+    }
+
+    /**
+     * Returns the sites that can be selected in the form (multi-sites only).
+     * Without $info (new message), all sites are checked.
+     * A message for all sites (empty array) has all its sites checked.
+     *
+     * @return array<int, array{id: int, name: string, checked: bool}>
+     */
+    private function sitesSelect(?AdminInfo $info = null): array
+    {
+        $sitesSelect = [];
+
+        if ($this->config('Multisites-nombre') < 2) {
+            return $sitesSelect;
+        }
+
+        for ($i = 1; $i <= $this->config('Multisites-nombre'); $i++) {
+
+            // Avoid displaying unamed or deleted sites
+            if (empty($this->config('Multisites-site' . $i))) {
+                continue;
+            }
+
+            $sitesSelect[] = [
+                'id' => $i,
+                'name' => $this->config('Multisites-site' . $i),
+                'checked' => $info === null || $info->isDisplayedOnSite($i),
+            ];
+        }
+
+        return $sitesSelect;
     }
 }

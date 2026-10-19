@@ -305,6 +305,9 @@ msgstr "Afficher les heures par groupe de postes"
 msgid "Sites"
 msgstr "Sites"
 
+msgid "All sites"
+msgstr "Tous les sites"
+
 msgid "Save changes"
 msgstr "Enregistrer les modifications"
 

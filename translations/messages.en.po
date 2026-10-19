@@ -305,6 +305,9 @@ msgstr "Display hours by job category"
 msgid "Sites"
 msgstr "Sites"
 
+msgid "All sites"
+msgstr "All sites"
+
 msgid "Save changes"
 msgstr "Save changes"
 

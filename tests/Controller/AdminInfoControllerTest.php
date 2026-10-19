@@ -69,6 +69,7 @@ class AdminInfoControllerTest extends PLBWebTestCase
 
         $this->assertEquals('20211005', $info->getStart(), 'debut is 20211005');
         $this->assertEquals('20211010', $info->getEnd(), 'fin is 20211010');
+        $this->assertSame([], $info->getSites(), 'mono-site: message is for all sites');
     }
 
     public function testNewForm(): void
@@ -111,6 +112,8 @@ class AdminInfoControllerTest extends PLBWebTestCase
 
         $result = $crawler->filterXPath('//textarea');
         $this->assertEquals($result->attr('name'),'text','textarea name is texte');
+
+        $this->assertSelectorCount(0, 'input[name="sites[]"]', 'mono-site: no site checkbox');
     }
 
     public function testFormEdit(): void
@@ -211,5 +214,194 @@ class AdminInfoControllerTest extends PLBWebTestCase
 
         $entityManager->clear();
         $this->assertNull($entityManager->getRepository(AdminInfo::class)->find($id), 'info is deleted');
+    }
+
+    protected function tearDown(): void
+    {
+        // Restore mono-site configuration for the other tests
+        if ($this->config) {
+            $this->setSites(1);
+        }
+
+        parent::tearDown();
+    }
+
+    public function testNewFormMultiSites(): void
+    {
+        $this->setSites(3);
+        $this->logInAdmin();
+
+        $crawler = $this->client->request('GET', '/admin/info/add');
+
+        $this->assertSelectorCount(3, 'input[name="sites[]"]', '3 site checkboxes');
+        $this->assertSelectorCount(3, 'input[name="sites[]"]:checked', 'all sites are checked when adding');
+        $this->assertSelectorTextContains('#info-sites legend', 'Sites');
+        $this->assertSelectorTextContains('label[for="site-2"]', 'Site B');
+    }
+
+    public function testAddMultiSitesAllChecked(): void
+    {
+        $this->setSites(3);
+        $this->logInAdmin();
+
+        $this->postInfo(['1', '2', '3']);
+
+        $info = $this->findInfo();
+        $this->assertNotNull($info, 'info is created');
+        $this->assertSame([], $info->getSites(), 'all sites checked are stored as [] (all sites)');
+    }
+
+    public function testAddMultiSitesSomeChecked(): void
+    {
+        $this->setSites(3);
+        $this->logInAdmin();
+
+        $this->postInfo(['3', '1']);
+
+        $info = $this->findInfo();
+        $this->assertNotNull($info, 'info is created');
+        $this->assertSame([1, 3], $info->getSites());
+    }
+
+    public function testAddMultiSitesUnknownSiteIsIgnored(): void
+    {
+        $this->setSites(3);
+        $this->logInAdmin();
+
+        $this->postInfo(['2', '9']);
+
+        $info = $this->findInfo();
+        $this->assertSame([2], $info->getSites(), 'unknown site 9 is ignored');
+    }
+
+    public function testAddMultiSitesNoneChecked(): void
+    {
+        $this->setSites(3);
+        $this->logInAdmin();
+
+        $this->postInfo([]);
+
+        $this->assertResponseRedirects('/admin/info/add');
+        $this->assertNull($this->findInfo(), 'info is not created without site');
+    }
+
+    public function testFormEditMultiSites(): void
+    {
+        $this->setSites(3);
+        $this->logInAdmin();
+
+        $info = new AdminInfo();
+        $info->setStart('20221005');
+        $info->setEnd('20221010');
+        $info->setComment('salut');
+        $info->setSites([2]);
+        $this->entityManager->persist($info);
+        $this->entityManager->flush();
+
+        $this->client->request('GET', '/admin/info/' . $info->getId());
+
+        $this->assertSelectorCount(1, 'input[name="sites[]"]:checked', 'only one site is checked');
+        $this->assertSelectorExists('#site-2:checked');
+        $this->assertSelectorNotExists('#site-1:checked');
+        $this->assertSelectorNotExists('#site-3:checked');
+    }
+
+    public function testEditMultiSitesNoneCheckedRedirectsToForm(): void
+    {
+        $this->setSites(3);
+        $this->logInAdmin();
+
+        $info = new AdminInfo();
+        $info->setStart('20221005');
+        $info->setEnd('20221010');
+        $info->setComment('salut');
+        $info->setSites([2]);
+        $this->entityManager->persist($info);
+        $this->entityManager->flush();
+        $id = $info->getId();
+
+        $this->postInfo([], $id);
+
+        $this->assertResponseRedirects("/admin/info/$id");
+
+        $this->entityManager->clear();
+        $info = $this->entityManager->getRepository(AdminInfo::class)->find($id);
+        $this->assertSame([2], $info->getSites(), 'sites are unchanged');
+    }
+
+    public function testListMultiSites(): void
+    {
+        $this->setSites(3);
+        $this->logInAdmin();
+
+        $info = new AdminInfo();
+        $info->setStart('2022-10-05');
+        $info->setEnd('2022-10-10');
+        $info->setComment('for all sites');
+        $this->entityManager->persist($info);
+
+        $info2 = new AdminInfo();
+        $info2->setStart('2022-10-06');
+        $info2->setEnd('2022-10-10');
+        $info2->setComment('for sites B and C');
+        $info2->setSites([2, 3]);
+        $this->entityManager->persist($info2);
+
+        $this->entityManager->flush();
+
+        $crawler = $this->client->request('GET', '/admin/info?start=01/10/2022&end=31/10/2022');
+
+        $this->assertSelectorTextContains('#AdminInfoTable thead', 'Sites');
+
+        $rows = $crawler->filter('#AdminInfoTable tbody tr');
+        $this->assertEquals(2, $rows->count());
+        $this->assertContains($rows->eq(0)->filter('td')->eq(4)->text(), ['Tous les sites', 'All sites']);
+        $this->assertEquals('Site B, Site C', $rows->eq(1)->filter('td')->eq(4)->text());
+    }
+
+    private function setSites(int $number): void
+    {
+        $this->config->setParam('Multisites-nombre', $number);
+
+        foreach (['A', 'B', 'C'] as $i => $letter) {
+            $this->config->setParam('Multisites-site' . ($i + 1), $i < $number && $number > 1 ? "Site $letter" : '');
+        }
+    }
+
+    private function logInAdmin(): void
+    {
+        $builder = new FixtureBuilder();
+        $builder->delete(Agent::class);
+        $builder->delete(AdminInfo::class);
+        $agent = $builder->build(Agent::class, array('login' => 'jdevoe'));
+
+        $this->logInAgent($agent, array(23));
+    }
+
+    private function postInfo(array $sites, ?int $id = null): void
+    {
+        $crawler = $this->client->request('GET', $id ? "/admin/info/$id" : '/admin/info/add');
+        $token = $crawler->filter('#form input[name="_token"]')->attr('value');
+
+        $data = array(
+            'id' => $id,
+            'start' => '05/10/2021',
+            'end' => '10/10/2021',
+            'text' => 'multi-sites',
+            '_token' => $token,
+        );
+
+        if (!empty($sites)) {
+            $data['sites'] = $sites;
+        }
+
+        $this->client->request('POST', '/admin/info', $data);
+    }
+
+    private function findInfo(): ?AdminInfo
+    {
+        $this->entityManager->clear();
+
+        return $this->entityManager->getRepository(AdminInfo::class)->findOneBy(array('debut' => '20211005', 'fin' => '20211010'));
     }
 }
