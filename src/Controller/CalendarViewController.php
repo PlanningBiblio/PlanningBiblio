@@ -117,13 +117,13 @@ final class CalendarViewController extends BaseController
 
         // Preparing the display
         // Daily display
-        $columns = [['display' => '', 'start' => '00:00:00', 'end' => '23:59:59']];
+        $columns = [['count' => 0, 'display' => '', 'start' => '00:00:00', 'end' => '23:59:59']];
 
         // Half-day display
         if ($diffDates < 14) {
             $columns = [
-                ['display' => 'A.M.', 'start' => '00:00:00', 'end' => '12:00:00'],
-                ['display' => 'P.M.', 'start' => '12:00:00', 'end' => '23:59:59'],
+                ['count' => 0, 'display' => 'A.M.', 'start' => '00:00:00', 'end' => '12:00:00'],
+                ['count' => 0, 'display' => 'P.M.', 'start' => '12:00:00', 'end' => '23:59:59'],
             ];
         }
 
@@ -134,6 +134,7 @@ final class CalendarViewController extends BaseController
             $columnEnd = DateTime::createFromFormat('G', '7');
             for ($i = 0; $i < 17; $i++) {
                 $columns[] = [
+                    'count' => 0,
                     'display' => $columnStart->format('G') . 'h - ' . $columnEnd->format('G') .'h',
                     'start' => $columnStart->format('H:i:s'),
                     'end' => $columnEnd->format('H:i:s'),
@@ -266,6 +267,9 @@ final class CalendarViewController extends BaseController
                                 }
                             }
                         }
+                    }
+                    if ($columnsPerDay > 2 and $class[$key] == 'attendee') {
+                        $columns[$key]['count']++;
                     }
                 }
             }
