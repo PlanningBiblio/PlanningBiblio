@@ -364,13 +364,13 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $this->assertEquals('Site B, Site C', $rows->eq(1)->filter('td')->eq(4)->text());
     }
 
-    public function testEditUnknownIdReturns404(): void
+    public function testEditUnknownIdRedirectsToList(): void
     {
         $this->logInAdmin();
 
         $this->client->request('GET', '/admin/info/999999');
 
-        $this->assertResponseStatusCodeSame(404);
+        $this->assertResponseRedirects('/admin/info');
     }
 
     public function testAddWithInvalidStartDate(): void

@@ -915,4 +915,20 @@ $(function(){
     }
   });
 
+  // Admin Info (Informational messages)
+  // At least one site must be checked (multi-sites)
+  $('#admin-info-form').on('submit', function(e) {
+      var sites = $('.admin-info-site');
+      if (sites.length && !sites.filter(':checked').length) {
+          e.preventDefault();
+          $('#admin-info-sites-feedback').addClass('d-block');
+          sites.first().trigger('focus');
+      }
+  });
+  $('.admin-info-site').on('change', function() {
+      if ($('.admin-info-site:checked').length) {
+          $('#admin-info-sites-feedback').removeClass('d-block');
+      }
+  });
+
 });

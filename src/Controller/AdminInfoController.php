@@ -18,7 +18,7 @@ use App\Entity\AdminInfo;
 class AdminInfoController extends BaseController
 {
     #[Route(path: '/admin/info/{reset?}', name: 'admin.info.index', methods: ['GET'], requirements: ['reset' => 'reset'])]
-    public function index(Request $request, Session $session, EntityManagerInterface $em): Response
+    public function index(Request $request, EntityManagerInterface $em): Response
     {
         $start = $this->initDate('start', 'AdminInfoStart');
         $end = $this->initDate('end', 'AdminInfoEnd', '+1 year');
@@ -44,7 +44,8 @@ class AdminInfoController extends BaseController
         if ($id) {
             $info = $this->entityManager->getRepository(AdminInfo::class)->find($id);
             if (!$info) {
-                throw $this->createNotFoundException();
+                $this->addFlash('error', "L'information demandée n'existe pas.");
+                return $this->redirectToRoute('admin.info.index');
             }
             $formTitle = 'Modify information';
         } else {
@@ -66,19 +67,18 @@ class AdminInfoController extends BaseController
     }
 
     #[Route(path: '/admin/info', name: 'admin.info.update', methods: ['POST'])]
-    public function update(Request $request, Session $session): RedirectResponse
+    public function update(Request $request): RedirectResponse
     {
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
         }
 
         $id = $request->request->get('id');
-        // '!' resets the time to 00:00:00
         $start = DateTimeImmutable::createFromFormat('!d/m/Y', $request->request->getString('start'));
         $end = DateTimeImmutable::createFromFormat('!d/m/Y', $request->request->getString('end'));
 
         if (!$start) {
-            $session->getFlashBag()->add('error', 'Veuillez saisir une date de début valide.');
+            $this->addFlash('error', 'Veuillez saisir une date de début valide.');
 
             return $id
                 ? $this->redirectToRoute('admin.info.edit', ['id' => $id])
@@ -108,7 +108,7 @@ class AdminInfoController extends BaseController
             ));
 
             if (empty($sites)) {
-                $session->getFlashBag()->add('error', 'Veuillez sélectionner au moins un site.');
+                $this->addFlash('error', 'Veuillez sélectionner au moins un site.');
 
                 return $id
                     ? $this->redirectToRoute('admin.info.edit', ['id' => $id])
@@ -141,12 +141,12 @@ class AdminInfoController extends BaseController
         $this->entityManager->persist($info);
         $this->entityManager->flush();
 
-        $session->getFlashBag()->add('notice', $flash);
+        $this->addFlash('notice', $flash);
         return $this->redirectToRoute('admin.info.index');
     }
 
     #[Route(path: '/admin/info/delete', name: 'admin.info.delete', methods: ['POST'])]
-    public function delete(Request $request, Session $session): Response
+    public function delete(Request $request): Response
     {
         if (!$this->csrf_protection($request)) {
             $response = new Response();
@@ -162,8 +162,7 @@ class AdminInfoController extends BaseController
         $this->entityManager->remove($info);
         $this->entityManager->flush();
 
-        $flash = "L'information a bien été supprimée.";
-        $session->getFlashBag()->add('notice', $flash);
+        $this->addFlash('notice', "L'information a bien été supprimée.");
 
         $response = new Response();
         $response->setStatusCode(200);
