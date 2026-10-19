@@ -58,7 +58,7 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $this->logInAgent($agent, array(23));
 
         $crawler = $this->client->request('GET', '/admin/info/add');
-        $extract_result = $crawler->filter('#form input[name="_token"]')->extract(array('value'));
+        $extract_result = $crawler->filter('#admin-info-form input[name="_token"]')->extract(array('value'));
         $token = $extract_result[0];
 
         $this->client->request('POST', '/admin/info', array('start' => '05/10/2021', 'end' => '10/10/2021', 'text' => 'salut', '_token' => $token));
@@ -240,7 +240,7 @@ class AdminInfoControllerTest extends PLBWebTestCase
 
         $this->assertSelectorCount(3, 'input[name="sites[]"]', '3 site checkboxes');
         $this->assertSelectorCount(3, 'input[name="sites[]"]:checked', 'all sites are checked when adding');
-        $this->assertSelectorTextContains('#info-sites legend', 'Sites');
+        $this->assertSelectorTextContains('#admin-info-sites legend', 'Sites');
         $this->assertSelectorTextContains('label[for="site-2"]', 'Site B');
     }
 
@@ -378,7 +378,7 @@ class AdminInfoControllerTest extends PLBWebTestCase
         $this->logInAdmin();
 
         $crawler = $this->client->request('GET', '/admin/info/add');
-        $token = $crawler->filter('#form input[name="_token"]')->attr('value');
+        $token = $crawler->filter('#admin-info-form input[name="_token"]')->attr('value');
 
         $this->client->request('POST', '/admin/info', array('start' => 'invalid', 'end' => '', 'text' => 'salut', '_token' => $token));
 
@@ -408,7 +408,7 @@ class AdminInfoControllerTest extends PLBWebTestCase
     private function postInfo(array $sites, ?int $id = null): void
     {
         $crawler = $this->client->request('GET', $id ? "/admin/info/$id" : '/admin/info/add');
-        $token = $crawler->filter('#form input[name="_token"]')->attr('value');
+        $token = $crawler->filter('#admin-info-form input[name="_token"]')->attr('value');
 
         $data = array(
             'id' => $id,
