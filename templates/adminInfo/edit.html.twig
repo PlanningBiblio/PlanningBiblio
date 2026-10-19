@@ -31,7 +31,7 @@
                 </tr>
 
                 <tr>
-                    <td><label>Texte</label></td>
+                    <td><label>{{ 'Text' | trans }}</label></td>
                     <td>
                     <textarea name="text" rows="3" cols="25" class="emoji-picker-textarea form-control" required>{{ text }}</textarea>
                     </td>
@@ -48,8 +48,8 @@
                             <label class="form-check-label" for="site-{{ s.id }}">{{ s.name }}</label>
                         </div>
                         {% endfor %}
-                        <p id="admin-info-sites-help" class="form-text">Si tous les sites sont cochés, le message sera également affiché sur les sites créés ultérieurement.</p>
-                        <p id="admin-info-sites-feedback" class="invalid-feedback" role="alert">Veuillez sélectionner au moins un site.</p>
+                        <p id="admin-info-sites-help" class="form-text">{{ 'If all sites are checked, the message will also be displayed on sites created later.' | trans }}</p>
+                        <p id="admin-info-sites-feedback" class="invalid-feedback" role="alert">{{ 'Please select at least one site.' | trans }}</p>
                     </fieldset>
                     </td>
                 </tr>

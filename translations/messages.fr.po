@@ -312,7 +312,7 @@ msgid "Save changes"
 msgstr "Enregistrer les modifications"
 
 msgid "Please enter a valid start date"
-msgstr "Veillez saisir une date de début valide"
+msgstr "Veuillez saisir une date de début valide"
 
 msgid "Please enter a valid end date"
 msgstr "Veillez saisir une date de fin valide"
@@ -844,3 +844,21 @@ msgstr "Ajouter une information"
 
 msgid "Modify information"
 msgstr "Modifier une information"
+
+msgid "The requested information does not exist."
+msgstr "L'information demandée n'existe pas."
+
+msgid "Please select at least one site."
+msgstr "Veuillez sélectionner au moins un site."
+
+msgid "The information has been successfully modified."
+msgstr "L'information a bien été modifiée."
+
+msgid "The information has been successfully saved."
+msgstr "L'information a bien été enregistrée."
+
+msgid "The information has been successfully deleted."
+msgstr "L'information a bien été supprimée."
+
+msgid "If all sites are checked, the message will also be displayed on sites created later."
+msgstr "Si tous les sites sont cochés, le message sera également affiché sur les sites créés ultérieurement."

@@ -44,7 +44,7 @@ class AdminInfoController extends BaseController
         if ($id) {
             $info = $this->entityManager->getRepository(AdminInfo::class)->find($id);
             if (!$info) {
-                $this->addFlash('error', "L'information demandée n'existe pas.");
+                $this->addFlash('error', $this->translator->trans('The requested information does not exist.'));
                 return $this->redirectToRoute('admin.info.index');
             }
             $formTitle = 'Modify information';
@@ -78,7 +78,7 @@ class AdminInfoController extends BaseController
         $end = DateTimeImmutable::createFromFormat('!d/m/Y', $request->request->getString('end'));
 
         if (!$start) {
-            $this->addFlash('error', 'Veuillez saisir une date de début valide.');
+            $this->addFlash('error', $this->translator->trans('Please enter a valid start date'));
 
             return $id
                 ? $this->redirectToRoute('admin.info.edit', ['id' => $id])
@@ -108,7 +108,7 @@ class AdminInfoController extends BaseController
             ));
 
             if (empty($sites)) {
-                $this->addFlash('error', 'Veuillez sélectionner au moins un site.');
+                $this->addFlash('error', $this->translator->trans('Please select at least one site.'));
 
                 return $id
                     ? $this->redirectToRoute('admin.info.edit', ['id' => $id])
@@ -127,7 +127,7 @@ class AdminInfoController extends BaseController
             $info->setEnd($end);
             $info->setComment($text);
             $info->setSites($sites);
-            $flash = "L'information a bien été modifiée.";
+            $flash = $this->translator->trans('The information has been successfully modified.');
         } else {
             // Store a new info
             $info = new AdminInfo();
@@ -135,7 +135,7 @@ class AdminInfoController extends BaseController
             $info->setEnd($end);
             $info->setComment($text);
             $info->setSites($sites);
-            $flash = "L'information a bien été enregistrée.";
+            $flash = $this->translator->trans('The information has been successfully saved.');
         }
 
         $this->entityManager->persist($info);
@@ -162,7 +162,7 @@ class AdminInfoController extends BaseController
         $this->entityManager->remove($info);
         $this->entityManager->flush();
 
-        $this->addFlash('notice', "L'information a bien été supprimée.");
+        $this->addFlash('notice', $this->translator->trans('The information has been successfully deleted.'));
 
         $response = new Response();
         $response->setStatusCode(200);

@@ -844,3 +844,21 @@ msgstr "Add a piece of information"
 
 msgid "Modify information"
 msgstr "Modify information"
+
+msgid "The requested information does not exist."
+msgstr "The requested information does not exist."
+
+msgid "Please select at least one site."
+msgstr "Please select at least one site."
+
+msgid "The information has been successfully modified."
+msgstr "The information has been successfully modified."
+
+msgid "The information has been successfully saved."
+msgstr "The information has been successfully saved."
+
+msgid "The information has been successfully deleted."
+msgstr "The information has been successfully deleted."
+
+msgid "If all sites are checked, the message will also be displayed on sites created later."
+msgstr "If all sites are checked, the message will also be displayed on sites created later."
