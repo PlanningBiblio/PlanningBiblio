@@ -687,9 +687,15 @@ class AbsenceController extends BaseController
             $message.="<br/>Commentaire:<br/>$commentaires<br/>";
         }
 
+        $notificationLevel = match (true) {
+            $valideN2 > 0 => 4,
+            $valideN1 > 0 => 3,
+            default => 2,
+        };
+
         if ($this->config('Absences-notifications-agent-par-agent')) {
             $a=new \absences();
-            $a->getRecipients2(null, $agents, 2, 500, $debut, $fin);
+            $a->getRecipients2(null, $agents, $notificationLevel, 500, $debut, $fin);
             $destinataires = $a->recipients;
         } else {
             // Foreach agent, search for agents in charge of absences.
@@ -707,7 +713,7 @@ class AbsenceController extends BaseController
             $destinataires=array();
             foreach ($staff_members as $member) {
                 $a=new \absences();
-                $a->getRecipients("-$workflow" . 2, $responsables, $member);
+                $a->getRecipients("-$workflow" . $notificationLevel, $responsables, $member);
                 $destinataires=array_merge($destinataires, $a->recipients);
             }
 
