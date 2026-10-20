@@ -1,5 +1,12 @@
 # Changelog Planno
 
+# Unreleased
+
+### Security / Dependencies
+
+* Bump phpseclib/phpseclib from 3.0.55 to 3.0.57
+  * Security advisory: https://github.com/PlanningBiblio/PlanningBiblio/security/dependabot/120
+
 ## Version 26.04.11 (2026-10-16)
 
 ### Fixes
