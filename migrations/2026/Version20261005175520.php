@@ -17,17 +17,31 @@ final class Version20261005175520 extends AbstractMigration
     public function up(Schema $schema): void
     {
         $dbprefix = $_ENV['DATABASE_PREFIX'];
+        $schemaManager = $this->connection->createSchemaManager();
 
-        $this->addSql("ALTER TABLE {$dbprefix}volants RENAME TO detached");
-        $this->addSql("ALTER TABLE {$dbprefix}detached RENAME COLUMN perso_id TO user_id");
+        $this->skipIf(
+            !$schemaManager->tablesExist(["{$dbprefix}volants"]),
+            'Skipping because `volants` table does not exists'
+        );
+
+        $this->addSql("DROP TABLE IF EXISTS {$dbprefix}detached;");
+        $this->addSql("ALTER TABLE {$dbprefix}volants RENAME TO detached;");
+        $this->addSql("ALTER TABLE {$dbprefix}detached RENAME COLUMN perso_id TO user_id;");
     }
 
     public function down(Schema $schema): void
     {
         $dbprefix = $_ENV['DATABASE_PREFIX'];
+        $schemaManager = $this->connection->createSchemaManager();
 
-        $this->addSql("ALTER TABLE {$dbprefix}detached RENAME COLUMN user_id TO perso_id");
-        $this->addSql("ALTER TABLE {$dbprefix}detached RENAME TO volants");
+        $this->skipIf(
+            !$schemaManager->tablesExist(["{$dbprefix}detached"]),
+            'Skipping because `detached` table does not exists'
+        );
+
+        $this->addSql("DROP TABLE IF EXISTS {$dbprefix}volants;");
+        $this->addSql("ALTER TABLE {$dbprefix}detached RENAME COLUMN user_id TO perso_id;");
+        $this->addSql("ALTER TABLE {$dbprefix}detached RENAME TO volants;");
     }
 
     public function isTransactional(): bool
