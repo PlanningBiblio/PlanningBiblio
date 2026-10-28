@@ -352,19 +352,20 @@ class AbsenceController extends BaseController
                 $this->addFlash('error', 'ClamAV is configured but not available: this file should not have been uploaded');
             } else {
 
-            $filename = $file->getClientOriginalName();
+                $filename = $file->getClientOriginalName();
+                $storage_id = bin2hex(random_bytes(16));
 
                 $ad = new AbsenceDocument();
                 $ad->setAbsenceId($result['id']);
                 $ad->setFilename($filename);
+                $ad->setStorageId($storage_id);
                 $ad->setDate(new \DateTime());
                 $this->entityManager->persist($ad);
                 $this->entityManager->flush();
 
-                $destination_dir = $ad->upload_dir() . $result['id'] . '/' . $ad->getId();
-                $file->move($destination_dir, $filename);
+                $file->move($ad->getStorageDirectory(), $storage_id);
                 if ($scanner->isEnabled()) {
-                    $scan_file = $destination_dir . '/' . $filename;
+                    $scan_file = $ad->getStoragePath();
                     $clean = $scanner->scan($scan_file);
                     if ($clean == 1) {
                         $this->logger->info("ClamAV is enabled and $scan_file is clean");

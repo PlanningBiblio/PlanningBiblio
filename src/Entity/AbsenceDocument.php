@@ -22,6 +22,9 @@ class AbsenceDocument
     #[ORM\Column(type: Types::TEXT)]
     private ?string $filename = '';
 
+    #[ORM\Column(type: Types::STRING)]
+    private ?string $storage_id = null;
+
     #[ORM\Column]
     private ?\DateTime $date = null;
 
@@ -66,12 +69,31 @@ class AbsenceDocument
         return $this;
     }
 
+    public function getStorageId(): ?string
+    {
+        return $this->storage_id;
+    }
+
+    public function setStorageId(string $storage_id): static
+    {
+        $this->storage_id = $storage_id;
+
+        return $this;
+    }
+
     public function deleteFile(): void
     {
         if (!$this->absence_id || !$this->filename || !$this->id) return;
 
-        unlink($this->upload_dir() . $this->absence_id . '/' . $this->id . '/' . $this->filename);
-        rmdir($this->upload_dir() . $this->absence_id . '/' . $this->id);
+        $filepath = $this->getStoragePath();
+        if (file_exists($filepath)) {
+            unlink($filepath);
+        }
+
+        $directory = $this->getStorageDirectory();
+        if (is_dir($directory)) {
+            rmdir($directory);
+        }
     }
 
     public function upload_dir() {
@@ -80,5 +102,22 @@ class AbsenceDocument
         }
 
         return $this->upload_dir;
+    }
+
+    /**
+     * Returns the absolute path of directory where the file is (or will be)
+     * stored
+     */
+    public function getStorageDirectory(): string
+    {
+        return sprintf('%s%s/%s', $this->upload_dir(), $this->absence_id, $this->id);
+    }
+
+    /**
+     * Returns the absolute path of the file
+     */
+    public function getStoragePath(): string
+    {
+        return sprintf('%s/%s', $this->getStorageDirectory(), $this->getStorageId());
     }
 }

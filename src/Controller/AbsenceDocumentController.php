@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
@@ -21,9 +22,10 @@ class AbsenceDocumentController extends BaseController
         $id = $request->attributes->get('id');
         $ad = $this->entityManager->getRepository(AbsenceDocument::class)->find($id);
 
-        $file = new File($ad->upload_dir() . $ad->getAbsenceId() . '/' . $ad->getId() . '/' . $ad->getFilename());
+        $file = new File($ad->getStoragePath());
 
         $response = new BinaryFileResponse($file);
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $ad->getFilename());
 
         return $response;
     }
@@ -64,17 +66,18 @@ class AbsenceDocumentController extends BaseController
             } else {
 
                 $filename = $file->getClientOriginalName();
+                $storage_id = bin2hex(random_bytes(16));
                 $ad = new AbsenceDocument();
                 $ad->setAbsenceId($id);
                 $ad->setFilename($filename);
+                $ad->setStorageId($storage_id);
                 $ad->setDate(new \DateTime());
                 $this->entityManager->persist($ad);
                 $this->entityManager->flush();
 
-                $destination_dir = $ad->upload_dir() . $id . '/' . $ad->getId();
-                $file->move($destination_dir, $filename);
+                $file->move($ad->getStorageDirectory(), $storage_id);
                 if ($scanner->isEnabled()) {
-                    $scan_file = $destination_dir . '/' . $filename;
+                    $scan_file = $ad->getStoragePath();
                     $clean = $scanner->scan($scan_file);
                     if ($clean == 1) {
                         $this->logger->info("ClamAV is enabled and $scan_file is clean");
