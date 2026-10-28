@@ -290,21 +290,31 @@ function refreshAbsenceDocumentList(id) {
         $.ajax({
             url: url('absences/documents/' + id),
             type: 'GET',
-            success: function(result) {
-                listString = '<div class="col-6" id="documentsList">';
-                jQuery.each(result, function() {
-                    listString +=
-                      `<div class="row gx-5" id="document_` + this.id + `">
+            success: function(docs) {
+                listDiv = document.createElement('div');
+                listDiv.id = 'documentsList';
+                listDiv.classList.add('col-6');
+
+                const docTemplate = document.createElement('template');
+                docTemplate.innerHTML = `
+                    <div class="row gx-5">
                         <div class="col-6">
-                          <a type="link" class="btn btn-link text-start" href="/absences/document/` + this.id + `">` + this.filename + `</a>
+                            <a type="link" class="btn btn-link text-start"></a>
                         </div>
                         <div class="col-auto ps-0">
-                          <button type="button" class="btn btn-link text-start" onclick="deleteAbsenceDocument(` + this.id + `);">Supprimer</button>
+                            <button type="button" class="btn btn-link text-start">Supprimer</button>
                         </div>
-                      </div>`;
-                  });
-                listString += '</div>';
-                $("#documentsList").replaceWith(listString);
+                    </div>
+                `;
+                for (const doc of docs) {
+                    const docDiv = docTemplate.content.firstElementChild.cloneNode(true);
+                    docDiv.id = `document_${doc.id}`;
+                    docDiv.querySelector('a').href = `/absences/document/${doc.id}`;
+                    docDiv.querySelector('a').innerText = doc.filename;
+                    docDiv.querySelector('button').addEventListener('click', () => { deleteAbsenceDocument(doc.id); });
+                    listDiv.append(docDiv);
+                }
+                $("#documentsList").replaceWith(listDiv);
                 return false;
             }
         });
