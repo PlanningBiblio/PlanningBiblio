@@ -91,7 +91,7 @@ class AuthorizationsController extends BaseController
                 case 'LDAP-SQL':
                     $auth = authLDAP($login, $password);
                     if (!$auth) {
-                        $auth = authSQL($login, $password);
+                        $auth = $this->authSQL($login, $password);
                     }
                     break;
 
@@ -104,14 +104,14 @@ class AuthorizationsController extends BaseController
                         $auth = true;
                     }
                     if (!$auth) {
-                        $auth = authSQL($login, $password);
+                        $auth = $this->authSQL($login, $password);
                     }
                     break;
             }
         }
 
         if ($this->config('Auth-Mode') == 'SQL' or $login == 'admin') {
-            $auth = authSQL($login, $password);
+            $auth = $this->authSQL($login, $password);
         }
 
         if ($authArgs and $redirect_url) {
@@ -198,6 +198,40 @@ class AuthorizationsController extends BaseController
         // Managed by ControllerAuthorizationListener::triggerAccessDenied
         $content = $this->renderView('access-denied.html.twig');
         return new Response($content, 403);
+    }
+
+    private function authSQL($login, $password): bool
+    {
+        $entityManager = $GLOBALS['entityManager'];
+        $agent = $entityManager->getRepository(Agent::class)->findOneBy(['login' => $login, 'supprime' => 0]);
+
+        if (empty($agent) or empty($login)) {
+            return false;
+        }
+
+        // Old MD5 password
+        if (strlen($agent->getPassword()) == 32) {
+            if (md5($password) == $agent->getPassword()) {
+                $_SESSION['oups']['Auth-Mode'] = 'SQL';
+
+                // Update password
+                $bcrypt_password = password_hash($password,PASSWORD_BCRYPT);
+
+                $agent->setPassword($bcrypt_password);
+                $em->persist($agent);
+                $em->flush();
+
+                return true;
+            }
+        // New bcrypt password
+        } else {
+            if (password_verify($password, $agent->getPassword())) {
+                $_SESSION['oups']['Auth-Mode'] = 'SQL';
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
