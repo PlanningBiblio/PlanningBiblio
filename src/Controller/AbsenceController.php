@@ -7,6 +7,7 @@ use App\Entity\AbsenceDocument;
 use App\Entity\Absence;
 use App\Entity\AbsenceReason;
 use App\Entity\Agent;
+use App\Service\AbsenceDocumentFileValidator;
 use App\Service\ClamAvScanner;
 
 use App\Planno\Helper\HourHelper;
@@ -317,7 +318,7 @@ class AbsenceController extends BaseController
     }
 
     #[Route(path: '/absence', name: 'absence.save', methods: ['POST'])]
-    public function save(Request $request, Session $session, ClamAvScanner $scanner)
+    public function save(Request $request, Session $session, ClamAvScanner $scanner, AbsenceDocumentFileValidator $validator)
     {
         if (!$this->csrf_protection($request)) {
             return $this->redirectToRoute('access-denied');
@@ -346,8 +347,12 @@ class AbsenceController extends BaseController
 
         $file = $request->files->get('documentFile');
         if (!empty($file)) {
-
-            if ($scanner->isConfigured() && !$scanner->isEnabled()) {
+            $violations = $validator->validate($file);
+            if (count($violations) > 0) {
+                foreach ($violations as $violation) {
+                    $this->addFlash('error', $violation->getMessage());
+                }
+            } elseif ($scanner->isConfigured() && !$scanner->isEnabled()) {
                 $this->logger->critical('ClamAV is configured but not available: this file should not have been uploaded');
                 $this->addFlash('error', 'ClamAV is configured but not available: this file should not have been uploaded');
             } else {

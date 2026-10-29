@@ -5,8 +5,10 @@ namespace App\Controller;
 use App\Controller\BaseController;
 use App\Entity\AbsenceDocument;
 use App\Service\ClamAvScanner;
+use App\Service\AbsenceDocumentFileValidator;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
@@ -47,55 +49,73 @@ class AbsenceDocumentController extends BaseController
     }
 
    #[Route(path: '/absences/document/{id_absence}', name: 'absences.document.add', methods: ['POST'])]
-    public function add(Request $request, Session $session, ClamAvScanner $scanner): RedirectResponse|Response
+    public function add(Request $request, Session $session, ClamAvScanner $scanner, AbsenceDocumentFileValidator $validator): JsonResponse
     {
         if (!$this->csrf_protection($request)) {
-            return $this->redirectToRoute('access-denied');
+            return new JsonResponse(['errors' => ['CSRF token validation failed']], Response::HTTP_FORBIDDEN);
         }
 
         $id = $request->attributes->get('id_absence');
         $file = $request->files->get('documentFile');
-        if (!empty($file)) {
+        if (empty($file)) {
+            return new JsonResponse(
+                ['errors' => ['No files were sent']],
+                Response::HTTP_BAD_REQUEST
+            );
+        }
 
-            if ($scanner->isConfigured() && !$scanner->isEnabled()) {
-               $this->logger->critical("ClamAV is configured but not available: this file should not have been uploaded"); 
-                return new Response(
-                    $this->translator->trans('The uploaded file cannot be scanned.'),
+        $violations = $validator->validate($file);
+        if (count($violations) > 0) {
+            $errors = array_map(fn ($v) => $v->getMessage(), iterator_to_array($violations));
+            return new JsonResponse(
+                ['errors' => $errors],
+                Response::HTTP_UNPROCESSABLE_ENTITY
+            );
+        }
+
+        if ($scanner->isConfigured() && !$scanner->isEnabled()) {
+           $this->logger->critical("ClamAV is configured but not available: this file should not have been uploaded"); 
+            return new JsonResponse(
+                ['errors' => [$this->translator->trans('The uploaded file cannot be scanned.')]],
+                Response::HTTP_UNPROCESSABLE_ENTITY
+            );
+        }
+
+        $filename = $file->getClientOriginalName();
+        $storage_id = bin2hex(random_bytes(16));
+        $ad = new AbsenceDocument();
+        $ad->setAbsenceId($id);
+        $ad->setFilename($filename);
+        $ad->setStorageId($storage_id);
+        $ad->setDate(new \DateTime());
+        $this->entityManager->persist($ad);
+        $this->entityManager->flush();
+
+        $file->move($ad->getStorageDirectory(), $storage_id);
+        if ($scanner->isEnabled()) {
+            $scan_file = $ad->getStoragePath();
+            $clean = $scanner->scan($scan_file);
+            if ($clean == 1) {
+                $this->logger->info("ClamAV is enabled and $scan_file is clean");
+            } else {
+                $this->logger->critical("ClamAV is enabled and $scan_file is unsafe, deleting it");
+                # We did not prevent the AbsenceDocument creation, so we can use ->deleteFile();
+                $ad->deleteFile();
+                $this->entityManager->remove($ad);
+                $this->entityManager->flush();
+                return new JsonResponse(
+                    ['errors' => [$this->translator->trans('The uploaded file contains malware and was deleted')]],
                     Response::HTTP_UNPROCESSABLE_ENTITY
                 );
-            } else {
-
-                $filename = $file->getClientOriginalName();
-                $storage_id = bin2hex(random_bytes(16));
-                $ad = new AbsenceDocument();
-                $ad->setAbsenceId($id);
-                $ad->setFilename($filename);
-                $ad->setStorageId($storage_id);
-                $ad->setDate(new \DateTime());
-                $this->entityManager->persist($ad);
-                $this->entityManager->flush();
-
-                $file->move($ad->getStorageDirectory(), $storage_id);
-                if ($scanner->isEnabled()) {
-                    $scan_file = $ad->getStoragePath();
-                    $clean = $scanner->scan($scan_file);
-                    if ($clean == 1) {
-                        $this->logger->info("ClamAV is enabled and $scan_file is clean");
-                    } else {
-                        $this->logger->critical("ClamAV is enabled and $scan_file is unsafe, deleting it");
-                        # We did not prevent the AbsenceDocument creation, so we can use ->deleteFile();
-                        $ad->deleteFile();
-                        $this->entityManager->remove($ad);
-                        $this->entityManager->flush();
-                        return new Response(
-                            $this->translator->trans('The uploaded file contains malware.'),
-                            Response::HTTP_UNPROCESSABLE_ENTITY
-                        );
-                    }
-                }
             }
         }
-        $response = new Response();
+
+        $response = new JsonResponse([
+            'id' => $ad->getId(),
+            'absence_id' => $ad->getAbsenceId(),
+            'filename' => $ad->getFilename(),
+        ]);
+
         return $response;
     }
 
