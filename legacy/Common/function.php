@@ -13,7 +13,6 @@
  * Page appelée par les fichiers index.php, setup/index.php et planning/poste/menudiv.php
  */
 
-use App\Entity\Agent;
 use App\Entity\WorkingHour;
 use App\Entity\WorkingHourCycle;
 use App\Planno\WorkingHours;
@@ -330,40 +329,6 @@ class CJMail implements NotificationTransporterInterface
 
         return true;
     }
-}
-
-function authSQL($login, $password): bool
-{
-    $entityManager = $GLOBALS['entityManager'];
-    $agent = $entityManager->getRepository(Agent::class)->findOneBy(['login' => $login, 'supprime' => 0]);
-
-    if (empty($agent) or empty($login)) {
-        return false;
-    }
-
-    // Old MD5 password
-    if (strlen($agent->getPassword()) == 32) {
-        if (md5($password) == $agent->getPassword()) {
-            $_SESSION['oups']['Auth-Mode'] = 'SQL';
-
-            // Update password
-            $bcrypt_password = password_hash($password,PASSWORD_BCRYPT);
-
-            $agent->setPassword($bcrypt_password);
-            $em->persist($agent);
-            $em->flush();
-
-            return true;
-        }
-    // New bcrypt password
-    } else {
-        if (password_verify($password, $agent->getPassword())) {
-            $_SESSION['oups']['Auth-Mode'] = 'SQL';
-            return true;
-        }
-    }
-
-    return false;
 }
 
 /**
