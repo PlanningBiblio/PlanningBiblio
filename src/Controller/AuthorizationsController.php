@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Agent;
 use App\Entity\IPBlocker;
 use App\Controller\BaseController;
 use App\Planno\OpenIDConnect;
@@ -10,6 +11,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
 include_once(__DIR__ . '/../../legacy/Common/function.php');
@@ -26,8 +28,8 @@ class AuthorizationsController extends BaseController
             return new Response($return, 403);
         }
 
-        $redirect_url = $request->get('redirURL');
-        $new_login = $request->get('newlogin');
+        $redirect_url = $request->query->get('redirURL');
+        $new_login = $request->query->get('newlogin');
 
         // SSO Link
         $sSOLink = null;
@@ -59,7 +61,7 @@ class AuthorizationsController extends BaseController
     }
 
     #[Route(path: '/login', name: 'login.check', methods: ['POST'])]
-    public function check_login(Request $request, LoggerInterface $logger = null): Response|RedirectResponse
+    public function check_login(Request $request, Session $session, LoggerInterface $logger = null): Response|RedirectResponse
     {
         $this->redirectCAS($request, $logger);
 
@@ -67,11 +69,9 @@ class AuthorizationsController extends BaseController
             return new Response($return, 403);
         }
 
-        $session = $request->getSession();
-
-        $login = $request->get('login');
-        $password = $request->get('password');
-        $redirect_url = $request->get('redirURL') ?? '/index.php';
+        $login = $request->request->get('login');
+        $password = $request->request->get('password');
+        $redirect_url = $request->request->get('redirURL') ?? '/index.php';
 
         $authArgs = null;
         if (preg_match('/^CAS|^OpenIDConnect/', $this->config['Auth-Mode'])) {
@@ -129,20 +129,19 @@ class AuthorizationsController extends BaseController
         if ($auth) {
             // Log login and client IP if success login.
             loginSuccess($login, $CSRFToken);
-            $db = new \db();
-            $db->select2("personnel", "id,nom,prenom", array("login"=>$login));
-            if ($db->result) {
-                $_SESSION['login_id'] = $db->result[0]['id'];
-                $_SESSION['login_nom'] = $db->result[0]['nom'];
-                $_SESSION['login_prenom'] = $db->result[0]['prenom'];
+
+            $user = $this->entityManager->getRepository(Agent::class)->findOneByLogin($login);
+            if ($user) {
+                $_SESSION['login_id'] = $user->getId();
+                $_SESSION['login_nom'] = $user->getLastname();
+                $_SESSION['login_prenom'] = $user->getFirstname();
 
                 // Symfony Session
-                $session = $request->getSession();
-                $session->set('loginId', $db->result[0]['id']);
+                $session->set('loginId', $user->getId());
 
                 $db = new \db();
                 $db->CSRFToken = $CSRFToken;
-                $db->update('personnel', array('last_login' => date('Y-m-d H:i:s')), array('id' => $session->get('loginId')));
+                $db->update('personnel', ['last_login' => date('Y-m-d H:i:s')], ['id' => $user->getId()]);
                 return $this->redirect($this->config('URL') . "/$redirect_url");
             } else {
                 $error = "unknown_user";
@@ -162,12 +161,11 @@ class AuthorizationsController extends BaseController
     }
 
     #[Route(path: '/logout', name: 'logout', methods: ['GET'])]
-    public function logout(Request $request): RedirectResponse
+    public function logout(Request $request, Session $session): RedirectResponse
     {
         session_destroy();
 
         // Symfony Session
-        $session = $request->getSession();
         $session->invalidate();
 
         $authArgs = null;
@@ -249,25 +247,23 @@ class AuthorizationsController extends BaseController
             }
 
             // Check if user login exists in database.
-            $db = new \db();
-            $db->select2('personnel', array('id','nom','prenom'), array('login' => 'LIKE' . $login, 'supprime' => '0'));
+            $user = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => $login, 'supprime' => 0]);
 
             // If user's login doesn't exist,
             // show an unauthorized message
-            if (!$db->result or empty($login)) {
+            if (!$user or empty($login)) {
                 // Redirect to error page
                 return 'cas_unknown_user';
             }
 
             // Création de la session
             // If login exists, create session.
-            $_SESSION['login_id']=$db->result[0]['id'];
-            $_SESSION['login_nom']=$db->result[0]['nom'];
-            $_SESSION['login_prenom']=$db->result[0]['prenom'];
+            $_SESSION['login_id'] = $user->getId();
+            $_SESSION['login_nom'] = $user->getLastname();
+            $_SESSION['login_prenom'] = $user->getFirstname();
 
             // Symfony Session
-            $session = $request->getSession();
-            $session->set('loginId', $db->result[0]['id']);
+            $session->set('loginId', $user->getId());
 
             // Create CSRF Token
             $CSRFToken = CSRFToken();
@@ -279,7 +275,7 @@ class AuthorizationsController extends BaseController
             // Update last_login field.
             $db = new \db();
             $db->CSRFToken = $CSRFToken;
-            $db->update('personnel', array('last_login' => date('Y-m-d H:i:s')), array('id' => $session->get('loginId')));
+            $db->update('personnel', ['last_login' => date('Y-m-d H:i:s')], ['id' => $user->getId()]);
 
             // Redirect
             header('Location: ' . $this->config('URL') . "/$redirURL");

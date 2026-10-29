@@ -332,29 +332,19 @@ class CJMail implements NotificationTransporterInterface
     }
 }
 
-function authSQL($login, $password)
+function authSQL($login, $password): bool
 {
-
-    $auth = false;
-    $em = $GLOBALS['entityManager'];
-
-    $agent = $em->getRepository(Agent::class)->findBy(array('login' => $login, 'supprime' => 0));
+    $entityManager = $GLOBALS['entityManager'];
+    $agent = $entityManager->getRepository(Agent::class)->findOneBy(['login' => $login, 'supprime' => 0]);
 
     if (empty($agent) or empty($login)) {
         return false;
     }
 
-    if (count($agent) <> 1) {
-        return false;
-    }
-
-    $agent = $agent[0];
-
     // Old MD5 password
     if (strlen($agent->getPassword()) == 32) {
         if (md5($password) == $agent->getPassword()) {
-            $auth=true;
-            $_SESSION['oups']['Auth-Mode']="SQL";
+            $_SESSION['oups']['Auth-Mode'] = 'SQL';
 
             // Update password
             $bcrypt_password = password_hash($password,PASSWORD_BCRYPT);
@@ -362,16 +352,18 @@ function authSQL($login, $password)
             $agent->setPassword($bcrypt_password);
             $em->persist($agent);
             $em->flush();
+
+            return true;
         }
     // New bcrypt password
     } else {
         if (password_verify($password, $agent->getPassword())) {
-            $auth=true;
-            $_SESSION['oups']['Auth-Mode']="SQL";
+            $_SESSION['oups']['Auth-Mode'] = 'SQL';
+            return true;
         }
     }
 
-    return $auth;
+    return false;
 }
 
 /**
