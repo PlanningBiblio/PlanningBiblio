@@ -1127,27 +1127,6 @@ function loginFailed($login, $CSRFToken): void
 }
 
 /**
- * Retourne le nombre de secondes restantes avant que l'IP bloquée soit de nouveau autorisée à se connecter
- * @param int config IPBlocker-Wait : temps de blocages des IP en minutes
- */
-function loginFailedWait(): int
-{
-    $seconds=$GLOBALS['config']['IPBlocker-Wait']*60;
-    $wait=0;
-
-    $ipAddress = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
-
-    $db=new db();
-    $db->select2('ip_blocker', 'timestamp', array('ip' => $ipAddress, 'status' => 'blocked'), 'ORDER BY `timestamp` DESC LIMIT 0,1');
-
-    if ($db->result) {
-        $timestamp=$db->result[0]['timestamp'];
-        $wait=strtotime($timestamp) + (int) $seconds - time();
-    }
-    return $wait;
-}
-
-/**
  * Log le login et l'adresse IP du client dans la table ip_blocker pour informations
  * @param string $login : login saisi par l'utilisateur
  */

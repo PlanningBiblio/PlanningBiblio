@@ -2,34 +2,28 @@
 
 namespace App\Controller;
 
+use App\Entity\IPBlocker;
 use App\Controller\BaseController;
 use App\Planno\OpenIDConnect;
-
+use DateTimeImmutable;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-
-use Psr\Log\LoggerInterface;
 
 include_once(__DIR__ . '/../../legacy/Common/function.php');
 include_once(__DIR__ . '/../../legacy/Class/class.ldap.php');
 
 class AuthorizationsController extends BaseController
 {
-
     #[Route(path: '/login', name: 'login', methods: ['GET'])]
-    public function login(Request $request, LoggerInterface $logger = null)
+    public function login(Request $request, LoggerInterface $logger = null): Response
     {
-
         $error = $this->redirectCAS($request, $logger);
 
-        $IPBlocker = loginFailedWait();
-        if ($IPBlocker > 0) {
-            $content = $this->renderView('forbidden.html.twig', array(
-                'remote_addr' => $_SERVER['REMOTE_ADDR'],
-                'ip_blocker' => $IPBlocker
-            ));
-            return new Response($content, 403);
+        if ($return = $this->checkLoginAttempts()) {
+            return new Response($return, 403);
         }
 
         $redirect_url = $request->get('redirURL');
@@ -65,9 +59,13 @@ class AuthorizationsController extends BaseController
     }
 
     #[Route(path: '/login', name: 'login.check', methods: ['POST'])]
-    public function check_login(Request $request, LoggerInterface $logger = null)
+    public function check_login(Request $request, LoggerInterface $logger = null): Response|RedirectResponse
     {
         $this->redirectCAS($request, $logger);
+
+        if ($return = $this->checkLoginAttempts()) {
+            return new Response($return, 403);
+        }
 
         $session = $request->getSession();
 
@@ -164,7 +162,7 @@ class AuthorizationsController extends BaseController
     }
 
     #[Route(path: '/logout', name: 'logout', methods: ['GET'])]
-    public function logout(Request $request): \Symfony\Component\HttpFoundation\RedirectResponse
+    public function logout(Request $request): RedirectResponse
     {
         session_destroy();
 
@@ -197,11 +195,27 @@ class AuthorizationsController extends BaseController
     }
 
     #[Route(path: '/access-denied', name: 'access-denied', methods: ['GET'])]
-    public function denied(Request $request): \Symfony\Component\HttpFoundation\Response
+    public function denied(Request $request): Response
     {
         // Managed by ControllerAuthorizationListener::triggerAccessDenied
         $content = $this->renderView('access-denied.html.twig');
         return new Response($content, 403);
+    }
+
+    /**
+     * Returns the "Forbidden" view if the IP address or account is blocked.
+     */
+    private function checkLoginAttempts(): string|false
+    {
+        $ipAddress = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
+        $minutes = $this->config['IPBlocker-Wait'];
+        $waitSince = new DateTimeImmutable("- $minutes minutes");
+
+        if ($this->entityManager->getRepository(IPBlocker::class)->ipIsBlocked($ipAddress, $waitSince)) {
+            return $this->renderView('forbidden.html.twig', ['remote_addr' => $ipAddress]);
+        }
+
+        return false;
     }
 
     private function redirectCAS(Request $request, $logger): string

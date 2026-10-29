@@ -5,9 +5,9 @@ use App\Entity\Agent;
 use Tests\PLBWebTestCase;
 use Tests\FixtureBuilder;
 
-class AuthorizationsControllerLoginFailedWait extends PLBWebTestCase
+class AuthorizationsControllerCheckLoginAttempts extends PLBWebTestCase
 {
-    public function testLoginFailedWait(): void
+    public function testCheckLoginAttempts(): void
     {
         $GLOBALS['config']['IPBlocker-Attempts'] = 3;
         $_SERVER['REMOTE_ADDR'] = '11.11.11.11';
@@ -16,7 +16,6 @@ class AuthorizationsControllerLoginFailedWait extends PLBWebTestCase
 
         $client = static::createClient([], ['REMOTE_ADDR' => '11.11.11.11']);
         $client->request('GET', '/login');
-        //$response = $client->getResponse()->getContent();
 
         $this->assertEquals(
             200,
