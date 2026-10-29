@@ -2,9 +2,10 @@
 
 namespace App\Entity;
 
+use App\Repository\IPBlockerRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: IPBlockerRepository::class)]
 #[ORM\Table(name: 'ip_blocker')]
 class IPBlocker
 {
