@@ -263,7 +263,6 @@ function addAbsenceDocument(id) {
     $.ajax({
         url: url('absences/document/' + id),
         type: 'POST',
-        dataType: 'text',
         cache: false,
         contentType: false,
         processData: false,
@@ -274,8 +273,9 @@ function addAbsenceDocument(id) {
             return false;
         }.bind(this, id),
         error: function(jqXHR) {
-            if (jqXHR.status === 422) {
-                alert(Translator.trans('The file contained malware and was deleted'));
+            if (jqXHR.responseJSON && jqXHR.responseJSON.errors) {
+                const message = jqXHR.responseJSON.errors.join("\n");
+                alert(message);
             } else if (jqXHR.status === 413) {
                 alert(Translator.trans('The file was too big'));
             } else {
