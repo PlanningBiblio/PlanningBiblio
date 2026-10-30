@@ -70,9 +70,10 @@ class AbsenceMigrateDocumentsCommand extends Command
             }
 
             $absenceDocument->setStorageId($storageId);
-            $this->entityManager->flush();
             $migratedDocumentsCount++;
         }
+
+        $this->entityManager->flush();
 
         if ($migratedDocumentsCount !== count($absenceDocuments)) {
             $io->error('Some documents could not have been migrated and require a manual intervention');
