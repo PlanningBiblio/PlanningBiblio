@@ -724,8 +724,8 @@ msgstr "Edit information about absences"
 msgid "Files cannot be scanned, upload is disabled"
 msgstr "Files cannot be scanned, upload is disabled"
 
-msgid "The file contained malware and was deleted"
-msgstr "The file contained malware and was deleted"
+msgid "The uploaded file contains malware and was deleted"
+msgstr "The uploaded file contains malware and was deleted"
 
 msgid "The file was too big"
 msgstr "The file was too big"

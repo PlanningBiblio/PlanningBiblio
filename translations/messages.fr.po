@@ -724,8 +724,8 @@ msgstr "Modification d'une information sur les absences"
 msgid "Files cannot be scanned, upload is disabled"
 msgstr "Les fichiers ne peuvent pas être analysés, le chargement de fichier est désactivé"
 
-msgid "The file contained malware and was deleted"
-msgstr "Le fichier contenait un logiciel malveillant et a été supprimé"
+msgid "The uploaded file contains malware and was deleted"
+msgstr "Le fichier téléchargé contenait un logiciel malveillant et a été supprimé."
 
 msgid "The file was too big"
 msgstr "Le fichier est trop lourd"
