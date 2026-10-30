@@ -117,7 +117,8 @@
             "cache:clear": "symfony-cmd",
             "assets:install %PUBLIC_DIR%": "symfony-cmd",
             "app:update-db" : "symfony-cmd",
-            "bazinga:js-translation:dump --format=js --merge-domains": "symfony-cmd"
+            "bazinga:js-translation:dump --format=js --merge-domains": "symfony-cmd",
+            "app:absence:migrate-documents": "symfony-cmd"
         },
         "post-install-cmd": [
             "@auto-scripts"
