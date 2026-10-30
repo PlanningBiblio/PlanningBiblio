@@ -221,7 +221,7 @@ class CJICS
         $deleted=array();           // Evénements supprimés du fichier ICS ou événements modifiés
         $insert=array();            // Evénements à insérer (nouveaux ou événements modifiés (suppression + réinsertion))
         $email=null;                // Email de l'agent
-        $now = date('Ymd\THis\Z');  // Current time
+        $now = (new DateTimeImmutable('', new DateTimeZone('UTC')))->format('Ymd\THis\Z'); // Current time"
         $config = $GLOBALS['config'];
 
         if ($this->logs) {
