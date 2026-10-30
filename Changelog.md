@@ -1,10 +1,26 @@
 # Changelog Planno
 
-# Unreleased
+## Version 26.04.12 (2026-10-30)
+
+### Fixes
+
+* MT55141: Fix absence/holiday notification recipients #1514
+  * Re-indent absences::getRecipients2
+  * Fix absence/holiday notification recipients
+  * It now takes into account absence/holiday validation level to get the correct list of recipients
+* CAPlanno320: Fix the timezone for the default date in the absence:import-ics command # 1522
+
+### Security
+
+* Authentication improvements 
+  * Fix LDAP and SQL injection vulnerabilities during LDAP authentication
+  * Check login attempts on the login POST route (IPBlocker / brute force attack)
+  * Use Doctrine in AuthorizationController
+  * Move the AuthSQL function to AuthorizationController
 
 ### Security / Dependencies
 
-* Bump phpseclib/phpseclib from 3.0.55 to 3.0.57
+* Bump phpseclib/phpseclib from 3.0.55 to 3.0.57 #1519
   * Security advisory: https://github.com/PlanningBiblio/PlanningBiblio/security/dependabot/120
 
 ## Version 26.04.11 (2026-10-16)
