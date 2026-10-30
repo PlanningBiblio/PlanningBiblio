@@ -1,6 +1,10 @@
 # Changelog Planno
 
-# Unreleased
+## Version 25.10.29 (2026-10-30)
+
+### Fixes
+
+* CAPlanno320: Fix the timezone for the default date in the absence:import-ics command #1522
 
 ### Security / Dependencies
 
