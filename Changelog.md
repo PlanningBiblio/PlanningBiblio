@@ -1,5 +1,12 @@
 # Changelog Planno
 
+## Version 26.04.13 (2026-10-30)
+
+### Security / Dependencies
+
+* Bump symfony/http-foundation from 7.4.14 to 7.4.22
+* Bump symfony/yaml from 7.4.14 to 7.4.22
+
 ## Version 26.04.12 (2026-10-30)
 
 ### Fixes
