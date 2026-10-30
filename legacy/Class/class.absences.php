@@ -1284,13 +1284,17 @@ class absences
             }
 
             break;
-        }
 
-        // In all cases, send a notification to the involved agents
-        foreach ($agents as $agent) {
-            if (!in_array($agent['mail'], $destinataires)) {
-                $destinataires[] = $agent['mail'];
+            // If the absence / holiday / compt-time is validated level 2,
+            // send notification to the employees concerned
+        case 4:
+
+            foreach ($agents as $agent) {
+                if (!in_array($agent['mail'], $destinataires)) {
+                    $destinataires[] = $agent['mail'];
+                }
             }
+            break;
         }
 
         $this->recipients = array_unique(array_filter($destinataires));
