@@ -1,11 +1,52 @@
 # Changelog Planno
 
-## Unreleased
+## Version 26.11.01 (2026-10-30)
+
+### Fixes
+
+* MT55141: Fix absence/holiday notification recipients #1514
+  * Re-indent absences::getRecipients2
+  * Fix absence/holiday notification recipients
+  * It now takes into account absence/holiday validation level to get the correct list of recipients
+* CAPlanno320: Fix the timezone for the default date in the absence:import-ics command # 1522
+
+### Security
+
+* MT 53228: Rename uploaded files
+  * Filename returned by UploadedFile::getClientOriginalName is not safe.
+    It should not be used as the name of the file created in Planno's "upload_dir" (var/upload).
+    Also, the path of uploaded files is predictable and it's a security risk
+    So instead we use a random hexadecimal string as filename, stored in the new column absences_documents.storage_id
+    Column absences_documents.filename is still there but should only be used for display purposes.
+    The database migration does not rename files. It is important to run the following command after the migration: `bin/console app:absence:migrate-documents`
+    This command will rename all existing files using the new method
+    UPDATE: The app:absence:migrate-documents command is added to the composer.json auto-script list so that it is automatically executed during updates
+  * Build HTML using the DOM API instead of string concatenation
+* MT53228: Validate absence document type and extension
+  * This adds two new settings:
+    * Absences-documents-typesMime is a comma-separated list of allowed MIME types.
+      Default is 'application/pdf, image/jpeg, image/png'
+    * Absences-documents-extensions is a comma-separated list of allowed file extensions.
+      Default is 'pdf, jpg, png'
+      Attached files must satisfy both constraints to be accepted.
+  * If ClamAV scan is enabled, it is done only if file pass the filetype and extensions checks
+  * This changes the absences.document.add route so that it always return a JSON response.
+      * In case of error, the JSON response is an object with a key `errors`.
+      * These errors are then displayed to the user using `alert()`
+      * In case of success, a partial representation of AbsenceDocument is returned.
+  * When attaching a document during the creation of an absence, a file validation error does not block the creation of the absence (same behavior as when ClamAV detects malware)
+* Authentication improvements 
+  * Fix LDAP and SQL injection vulnerabilities during LDAP authentication
+  * Check login attempts on the login POST route
+  * Use Doctrine in AuthorizationController
+  * Move the AuthSQL function to AuthorizationController
 
 ### Security / Dependencies
 
 * Bump phpseclib/phpseclib from 3.0.55 to 3.0.57
   * Security advisory: https://github.com/PlanningBiblio/PlanningBiblio/security/dependabot/120
+* Bump symfony/yaml from 7.4.14 to 7.4.18 #1523
+* Bump symfony/http-foundation from 7.4.14 to 7.4.19 #1524
 
 ### Plumbing
 
