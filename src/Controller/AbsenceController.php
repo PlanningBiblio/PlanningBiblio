@@ -688,9 +688,9 @@ class AbsenceController extends BaseController
         }
 
         $notificationLevel = match (true) {
-            $valideN2 > 0 => 4,
-            $valideN1 > 0 => 3,
-            default => 2,
+            $valideN2 != 0 => 4,
+            $valideN1 != 0 => 3,
+            default => 1,
         };
 
         if ($this->config('Absences-notifications-agent-par-agent')) {

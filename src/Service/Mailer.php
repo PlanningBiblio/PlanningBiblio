@@ -59,9 +59,9 @@ class Mailer
         $end = $holiday->getEnd()->format('Y-m-d H:i:s');
 
         $notificationLevel = match (true) {
-            $holiday->getValidLevel2() > 0 => 4,
-            $holiday->getValidLevel1() > 0 => 3,
-            default => 2,
+            $holiday->getValidLevel2() != 0 => 4,
+            $holiday->getValidLevel1() != 0 => 3,
+            default => 1,
         };
 
         if ($configRepository->getValue('Absences-notifications-agent-par-agent')) {
