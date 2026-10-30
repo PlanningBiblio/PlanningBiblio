@@ -380,7 +380,7 @@ class AbsenceController extends BaseController
                         $ad->deleteFile();
                         $this->entityManager->remove($ad);
                         $this->entityManager->flush();
-                        $this->addFlash('error', 'The file contained malware and was deleted');
+                        $this->addFlash('error', 'The uploaded file contains malware and was deleted');
                     }
                 }
             }

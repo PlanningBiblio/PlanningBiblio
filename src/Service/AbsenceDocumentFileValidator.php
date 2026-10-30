@@ -24,8 +24,11 @@ class AbsenceDocumentFileValidator
         $mimeTypesList = $config->getValue('Absences-documents-typesMime') ?? '';
         $extensionsList = $config->getValue('Absences-documents-extensions') ?? '';
 
-        $mimeTypes = explode(',', $mimeTypesList);
-        $extensions = explode(',', $extensionsList);
+        $mimeTypes = preg_split('/(,|;|\n)/', $mimeTypesList);
+        $extensions = preg_split('/(,|;|\n)/', $extensionsList);
+
+        $mimeTypes = array_filter(array_map('trim', $mimeTypes));
+        $extensions = array_filter(array_map('trim', $extensions));
 
         // Warning: This does not validate that the file extension matches its mime type.
         $constraint = new Constraints\File(

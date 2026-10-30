@@ -23,7 +23,7 @@ class AbsenceDocument
     private ?string $filename = '';
 
     #[ORM\Column(type: Types::STRING)]
-    private ?string $storage_id = null;
+    private string $storage_id = '';
 
     #[ORM\Column]
     private ?\DateTime $date = null;
@@ -69,7 +69,7 @@ class AbsenceDocument
         return $this;
     }
 
-    public function getStorageId(): ?string
+    public function getStorageId(): string
     {
         return $this->storage_id;
     }

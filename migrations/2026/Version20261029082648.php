@@ -11,7 +11,7 @@ final class Version20261029082648 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return 'MT 53228: Add settings Absences-documents-typesMime and Absences-documents-extensions';
+        return 'MT53228: Add settings Absences-documents-typesMime and Absences-documents-extensions';
     }
 
     public function up(Schema $schema): void
@@ -19,12 +19,12 @@ final class Version20261029082648 extends AbstractMigration
         $dbprefix = $_ENV['DATABASE_PREFIX'];
 
         $this->addSql(
-            "INSERT IGNORE INTO {$dbprefix}config (nom, type, valeur, commentaires, categorie, valeurs, ordre) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            "INSERT IGNORE INTO {$dbprefix}config (nom, type, valeur, commentaires, categorie, valeurs, ordre) VALUES (?, ?, ?, ?, ?, ?, ?);",
             [
                 'Absences-documents-typesMime',
                 'textarea',
                 'application/pdf, image/jpeg, image/png',
-                'Types MIME autorisés pour les documents attachés aux absences',
+                'Types MIME autorisés pour les documents attachés aux absences, séparés par des virgules.',
                 'Absences',
                 '',
                 151,
@@ -32,12 +32,12 @@ final class Version20261029082648 extends AbstractMigration
         );
 
         $this->addSql(
-            "INSERT IGNORE INTO {$dbprefix}config (nom, type, valeur, commentaires, categorie, valeurs, ordre) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            "INSERT IGNORE INTO {$dbprefix}config (nom, type, valeur, commentaires, categorie, valeurs, ordre) VALUES (?, ?, ?, ?, ?, ?, ?);",
             [
                 'Absences-documents-extensions',
                 'textarea',
                 'pdf, jpg, png',
-                'Extensions autorisées pour les documents attachés aux absences',
+                'Extensions autorisées pour les documents attachés aux absences, séparés par des virgules.',
                 'Absences',
                 '',
                 152,
@@ -49,7 +49,7 @@ final class Version20261029082648 extends AbstractMigration
     {
         $dbprefix = $_ENV['DATABASE_PREFIX'];
 
-        $this->addSql("DELETE FROM {$dbprefix}config WHERE nom = ?", ['Absences-documents-typesMime']);
-        $this->addSql("DELETE FROM {$dbprefix}config WHERE nom = ?", ['Absences-documents-extensions']);
+        $this->addSql("DELETE FROM {$dbprefix}config WHERE nom = ?;", ['Absences-documents-typesMime']);
+        $this->addSql("DELETE FROM {$dbprefix}config WHERE nom = ?;", ['Absences-documents-extensions']);
     }
 }
