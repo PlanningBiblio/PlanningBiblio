@@ -1,5 +1,12 @@
 # Changelog Planno
 
+## Version 25.10.30 (2026-10-30)
+
+### Security / Dependencies
+
+* Bump symfony/ttp-foundation from 6.4.42 to 6.4.49
+* Bump symfony/yaml from 6.4.42 to 6.4.49
+
 ## Version 25.10.29 (2026-10-30)
 
 ### Fixes
