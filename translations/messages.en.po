@@ -832,3 +832,9 @@ msgstr "Show statuses"
 
 msgid "Holiday"
 msgstr "Holiday"
+
+msgid "Undo the last action"
+msgstr "Undo the last action"
+
+msgid "Redo the last action"
+msgstr "Redo the last action"
