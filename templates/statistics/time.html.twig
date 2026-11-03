@@ -27,8 +27,8 @@
 
       {% if groups_exist %}
         <div class="col-3 form-check" style="align-content: center;">
-          <input id="selection_groupe" type="checkbox" value="" class="form-check-input m-1 mx-2" name="selection_groupe" {{ checked }} />            
-          <label class="form-check-label" for="selection_groupe">{% trans %}Display hours by job category{% endtrans %}</label>              
+          <input id="selection_groupe" type="checkbox" value="1" class="form-check-input mx-2" name="selection_groupe" {{ checked }} />
+          <label class="form-check-label" for="selection_groupe">{% trans %}Display hours by job category{% endtrans %}</label>
         </div>
       {% endif %}
 
