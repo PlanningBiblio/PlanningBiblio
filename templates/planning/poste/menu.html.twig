@@ -68,25 +68,25 @@
           <div class="col-auto d-print-none p-0">
 
             {% if userCan('300', site) or userCan('1000', site) %}
-              <button id="icon-lock" type="button" class="col-auto btn btn-icon" {% if not locked %} style="display:none;" {% endif %} >
-                <span class="col-auto pl-icon pl-icon-lock pointer" title="{% trans %}Unlock the schedule{% endtrans %}" ></span>
+              <button id="icon-lock" type="button" class="col-auto btn btn-icon" {% if not locked %} style="display:none;" {% endif %} title="{% trans %}Unlock the schedule{% endtrans %}" aria-label="{% trans %}Unlock the schedule{% endtrans %}">
+                <span class="col-auto pl-icon pl-icon-lock pointer" aria-hidden="true"></span>
               </button>
-              <button id="icon-unlock" type="button" class="col-auto btn btn-icon" {% if locked %} style="display:none;" {% endif %}>
-                <span class="col-auto pl-icon pl-icon-unlock pointer" title="{% trans %}Lock the schedule{% endtrans %}"></span>
+              <button id="icon-unlock" type="button" class="col-auto btn btn-icon" {% if locked %} style="display:none;" {% endif %} title="{% trans %}Lock the schedule{% endtrans %}" aria-label="{% trans %}Lock the schedule{% endtrans %}">
+                <span class="col-auto pl-icon pl-icon-unlock pointer" aria-hidden="true"></span>
               </button>
             {% endif %}
 
             {% if userCan('300', site) %}
-              <button id="planning-save" type="button" class="col-auto btn btn-icon disabled" data-bs-toggle="modal" data-bs-target="#save-model-modal">
-                <span class="pl-icon pl-icon-save" title="{% trans %}Save as model{% endtrans %}"></span>
+              <button id="planning-save" type="button" class="col-auto btn btn-icon disabled" data-bs-toggle="modal" data-bs-target="#save-model-modal" title="{% trans %}Save as model{% endtrans %}" aria-label="{% trans %}Save as model{% endtrans %}">
+                <span class="pl-icon pl-icon-save" aria-hidden="true"></span>
               </button>
 
-              <button id="planning-import" type="button" class="col-auto btn btn-icon" data-bs-toggle="modal" data-bs-target="#import-model-modal" style="{{ locked ? 'display:none;' }}">
-                <span class="pl-icon pl-icon-open" title="{% trans %}Import a model{% endtrans %}"></span>
+              <button id="planning-import" type="button" class="col-auto btn btn-icon" data-bs-toggle="modal" data-bs-target="#import-model-modal" style="{{ locked ? 'display:none;' }}" title="{% trans %}Import a model{% endtrans %}" aria-label="{% trans %}Import a model{% endtrans %}">
+                <span class="pl-icon pl-icon-open" aria-hidden="true"></span>
               </button>
 
-              <button id="planning-drop" type="button" class="col-auto btn btn-icon" data-bs-toggle="modal" data-bs-target="#drop-model-modal" style="{{ locked ? 'display:none;' }}">
-                <span class="pl-icon pl-icon-drop" title="{% trans %}Delete the schedule{% endtrans %}"></span>
+              <button id="planning-drop" type="button" class="col-auto btn btn-icon" data-bs-toggle="modal" data-bs-target="#drop-model-modal" style="{{ locked ? 'display:none;' }}" title="{% trans %}Delete the schedule{% endtrans %}" aria-label="{% trans %}Delete the schedule{% endtrans %}">
+                <span class="pl-icon pl-icon-drop" aria-hidden="true"></span>
               </button>
             {% endif %}
 
@@ -94,22 +94,22 @@
         {% endif %}
 
         <div class="col-auto d-print-none p-0">
-          <button onclick="print();" class="col-auto btn btn-icon">
-            <span class="pl-icon pl-icon-printer" title="Imprimer le planning"></span>
+          <button type="button" onclick="print();" class="col-auto btn btn-icon" title="{% trans %}Print the schedule{% endtrans %}" aria-label="{% trans %}Print the schedule{% endtrans %}">
+            <span class="pl-icon pl-icon-printer" aria-hidden="true"></span>
           </button>
-          <button onclick="location.href='{{ path('home') }}'" class="col-auto btn btn-icon">
-            <span class="pl-icon pl-icon-refresh" title="Actualiser">
+          <button type="button" onclick="location.href='{{ path('home') }}'" class="col-auto btn btn-icon" title="{% trans %}Refresh{% endtrans %}" aria-label="{% trans %}Refresh{% endtrans %}">
+            <span class="pl-icon pl-icon-refresh" aria-hidden="true"></span>
           </button>
         </div>
       </div>
 
       <div class="row justify-content-end d-print-none" id="undo-redo" style="{{ locked ? 'display:none;' }}">
         {% if (userCan('300', site) or userCan('1000', site)) and not week_view %}
-          <button id="undo-action" class="col-auto btn btn-icon {% if not undoable %} isDisabled {% endif %}" onclick="void(0);">
-            <span class="pl-icon pl-icon-undo"></span>
-          </butonn>
-          <button id="redo-action" class="col-auto btn btn-icon {% if not redoable %} isDisabled {% endif %}" onclick="void(0);">
-            <span class="pl-icon pl-icon-redo"></span>
+          <button id="undo-action" class="col-auto btn btn-icon {% if not undoable %} isDisabled {% endif %}" type="button" title="{% trans %}Undo the last action{% endtrans %}" aria-label="{% trans %}Undo the last action{% endtrans %}" aria-disabled="{{ undoable ? 'false' : 'true' }}">
+            <span class="pl-icon pl-icon-undo" aria-hidden="true"></span>
+          </button>
+          <button id="redo-action" class="col-auto btn btn-icon {% if not redoable %} isDisabled {% endif %}" type="button" title="{% trans %}Redo the last action{% endtrans %}" aria-label="{% trans %}Redo the last action{% endtrans %}" aria-disabled="{{ redoable ? 'false' : 'true' }}">
+            <span class="pl-icon pl-icon-redo" aria-hidden="true"></span>
           </button>
         {% endif %}
       </div>

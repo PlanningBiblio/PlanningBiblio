@@ -98,9 +98,9 @@ function cross(action, cellid) {
 }
 
 function disableRedo() {
-  $('#redo-action').addClass('isDisabled');
+  $('#redo-action').addClass('isDisabled').attr('aria-disabled', 'true');
 }
 
 function enableRedo() {
-  $('#redo-action').removeClass('isDisabled');
+  $('#redo-action').removeClass('isDisabled').attr('aria-disabled', 'false');
 }

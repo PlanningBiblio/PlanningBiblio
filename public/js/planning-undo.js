@@ -100,11 +100,11 @@ function cancelCross(action, cellid) {
 }
 
 function disableUndo() {
-  $('#undo-action').addClass('isDisabled');
+  $('#undo-action').addClass('isDisabled').attr('aria-disabled', 'true');
 }
 
 function enableUndo() {
-  $('#undo-action').removeClass('isDisabled');
+  $('#undo-action').removeClass('isDisabled').attr('aria-disabled', 'false');
 }
 
 function getCellId(action) {
