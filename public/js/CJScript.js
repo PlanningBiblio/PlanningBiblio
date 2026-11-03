@@ -111,8 +111,8 @@ function stackAlert(message, type='success', timeout=7000, position='top-center'
   const div = document.createElement('div');
   div.id = alertId;
   div.className = `alert alert-${type} alert-dismissible fade show mb-2`;
-  div.role = 'alert';
-  div.insertAdjacentHTML('beforeend', `<i class="bi ${icons[type]} me-2"></i>`);
+  div.setAttribute('role', 'alert');
+  div.insertAdjacentHTML('beforeend', `<i class="bi ${icons[type]} me-2" aria-hidden="true"></i>`);
   div.append(...messageParts);
   div.insertAdjacentHTML('beforeend', `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="${close_msg}"></button>`);
 
