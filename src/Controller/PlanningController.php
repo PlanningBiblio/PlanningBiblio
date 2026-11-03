@@ -1946,7 +1946,21 @@ class PlanningController extends BaseController
         $a->documents = false;
         $a->fetch("`nom`,`prenom`,`debut`,`fin`", null, $date, $date, $site);
 
-        $absences = $a->elements;
+
+        $absences = array_map(function($a)
+            {
+                // MT55630: POC config Agenda // TODO FIXME
+                $configPOC = [
+                    'reasons' => ['Autre'],
+                    'stringLength' => 30,
+                ];
+
+                $a['motif'] = in_array($a['motif'], $configPOC['reasons']) ? mb_substr($a['commentaires'], 0, $configPOC['stringLength']) : $a['motif'];
+
+                return $a;
+            },
+            $a->elements
+        );
 
         // Add holidays
         $holidays = $this->getHolidays($date, $site);

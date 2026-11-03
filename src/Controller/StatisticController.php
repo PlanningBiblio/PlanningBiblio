@@ -989,7 +989,21 @@ class StatisticController extends BaseController
             $absences = new \absences();
             $absences->valide = false;
             $absences->fetch("`nom`,`prenom`,`debut`,`fin`", null, $date, $date);
-            $absents = $absences->elements;
+
+            $absents = array_map(function($a)
+                {
+                    // MT55630: POC config Agenda // TODO FIXME
+                    $configPOC = [
+                        'reasons' => ['Autre'],
+                        'stringLength' => 30,
+                    ];
+
+                    $a['motif'] = in_array($a['motif'], $configPOC['reasons']) ? mb_substr($a['commentaires'], 0, $configPOC['stringLength']) : $a['motif'];
+
+                    return $a;
+                },
+                $absences->elements
+            );
 
             foreach ($conges as $elem) {
                 $elem['motif']="Congé payé";
