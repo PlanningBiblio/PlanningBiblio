@@ -98,7 +98,7 @@
             <span class="pl-icon pl-icon-printer" title="Imprimer le planning"></span>
           </button>
           <button onclick="location.href='{{ path('home') }}'" class="col-auto btn btn-icon">
-            <span class="pl-icon pl-icon-refresh" title="Actualiser">
+            <span class="pl-icon pl-icon-refresh" title="Actualiser"></span>
           </button>
         </div>
       </div>
@@ -107,7 +107,7 @@
         {% if (userCan('300', site) or userCan('1000', site)) and not week_view %}
           <button id="undo-action" class="col-auto btn btn-icon {% if not undoable %} isDisabled {% endif %}" onclick="void(0);">
             <span class="pl-icon pl-icon-undo"></span>
-          </butonn>
+          </button>
           <button id="redo-action" class="col-auto btn btn-icon {% if not redoable %} isDisabled {% endif %}" onclick="void(0);">
             <span class="pl-icon pl-icon-redo"></span>
           </button>
