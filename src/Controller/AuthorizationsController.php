@@ -202,8 +202,7 @@ class AuthorizationsController extends BaseController
 
     private function authSQL($login, $password): bool
     {
-        $entityManager = $GLOBALS['entityManager'];
-        $agent = $entityManager->getRepository(Agent::class)->findOneBy(['login' => $login, 'supprime' => 0]);
+        $agent = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => $login, 'supprime' => 0]);
 
         if (empty($agent) or empty($login)) {
             return false;
@@ -218,8 +217,8 @@ class AuthorizationsController extends BaseController
                 $bcrypt_password = password_hash($password,PASSWORD_BCRYPT);
 
                 $agent->setPassword($bcrypt_password);
-                $em->persist($agent);
-                $em->flush();
+                $this->entityManager->persist($agent);
+                $this->entityManager->flush();
 
                 return true;
             }
