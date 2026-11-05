@@ -22,6 +22,7 @@ use App\Planno\Event\OnTransformLeaveHours;
 use App\Planno\Helper\HolidayHelper;
 use App\Planno\Helper\HourHelper;
 use App\Planno\Ldif2Array;
+use App\Service\PasswordPolicy;
 
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -838,27 +839,9 @@ class AgentController extends BaseController
     // Returns true if the password is complex enough, and false otherwise
     private function check_password_complexity($password): bool
     {
-        $minimum_password_length = $this->config('Auth-PasswordLength') ?? 8;
-        if (strlen($password) < $minimum_password_length) {
-            return false;
-        }
-        if (!preg_match("#[0-9]+#", $password)) {
-            return false;
-        }
-        if (!preg_match("#[A-Z]+#", $password)) {
-            return false;
-        }
-        if (!preg_match("#[a-z]+#", $password)) {
-            return false;
-        }
-        # Special chars list come from this list: https://owasp.org/www-community/password-special-characters
-        $chars = array('!', '"', '#', '$', '%', '&', "'", '(', ')', '*', '+', ',', '-', '.', '/', ':', ';', '<', '=', '>', '?', '@', '[', '\\', ']', '^', '_', '`', '{', '|', '}', '~');
-        foreach($chars as $char) {
-            if (strpos($password, $char) !== false) {
-                return true;
-            }
-        }
-        return false;
+        $minimumLength = (int) ($this->config('Auth-PasswordLength') ?? PasswordPolicy::DEFAULT_MINIMUM_LENGTH);
+
+        return (new PasswordPolicy())->isComplexEnough((string) $password, $minimumLength);
     }
 
     #[Route(path: '/ajax/is-current-password', name: 'ajax.iscurrentpassword', methods: ['GET'])]
