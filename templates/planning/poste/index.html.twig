@@ -132,7 +132,7 @@
                   <td>{{ a.prenom }}</td>
                   <td>{{ a.debutAff }}</td>
                   <td>{{ a.finAff }}</td>
-                  <td>{{ a.motif }}{{ a.nonValidee }}</td>
+                  <td>{{ a | absenceReason }}{{ a.nonValidee }}</td>
                 </tr>
               {% endfor %}
             </tbody>
@@ -157,7 +157,7 @@
                   <td style='padding-left:15px;'>{{ p.site }}{{ p.heures }}</td>
                   <td style='padding-left:15px;'>
                     {% for a in p.absences %}
-                      {{ a.motif }}{{ a.heures }}{{ a.nonValidee }}<br/>
+                      {{ a | absenceReason }}{{ a.heures }}{{ a.nonValidee }}<br/>
                     {% endfor %}
                   </td>
                 </tr>

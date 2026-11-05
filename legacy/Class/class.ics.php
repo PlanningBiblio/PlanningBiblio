@@ -218,6 +218,9 @@ class CJICS
             logs("Agent #$perso_id : Table: $table, src: $src", "ICS", $CSRFToken);
         }
 
+        // Service shared by the imports to resolve the reason of the absences
+        $importedReason = new \App\Service\ImportedAbsenceReason();
+
         // Get available absences reasons
         $reasons = array();
         $db = new db();
@@ -490,18 +493,20 @@ class CJICS
 
                 // Par défaut, nous mettons dans le champ motif l'information enregistrée dans la config, paramètre ICS-PatternX (ex: Agenda personnel)
                 // Mais nous pouvons mettre l'information présente dans le champ SUMMARY de l'événements. Dans ce cas, il faut préciser $this->pattern = "[SUMMARY]"; (exemple d'utilisation : enregistrement d'absences récurrentes dans Planning Biblio)
+                // The reason is resolved by the service shared with the other imports (CSV, Microsoft Graph):
+                // existing reason (trimmed, case-insensitive), otherwise "Autre" with the title in "motif_autre".
+                // Private events (CLASS:PRIVATE or CLASS:CONFIDENTIAL): the title is replaced by "[Private]" and the description is not imported.
 
-                $motif = $this->pattern == '[SUMMARY]' ? $elem['SUMMARY'] ?? '' : $this->pattern;
-                $motif_autre = '';
+                $title = $importedReason->icsEventTitle($elem);
+                $private = $importedReason->isPrivateIcsEvent($elem);
 
-                if (!in_array($motif, $reasons)) {
-                    $motif = 'Autre';
-                    $motif_autre = $elem['SUMMARY'] ?? '';
-                }
+                $resolved = $importedReason->resolve((string) $this->pattern, $title, $reasons);
+                $motif = $resolved['reason'];
+                $motif_autre = $resolved['otherReason'];
 
                 // The DESCRIPTION is added to the comment field depending on the configuration
                 $description = null;
-                if ($this->desc) {
+                if ($this->desc and !$private) {
                     $description = !empty($elem['DESCRIPTION']) ? str_replace("\\n", "\n", $elem['DESCRIPTION']) : '';
                 }
 
@@ -510,12 +515,9 @@ class CJICS
                     $commentaires = !empty($description) ? $description : '';
                 // Else, SUMMARY and DESCRIPTION are stored in the comment field
                 } else {
-                    $commentaires = !empty($elem['SUMMARY']) ? $elem['SUMMARY'] : '';
-                    if ($commentaires and !empty($description)) {
-                        $commentaires .= "<br/>\n";
-                    }
+                    $commentaires = $title;
                     if (!empty($description)) {
-                        $commentaires .= $description;
+                        $commentaires .= "<br/>\n" . $description;
                     }
                 }
 

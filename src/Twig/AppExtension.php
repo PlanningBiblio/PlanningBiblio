@@ -4,6 +4,7 @@ namespace App\Twig;
 
 use App\Planno\Helper\HolidayHelper;
 use App\Planno\Helper\HourHelper;
+use App\Service\AbsenceReasonLabel;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
@@ -16,12 +17,20 @@ class AppExtension extends AbstractExtension
 
     private $blacklistedTags = ['script'];
 
+    private AbsenceReasonLabel $absenceReasonLabel;
+
+    public function __construct(?AbsenceReasonLabel $absenceReasonLabel = null)
+    {
+        $this->absenceReasonLabel = $absenceReasonLabel ?? new AbsenceReasonLabel();
+    }
+
     /**
      * @return array
     */
     public function getFilters()
     {
         return [
+            new TwigFilter('absenceReason', [$this, 'absenceReason'], ['is_safe' => ['html']]),
             new TwigFilter('datefull', [$this, 'dateFull'], ['is_safe' => ['html']]),
             new TwigFilter('datefr', [$this, 'dateFr']),
             new TwigFilter('dateOrNull', [$this, 'dateOrNull']),
@@ -49,6 +58,33 @@ class AppExtension extends AbstractExtension
             new TwigFunction('menuIsActive', [$this, 'menuIsActive']),
             new TwigFunction('colspan', [$this, 'colspan']),
         ];
+    }
+
+    /**
+     * Reason of an absence: reason details instead of the reason if the parameter
+     * Absences-ShowReasonDetails is enabled (see App\Service\AbsenceReasonLabel).
+     * Truncated details are followed by "…"; the full text is available in a tooltip
+     * (mouse and keyboard focus) and for screen readers.
+     *
+     * @param array<string, mixed>|\App\Entity\Absence $absence
+     */
+    public function absenceReason($absence): string
+    {
+        if (!is_array($absence) && !$absence instanceof \App\Entity\Absence) {
+            return '';
+        }
+
+        $label = $this->absenceReasonLabel->format($absence);
+        $escape = fn (string $text): string => htmlspecialchars($text, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+
+        if (!$label['truncated']) {
+            return $escape($label['label']);
+        }
+
+        return '<span class="absence-reason" tabindex="0" title="' . $escape($label['full']) . '">'
+            . '<span aria-hidden="true">' . $escape($label['label']) . '</span>'
+            . '<span class="visually-hidden">' . $escape($label['full']) . '</span>'
+            . '</span>';
     }
 
     public function dateFull($date, bool $day = true, bool $year = true)

@@ -3,6 +3,7 @@
 namespace App\Tests\Command;
 
 use App\Entity\Absence;
+use App\Entity\AbsenceReason;
 use App\Entity\Agent;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -82,6 +83,52 @@ class AbsenceImportICSCommandTest extends PLBWebTestCase
         $this->config->setParam('ICS-Server1', '');
         $this->config->setParam('ICS-Server3', 1);
         $this->check(3, 'ICS Server 3');
+    }
+
+    // [SUMMARY]: title matched with an existing reason (trimmed, case-insensitive), otherwise "Autre" + title
+    // in motif_autre; private events: "[Private]" and no description
+    public function testAbsenceImportICSSummaryAndPrivateEvents(): void
+    {
+        $reason = new AbsenceReason();
+        $reason->setValue('Télétravail');
+        $reason->setRank(999);
+        $this->entityManager->persist($reason);
+        $this->entityManager->flush();
+
+        $this->config->setParam('ICS-Server1', __DIR__ . '/../data/absenceImportSummary[login].ics');
+        $this->config->setParam('ICS-Pattern1', '[SUMMARY]');
+        $this->config->setParam('ICS-Description1', 1);
+
+        $user = $this->entityManager->getRepository(Agent::class)->findOneBy(['login' => 'alice']);
+        $user->setIcsCheck([1, 0, 0]);
+        $this->entityManager->flush();
+
+        try {
+            $this->execute();
+
+            $rows = $this->entityManager->getConnection()->fetchAllAssociative(
+                'SELECT `motif`, `motif_autre`, `commentaires` FROM `absences` WHERE `perso_id` = ? ORDER BY `debut`',
+                [$user->getId()]
+            );
+
+            $this->assertCount(3, $rows, '3 events imported');
+
+            $this->assertSame('Télétravail', $rows[0]['motif'], 'title matched with the reason (trimmed, case-insensitive)');
+            $this->assertSame('', $rows[0]['motif_autre']);
+
+            $this->assertSame('Autre', $rows[1]['motif'], 'title without matching reason');
+            $this->assertSame('Atelier jeunesse', $rows[1]['motif_autre']);
+            $this->assertSame('Animation au bassin Nord', $rows[1]['commentaires'], 'description imported');
+
+            $this->assertSame('Autre', $rows[2]['motif'], 'private event');
+            $this->assertSame('[Private]', $rows[2]['motif_autre'], 'title of a private event is hidden');
+            $this->assertSame('', (string) $rows[2]['commentaires'], 'description of a private event is not imported');
+        } finally {
+            $this->config->setParam('ICS-Pattern1', '');
+            $this->config->setParam('ICS-Server1', '');
+            $this->entityManager->remove($this->entityManager->getRepository(AbsenceReason::class)->find($reason->getId()));
+            $this->entityManager->flush();
+        }
     }
 
     private function check($serverNumber, $test): void
