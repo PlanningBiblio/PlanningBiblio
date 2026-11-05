@@ -58,7 +58,7 @@
                     <td class="no-hover">
         {% if agent.absences is defined %}
             {% for absence in agent.absences %}
-          {{ absence.motif }}{% if not absence.all_the_day %}, {{ absence.from }} - {{ absence.to }}{% endif %} {% if absence.valide == 0 %} <b>(non-validée)</b> {% endif %}
+          {{ absence | absenceReason }}{% if not absence.all_the_day %}, {{ absence.from }} - {{ absence.to }}{% endif %} {% if absence.valide == 0 %} <b>(non-validée)</b> {% endif %}
           <br/>
             {% endfor %}
         {% endif %}

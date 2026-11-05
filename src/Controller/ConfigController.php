@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Controller\BaseController;
 use App\Entity\Config;
 use App\Planno\Helper\ConfigHelper;
+use App\Service\AbsenceReasonProvisioner;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -105,7 +106,7 @@ class ConfigController extends BaseController
     }
 
     #[Route(path: '/config', name: 'config.update', methods: ['POST'])]
-    public function update(Request $request, Session $session): RedirectResponse
+    public function update(Request $request, Session $session, AbsenceReasonProvisioner $absenceReasonProvisioner): RedirectResponse
     {
         if (!$this->csrf_protection($request)) {
             $session->set('AccessDeniedReason', 'CSRF');
@@ -130,6 +131,13 @@ class ConfigController extends BaseController
             $this->addFlash('error', $error);
         } else {
             $this->addFlash('notice', 'La configuration a été modifiée avec succès');
+
+            // The absence reasons used by the imports (ICS, Microsoft Graph, CSV) must exist in the list of reasons
+            if ($params !== []) {
+                foreach ($absenceReasonProvisioner->provision() as $reason) {
+                    $this->addFlash('notice', sprintf('Le motif d\'absence « %s » a été créé.', $reason));
+                }
+            }
         }
 
         return $this->redirectToRoute('config.index', $options);

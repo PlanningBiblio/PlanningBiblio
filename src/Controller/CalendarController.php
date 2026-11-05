@@ -206,22 +206,24 @@ class CalendarController extends BaseController
              */
             $awayTimeSlots = [];
 
+            // Absences are passed as structured data: the reason is displayed in the template
+            // with the filter absenceReason (reason details, parameter Absences-ShowReasonDetails)
             foreach ($current_abs as $elem) {
                 if ($elem['debut'] <= $current." 00:00:00" and $elem['fin'] >= $current." 23:59:59") {
                     $absent = true;
-                    $absences_affichage[] = "Toute la journée : ".$elem['motif'];
+                    $absences_affichage[] = ['when' => 'Toute la journée', 'absence' => $elem];
                 } elseif (substr($elem['debut'], 0, 10) == $current and substr($elem['fin'], 0, 10)==$current) {
                     $deb = heure2(substr($elem['debut'], -8));
                     $fi = heure2(substr($elem['fin'], -8));
-                    $absences_affichage[] = "De $deb à $fi : ".$elem['motif'];
+                    $absences_affichage[] = ['when' => "De $deb à $fi", 'absence' => $elem];
                 } elseif (substr($elem['debut'], 0, 10) == $current and $elem['fin'] >= $current." 23:59:59") {
                     $deb = heure2(substr($elem['debut'], -8));
-                    $absences_affichage[]="À partir de $deb : ".$elem['motif'];
+                    $absences_affichage[] = ['when' => "À partir de $deb", 'absence' => $elem];
                 } elseif ($elem['debut'] <= $current." 00:00:00" and substr($elem['fin'], 0, 10)==$current) {
                     $fi = heure2(substr($elem['fin'], -8));
-                    $absences_affichage[] = "Jusqu'à $fi : ".$elem['motif'];
+                    $absences_affichage[] = ['when' => "Jusqu'à $fi", 'absence' => $elem];
                 } else {
-                    $absences_affichage[] = "{$elem['debut']} &rarr; {$elem['fin']} : {$elem['motif']}";
+                    $absences_affichage[] = ['when' => "{$elem['debut']} → {$elem['fin']}", 'absence' => $elem];
                 }
 
                 $awayTimeSlots[] = TimeSlot::createFromFormat('Y-m-d H:i:s', $elem['debut'], $elem['fin']);
