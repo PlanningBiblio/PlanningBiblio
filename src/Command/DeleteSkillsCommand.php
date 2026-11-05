@@ -15,26 +15,29 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'app:skills:delete',
-    description: 'This command displays the list of skills and then prompts us to delete one or more skills (separate with commas).
-  We can cancel at any stage.
-  E.g. :
-    bin/console app:skills:delete
+    description: 'Display the list of skills and prompt us to delete one or more skills',
+    help:<<<'HELP'
+This command displays the list of skills and then prompts us to delete one or more skills (separate with commas).
+We can cancel at any stage.
+E.g. :
+bin/console app:skills:delete
 
-    Please select skills to delete
-      [0 ] None (0)
-      [2 ] Self-study support (2)
-      [3 ] Document delivery (3)
-      [4 ] Special collections document delivery (4)
-      [6 ] Circulation services (6)
-      [10] Reference desk (10)
+Please select skills to delete
+    [0 ] None (0)
+    [2 ] Self-study support (2)
+    [3 ] Document delivery (3)
+    [4 ] Special collections document delivery (4)
+    [6 ] Circulation services (6)
+    [10] Reference desk (10)
 
-    > 3,6
+> 3,6
 
-    The following skills will be deleted.
-    - Document delivery (3)
-    - Circulation services (6)
+The following skills will be deleted.
+- Document delivery (3)
+- Circulation services (6)
 
-    Continue with this action [y/n]?',
+Continue with this action [y/n]?
+HELP
 )]
 class DeleteSkillsCommand extends Command
 {
