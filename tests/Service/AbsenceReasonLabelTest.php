@@ -5,6 +5,7 @@ namespace App\Tests\Service;
 use App\Entity\Absence;
 use App\Service\AbsenceReasonLabel;
 use App\Repository\ConfigRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 
 class AbsenceReasonLabelTest extends TestCase
@@ -27,7 +28,7 @@ class AbsenceReasonLabelTest extends TestCase
     }
 
     /**
-     * Service reading the given parameters (default values otherwise) through a stub of ConfigRepository:
+     * Service reading the given parameters (default values otherwise) through stubs of the entity manager and ConfigRepository:
      * unit tests, no database. Reading the real configuration is covered by CalendarControllerTest.
      *
      * @param array<string, string> $params
@@ -36,8 +37,10 @@ class AbsenceReasonLabelTest extends TestCase
     {
         $repository = $this->createStub(ConfigRepository::class);
         $repository->method('getAll')->willReturn(array_merge(self::DEFAULTS, $params));
+        $entityManager = $this->createStub(EntityManagerInterface::class);
+        $entityManager->method('getRepository')->willReturn($repository);
 
-        return new AbsenceReasonLabel($repository);
+        return new AbsenceReasonLabel($entityManager);
     }
 
     public function testDetailsHiddenByDefault(): void
@@ -218,7 +221,10 @@ class AbsenceReasonLabelTest extends TestCase
             ->method('getAll')
             ->willReturn(array_merge(self::DEFAULTS, ['Absences-CommentReasons' => '[All]']));
 
-        $service = new AbsenceReasonLabel($repository);
+        $entityManager = $this->createStub(EntityManagerInterface::class);
+        $entityManager->method('getRepository')->willReturn($repository);
+
+        $service = new AbsenceReasonLabel($entityManager);
 
         for ($i = 0; $i < 50; $i++) {
             $service->format(['motif' => 'Réunion', 'commentaires' => 'COPIL'], null, AbsenceReasonLabel::VIEW_PLANNING);
