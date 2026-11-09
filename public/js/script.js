@@ -627,6 +627,19 @@ function initTooltips() {
   const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
 }
 
+// Tooltips can be closed with the Escape key (RGAA 10.13: additional content must be dismissible)
+document.addEventListener('keydown', function (event) {
+  if (event.key !== 'Escape' || typeof bootstrap === 'undefined') {
+    return;
+  }
+  document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function (element) {
+    const tooltip = bootstrap.Tooltip.getInstance(element);
+    if (tooltip) {
+      tooltip.hide();
+    }
+  });
+});
+
 //	--------------------------------	END Tooltips		---------------------------------	//
 
 

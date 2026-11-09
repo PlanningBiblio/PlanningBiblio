@@ -131,7 +131,7 @@
                       <ul>
                       {% for a in d.absence %}
                         {% if a.absence is defined %}
-                          <li> {{ a.when }} : {{ a.absence | absenceReason }} </li>
+                          <li> {{ a.when }} : {{ a.absence | absenceReason('calendar') }} </li>
                         {% else %}
                           <li> {{ a }} </li>
                         {% endif %}
