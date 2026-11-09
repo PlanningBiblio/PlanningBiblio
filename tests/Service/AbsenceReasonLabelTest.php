@@ -4,24 +4,50 @@ namespace App\Tests\Service;
 
 use App\Entity\Absence;
 use App\Service\AbsenceReasonLabel;
-use PHPUnit\Framework\TestCase;
+use Tests\PLBWebTestCase;
 
-class AbsenceReasonLabelTest extends TestCase
+class AbsenceReasonLabelTest extends PLBWebTestCase
 {
     private const NO_COMMENT = ['reasons' => ''];
 
+    private const DEFAULTS = [
+        'Absences-ShowReasonDetails' => '0',
+        'Absences-CommentReasons' => '',
+        'Absences-CommentDisplay' => 'append',
+        'Absences-CommentMaxLength' => '30',
+        'Absences-CommentViews' => '["calendar","planning","attendees"]',
+    ];
+
     private AbsenceReasonLabel $service;
-    private mixed $previousParameter;
 
     protected function setUp(): void
     {
-        $this->service = new AbsenceReasonLabel();
-        $this->previousParameter = $GLOBALS['config']['Absences-ShowReasonDetails'] ?? null;
+        parent::setUp();
+
+        $this->setParams(self::DEFAULTS);
+        $this->service = new AbsenceReasonLabel($this->config);
     }
 
     protected function tearDown(): void
     {
-        $GLOBALS['config']['Absences-ShowReasonDetails'] = $this->previousParameter;
+        $this->setParams(self::DEFAULTS);
+
+        parent::tearDown();
+    }
+
+    /**
+     * Sets parameters of the config table, then returns a new service:
+     * the service loads the configuration once.
+     *
+     * @param array<string, string> $params
+     */
+    private function setParams(array $params): AbsenceReasonLabel
+    {
+        foreach ($params as $name => $value) {
+            $this->config->setParam($name, $value);
+        }
+
+        return new AbsenceReasonLabel($this->config);
     }
 
     public function testDetailsHiddenByDefault(): void
@@ -80,11 +106,11 @@ class AbsenceReasonLabelTest extends TestCase
     {
         $absence = ['motif' => 'Autre', 'motif_autre' => 'Atelier jeunesse'];
 
-        $GLOBALS['config']['Absences-ShowReasonDetails'] = 0;
-        $this->assertSame('Autre', $this->service->format($absence)['label']);
+        $service = $this->setParams(['Absences-ShowReasonDetails' => '0']);
+        $this->assertSame('Autre', $service->format($absence)['label']);
 
-        $GLOBALS['config']['Absences-ShowReasonDetails'] = 1;
-        $this->assertSame('Atelier jeunesse', $this->service->format($absence)['label']);
+        $service = $this->setParams(['Absences-ShowReasonDetails' => '1']);
+        $this->assertSame('Atelier jeunesse', $service->format($absence)['label']);
     }
 
     // MT52381: comments
@@ -171,28 +197,37 @@ class AbsenceReasonLabelTest extends TestCase
 
     public function testSettingsFromConfiguration(): void
     {
-        $previous = $GLOBALS['config'] ?? [];
-        $GLOBALS['config']['Absences-CommentReasons'] = 'Réunion';
-        $GLOBALS['config']['Absences-CommentDisplay'] = 'icon';
-        $GLOBALS['config']['Absences-CommentMaxLength'] = '12';
-        $GLOBALS['config']['Absences-CommentViews'] = '["planning"]';
+        $service = $this->setParams([
+            'Absences-CommentReasons' => 'Réunion',
+            'Absences-CommentDisplay' => 'icon',
+            'Absences-CommentMaxLength' => '12',
+            'Absences-CommentViews' => '["planning"]',
+        ]);
 
-        try {
-            $this->assertSame(
-                ['reasons' => 'Réunion', 'display' => 'icon', 'maxLength' => 12, 'views' => ['planning']],
-                $this->service->commentSettings()
-            );
+        $this->assertSame(
+            ['reasons' => 'Réunion', 'display' => 'icon', 'maxLength' => 12, 'views' => ['planning']],
+            $service->commentSettings()
+        );
 
-            $GLOBALS['config']['Absences-CommentDisplay'] = 'unknown';
-            $GLOBALS['config']['Absences-CommentMaxLength'] = '0';
-            unset($GLOBALS['config']['Absences-CommentViews']);
-            $settings = $this->service->commentSettings();
-            $this->assertSame('append', $settings['display'], 'invalid display: default');
-            $this->assertSame(30, $settings['maxLength'], 'invalid length: default');
-            $this->assertSame(AbsenceReasonLabel::VIEWS, $settings['views'], 'parameter missing: all the screens');
-        } finally {
-            $GLOBALS['config'] = $previous;
-        }
+        $service = $this->setParams([
+            'Absences-CommentDisplay' => 'unknown',
+            'Absences-CommentMaxLength' => '0',
+            'Absences-CommentViews' => '',
+        ]);
+        $settings = $service->commentSettings();
+
+        $this->assertSame('append', $settings['display'], 'invalid display: default');
+        $this->assertSame(30, $settings['maxLength'], 'invalid length: default');
+        $this->assertSame(AbsenceReasonLabel::VIEWS, $settings['views'], 'invalid value: all the screens');
+    }
+
+    public function testConfigurationIsLoadedOnce(): void
+    {
+        $service = $this->setParams(['Absences-CommentReasons' => 'Réunion']);
+        $this->assertSame('Réunion', $service->commentSettings()['reasons']);
+
+        $this->config->setParam('Absences-CommentReasons', 'Formation');
+        $this->assertSame('Réunion', $service->commentSettings()['reasons'], 'values are cached by the instance (one query per request)');
     }
 
     /**

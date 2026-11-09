@@ -189,9 +189,8 @@ class CalendarControllerTest extends PLBWebTestCase
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
 
-        $GLOBALS['config']['PlanningHebdo'] = 0;
-        $GLOBALS['config']['Absences-validation'] = 1;
-        $previous = $GLOBALS['config']['Absences-ShowReasonDetails'] ?? 0;
+        $this->config->setParam('PlanningHebdo', 0);
+        $this->config->setParam('Absences-validation', 1);
 
         $agent = $builder->build(Agent::class, array('login' => 'jdoenv', 'nom' => 'Doenv', 'prenom' => 'Jean', 'actif' => 'Actif', 'sites' => ['1']));
         $this->logInAgent($agent, array(3,100));
@@ -213,14 +212,14 @@ class CalendarControllerTest extends PLBWebTestCase
 
         try {
             // Parameter disabled (default): the reason is displayed
-            $GLOBALS['config']['Absences-ShowReasonDetails'] = 0;
+            $this->config->setParam('Absences-ShowReasonDetails', '0');
             $crawler = $this->client->request('GET', '/calendar', $params);
             $text = $crawler->filterXPath('//tbody/tr/td[1]')->text();
             $this->assertStringContainsString('Toute la journée : Autre', $text);
             $this->assertStringNotContainsString('Atelier jeunesse', $text);
 
             // Parameter enabled: the reason details are displayed
-            $GLOBALS['config']['Absences-ShowReasonDetails'] = 1;
+            $this->config->setParam('Absences-ShowReasonDetails', '1');
             $crawler = $this->client->request('GET', '/calendar', $params);
             $this->assertStringContainsString('Toute la journée : Atelier jeunesse', $crawler->filterXPath('//tbody/tr/td[1]')->text());
 
@@ -230,7 +229,7 @@ class CalendarControllerTest extends PLBWebTestCase
             $this->assertSame('Réunion du réseau des bibliothèques de la métropole', $span->attr('title'));
             $this->assertStringContainsString('Réunion du réseau des biblioth…', $span->text());
         } finally {
-            $GLOBALS['config']['Absences-ShowReasonDetails'] = $previous;
+            $this->config->setParam('Absences-ShowReasonDetails', '0');
         }
     }
 
@@ -239,10 +238,9 @@ class CalendarControllerTest extends PLBWebTestCase
         $builder = new FixtureBuilder();
         $builder->delete(Agent::class);
 
-        $GLOBALS['config']['PlanningHebdo'] = 0;
-        $GLOBALS['config']['Absences-validation'] = 1;
-        $previous = $GLOBALS['config'];
-        $GLOBALS['config']['Absences-ShowReasonDetails'] = 0;
+        $this->config->setParam('PlanningHebdo', 0);
+        $this->config->setParam('Absences-validation', 1);
+        $this->config->setParam('Absences-ShowReasonDetails', '0');
 
         $agent = $builder->build(Agent::class, array('login' => 'jdoecom', 'nom' => 'Doecom', 'prenom' => 'Jean', 'actif' => 'Actif', 'sites' => ['1']));
         $this->logInAgent($agent, array(3,100));
@@ -257,31 +255,33 @@ class CalendarControllerTest extends PLBWebTestCase
         $params = array('debut' => '26/09/2022', 'fin' => '26/09/2022', 'perso_id' => $agent->getId());
 
         try {
-            $GLOBALS['config']['Absences-CommentReasons'] = 'réunion';
-            $GLOBALS['config']['Absences-CommentDisplay'] = 'append';
-            $GLOBALS['config']['Absences-CommentMaxLength'] = 30;
+            $this->config->setParam('Absences-CommentReasons', 'réunion');
+            $this->config->setParam('Absences-CommentDisplay', 'append');
+            $this->config->setParam('Absences-CommentMaxLength', '30');
 
             // Calendar not checked in Absences-CommentViews: reason only
-            $GLOBALS['config']['Absences-CommentViews'] = '["planning","attendees"]';
+            $this->config->setParam('Absences-CommentViews', '["planning","attendees"]');
             $crawler = $this->client->request('GET', '/calendar', $params);
             $text = $crawler->filterXPath('//tbody/tr/td[1]')->text();
             $this->assertStringContainsString('Toute la journée : Réunion', $text);
             $this->assertStringNotContainsString('COPIL', $text);
 
             // Calendar checked: comment after the reason
-            $GLOBALS['config']['Absences-CommentViews'] = '["calendar"]';
+            $this->config->setParam('Absences-CommentViews', '["calendar"]');
             $crawler = $this->client->request('GET', '/calendar', $params);
             $this->assertStringContainsString('Toute la journée : Réunion : COPIL', $crawler->filterXPath('//tbody/tr/td[1]')->text());
 
             // Symbol: comment in an accessible button
-            $GLOBALS['config']['Absences-CommentDisplay'] = 'icon';
+            $this->config->setParam('Absences-CommentDisplay', 'icon');
             $crawler = $this->client->request('GET', '/calendar', $params);
             $button = $crawler->filterXPath('//tbody/tr/td[1]//button[contains(@class, "absence-comment-icon")]');
             $this->assertEquals(1, $button->count());
             $this->assertSame('COPIL', $button->attr('title'));
             $this->assertNotEmpty($button->attr('aria-label'));
         } finally {
-            $GLOBALS['config'] = $previous;
+            $this->config->setParam('Absences-CommentReasons', '');
+            $this->config->setParam('Absences-CommentDisplay', 'append');
+            $this->config->setParam('Absences-CommentViews', '["calendar","planning","attendees"]');
         }
     }
 
