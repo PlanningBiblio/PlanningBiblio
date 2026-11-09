@@ -832,3 +832,6 @@ msgstr "Afficher les statuts"
 
 msgid "Holiday"
 msgstr "Congé"
+
+msgid "Comment: %comment%"
+msgstr "Commentaire : %comment%"

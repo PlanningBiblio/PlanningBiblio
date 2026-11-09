@@ -234,6 +234,57 @@ class CalendarControllerTest extends PLBWebTestCase
         }
     }
 
+    public function testCalendarWithComments(): void
+    {
+        $builder = new FixtureBuilder();
+        $builder->delete(Agent::class);
+
+        $GLOBALS['config']['PlanningHebdo'] = 0;
+        $GLOBALS['config']['Absences-validation'] = 1;
+        $previous = $GLOBALS['config'];
+        $GLOBALS['config']['Absences-ShowReasonDetails'] = 0;
+
+        $agent = $builder->build(Agent::class, array('login' => 'jdoecom', 'nom' => 'Doecom', 'prenom' => 'Jean', 'actif' => 'Actif', 'sites' => ['1']));
+        $this->logInAgent($agent, array(3,100));
+
+        $builder->build(Absence::class, array(
+            'debut' => \DateTime::createFromFormat('d/m/Y H:i:s', '26/09/2022 00:00:00'),
+            'fin' => \DateTime::createFromFormat('d/m/Y H:i:s', '26/09/2022 23:59:59'),
+            'motif' => 'Réunion', 'motif_autre' => '', 'commentaires' => 'COPIL',
+            'perso_id' => $agent->getId(), 'validation' => new \DateTime(), 'valide' => 1, 'supprime' => 0, 'groupe' => '1',
+        ));
+
+        $params = array('debut' => '26/09/2022', 'fin' => '26/09/2022', 'perso_id' => $agent->getId());
+
+        try {
+            $GLOBALS['config']['Absences-CommentReasons'] = 'réunion';
+            $GLOBALS['config']['Absences-CommentDisplay'] = 'append';
+            $GLOBALS['config']['Absences-CommentMaxLength'] = 30;
+
+            // Calendar not checked in Absences-CommentViews: reason only
+            $GLOBALS['config']['Absences-CommentViews'] = '["planning","attendees"]';
+            $crawler = $this->client->request('GET', '/calendar', $params);
+            $text = $crawler->filterXPath('//tbody/tr/td[1]')->text();
+            $this->assertStringContainsString('Toute la journée : Réunion', $text);
+            $this->assertStringNotContainsString('COPIL', $text);
+
+            // Calendar checked: comment after the reason
+            $GLOBALS['config']['Absences-CommentViews'] = '["calendar"]';
+            $crawler = $this->client->request('GET', '/calendar', $params);
+            $this->assertStringContainsString('Toute la journée : Réunion : COPIL', $crawler->filterXPath('//tbody/tr/td[1]')->text());
+
+            // Symbol: comment in an accessible button
+            $GLOBALS['config']['Absences-CommentDisplay'] = 'icon';
+            $crawler = $this->client->request('GET', '/calendar', $params);
+            $button = $crawler->filterXPath('//tbody/tr/td[1]//button[contains(@class, "absence-comment-icon")]');
+            $this->assertEquals(1, $button->count());
+            $this->assertSame('COPIL', $button->attr('title'));
+            $this->assertNotEmpty($button->attr('aria-label'));
+        } finally {
+            $GLOBALS['config'] = $previous;
+        }
+    }
+
     public function testFullCalendar(): void
     {
         $builder = new FixtureBuilder();
