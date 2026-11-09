@@ -4,9 +4,10 @@ namespace App\Tests\Twig;
 
 use App\Service\AbsenceReasonLabel;
 use App\Twig\AppExtension;
-use Tests\PLBWebTestCase;
+use App\Repository\ConfigRepository;
+use PHPUnit\Framework\TestCase;
 
-class AppExtensionAbsenceReasonTest extends PLBWebTestCase
+class AppExtensionAbsenceReasonTest extends TestCase
 {
     private const DEFAULTS = [
         'Absences-ShowReasonDetails' => '0',
@@ -20,31 +21,21 @@ class AppExtensionAbsenceReasonTest extends PLBWebTestCase
 
     protected function setUp(): void
     {
-        parent::setUp();
-
-        $this->setParams(['Absences-ShowReasonDetails' => '1', 'Absences-CommentReasons' => '']);
-    }
-
-    protected function tearDown(): void
-    {
-        $this->setParams(self::DEFAULTS);
-
-        parent::tearDown();
+        $this->setParams(['Absences-ShowReasonDetails' => '1']);
     }
 
     /**
-     * Sets parameters of the config table and creates a new extension
-     * (the service loads the configuration once).
+     * Extension whose service reads the given parameters (default values otherwise)
+     * through a stub of ConfigRepository: unit tests, no database.
      *
      * @param array<string, string> $params
      */
     private function setParams(array $params): void
     {
-        foreach ($params as $name => $value) {
-            $this->config->setParam($name, $value);
-        }
+        $repository = $this->createStub(ConfigRepository::class);
+        $repository->method('getAll')->willReturn(array_merge(self::DEFAULTS, $params));
 
-        $this->extension = new AppExtension(new AbsenceReasonLabel($this->config));
+        $this->extension = new AppExtension(new AbsenceReasonLabel($repository));
     }
 
     public function testShortLabelIsEscaped(): void
@@ -137,6 +128,7 @@ class AppExtensionAbsenceReasonTest extends PLBWebTestCase
     private function setComments(string $display, int $maxLength = 30, string $views = '["calendar","planning","attendees"]'): void
     {
         $this->setParams([
+            'Absences-ShowReasonDetails' => '1',
             'Absences-CommentReasons' => '[All]',
             'Absences-CommentDisplay' => $display,
             'Absences-CommentMaxLength' => (string) $maxLength,
