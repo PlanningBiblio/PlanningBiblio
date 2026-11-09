@@ -5,6 +5,7 @@ namespace App\Tests\Twig;
 use App\Service\AbsenceReasonLabel;
 use App\Twig\AppExtension;
 use App\Repository\ConfigRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 
 class AppExtensionAbsenceReasonTest extends TestCase
@@ -26,7 +27,7 @@ class AppExtensionAbsenceReasonTest extends TestCase
 
     /**
      * Extension whose service reads the given parameters (default values otherwise)
-     * through a stub of ConfigRepository: unit tests, no database.
+     * through stubs of the entity manager and ConfigRepository: unit tests, no database.
      *
      * @param array<string, string> $params
      */
@@ -34,8 +35,10 @@ class AppExtensionAbsenceReasonTest extends TestCase
     {
         $repository = $this->createStub(ConfigRepository::class);
         $repository->method('getAll')->willReturn(array_merge(self::DEFAULTS, $params));
+        $entityManager = $this->createStub(EntityManagerInterface::class);
+        $entityManager->method('getRepository')->willReturn($repository);
 
-        $this->extension = new AppExtension(new AbsenceReasonLabel($repository));
+        $this->extension = new AppExtension(new AbsenceReasonLabel($entityManager));
     }
 
     public function testShortLabelIsEscaped(): void

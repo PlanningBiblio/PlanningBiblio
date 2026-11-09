@@ -3,7 +3,8 @@
 namespace App\Service;
 
 use App\Entity\Absence;
-use App\Repository\ConfigRepository;
+use App\Entity\Config;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Label of an absence reason displayed in the calendars and in the absence lists.
@@ -46,7 +47,9 @@ class AbsenceReasonLabel
      */
     private ?array $config = null;
 
-    public function __construct(private ConfigRepository $configRepository)
+    // Repositories are not services in Planno (src/Repository excluded from autowiring):
+    // the entity manager is injected, as in the other services.
+    public function __construct(private EntityManagerInterface $entityManager)
     {
     }
 
@@ -82,7 +85,7 @@ class AbsenceReasonLabel
      */
     private function config(string $name): mixed
     {
-        $this->config ??= $this->configRepository->getAll();
+        $this->config ??= $this->entityManager->getRepository(Config::class)->getAll();
 
         return $this->config[$name] ?? null;
     }
