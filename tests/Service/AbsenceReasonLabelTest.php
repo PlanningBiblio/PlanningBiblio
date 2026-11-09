@@ -164,8 +164,8 @@ class AbsenceReasonLabelTest extends TestCase
         $this->assertSame('COPIL …', $label['comment']['label'], 'short first line followed by other lines');
         $this->assertTrue($label['comment']['truncated']);
 
-        $label = $this->service->format(['motif' => 'Autre', 'commentaires' => '<b>COPIL</b>'], false, null, $settings);
-        $this->assertSame('COPIL', $label['comment']['label'], 'tags removed');
+        $label = $this->service->format(['motif' => 'Autre', 'commentaires' => 'Réunion <2h'], false, null, ['reasons' => '[All]']);
+        $this->assertSame('Réunion <2h', $label['comment']['label'], 'text kept as typed (escaped when displayed)');
     }
 
     public function testCommentViews(): void

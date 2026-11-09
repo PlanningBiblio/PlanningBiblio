@@ -19,7 +19,8 @@ use Doctrine\ORM\EntityManagerInterface;
  *    - "append": after the reason ("Réunion : COPIL");
  *    - "replace": instead of the reason ("COPIL");
  *    - "icon": a symbol after the reason, the comment being displayed in a tooltip.
- *    The first line of the comment is displayed, truncated to Absences-CommentMaxLength characters.
+ *    The first line of the comment (text before the first line break or <br/>) is displayed, truncated to
+ *    Absences-CommentMaxLength characters. The text is kept as typed: it is escaped when displayed.
  *    Absences-CommentViews restricts the screens where comments are displayed.
  */
 class AbsenceReasonLabel
@@ -202,7 +203,9 @@ class AbsenceReasonLabel
     {
         $lines = preg_split('/<br\s*\/?>|\R/i', $comment) ?: [];
         $lines = array_values(array_filter(
-            array_map(fn (string $line) => trim((string) preg_replace('/\s+/u', ' ', strip_tags($line))), $lines),
+            // The text is kept as typed (escaped when displayed), as in the list of absences:
+            // strip_tags() would remove legitimate text ("réunion <2h" → "réunion ")
+            array_map(fn (string $line) => trim((string) preg_replace('/\s+/u', ' ', $line)), $lines),
             fn (string $line) => $line !== ''
         ));
 
