@@ -3,6 +3,7 @@
 namespace App\Tests\Command;
 
 use App\Entity\Absence;
+use App\Entity\AbsenceReason;
 use App\Entity\Agent;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -111,6 +112,38 @@ class AbsenceImportCSVCommandTest extends PLBWebTestCase
 
         $countAfter = $this->entityManager->getConnection()->fetchOne("SELECT COUNT(*) FROM absences");
         $this->assertSame(214, $countAfter, "214 absences from 2025-10-14 with status 2 should be imported");
+    }
+
+    // Hamac-motif = [SUMMARY]: the label (2nd column) is used as reason if it matches an existing reason
+    // (case-insensitive), otherwise "Autre" with the label in motif_autre
+    public function testSummaryReason(): void
+    {
+        $this->config->setParam('Hamac-motif', '[SUMMARY]');
+
+        $reason = new AbsenceReason();
+        $reason->setValue('Form');
+        $reason->setRank(999);
+        $this->entityManager->persist($reason);
+
+        foreach (['yokl8ucgenw6', 'qv0bzb2g8yj0', 'ezcjirxm6oht', 'rn9cmni34l0y', '7tzvc1ahrdrw', 'b6mizbg7at2j', 'ewcmtgoawa7j', 'o1nxxbhfbx1e', '3m6mrm6sd1uc'] as $matricule) {
+            $this->builder->build(Agent::class, ['check_hamac' => 1, 'matricule' => $matricule]);
+        }
+        $this->entityManager->flush();
+
+        try {
+            $this->execute();
+
+            $connection = $this->entityManager->getConnection();
+
+            $this->assertSame(0, (int) $connection->fetchOne("SELECT COUNT(*) FROM absences WHERE motif = '[SUMMARY]'"), 'the keyword is never saved as reason');
+            $this->assertGreaterThan(0, (int) $connection->fetchOne("SELECT COUNT(*) FROM absences WHERE motif = 'Form' AND motif_autre = '' AND commentaires = 'FORM'"), 'FORM matches the reason Form');
+            $this->assertGreaterThan(0, (int) $connection->fetchOne("SELECT COUNT(*) FROM absences WHERE motif = 'Autre' AND motif_autre = 'CONGh'"), 'CONGh matches no reason');
+            $this->assertSame(0, (int) $connection->fetchOne("SELECT COUNT(*) FROM absences WHERE motif = 'Autre' AND motif_autre = ''"), 'motif_autre is always filled with "Autre"');
+        } finally {
+            $this->config->setParam('Hamac-motif', 'Hamac');
+            $this->entityManager->remove($this->entityManager->getRepository(AbsenceReason::class)->find($reason->getId()));
+            $this->entityManager->flush();
+        }
     }
 
     private function execute(): void

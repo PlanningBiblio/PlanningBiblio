@@ -2,10 +2,12 @@
 
 namespace App\Planno;
 
+use App\Entity\AbsenceReason;
 use App\Entity\Agent;
 use App\Entity\Config;
 use App\Planno\OAuth;
 use App\Planno\MSCalendarUtils;
+use App\Service\ImportedAbsenceReason;
 use Doctrine\Common\Collections\ArrayCollection;
 use Unirest\Request;
 
@@ -28,6 +30,8 @@ class MSGraphClient
     private $login_suffix;
     private $oauth;
     private $reason_name;
+    private $reasons;
+    private $importedReason;
     private $ignoredStatuses;
     private $stdout;
     private $user_id;
@@ -54,7 +58,13 @@ class MSGraphClient
         $this->msCalendarUtils = new MSCalendarUtils();
         $this->entityManager = $entityManager;
         $this->dbprefix = '';
-        $this->reason_name = $absenceReason ?? 'Outlook';
+        // Configured reason, or "[SUMMARY]" to use the title of the events as reason
+        $this->reason_name = !empty(trim((string) $absenceReason)) ? trim($absenceReason) : 'Outlook';
+        $this->importedReason = new ImportedAbsenceReason();
+        $this->reasons = array_map(
+            fn (AbsenceReason $reason) => $reason->getValue(),
+            $entityManager->getRepository(AbsenceReason::class)->findAll()
+        );
         $this->login_suffix = $loginSuffix ?? null;
         $this->ignoredStatuses = !empty($ignoredStatuses) ? explode(';', $ignoredStatuses) : ['free', 'tentative'];
         $this->full = $full;
@@ -168,7 +178,9 @@ class MSGraphClient
             $from = $range['from'];
             $to = $range['to'];
         }
-        $query = "SELECT * FROM " . $this->dbprefix . "absences WHERE motif='" . $this->reason_name . "' AND perso_id IN($usersSQLIds) AND debut >= '" . $from . "' AND fin <= '" . $to . "'";
+        // The imported absences are identified by their calendar name (MSGraph-<agent id>-<md5 of ical_key>), not by
+        // their reason, which may vary with the title of the events ([SUMMARY]) or with the configuration.
+        $query = "SELECT * FROM " . $this->dbprefix . "absences WHERE cal_name LIKE '" . $this->cal_name . "%' AND perso_id IN($usersSQLIds) AND debut >= '" . $from . "' AND fin <= '" . $to . "'";
         $statement = $this->entityManager->getConnection()->prepare($query);
         $results = $statement->execute();
         $this->localEvents = array();
@@ -218,11 +230,11 @@ class MSGraphClient
                 continue;
             }
 
-            if ($incomingEvent->sensitivity == 'private') {
-                $incomingEvent->subject = '[Private]';
-            } elseif(!$incomingEvent->subject) {
-                $incomingEvent->subject = '[Empty]';
-            }
+            // Private events (sensitivity private or confidential): "[Private]"; events without subject: "[Empty]"
+            $incomingEvent->subject = $this->importedReason->graphEventTitle($incomingEvent);
+
+            // Reason: configured reason, or title of the event with [SUMMARY]; "Autre" + title if it does not exist
+            $resolved = $this->importedReason->resolve($this->reason_name, $incomingEvent->subject, $this->reasons);
 
             if (array_key_exists($eventArray['plb_id'] . $incomingEvent->iCalUId, $this->localEvents)) {
                 // Event modification
@@ -232,12 +244,13 @@ class MSGraphClient
                         $response = $this->sendGet("/users/" . $eventArray['plb_login'] . $this->login_suffix . '/calendar/events/' . $incomingEvent->seriesMasterId);
                         $rrule = $this->msCalendarUtils->recurrenceToRRule($response->body->recurrence);
                     }
-                    $query = "UPDATE " . $this->dbprefix . "absences SET debut=:debut, fin=:fin, motif=:motif, commentaires=:commentaires, last_modified=:last_modified, rrule=:rrule WHERE ical_key=:ical_key AND perso_id=:perso_id LIMIT 1";
+                    $query = "UPDATE " . $this->dbprefix . "absences SET debut=:debut, fin=:fin, motif=:motif, motif_autre=:motif_autre, commentaires=:commentaires, last_modified=:last_modified, rrule=:rrule WHERE ical_key=:ical_key AND perso_id=:perso_id LIMIT 1";
                     $statement = $this->entityManager->getConnection()->prepare($query);
                     $statement->execute(array(
                         'debut'             => $this->formatDate($incomingEvent->start),
                         'fin'               => $this->formatDate($incomingEvent->end),
-                        'motif'             => $this->reason_name,
+                        'motif'             => $resolved['reason'],
+                        'motif_autre'       => $resolved['otherReason'],
                         'commentaires'      => $incomingEvent->subject,
                         'last_modified'     => $incomingEvent->lastModifiedDateTime,
                         'rrule'             => $rrule,
@@ -254,13 +267,14 @@ class MSGraphClient
                 }
                 $query = "INSERT INTO " . $this->dbprefix . "absences ";
                 $query .= "( perso_id,  debut,  fin,  motif, motif_autre, commentaires, valide_n1, validation_n1, valide, validation, demande, cal_name,  ical_key, last_modified, rrule) VALUES ";
-                $query .= "(:perso_id, :debut, :fin, :motif, '',         :commentaires, 99999, NOW(), 99999, NOW(), NOW(), :cal_name, :ical_key, :last_modified, :rrule)";
+                $query .= "(:perso_id, :debut, :fin, :motif, :motif_autre, :commentaires, 99999, NOW(), 99999, NOW(), NOW(), :cal_name, :ical_key, :last_modified, :rrule)";
                 $statement = $this->entityManager->getConnection()->prepare($query);
                 $statement->execute(array(
                     'perso_id'      => $eventArray['plb_id'],
                     'debut'         => $this->formatDate($incomingEvent->start),
                     'fin'           => $this->formatDate($incomingEvent->end),
-                    'motif'         => $this->reason_name,
+                    'motif'         => $resolved['reason'],
+                    'motif_autre'   => $resolved['otherReason'],
                     'commentaires'  => $incomingEvent->subject,
                     'cal_name'      => $this->cal_name . $eventArray['plb_id'] . '-' . md5($incomingEvent->iCalUId),
                     'ical_key'      => $incomingEvent->iCalUId,

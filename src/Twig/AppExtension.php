@@ -4,6 +4,8 @@ namespace App\Twig;
 
 use App\Planno\Helper\HolidayHelper;
 use App\Planno\Helper\HourHelper;
+use App\Service\AbsenceReasonLabel;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
@@ -16,12 +18,19 @@ class AppExtension extends AbstractExtension
 
     private $blacklistedTags = ['script'];
 
+    public function __construct(
+        private AbsenceReasonLabel $absenceReasonLabel,
+        private ?TranslatorInterface $translator = null,
+    ) {
+    }
+
     /**
      * @return array
     */
     public function getFilters()
     {
         return [
+            new TwigFilter('absenceReason', [$this, 'absenceReason'], ['is_safe' => ['html']]),
             new TwigFilter('datefull', [$this, 'dateFull'], ['is_safe' => ['html']]),
             new TwigFilter('datefr', [$this, 'dateFr']),
             new TwigFilter('dateOrNull', [$this, 'dateOrNull']),
@@ -49,6 +58,71 @@ class AppExtension extends AbstractExtension
             new TwigFunction('menuIsActive', [$this, 'menuIsActive']),
             new TwigFunction('colspan', [$this, 'colspan']),
         ];
+    }
+
+    /**
+     * Reason of an absence (see App\Service\AbsenceReasonLabel):
+     * - reason details instead of the reason if the parameter Absences-ShowReasonDetails is enabled;
+     * - comment of the absence after the reason, instead of the reason, or in a tooltip behind a symbol,
+     *   depending on Absences-CommentReasons, Absences-CommentDisplay and Absences-CommentViews.
+     * Truncated texts are followed by "…"; the full text is available in a tooltip
+     * (mouse, keyboard focus, touch) and for screen readers.
+     *
+     * @param array<string, mixed>|\App\Entity\Absence $absence
+     * @param string|null                               $view    Screen: calendar, planning or attendees
+     */
+    public function absenceReason($absence, ?string $view = null): string
+    {
+        if (!is_array($absence) && !$absence instanceof \App\Entity\Absence) {
+            return '';
+        }
+
+        $label = $this->absenceReasonLabel->format($absence, null, $view);
+        $reason = $this->truncatedText($label);
+        $comment = $label['comment'];
+
+        if ($comment === null) {
+            return $reason;
+        }
+
+        switch ($label['display']) {
+            case AbsenceReasonLabel::DISPLAY_REPLACE:
+                return $this->truncatedText($comment, 'absence-comment');
+
+            case AbsenceReasonLabel::DISPLAY_ICON:
+                $full = $this->escape($comment['full']);
+                $name = $this->escape($this->translator
+                    ? $this->translator->trans('Comment: %comment%', ['%comment%' => $comment['full']])
+                    : 'Comment: ' . $comment['full']);
+
+                return $reason . ' <button type="button" class="btn btn-link p-0 align-baseline absence-comment-icon" title="' . $full . '" aria-label="' . $name . '">'
+                    . '<span aria-hidden="true">ⓘ</span></button>';
+
+            default:
+                return $reason . ' : ' . $this->truncatedText($comment, 'absence-comment');
+        }
+    }
+
+    /**
+     * Text, or truncated text with the full text in a tooltip and for screen readers.
+     *
+     * @param array{label: string, full: string, truncated: bool} $text
+     */
+    private function truncatedText(array $text, string $class = 'absence-reason'): string
+    {
+        if (!$text['truncated']) {
+            return $this->escape($text['label']);
+        }
+
+        return '<span class="' . $class . '" tabindex="0" title="' . $this->escape($text['full']) . '">'
+            . '<span aria-hidden="true">' . $this->escape($text['label']) . '</span>'
+            . '<span class="visually-hidden">' . $this->escape($text['full']) . '</span>'
+            . '</span>';
+    }
+
+    private function escape(string $text): string
+    {
+        return htmlspecialchars($text, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
 
     public function dateFull($date, bool $day = true, bool $year = true)

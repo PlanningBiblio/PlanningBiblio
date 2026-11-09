@@ -3,8 +3,10 @@
 namespace App\Command;
 
 use App\Entity\Absence;
+use App\Entity\AbsenceReason;
 use App\Entity\Agent;
 use App\Entity\Config;
+use App\Service\ImportedAbsenceReason;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -52,7 +54,14 @@ class AbsenceImportCSVCommand extends Command
         // If null or false : deleted entries will not be removed. If interger >= 0 : entries with end upper than today minor the specified value will be deleted
         $days_before = $config['hamac_days_before'] ?? null;
         $debug = $config['Hamac-debug'] ?? false;
+        // Configured reason, or "[SUMMARY]" to use the label of the absence (2nd column) as reason
         $motif = !empty(trim($config['Hamac-motif'])) ? trim($config['Hamac-motif']) : 'Hamac';
+        $useSummary = $motif === ImportedAbsenceReason::SUMMARY_KEYWORD;
+        $importedReason = new ImportedAbsenceReason();
+        $reasons = array_map(
+            fn (AbsenceReason $reason) => $reason->getValue(),
+            $entityManager->getRepository(AbsenceReason::class)->findAll()
+        );
 
         $this->log('Start CSV import', 'AbsenceImportCSV');
 
@@ -267,6 +276,9 @@ class AbsenceImportCSVCommand extends Command
             $end = \DateTime::createFromFormat('d/m/Y H:i:s', $tab[3]);
             $comment = $tab[1];
 
+            // Reason: configured reason, or label of the absence with [SUMMARY]; "Autre" + label if it does not exist
+            $resolved = $importedReason->resolve($motif, (string) $comment, $reasons);
+
             $log_info = 'agent=' . $perso_id;
             $log_info .= ' / request=' . $requestDate->format('Y-m-d H:i:s');
             $log_info .= ' / start=' . $start->format('Y-m-d H:i:s');
@@ -313,8 +325,8 @@ class AbsenceImportCSVCommand extends Command
                 $absi->setEnd($end);
                 $absi->setICalKey($uid);
                 $absi->setOriginId(0);
-                $absi->setOtherReason('');
-                $absi->setReason($motif);
+                $absi->setOtherReason($resolved['otherReason']);
+                $absi->setReason($resolved['reason']);
                 $absi->setRequestDate($requestDate);
                 $absi->setStart($start);
                 $absi->setValidLevel1($validLevel1);
@@ -353,6 +365,11 @@ class AbsenceImportCSVCommand extends Command
                 }
 
                 $absu->setComment($comment);
+                // The reason is only updated with [SUMMARY]: otherwise, a reason changed in Planno is kept
+                if ($useSummary) {
+                    $absu->setReason($resolved['reason']);
+                    $absu->setOtherReason($resolved['otherReason']);
+                }
                 $absu->setEnd($end);
                 $absu->setRequestDate($requestDate);
                 $absu->setStart($start);
