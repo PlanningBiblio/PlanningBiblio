@@ -4,24 +4,47 @@ namespace App\Tests\Twig;
 
 use App\Service\AbsenceReasonLabel;
 use App\Twig\AppExtension;
-use PHPUnit\Framework\TestCase;
+use Tests\PLBWebTestCase;
 
-class AppExtensionAbsenceReasonTest extends TestCase
+class AppExtensionAbsenceReasonTest extends PLBWebTestCase
 {
+    private const DEFAULTS = [
+        'Absences-ShowReasonDetails' => '0',
+        'Absences-CommentReasons' => '',
+        'Absences-CommentDisplay' => 'append',
+        'Absences-CommentMaxLength' => '30',
+        'Absences-CommentViews' => '["calendar","planning","attendees"]',
+    ];
+
     private AppExtension $extension;
-    private array $previousConfig;
 
     protected function setUp(): void
     {
-        $this->extension = new AppExtension(new AbsenceReasonLabel());
-        $this->previousConfig = $GLOBALS['config'] ?? [];
-        $GLOBALS['config']['Absences-ShowReasonDetails'] = 1;
-        $GLOBALS['config']['Absences-CommentReasons'] = '';
+        parent::setUp();
+
+        $this->setParams(['Absences-ShowReasonDetails' => '1', 'Absences-CommentReasons' => '']);
     }
 
     protected function tearDown(): void
     {
-        $GLOBALS['config'] = $this->previousConfig;
+        $this->setParams(self::DEFAULTS);
+
+        parent::tearDown();
+    }
+
+    /**
+     * Sets parameters of the config table and creates a new extension
+     * (the service loads the configuration once).
+     *
+     * @param array<string, string> $params
+     */
+    private function setParams(array $params): void
+    {
+        foreach ($params as $name => $value) {
+            $this->config->setParam($name, $value);
+        }
+
+        $this->extension = new AppExtension(new AbsenceReasonLabel($this->config));
     }
 
     public function testShortLabelIsEscaped(): void
@@ -44,7 +67,7 @@ class AppExtensionAbsenceReasonTest extends TestCase
 
     public function testParameterDisabled(): void
     {
-        $GLOBALS['config']['Absences-ShowReasonDetails'] = 0;
+        $this->setParams(['Absences-ShowReasonDetails' => '0']);
 
         $this->assertSame('Autre', $this->extension->absenceReason(['motif' => 'Autre', 'motif_autre' => 'Atelier jeunesse']));
     }
@@ -113,9 +136,11 @@ class AppExtensionAbsenceReasonTest extends TestCase
 
     private function setComments(string $display, int $maxLength = 30, string $views = '["calendar","planning","attendees"]'): void
     {
-        $GLOBALS['config']['Absences-CommentReasons'] = '[All]';
-        $GLOBALS['config']['Absences-CommentDisplay'] = $display;
-        $GLOBALS['config']['Absences-CommentMaxLength'] = $maxLength;
-        $GLOBALS['config']['Absences-CommentViews'] = $views;
+        $this->setParams([
+            'Absences-CommentReasons' => '[All]',
+            'Absences-CommentDisplay' => $display,
+            'Absences-CommentMaxLength' => (string) $maxLength,
+            'Absences-CommentViews' => $views,
+        ]);
     }
 }

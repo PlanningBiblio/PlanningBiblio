@@ -18,13 +18,10 @@ class AppExtension extends AbstractExtension
 
     private $blacklistedTags = ['script'];
 
-    private AbsenceReasonLabel $absenceReasonLabel;
-    private ?TranslatorInterface $translator;
-
-    public function __construct(?AbsenceReasonLabel $absenceReasonLabel = null, ?TranslatorInterface $translator = null)
-    {
-        $this->absenceReasonLabel = $absenceReasonLabel ?? new AbsenceReasonLabel();
-        $this->translator = $translator;
+    public function __construct(
+        private AbsenceReasonLabel $absenceReasonLabel,
+        private ?TranslatorInterface $translator = null,
+    ) {
     }
 
     /**

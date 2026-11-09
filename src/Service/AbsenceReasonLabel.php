@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\Absence;
+use App\Repository\ConfigRepository;
 
 /**
  * Label of an absence reason displayed in the calendars and in the absence lists.
@@ -37,9 +38,21 @@ class AbsenceReasonLabel
     public const VIEW_ATTENDEES = 'attendees';
     public const VIEWS = [self::VIEW_CALENDAR, self::VIEW_PLANNING, self::VIEW_ATTENDEES];
 
+    /**
+     * Configuration values, loaded once per instance (one query per request): the filter may be
+     * called for each absence of a page.
+     *
+     * @var array<string, mixed>|null
+     */
+    private ?array $config = null;
+
+    public function __construct(private ConfigRepository $configRepository)
+    {
+    }
+
     public function isDetailsDisplayEnabled(): bool
     {
-        return !empty($GLOBALS['config']['Absences-ShowReasonDetails']);
+        return !empty($this->config('Absences-ShowReasonDetails'));
     }
 
     /**
@@ -49,21 +62,29 @@ class AbsenceReasonLabel
      */
     public function commentSettings(): array
     {
-        $config = $GLOBALS['config'] ?? [];
-
-        $views = $config['Absences-CommentViews'] ?? null;
+        $views = $this->config('Absences-CommentViews');
         if (is_string($views)) {
             $decoded = json_decode($views, true);
             $views = is_array($decoded) ? $decoded : null;
         }
 
         return self::normalizeSettings([
-            'reasons' => (string) ($config['Absences-CommentReasons'] ?? ''),
-            'display' => (string) ($config['Absences-CommentDisplay'] ?? self::DISPLAY_APPEND),
-            'maxLength' => (int) ($config['Absences-CommentMaxLength'] ?? self::MAX_LENGTH),
+            'reasons' => (string) ($this->config('Absences-CommentReasons') ?? ''),
+            'display' => (string) ($this->config('Absences-CommentDisplay') ?? self::DISPLAY_APPEND),
+            'maxLength' => (int) ($this->config('Absences-CommentMaxLength') ?? self::MAX_LENGTH),
             // Parameter missing (option not installed): all the screens
             'views' => is_array($views) ? $views : self::VIEWS,
         ]);
+    }
+
+    /**
+     * Value of a configuration parameter (config table), null if it does not exist.
+     */
+    private function config(string $name): mixed
+    {
+        $this->config ??= $this->configRepository->getAll();
+
+        return $this->config[$name] ?? null;
     }
 
     /**
