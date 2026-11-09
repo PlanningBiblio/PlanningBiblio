@@ -4,9 +4,10 @@ namespace App\Tests\Service;
 
 use App\Entity\Absence;
 use App\Service\AbsenceReasonLabel;
-use Tests\PLBWebTestCase;
+use App\Repository\ConfigRepository;
+use PHPUnit\Framework\TestCase;
 
-class AbsenceReasonLabelTest extends PLBWebTestCase
+class AbsenceReasonLabelTest extends TestCase
 {
     private const NO_COMMENT = ['reasons' => ''];
 
@@ -22,32 +23,21 @@ class AbsenceReasonLabelTest extends PLBWebTestCase
 
     protected function setUp(): void
     {
-        parent::setUp();
-
-        $this->setParams(self::DEFAULTS);
-        $this->service = new AbsenceReasonLabel($this->config);
-    }
-
-    protected function tearDown(): void
-    {
-        $this->setParams(self::DEFAULTS);
-
-        parent::tearDown();
+        $this->service = $this->setParams([]);
     }
 
     /**
-     * Sets parameters of the config table, then returns a new service:
-     * the service loads the configuration once.
+     * Service reading the given parameters (default values otherwise) through a stub of ConfigRepository:
+     * unit tests, no database. Reading the real configuration is covered by CalendarControllerTest.
      *
      * @param array<string, string> $params
      */
     private function setParams(array $params): AbsenceReasonLabel
     {
-        foreach ($params as $name => $value) {
-            $this->config->setParam($name, $value);
-        }
+        $repository = $this->createStub(ConfigRepository::class);
+        $repository->method('getAll')->willReturn(array_merge(self::DEFAULTS, $params));
 
-        return new AbsenceReasonLabel($this->config);
+        return new AbsenceReasonLabel($repository);
     }
 
     public function testDetailsHiddenByDefault(): void
@@ -223,11 +213,16 @@ class AbsenceReasonLabelTest extends PLBWebTestCase
 
     public function testConfigurationIsLoadedOnce(): void
     {
-        $service = $this->setParams(['Absences-CommentReasons' => 'Réunion']);
-        $this->assertSame('Réunion', $service->commentSettings()['reasons']);
+        $repository = $this->createMock(ConfigRepository::class);
+        $repository->expects($this->once())
+            ->method('getAll')
+            ->willReturn(array_merge(self::DEFAULTS, ['Absences-CommentReasons' => '[All]']));
 
-        $this->config->setParam('Absences-CommentReasons', 'Formation');
-        $this->assertSame('Réunion', $service->commentSettings()['reasons'], 'values are cached by the instance (one query per request)');
+        $service = new AbsenceReasonLabel($repository);
+
+        for ($i = 0; $i < 50; $i++) {
+            $service->format(['motif' => 'Réunion', 'commentaires' => 'COPIL'], null, AbsenceReasonLabel::VIEW_PLANNING);
+        }
     }
 
     /**
