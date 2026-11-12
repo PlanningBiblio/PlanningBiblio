@@ -11,10 +11,11 @@ Dernière modification : 8 février 2017
 
 Description :
 Fichier regroupant les fonctions de tris personnalisés pour les dataTables
+(DataTable.ext.type.order, formerly jQuery.fn.dataTableExt.oSort)
 */
 
 // Tri des dates avec (ou sans) heure (DD/MM/YYYY HHhii)
-jQuery.extend( jQuery.fn.dataTableExt.oSort, {
+Object.assign(DataTable.ext.type.order, {
   "date-fr-pre": function ( a ) {
     if(!a){
       return " ";
@@ -43,7 +44,7 @@ jQuery.extend( jQuery.fn.dataTableExt.oSort, {
 
 // Tri des dates de fin avec (ou sans) heure (DD/MM/YYYY HHhii)
 // une date sans heure est supérieure à une date avec heure, si pas d'heure, heure=23h59
-jQuery.extend( jQuery.fn.dataTableExt.oSort, {
+Object.assign(DataTable.ext.type.order, {
   "date-fr-fin-pre": function ( a ) {
     var tmp = a.split(' ');
     var frDatea = tmp[0].split('/');
@@ -60,7 +61,7 @@ jQuery.extend( jQuery.fn.dataTableExt.oSort, {
 });
 
 // Tri des heures au format 00h00 et 0h00
-jQuery.extend( jQuery.fn.dataTableExt.oSort, {
+Object.assign(DataTable.ext.type.order, {
   "heure-fr-pre": function ( a ) {
     if(!a){
       return " ";

@@ -26,6 +26,47 @@ function CJDataTableDraw() {
     });
 }
 
+/**
+ * Options of a CJDataTable column, from the classes of its th:
+ * - dataTableNoSort: column not orderable
+ * - dataTableHide: hidden column
+ * - dataTableDate, dataTableDateFR, dataTableDateFR-fin, dataTableHeureFR, clear-string: sort type
+ */
+function CJDataTableColumn(th) {
+  if (th.hasClass('dataTableDate')) {
+    return { type: 'date' };
+  }
+  if (th.hasClass('dataTableDateFR')) {
+    return { type: 'date-fr' };
+  }
+  if (th.hasClass('dataTableDateFR-fin')) {
+    return { type: 'date-fr-fin' };
+  }
+  if (th.hasClass('dataTableHeureFR')) {
+    return { type: 'heure-fr' };
+  }
+  if (th.hasClass('dataTableNoSort')) {
+    return { orderable: false };
+  }
+  if (th.hasClass('dataTableHide')) {
+    return { visible: false };
+  }
+  if (th.hasClass('clear-string')) {
+    return { type: 'clear-string' };
+  }
+  return { orderable: true };
+}
+
+/**
+ * Boolean value of a data- attribute: '0' and 'false' are false, a missing attribute gives the default value
+ */
+function CJDataTableBoolean(value, defaultValue) {
+  if (value === undefined || value === null || value === '') {
+    return defaultValue;
+  }
+  return !(value === '0' || String(value).toLowerCase() === 'false');
+}
+
 function CJDataTableStripe() {
   // On refait le zebra, à chaque fois que le tableau est redessiné.
   // Utile en cas de suppression de ligne et d'utilisation du filtre et des tris
@@ -144,7 +185,9 @@ $(function(){
   - data-sort : tri par défaut, doit être une chaine JSON du type [[0,"asc"],[1,"asc"]]. Valeur par défaut [[0,"asc"]]
   - data-stateSave : garde en mémoire l'état du tableau (tris, recherches). Valeurs : 0, false, 1 ou true. Valeur par défaut = true
   - data-length : nombre d'éléments affichés. Par défaut : 25
-  - data-responsive : Tableau responsive (les colonnes qui n'entrent pas dans le cadre sont masquées, le signe + permet d'afficher leur contenu). Par défaut : true
+  - data-responsive: responsive table (the columns that do not fit are hidden, the + sign displays their content). Values: 0, false, 1 or true. Default: true
+  - data-fixedColumns: number of fixed columns on the left (horizontal scrolling)
+  - data-noExport: hides the export buttons
   
   Sur les balises th de l'entête, les classes suivantes permettent de définir le type de données contenues dans les cellules 
   pour trier correctement les colonnes :
@@ -156,146 +199,119 @@ $(function(){
   - dataTableHeureFR : La colonne contient des heures au format HH:mm[:ss]
   */
   
-  $(".CJDataTable").each(function(){
+  // Sort strings without taking accents into account (declared before the tables are initialized)
+  Object.assign(DataTable.ext.type.order, {
+    'clear-string-asc': function (x, y) {
+      return removeAccents(x) > removeAccents(y) ? 1 : -1;
+    },
+    'clear-string-desc': function (x, y) {
+      return removeAccents(x) < removeAccents(y) ? 1 : -1;
+    },
+  });
 
-    // Tri des colonnes en fonction des classes des th
-    var aoCol=[];
-    
-    // Variables tr2 utilisées si 2 lignes en entête. tr2 = 2eme ligne
-    var tr2=null;
-    if($(this).find("thead tr").length==2){
-      tr2=$(this).find("thead tr:nth-child(2)");
-      tr2th=tr2.find("th");
-      tr2thNb=tr2th.length;
-      tr2Index=1;
+  $(".CJDataTable").each(function(){
+    var table = $(this);
+
+    // Columns: sort type, orderable, visibility, from the classes of the th
+    var columns = [];
+
+    // With 2 header rows, merged columns (colspan) are described by the th of the 2nd row
+    var tr2 = null;
+    var tr2Index = 1;
+    if (table.find('thead tr').length == 2) {
+      tr2 = table.find('thead tr:nth-child(2)');
     }
 
-    $(this).find("thead tr:first th").each(function(){
-      
-      var th=[$(this)];
-      
-      // Si colspan et 2 lignes en entête, on se base sur la 2ème ligne
-      if($(this).attr("colspan") && $(this).attr("colspan")>1 && tr2){
-	th=new Array();
-	for(i=0;i<$(this).attr("colspan");i++){
-	  th.push(tr2.find("th:nth-child("+tr2Index+")"));
-	  tr2Index++;
-	}
+    table.find('thead tr:first th').each(function(){
+      var th = [$(this)];
+
+      if ($(this).attr('colspan') && $(this).attr('colspan') > 1 && tr2) {
+        th = [];
+        for (var i = 0; i < $(this).attr('colspan'); i++) {
+          th.push(tr2.find('th:nth-child(' + tr2Index + ')'));
+          tr2Index++;
+        }
       }
 
-      for(i in th){
-	// Par défault, tri basic
-	if(th[i].attr("class")==undefined){
-	  aoCol.push({"bSortable":true});
-	}
-	// si date
-	else if(th[i].hasClass("dataTableDate")){
-	  aoCol.push({"sType": "date"});
-	}
-	// si date FR
-	else if(th[i].hasClass("dataTableDateFR")){
-	  aoCol.push({"sType": "date-fr"});
-	}
-	// si date FR Fin
-	else if(th[i].hasClass("dataTableDateFR-fin")){
-	  aoCol.push({"sType": "date-fr-fin"});
-	}
-	// si heures fr (00h00)
-	else if(th[i].hasClass("dataTableHeureFR")){
-	  aoCol.push({"sType": "heure-fr"});
-	}
-	// si pas de tri
-	else if(th[i].hasClass("dataTableNoSort")){
-	  aoCol.push({"bSortable":false});
-	}
-    else if(th[i].hasClass("dataTableHide")){
-      aoCol.push({"visible":false});
-    }
-    // For accentuated string
-    else if(th[i].hasClass('clear-string')){
-      aoCol.push({'sType': 'clear-string'});
-    }
-	// Par défaut (encore) : tri basic
-	else{
-	  aoCol.push({"bSortable":true});
-	}
+      for (var j in th) {
+        columns.push(CJDataTableColumn(th[j]));
       }
     });
 
-    // Tri au chargement du tableau
-    // Par défaut : 1ère colonne
-    var sort=[[0,"asc"]];
-    
-    // Si le tableau à l'attribut data-sort, on récupère sa valeur
-    if($(this).attr("data-sort")){
-      var sort=JSON.parse($(this).attr("data-sort"));
-    }
-    
-    // Taille du tableau par défaut
-    var tableLength=25;
-    if($(this).attr("data-length")){
-      tableLength=$(this).attr("data-length")
+    // Initial order. Default: 1st column
+    var order = [[0, 'asc']];
+    if (table.attr('data-sort')) {
+      order = JSON.parse(table.attr('data-sort'));
     }
 
-    // DataTable responsive or not
-    var responsive = true;
-    if($(this).attr("data-responsive")) {
-      responsive = $(this).attr("data-responsive")
+    // Number of rows displayed. Default: 25
+    var pageLength = 25;
+    if (table.attr('data-length')) {
+      pageLength = parseInt(table.attr('data-length'), 10) || pageLength;
     }
 
-    // save state ?
-    var saveState=true;
-    if($(this).attr("data-stateSave") && ($(this).attr("data-stateSave")=="false" || $(this).attr("data-stateSave")=="0")){
-      var saveState=false;
-    }
+    // Responsive table. Default: true. data-responsive='false' or '0' disables it
+    var responsive = CJDataTableBoolean(table.attr('data-responsive'), true);
 
-    // Colonnes fixes
-    var scollX=$(this).attr("data-fixedColumns")?"100%":"";
-    
-    // Liens pour exporter les informations
-    var sDom='<"H"lfr>t<"F"ip>T';
-    if($(this).attr("data-noExport")){
-      sDom='<"H"lfr>t<"F"ip>';
-    }
-    
-    // On applique le DataTable
-    var CJDataTable=$(this).DataTable({
-      "bJQueryUI": true,
-      "sPaginationType": "full_numbers",
-      "bStateSave": saveState,
-      "aLengthMenu" : [[10,25,50,75,100,-1],[10,25,50,75,100,"All"]],
-      "iDisplayLength" : tableLength,
-      "aaSorting" : sort,
-      "aoColumns" : aoCol,
-      "sScrollX": scollX,
-      "autoWidth": false,
-      "buttons": true,
-      "language" : { "url" : jsFileLocation+"/dataTables.french.lang.json" },
-      "initComplete": function () {
-        $('.dt-layout-row:last').after(CJDataTable.buttons().container());
-      },
+    // Save the state (order, search, paging). Default: true
+    var stateSave = CJDataTableBoolean(table.attr('data-stateSave'), true);
+
+    // Fixed columns (number of fixed columns on the left)
+    var fixedColumns = parseInt(table.attr('data-fixedColumns'), 10) || 0;
+
+    // Export buttons, hidden by data-noExport
+    var exportButtons = !table.attr('data-noExport');
+
+    var options = {
+      pagingType: 'full_numbers',
+      stateSave: stateSave,
+      lengthMenu: [10, 25, 50, 75, 100, { label: 'All', value: -1 }],
+      pageLength: pageLength,
+      order: order,
+      columns: columns,
+      autoWidth: false,
+      buttons: exportButtons,
+      language: { url: jsFileLocation + '/dataTables.french.lang.json' },
+      responsive: responsive,
 
       // On refait le zebra, à chaque fois que le tableau est redessiné.
       // Utile en cas de suppression de ligne et d'utilisation du filtre et des tris
-      "fnDrawCallback": CJDataTableStripe,
-      responsive: responsive,
-    });
+      drawCallback: function (settings) {
+        CJDataTableStripe.call(new DataTable.Api(settings).table().node());
+      },
+    };
 
-    // Colonnes fixes
-    if($(this).attr("data-fixedColumns")){
-      var nb=$(this).attr("data-fixedColumns");
-      new $.fn.dataTable.FixedColumns(CJDataTable, init={"iLeftColumns" : nb});
+    if (fixedColumns) {
+      options.scrollX = true;
+      options.fixedColumns = { start: fixedColumns };
+      // With scrollX, the header is drawn in a separate table: the widths of the columns must be
+      // calculated, otherwise the header and the body are misaligned and the offsets of the fixed
+      // columns are wrong (the fixed header cells overlap)
+      options.autoWidth = true;
     }
 
+    options.initComplete = function (settings) {
+      var api = new DataTable.Api(settings);
+
+      // Buttons placed under their own table (not under the last table of the page)
+      if (exportButtons) {
+        $(api.table().container()).find('.dt-layout-row').last().after(api.buttons().container());
+      }
+
+      // Recalculate the widths once the language file and the web fonts are loaded:
+      // both change the width of the texts after the first draw
+      if (fixedColumns) {
+        api.columns.adjust();
+        if (document.fonts && document.fonts.ready) {
+          document.fonts.ready.then(function () {
+            api.columns.adjust();
+          });
+        }
+      }
+    };
+
+    new DataTable(this, options);
   });
-
-  $.fn.dataTableExt.oSort['clear-string-asc'] = function (x, y) {
-    return removeAccents(x) > removeAccents(y) ? 1 : -1;
-  };
-
-  $.fn.dataTableExt.oSort['clear-string-desc'] = function (x, y) {
-    return removeAccents(x) < removeAccents(y) ? 1 : -1;
-  };
 
    // Check all checkboxes 
    $(".CJCheckAll").click(function(){
