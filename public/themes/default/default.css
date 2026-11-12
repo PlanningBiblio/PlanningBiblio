@@ -1702,6 +1702,22 @@ div.dt-container .dt-paging .dt-paging-button:hover {
   background-color: white;
 }
 
+/* Fixed columns (FixedColumns): background of the fixed cells.
+   FixedColumns gives them a white background (variables below): the headers would be white on white.
+   The variables are set on the table, so that they apply whatever the loading order of the stylesheets. */
+table.dataTable {
+  --dtfc-thead-cell_background: var(--blue-slate);
+  --dtfc-tbody-cell_background: white;
+}
+
+table.dataTable tbody tr.odd {
+  --dtfc-tbody-cell_background: var(--odd-grey);
+}
+
+table.dataTable thead tr>.dtfc-fixed-start,
+table.dataTable thead tr>.dtfc-fixed-end,
+table.dataTable tfoot tr>.dtfc-fixed-start,
+table.dataTable tfoot tr>.dtfc-fixed-end,
 table.dataTable thead tr>.dtfc-fixed-left,
 table.dataTable thead tr>.dtfc-fixed-right,
 table.dataTable tfoot tr>.dtfc-fixed-left,
@@ -1927,6 +1943,11 @@ div#holiday-info .col-4 {
 /* Frameworks */
 .framework-timepicker {
   width: 85px;
+}
+
+#framework-bulk-delete-button,
+#framework-restore-frameworks {
+  margin-top: 20px;
 }
 
 #div_infos .important,

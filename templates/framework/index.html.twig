@@ -80,10 +80,10 @@
       </table>
     </form>
     <p>
-      <input type="button" value="Supprimer la sélection" class="btn btn-danger" onclick="supprime_select('chk1','{{ asset("framework-batch_delete") }}');">
+      <input type="button" id="framework-bulk-delete-button" value="Supprimer la sélection" class="btn btn-danger" onclick="supprime_select('chk1','{{ asset("framework-batch_delete") }}');">
     </p>
     {% if tableauxSupprimes is not empty %}
-      <p style="margin-top:30px;">
+      <p id="framework-restore-frameworks">
         Récupération d'un tableau supprimé
         <select id="tableauxSupprimes">
           <option value="">&nbsp;</option>
