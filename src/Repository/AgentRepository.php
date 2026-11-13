@@ -79,7 +79,6 @@ class AgentRepository extends EntityRepository
                 Absence::class,
                 OverTime::class,
                 Detached::class,
-                HiddenTables::class,
                 Holiday::class,
                 PlanningNote::class,
                 PlanningPosition::class,
@@ -95,6 +94,14 @@ class AgentRepository extends EntityRepository
             }
 
             // Special cases:
+            // HiddenTables::class
+            $hiddenTablesCriteria = new \Doctrine\Common\Collections\Criteria();
+            $hiddenTablesCriteria
+                ->where($hiddenTablesCriteria->expr()->eq('userId', $perso_id));
+
+            $hiddenTables = $entityManager->getRepository(HiddenTables::class)->matching($hiddenTablesCriteria);
+            if (count($hiddenTables) > 0) { $delete = false; continue; }
+
             // PlanningPositionLock::class
             $planningPositionLockCriteria = new \Doctrine\Common\Collections\Criteria();
             $planningPositionLockCriteria
