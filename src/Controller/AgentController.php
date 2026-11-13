@@ -1393,6 +1393,9 @@ class AgentController extends BaseController
 
         if ($session->get('AgentActive') == 'Supprimé') {
             $this->entityManager->getRepository(Agent::class)->delete($tab);
+            // Mise à jour de la table responsables
+            // Deletes manager links by agent or responsible IDs.
+            $this->entityManager->getRepository(Manager::class)->deleteByPersoOrResponsable($tab);
         } else {
             // TODO : demander la date de suppression en popup
             // Date de suppression
