@@ -1,5 +1,26 @@
 # Changelog Planno
 
+## Version 26.11.02 (2026-11-13)
+
+### Enhancement
+
+* MT55669: New command app:agent:password to change an agent's password #1528
+
+### Fixes
+
+* MT55403: Fix display of statistics by position's group #1525
+* Planning menu and stackAlert: accessibility fixes #1526
+* MT55656: Fix entityManager in AuthorizationController::AuthSQL #1527
+* Revert "BugFix : demi-journée available only on day mode" Issue #1530 #1533
+  * Update the comment for the Conges-demi-journee parameter
+  * Update the order of the parameters in the Holiday category
+* MT55762: Fix the purge of HiddenTables #1535
+* MT54495: Fix validation level on deleted agents (level 1 deletion) #1536
+
+### Plumbing
+
+* MT55253: Modernize the initialization of the DataTables #1534
+
 ## Version 26.11.01 (2026-10-30)
 
 ### Fixes
