@@ -101,7 +101,7 @@ class FrameworkControllerTest extends PLBWebTestCase
         $this->assertStringContainsString("50",$result->text());
         $this->assertStringContainsString("75",$result->text());
         $this->assertStringContainsString("100",$result->text());
-        $this->assertStringContainsString("All",$result->text());
+        $this->assertStringContainsString("Tout",$result->text());
     }
 
     public function testListLine(): void
@@ -157,7 +157,7 @@ class FrameworkControllerTest extends PLBWebTestCase
         $this->assertStringContainsString("50",$result->text());
         $this->assertStringContainsString("75",$result->text());
         $this->assertStringContainsString("100",$result->text());
-        $this->assertStringContainsString("All",$result->text());
+        $this->assertStringContainsString("Tout",$result->text());
     }
 
     public function testListGroup(): void
@@ -241,7 +241,7 @@ class FrameworkControllerTest extends PLBWebTestCase
         $this->assertStringContainsString("50",$result->text());
         $this->assertStringContainsString("75",$result->text());
         $this->assertStringContainsString("100",$result->text());
-        $this->assertStringContainsString("All",$result->text());
+        $this->assertStringContainsString("Tout",$result->text());
     }
 
     public function testGroupAdd(): void

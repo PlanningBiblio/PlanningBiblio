@@ -38,8 +38,8 @@
       <thead>
         <tr>
             <th scope="col" class="dataTableNoSort"></th>
-            <th scope="col" class="dataTableDateFR">{{ 'Start' | trans }}</th>
-            <th scope="col" class="dataTableDateFR">{{ 'End' | trans }}</th>
+            <th scope="col">{{ 'Start' | trans }}</th>
+            <th scope="col">{{ 'End' | trans }}</th>
             <th scope="col">{{ 'Text' | trans }}</th>
         </tr>
       </thead>
@@ -51,8 +51,8 @@
                 <span class="pl-icon pl-icon-edit" title="{{ 'Edit' | trans }}"></span>
               </a>
             </td>
-            <td>{{ elem.start | date('d/m/Y') }}</td>
-            <td>{{ elem.end | date('d/m/Y')  }}</td>
+            <td data-order="{{ elem.start | date('Y-m-d') }}">{{ elem.start | date('d/m/Y') }}</td>
+            <td data-order="{{ elem.end | date('Y-m-d') }}">{{ elem.end | date('d/m/Y') }}</td>
             <td>{{ elem.comment | nl2br }}</td>
           </tr>
         {% endfor %}

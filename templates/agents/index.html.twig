@@ -55,9 +55,9 @@
         {% if config('Multisites-nombre') > 1 %}
           <th scope="col">Sites</th>
         {% endif %}
-        <th scope="col" class="dataTableDateFR">Arrivée</th>
-        <th scope="col" class="dataTableDateFR">Départ</th>
-        <th scope="col" class="dataTableDateFR">Accès</th>
+        <th scope="col">Arrivée</th>
+        <th scope="col">Départ</th>
+        <th scope="col">Accès</th>
     </thead>
     <tbody>
       {% for a in agents %}
@@ -87,9 +87,9 @@
           {% if config('Multisites-nombre') > 1 %}
             <td>{{ a.sites | sites }}</td>
           {% endif %}
-          <td>{{ a.arrival | dateOrNull('d/m/Y') }}</td>
-          <td>{{ a.departure | dateOrNull('d/m/Y') }}</td>
-          <td>{{ a.lastLogin | dateOrTime('d/m/Y H:i') }}</td>
+          <td data-order="{{ a.arrival | dateOrNull('Y-m-d') }}">{{ a.arrival | dateOrNull('d/m/Y') }}</td>
+          <td data-order="{{ a.departure | dateOrNull('Y-m-d') }}">{{ a.departure | dateOrNull('d/m/Y') }}</td>
+          <td data-order="{{ a.lastLogin | dateOrNull('Y-m-d H:i:s') }}">{{ a.lastLogin | dateOrTime('d/m/Y H:i') }}</td>
         </tr>
       {% endfor %}
     </tbody>

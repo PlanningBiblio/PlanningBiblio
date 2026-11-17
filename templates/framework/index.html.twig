@@ -40,7 +40,7 @@
     </p>
     <form name="form" method="get" action="{{ asset('framework')}}">
       <input type="hidden" name="modification" value ="tableau"/>
-      <table class="CJDataTable" id="table-list" data-noExport="1" data-sort='[[1,"asc"]]'>
+      <table class="CJDataTable" id="table-list" data-no-export data-sort='[[1,"asc"]]'>
         <thead>
           <tr>
             <th scope="col" class="dataTableNoSort">
@@ -99,7 +99,7 @@
     <p>
       <input type="button" value="Nouveau groupe" class="btn btn-primary" onclick="location.href='{{ asset("framework-group/add") }}';" />
     </p>
-    <table class="CJDataTable" id="table-groups" data-noExport="1" data-sort='[[1,"asc"]]'>
+    <table class="CJDataTable" id="table-groups" data-no-export data-sort='[[1,"asc"]]'>
       <thead>
         <tr>
           <th scope="col" class="dataTableNoSort"></th>
@@ -136,7 +136,7 @@
     <p>
       <input type="submit" value="Nouvelle ligne" class="btn btn-primary" onclick='location.href="{{ asset('framework-line/add') }}";'/>
     </p>
-    <table class="CJDataTable" id="table-separations" data-noExport="1"  data-sort='[[1, "asc"]]'>
+    <table class="CJDataTable" id="table-separations" data-no-export  data-sort='[[1, "asc"]]'>
       <thead>
         <tr>
           <th scope="col" class="dataTableNoSort"></th>
