@@ -487,3 +487,6 @@ msgstr "Requested"
 
 msgid "Comment:"
 msgstr "Comment:"
+
+msgid "Current value :"
+msgstr "Current value :"

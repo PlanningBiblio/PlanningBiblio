@@ -31,4 +31,17 @@ class ConfigHelperTest extends PLBWebTestCase
 
     }
 
+    public function testDefaultValues(): void
+    {
+        $this->config->setParam('Mail-IsEnabled', '1');
+        $this->config->setParam('Mail-Signature', 'Ce mail a été envoyé par Planno');
+        $this->config->setParam('Absences-notifications-A1', json_encode([0,1,2,3]));
+
+        $helper = new ConfigHelper();
+        $helper->saveConfig(['technical' => 0]);
+
+        $this->assertEquals('0', $this->config->getValue('Mail-IsEnabled'));
+        $this->assertEquals('', $this->config->getValue('Mail-Signature'));
+        $this->assertEquals('[]', $this->config->getValue('Absences-notifications-A1'));
+    }
 }

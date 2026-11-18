@@ -139,4 +139,28 @@ class Config
 
         return $this;
     }
+
+    public function getDecryptedValue(): ?string
+    {
+        $value = $this->getValue();
+        if ($value === null || $value === '' || !in_array($this->getType(), ['password', 'secret'])) {
+            return $value;
+        }
+
+        return decrypt($value);
+    }
+
+    public function getPartiallyRevealedValue(): ?string
+    {
+        if ($this->getType() !== 'secret') {
+            return null;
+        }
+
+        $decryptedValue = $this->getDecryptedValue();
+        if ($decryptedValue === null || $decryptedValue === '') {
+            return $decryptedValue;
+        }
+
+        return mb_substr($decryptedValue, 0, 3) . str_repeat('*', 10);
+    }
 }
