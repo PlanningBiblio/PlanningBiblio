@@ -615,16 +615,21 @@ function position(object,top,left){
 function initTooltips() {
   // Select every element with a title attribute
   $('[title]').each(function() {
-    $(this).attr('data-bs-toggle', 'tooltip');
+    // Keep an existing data-bs-toggle (modal, dropdown, collapse...): replacing it with "tooltip"
+    // would disable the component (e.g. the buttons that open a modal in the planning menu)
+    if (!$(this).attr('data-bs-toggle')) {
+      $(this).attr('data-bs-toggle', 'tooltip');
+    }
     $(this).attr('data-bs-custom-class', 'custom-tooltip');
     if (!$(this).attr('data-bs-placement')) {
       $(this).attr('data-bs-placement', 'bottom');
     }
   });
 
-  // Initialize the tooltips on those
-  const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-  const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+  // Initialize the tooltips on those, and on the elements with a title and another data-bs-toggle
+  // (the tooltip is then created by JavaScript, the data-bs-toggle attribute keeps its component)
+  const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"], [title][data-bs-toggle]:not([data-bs-toggle="tooltip"])');
+  const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => bootstrap.Tooltip.getOrCreateInstance(tooltipTriggerEl));
 }
 
 //	--------------------------------	END Tooltips		---------------------------------	//
