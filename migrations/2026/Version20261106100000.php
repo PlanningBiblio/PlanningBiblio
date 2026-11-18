@@ -23,7 +23,7 @@ final class Version20261106100000 extends AbstractMigration
 
         foreach ($this->parameters() as $parameter) {
             $this->addSql(
-                "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `commentaires`, `ordre`) VALUES (?, ?, ?, ?, 'Absences', ?, ?)",
+                "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `valeurs`, `categorie`, `commentaires`, `ordre`) VALUES (?, ?, ?, ?, 'Absences : motifs et commentaires', ?, ?)",
                 $parameter
             );
         }
@@ -66,10 +66,10 @@ final class Version20261106100000 extends AbstractMigration
             . 'La confidentialité des commentaires s\'applique à chaque écran coché : voir le commentaire du paramètre Absences-CommentReasons.';
 
         return [
-            ['Absences-CommentReasons', 'textarea', '', '', $reasons, '37'],
-            ['Absences-CommentDisplay', 'enum2', 'append', json_encode([['append', 'Après le motif'], ['replace', 'À la place du motif'], ['icon', 'Symbole ⓘ']], JSON_UNESCAPED_UNICODE), $display, '38'],
-            ['Absences-CommentMaxLength', 'number', '30', '{"min":5,"max":200,"step":1}', $maxLength, '39'],
-            ['Absences-CommentViews', 'checkboxes', '["calendar","planning","attendees"]', json_encode([['calendar', 'Agenda'], ['planning', 'Liste des absents sous les plannings'], ['attendees', 'Statistiques / Présents et absents']], JSON_UNESCAPED_UNICODE), $views, '40'],
+            ['Absences-CommentReasons', 'textarea', '', '', $reasons, '20'],
+            ['Absences-CommentDisplay', 'enum2', 'append', json_encode([['append', 'Après le motif'], ['replace', 'À la place du motif'], ['icon', 'Symbole ⓘ']], JSON_UNESCAPED_UNICODE), $display, '30'],
+            ['Absences-CommentMaxLength', 'number', '30', '{"min":5,"max":200,"step":1}', $maxLength, '40'],
+            ['Absences-CommentViews', 'checkboxes', '["calendar","planning","attendees"]', json_encode([['calendar', 'Agenda'], ['planning', 'Liste des absents sous les plannings'], ['attendees', 'Statistiques / Présents et absents']], JSON_UNESCAPED_UNICODE), $views, '50'],
         ];
     }
 

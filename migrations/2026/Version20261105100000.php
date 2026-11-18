@@ -36,7 +36,7 @@ final class Version20261105100000 extends AbstractMigration
             . 'L\'établissement reste responsable du respect du RGPD pour les informations ainsi affichées.';
 
         $this->addSql(
-            "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `ordre`) VALUES ('Absences-ShowReasonDetails', 'boolean', '0', 'Absences', ?, '36')",
+            "INSERT IGNORE INTO `{$dbprefix}config` (`nom`, `type`, `valeur`, `categorie`, `commentaires`, `ordre`) VALUES ('Absences-ShowReasonDetails', 'boolean', '0', 'Absences : motifs et commentaires', ?, '10')",
             [$comment]
         );
 
