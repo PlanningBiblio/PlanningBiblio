@@ -1318,7 +1318,7 @@ class HolidayController extends BaseController
         $recover = ($result['hours'] + ($result['minutes'] / 100));
 
         $c = new \conges();
-        $credit = $c->calculCreditRecup($perso_id, $debut);
+        $credit = $c->calculCreditRecup($perso_id, $debutSQL);
         $credit_after_debit = ($credit[1] - $recover);
 
         if ($credit_after_debit < 0 and $validationStatus == 1) {
@@ -1481,7 +1481,7 @@ class HolidayController extends BaseController
             $recoverValue = ($result['hours'] + ($result['minutes'] / 100));
 
             $c=new \conges();
-            $credit = $c->calculCreditRecup($perso_id, $debut, $id);
+            $credit = $c->calculCreditRecup($perso_id, $debutSQL, $id);
 
             $credit_after_debit = ($credit[1] - $recoverValue);
 
