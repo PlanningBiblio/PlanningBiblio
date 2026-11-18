@@ -30,5 +30,4 @@ class ConfigHelperTest extends PLBWebTestCase
         $this->assertNotEquals('',                           $this->config->getValue('LDAP-Password'), 'Password is not empty');
 
     }
-
 }

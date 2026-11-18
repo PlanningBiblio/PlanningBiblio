@@ -838,3 +838,6 @@ msgstr "Undo the last action"
 
 msgid "Redo the last action"
 msgstr "Redo the last action"
+
+msgid "Current value :"
+msgstr "Current value :"
