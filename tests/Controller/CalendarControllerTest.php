@@ -184,6 +184,107 @@ class CalendarControllerTest extends PLBWebTestCase
         $this->assertStringNotContainsString('Présence', $text, 'Presence is not shown because agent is absent');
     }
 
+    public function testCalendarWithReasonDetails(): void
+    {
+        $builder = new FixtureBuilder();
+        $builder->delete(Agent::class);
+
+        $this->config->setParam('PlanningHebdo', 0);
+        $this->config->setParam('Absences-validation', 1);
+
+        $agent = $builder->build(Agent::class, array('login' => 'jdoenv', 'nom' => 'Doenv', 'prenom' => 'Jean', 'actif' => 'Actif', 'sites' => ['1']));
+        $this->logInAgent($agent, array(3,100));
+
+        $builder->build(Absence::class, array(
+            'debut' => \DateTime::createFromFormat('d/m/Y H:i:s', '26/09/2022 00:00:00'),
+            'fin' => \DateTime::createFromFormat('d/m/Y H:i:s', '26/09/2022 23:59:59'),
+            'motif' => 'Autre', 'motif_autre' => 'Atelier jeunesse',
+            'perso_id' => $agent->getId(), 'validation' => new \DateTime(), 'valide' => 1, 'supprime' => 0, 'groupe' => '1',
+        ));
+        $builder->build(Absence::class, array(
+            'debut' => \DateTime::createFromFormat('d/m/Y H:i:s', '27/09/2022 00:00:00'),
+            'fin' => \DateTime::createFromFormat('d/m/Y H:i:s', '27/09/2022 23:59:59'),
+            'motif' => 'Autre', 'motif_autre' => 'Réunion du réseau des bibliothèques de la métropole',
+            'perso_id' => $agent->getId(), 'validation' => new \DateTime(), 'valide' => 1, 'supprime' => 0, 'groupe' => '2',
+        ));
+
+        $params = array('debut' => '26/09/2022', 'fin' => '27/09/2022', 'perso_id' => $agent->getId());
+
+        try {
+            // Parameter disabled (default): the reason is displayed
+            $this->config->setParam('Absences-ShowReasonDetails', '0');
+            $crawler = $this->client->request('GET', '/calendar', $params);
+            $text = $crawler->filterXPath('//tbody/tr/td[1]')->text();
+            $this->assertStringContainsString('Toute la journée : Autre', $text);
+            $this->assertStringNotContainsString('Atelier jeunesse', $text);
+
+            // Parameter enabled: the reason details are displayed
+            $this->config->setParam('Absences-ShowReasonDetails', '1');
+            $crawler = $this->client->request('GET', '/calendar', $params);
+            $this->assertStringContainsString('Toute la journée : Atelier jeunesse', $crawler->filterXPath('//tbody/tr/td[1]')->text());
+
+            // Long details: truncated, full text in a focusable tooltip
+            $span = $crawler->filterXPath('//tbody/tr/td[2]//span[@tabindex="0"]');
+            $this->assertEquals(1, $span->count(), 'truncated details are focusable');
+            $this->assertSame('Réunion du réseau des bibliothèques de la métropole', $span->attr('title'));
+            $this->assertStringContainsString('Réunion du réseau des biblioth…', $span->text());
+        } finally {
+            $this->config->setParam('Absences-ShowReasonDetails', '0');
+        }
+    }
+
+    public function testCalendarWithComments(): void
+    {
+        $builder = new FixtureBuilder();
+        $builder->delete(Agent::class);
+
+        $this->config->setParam('PlanningHebdo', 0);
+        $this->config->setParam('Absences-validation', 1);
+        $this->config->setParam('Absences-ShowReasonDetails', '0');
+
+        $agent = $builder->build(Agent::class, array('login' => 'jdoecom', 'nom' => 'Doecom', 'prenom' => 'Jean', 'actif' => 'Actif', 'sites' => ['1']));
+        $this->logInAgent($agent, array(3,100));
+
+        $builder->build(Absence::class, array(
+            'debut' => \DateTime::createFromFormat('d/m/Y H:i:s', '26/09/2022 00:00:00'),
+            'fin' => \DateTime::createFromFormat('d/m/Y H:i:s', '26/09/2022 23:59:59'),
+            'motif' => 'Réunion', 'motif_autre' => '', 'commentaires' => 'COPIL',
+            'perso_id' => $agent->getId(), 'validation' => new \DateTime(), 'valide' => 1, 'supprime' => 0, 'groupe' => '1',
+        ));
+
+        $params = array('debut' => '26/09/2022', 'fin' => '26/09/2022', 'perso_id' => $agent->getId());
+
+        try {
+            $this->config->setParam('Absences-CommentReasons', 'réunion');
+            $this->config->setParam('Absences-CommentDisplay', 'append');
+            $this->config->setParam('Absences-CommentMaxLength', '30');
+
+            // Calendar not checked in Absences-CommentViews: reason only
+            $this->config->setParam('Absences-CommentViews', '["planning","attendees"]');
+            $crawler = $this->client->request('GET', '/calendar', $params);
+            $text = $crawler->filterXPath('//tbody/tr/td[1]')->text();
+            $this->assertStringContainsString('Toute la journée : Réunion', $text);
+            $this->assertStringNotContainsString('COPIL', $text);
+
+            // Calendar checked: comment after the reason
+            $this->config->setParam('Absences-CommentViews', '["calendar"]');
+            $crawler = $this->client->request('GET', '/calendar', $params);
+            $this->assertStringContainsString('Toute la journée : Réunion : COPIL', $crawler->filterXPath('//tbody/tr/td[1]')->text());
+
+            // Symbol: comment in an accessible button
+            $this->config->setParam('Absences-CommentDisplay', 'icon');
+            $crawler = $this->client->request('GET', '/calendar', $params);
+            $button = $crawler->filterXPath('//tbody/tr/td[1]//button[contains(@class, "absence-comment-icon")]');
+            $this->assertEquals(1, $button->count());
+            $this->assertSame('COPIL', $button->attr('title'));
+            $this->assertNotEmpty($button->attr('aria-label'));
+        } finally {
+            $this->config->setParam('Absences-CommentReasons', '');
+            $this->config->setParam('Absences-CommentDisplay', 'append');
+            $this->config->setParam('Absences-CommentViews', '["calendar","planning","attendees"]');
+        }
+    }
+
     public function testFullCalendar(): void
     {
         $builder = new FixtureBuilder();
