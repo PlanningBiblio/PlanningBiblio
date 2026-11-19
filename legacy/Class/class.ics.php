@@ -475,7 +475,7 @@ class CJICS
                 $lastmodified = date("Y-m-d H:i:s", strtotime($elem['LAST-MODIFIED']));
                 $demande= array_key_exists("CREATED", $elem) ? date("Y-m-d H:i:s", strtotime($elem['CREATED'])) : $lastmodified;
 
-                $debut = date("Y-m-d H:i:s", strtotime($elem["DTSTART_tz"]));
+                $debut = date('Y-m-d H:i:s', $elem['DTSTART_array'][2]);
                 $id_origin = 0;
 
                 // Si pas de date de fin, la fin est égale au début
@@ -485,8 +485,8 @@ class CJICS
 
                 // Les événements ICS sur des journées complètes ont comme date de fin J+1 à 0h00
                 // Donc si la date de fin est à 0h00, on retire une seconde pour la rammener à J
-                $offset = date("H:i:s", strtotime($elem["DTEND_tz"])) == "00:00:00" ? "-1 second" : null;
-                $fin = date("Y-m-d H:i:s", strtotime($elem["DTEND_tz"]." $offset"));
+                $offset = date('H:i:s', strtotime($elem['DTEND_tz'])) == '00:00:00' ? 1 : 0;
+                $fin = date('Y-m-d H:i:s', ($elem['DTEND_array'][2] - $offset));
 
                 // Par défaut, nous mettons dans le champ motif l'information enregistrée dans la config, paramètre ICS-PatternX (ex: Agenda personnel)
                 // Mais nous pouvons mettre l'information présente dans le champ SUMMARY de l'événements. Dans ce cas, il faut préciser $this->pattern = "[SUMMARY]"; (exemple d'utilisation : enregistrement d'absences récurrentes dans Planning Biblio)
