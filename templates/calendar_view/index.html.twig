@@ -56,6 +56,11 @@
         </div>
       {% endif %}
 
+      <label class="col-xl-auto col-form-label mt-2" for="hide-never-present">{{ 'Hide agents who are never present' | trans }} :</label>
+      <div class="col-xl-auto ps-0 m-2">
+        <input type="checkbox" value="1" id="hide-never-present" name="hide-never-present" class="m-2" {{ hideNeverPresent }}/>
+      </div>
+
       <label class="col-xl-auto col-form-label mt-2" for="all-absences">{% trans %}Display all absences{% endtrans %} :</label>
       <div class="col-xl-auto ps-0 m-2">
         <input type="checkbox" value="1" id="all-absences" name="all-absences" class="m-2" {{ displayAllAbsences }}/>

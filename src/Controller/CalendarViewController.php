@@ -27,6 +27,7 @@ final class CalendarViewController extends BaseController
         $start = $this->initDate('start', 'calendarViewStart', 'last monday', 'd/m/Y');
         $end = $this->initDate('end', 'calendarViewEnd', 'second sunday', 'd/m/Y');
         $displayAllAbsences = $this->initBoolean('all-absences', 'calendarViewAllAbsences', 'start');
+        $hideNeverPresent = $this->initBoolean('hide-never-present', 'calendarViewHideNeverPresent', 'start');
         // FIXME: Whenever possible, replace the following conditions with the DataTable's Select Columns method. #}
         $showDept = $this->initBoolean('show-dept', 'calendarViewShowDept', 'start') ? 'checked' : null;
         $showSites = $this->initBoolean('show-sites', 'calendarViewShowSites', 'start') ? 'checked' : null;
@@ -177,6 +178,7 @@ final class CalendarViewController extends BaseController
                     $columnStart = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $current->format('Y-m-d') . ' ' . $column['start']);
                     $columnEnd = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $current->format('Y-m-d') . ' ' . $column['end']);
 
+                    $initiallyAttendee[$key] = &$line[$current->format('Y-m-d')][$key]['initiallyAttendee'];
                     $class[$key] = &$line[$current->format('Y-m-d')][$key]['class'];
                     $content[$key] = &$line[$current->format('Y-m-d')][$key]['content'];
 
@@ -201,10 +203,12 @@ final class CalendarViewController extends BaseController
                                     foreach ($hours as $hour) {
                                         if ($key == 0 and $hour[0] < $column['end']) {
                                             $class[$key] = 'attendee';
+                                            $initiallyAttendee[$key] = true;
                                             break;
                                         }
                                         if ($key == 1 and $hour[1] > $column['start']) {
                                             $class[$key] = 'attendee';
+                                            $initiallyAttendee[$key] = true;
                                             break;
                                         }
                                     }
@@ -213,6 +217,7 @@ final class CalendarViewController extends BaseController
                                     foreach ($hours as $hour) {
                                         if ($hour[0] <= $column['start'] and $hour[1] >= $column['end']) {
                                             $class[$key] = 'attendee';
+                                            $initiallyAttendee[$key] = true;
                                             break;
                                         }
                                     }
@@ -275,6 +280,30 @@ final class CalendarViewController extends BaseController
             }
         }
 
+        // Remove agents that are never present
+        if ($hideNeverPresent) {
+            $agentsToRemove = [];
+            foreach($agents as $agentKey => $agent) {
+                $keep = false;
+                foreach($allDates as $date) {
+                    foreach($allAbsences[$agent->getId()][$date->format('Y-m-d')] as $absence) {
+                        $class = trim($absence['class'] ?? '');
+                        if ($absence['initiallyAttendee'] && (!str_ends_with($class, '-validated') || str_ends_with($class, '-not-validated'))) {
+                            $keep = true;
+                            break 2;
+                        }
+                    }
+                }
+                if (!$keep) {
+                    $agentsToRemove[] = $agentKey;
+                }
+            }
+
+            foreach ($agentsToRemove as $agent) {
+                unset($agents[$agent]);
+            }
+        }
+
         $this->templateParams([
             'agents' => $agents,
             'allAbsences' => $allAbsences,
@@ -284,6 +313,7 @@ final class CalendarViewController extends BaseController
             'departments' => $departments,
             'displayAllAbsences' => $displayAllAbsences ? 'checked' : null,
             'end' => $end->format('d/m/Y'),
+            'hideNeverPresent' => $hideNeverPresent ? 'checked' : null,
             'selectedDepartments' => $selectedDepartments,
             'selectedSites' => $selectedSites,
             'selectedStatus' => $selectedStatus,
