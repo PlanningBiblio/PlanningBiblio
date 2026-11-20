@@ -15,6 +15,12 @@ Planno est un logiciel libre développé en PHP-MySQL permettant de réaliser le
 - PHP 8.2 ou 8.3
 - MariaDB client/serveur 10 ou supérieur
 
+- Paramètre PHP : `max_input_vars` égal ou supérieur à 2000 (formulaires du planning et des tableaux). Il est fourni :
+  - par `public/.user.ini`, avec PHP-FPM ou CGI ;
+  - par `public/.htaccess`, avec Apache et mod_php (nécessite `AllowOverride Options` ou `All`).
+
+  Sinon (fichiers ignorés par la configuration du serveur, autre mode d'exécution de PHP), le définir dans le `php.ini` ou dans la configuration du pool PHP-FPM (`php_admin_value[max_input_vars] = 2000`).
+
 - Extensions PHP :
   - Calendar
   - Mysqli
