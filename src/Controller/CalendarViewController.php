@@ -181,6 +181,8 @@ final class CalendarViewController extends BaseController
                     $initiallyAttendee[$key] = &$line[$current->format('Y-m-d')][$key]['initiallyAttendee'];
                     $class[$key] = &$line[$current->format('Y-m-d')][$key]['class'];
                     $content[$key] = &$line[$current->format('Y-m-d')][$key]['content'];
+                    $order[$key] = &$line[$current->format('Y-m-d')][$key]['order'];
+                    $order[$key] = 100;
 
                     // Zebra on Sundays
                     if (!$this->config['Dimanche'] and $current->format('N') == 7) {
@@ -204,11 +206,13 @@ final class CalendarViewController extends BaseController
                                         if ($key == 0 and $hour[0] < $column['end']) {
                                             $class[$key] = 'attendee';
                                             $initiallyAttendee[$key] = true;
+                                            $order[$key] = 10;
                                             break;
                                         }
                                         if ($key == 1 and $hour[1] > $column['start']) {
                                             $class[$key] = 'attendee';
                                             $initiallyAttendee[$key] = true;
+                                            $order[$key] = 10;
                                             break;
                                         }
                                     }
@@ -218,6 +222,7 @@ final class CalendarViewController extends BaseController
                                         if ($hour[0] <= $column['start'] and $hour[1] >= $column['end']) {
                                             $class[$key] = 'attendee';
                                             $initiallyAttendee[$key] = true;
+                                            $order[$key] = 10;
                                             break;
                                         }
                                     }
@@ -241,11 +246,15 @@ final class CalendarViewController extends BaseController
                                 // Full day, half day and hourly: strict search
                                 if ($absence->getStart() < $columnEnd and $absence->getEnd() > $columnStart) {
                                     $class[$key] = $prefix . '-validated';
+                                    $order[$key] = 40;
 
-                                    if (!$holidayBadge and $absence instanceof Holiday) {
-                                        $content[$key] = 'Holiday';
-                                        $holidayBadge = true;
-                                    } elseif (!$absence instanceof Holiday) {
+                                    if ($absence instanceof Holiday) {
+                                        if (!$holidayBadge) {
+                                            $content[$key] = 'Holiday';
+                                            $holidayBadge = true;
+                                        }
+                                        $order[$key] = 50;
+                                    } else {
                                         $content[$key] = '';
                                         $holidayBadge = false;
                                     }
@@ -261,11 +270,15 @@ final class CalendarViewController extends BaseController
                                 // Full day, half day and hourly: strict search
                                 if ($absence->getStart() < $columnEnd and $absence->getEnd() > $columnStart and $class[$key] != 'absence-validated') {
                                     $class[$key] = $prefix . '-not-validated';
+                                    $order[$key] = 20;
 
-                                    if (!$holidayBadge and $absence instanceof Holiday) {
-                                        $content[$key] = 'Holiday';
-                                        $holidayBadge = true;
-                                    } elseif (!$absence instanceof Holiday) {
+                                    if ($absence instanceof Holiday) {
+                                        if (!$holidayBadge) {
+                                            $content[$key] = 'Holiday';
+                                            $holidayBadge = true;
+                                        }
+                                        $order[$key] = 30;
+                                    } else {
                                         $content[$key] = '';
                                         $holidayBadge = false;
                                     }

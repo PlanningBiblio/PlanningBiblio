@@ -114,7 +114,7 @@
           </th>
         {% endif %}
         {% for date in allDates %}
-          <th scope="col" class="dataTableNoSort" colspan="{{ columnsPerDay }}">
+          <th scope="col" colspan="{{ columnsPerDay }}">
             {{ date | date('D d/m') }}
           </th>
         {% endfor %}
@@ -123,7 +123,7 @@
         <tr>
           {% for date in allDates %}
             {% for c in columns %}
-              <th scope="col" class="dataTableNoSort align-top text-center">
+              <th scope="col" class="align-top text-center">
                 {{ c.display }}
                 {%if c.count %}
                   <br/><span class="badge bg-secondary">{{ c.count }}</span>
@@ -157,7 +157,7 @@
           {% endif %}
           {% for date in allDates %}
             {% for a in allAbsences[agent.id][date | date('Y-m-d')] %}
-              <td class="calendar-view {{ a.class }}"><span class="badge bg-secondary">{{ a.content | trans }}</span></td>
+              <td class="calendar-view {{ a.class }} text-start" data-order="{{ a.order }}"><span class="badge bg-secondary">{{ a.content | trans }}</span></td>
             {% endfor %}
           {% endfor %}
         </tr>
