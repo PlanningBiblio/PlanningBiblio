@@ -15,17 +15,19 @@ class DataTablesInitTest extends PLBWebTestCase
 
         $admin = $this->builder->build(Agent::class, [
             'login' => 'dtadmin', 'nom' => 'Admin', 'prenom' => 'Data',
+            'arrivee' => new \DateTime('2020-01-01'),
             'droits' => [21, 4, 99, 100], 'supprime' => 0, 'actif' => 'Actif',
         ]);
 
-        // Arrival dates of the first agents: sorted on data-order (Y-m-d), not on the displayed text (d/m/Y)
+        // Arrival dates of the first agents: sorted on data-order (Y-m-d), not on the displayed text (d/m/Y).
         $arrivals = [1 => '2026-01-15', 2 => '2025-12-01', 3 => '2026-02-03'];
 
         for ($i = 1; $i <= 30; $i++) {
             $this->builder->build(Agent::class, [
                 'login' => 'dtagent' . $i, 'nom' => sprintf('Agent%02d', $i), 'prenom' => 'Test',
                 'supprime' => 0, 'actif' => 'Actif',
-                'arrivee' => isset($arrivals[$i]) ? new \DateTime($arrivals[$i]) : null,
+                // The other agents get an older arrival date: without value, FixtureBuilder sets today's date
+                'arrivee' => new \DateTime($arrivals[$i] ?? '2020-01-01'),
             ]);
         }
 

@@ -173,9 +173,11 @@ class HolidayInfoControllerTest extends PLBWebTestCase
         $result = $crawler->filterXPath('//a[@href="/holiday-info/add"]');
         $this->assertEquals('Ajouter', $result->text('Node does not exist', false), 'a is Ajouter');
 
-        $result = $crawler->filterXPath('//th[@class="dataTableDateFR"]');
-        $this->assertEquals($result->eq(0)->text('Node does not exist', false), 'Début','table title id Début');
-        $this->assertEquals($result->eq(1)->text('Node does not exist', false), 'Fin','table title is Fin');
+        // The dates are sorted with data-order: the headers no longer need the dataTableDateFR class
+        $result = $crawler->filterXPath('//table[contains(@class, "CJDataTable")]/thead/tr/th');
+        $this->assertContains('Début', $result->each(fn ($th) => $th->text('', false)), 'table title Début');
+        $this->assertContains('Fin', $result->each(fn ($th) => $th->text('', false)), 'table title Fin');
+        $this->assertGreaterThan(0, $crawler->filterXPath('//table[contains(@class, "CJDataTable")]/tbody/tr/td[@data-order]')->count(), 'date cells with data-order');
 
         $result = $crawler->filterXPath('//span[@class="pl-icon pl-icon-edit"]');
         $this->assertEquals($result->attr('title'),'Editer','span logo edit title is Edit');
