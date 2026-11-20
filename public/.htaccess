@@ -1,3 +1,10 @@
+# PHP settings required by Planno, for Apache with mod_php.
+# With PHP-FPM or CGI, these settings are in public/.user.ini.
+# php_value requires "AllowOverride Options" (or All) in the Apache configuration.
+<IfModule mod_php.c>
+    php_value max_input_vars 2000
+</IfModule>
+
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes
