@@ -69,16 +69,46 @@ class DataTablesInitTest extends PLBWebTestCase
         $this->client->waitFor('#tableAgents_wrapper select option[value="-1"]');
         $this->assertSame('Tout', trim($this->client->executeScript("return document.querySelector('#tableAgents_wrapper select option[value=\"-1\"]').textContent;")), 'language file');
 
-        // Order data (data-order): arrival dates sorted chronologically, descending -> 03/02/2026 first
-        // (a sort on the displayed text would give 15/01/2026 first)
-        // (column found by its header: the Sites column only exists in multi-sites configuration)
-        $first = $this->client->executeScript(
+        // Order data (data-order): the arrival dates must be sorted chronologically.
+        // Only the relative positions of 3 agents of the test are checked, so that the other rows
+        // (agents of the installation, agents without arrival date) have no influence:
+        // descending, chronological order: Agent03 (03/02/2026), Agent01 (15/01/2026), Agent02 (01/12/2025);
+        // a sort on the displayed text (d/m/Y) would give Agent01 (15/...), Agent03 (03/...), Agent02 (01/...).
+        // The rows are returned with their values, to make a failure easier to understand.
+        // The rows are read in the DOM (all the rows displayed: page length -1), not with the rows() API
+        $result = $this->client->executeScript(
             "var api = new DataTable.Api('#tableAgents');"
-            . " var col = api.columns().header().toArray().findIndex(function (th) { return th.textContent.trim() === 'Arrivée'; });"
-            . " api.order([col, 'desc']).draw();"
-            . " return api.cell(api.rows({ order: 'applied' }).indexes()[0], col).data();"
+            . " var headers = Array.prototype.map.call(document.querySelectorAll('#tableAgents thead th'), function (th) { return th.textContent.trim(); });"
+            . " var col = headers.indexOf('Arrivée');"
+            . " var nameCol = headers.indexOf('Nom');"
+            . " var before = { apiRows: api.rows().count(), domRows: document.querySelectorAll('#tableAgents tbody tr').length, page: api.page.info() };"
+            . " api.search('').order([col, 'desc']).page.len(-1).draw();"
+            . " var rows = Array.prototype.map.call(document.querySelectorAll('#tableAgents tbody tr'), function (tr) {"
+            . "   var name = tr.cells[nameCol], date = tr.cells[col];"
+            . "   return [name ? name.textContent.trim() : null, date ? date.textContent.trim() : null, date ? date.getAttribute('data-order') : null];"
+            . " });"
+            . " return { headers: headers, col: col, nameCol: nameCol, type: col >= 0 ? api.column(col).type() : null, before: before, rows: rows };"
         );
-        $this->assertSame('03/02/2026', trim(strip_tags((string) $first)), 'data-order on the dates');
+
+        $names = array_column($result['rows'], 0);
+        $debug = json_encode([
+            'headers' => $result['headers'],
+            'before' => $result['before'],
+            'type' => $result['type'],
+            'rows' => array_slice($result['rows'], 0, 12),
+            'total' => count($result['rows']),
+        ], JSON_UNESCAPED_UNICODE);
+
+        $positions = [];
+        foreach (['Agent03', 'Agent01', 'Agent02'] as $name) {
+            $position = array_search($name, $names, true);
+            $this->assertNotFalse($position, "$name in the table: $debug");
+            $positions[] = $position;
+        }
+
+        $sorted = $positions;
+        sort($sorted);
+        $this->assertSame($sorted, $positions, "data-order on the dates (Agent03, Agent01, Agent02): $debug");
     }
 
     public function testBooleanAttributes(): void
