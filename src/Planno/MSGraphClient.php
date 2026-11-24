@@ -31,6 +31,10 @@ class MSGraphClient
     private $ignoredStatuses;
     private $stdout;
     private $user_id;
+    // Cache: Planno login => Graph user key (object id or URL-encoded UPN)
+    private $graphKeys = [];
+    // Disabled after the first lookup refused by Graph (e.g. missing User.Read.All)
+    private $mailLookupEnabled = true;
 
     public function __construct($entityManager, $tenantid, $clientid, $clientsecret, $full, $stdout, $user_id)
     {
@@ -91,46 +95,63 @@ class MSGraphClient
             $users = $this->entityManager->getRepository(Agent::class)->findBy(['supprime' => 0, 'check_ms_graph' => 1]);
         }
         foreach ($users as $user) {
-            if ($this->isGraphUser($user)) {
-                array_push($this->graphUsers, $user->getId());
-                $currentYear = date("Y");
-                if ($this->full) {
-                    $yearCount = 0;
-                    while ($this->start_year + $yearCount <= $currentYear) {
-                        $from = ($this->start_year + $yearCount) . "-01-01";
-                        $to = ($this->start_year + $yearCount) . "-12-31";
-                        $this->logMessage("Getting events from $from to $to for user ". $user->getLogin());
-                        $response = $this->getCalendarView($user, $from, $to);
-                        if ($response && $response->code == 200) {
-                            $this->addToIncomingEvents($user, $response, $from, $to);
-                        } else {
-                            $this->logMessage("Unable to get events");
-                        }
-                        $yearCount++;
-                    }
-                } else {
-                    $range = $this->getDateRange();
-                    $from = $range['from'];
-                    $to = $range['to'];
-                    $this->logMessage("Getting events from $from to $to for user ". $user->getLogin());
-                    $response = $this->getCalendarView($user, $from, $to);
-                    if ($response && $response->code == 200) {
-                        $this->addToIncomingEvents($user, $response, $from, $to);
-                    } else {
-                        $this->logMessage("Unable to get events");
-                    }
+            if (!$this->isGraphUser($user)) {
+                continue;
+            }
+
+            // Keep a snapshot: if any request fails for this user, discard the
+            // partial result and leave the user out of graphUsers, so that
+            // deleteEvents() does not remove his local absences.
+            $snapshot = $this->incomingEvents;
+            $complete = true;
+
+            foreach ($this->getRanges() as [$from, $to]) {
+                $this->logMessage("Getting events from $from to $to for user " . $user->getLogin());
+                $response = $this->getCalendarView($user, $from, $to);
+                if (!$response || !$this->addToIncomingEvents($user, $response, $from, $to)) {
+                    $complete = false;
+                    break;
                 }
+            }
+
+            if ($complete) {
+                array_push($this->graphUsers, $user->getId());
+            } else {
+                $this->incomingEvents = $snapshot;
+                $this->logMessage("Unable to get events for user " . $user->getLogin() . ": user skipped, local absences kept");
             }
         }
         $this->logMessage("Amount of incoming events: " . count($this->incomingEvents));
     }
 
-    private function addToIncomingEvents($user, $response, $from, $to, $nextLink = null): void {
+    /**
+     * Date ranges to scan: one range per year for a full scan,
+     * otherwise the default sliding window.
+     */
+    private function getRanges(): array {
+        if (!$this->full) {
+            $range = $this->getDateRange();
+            return [[$range['from'], $range['to']]];
+        }
+
+        $ranges = [];
+        for ($year = (int) $this->start_year; $year <= (int) date("Y"); $year++) {
+            $ranges[] = ["$year-01-01", "$year-12-31"];
+        }
+        return $ranges;
+    }
+
+    /**
+     * Adds the events of a calendarView response (and its next pages) to incomingEvents.
+     *
+     * @return bool false if a page could not be retrieved
+     */
+    private function addToIncomingEvents($user, $response, $from, $to, $nextLink = null): bool {
         if ($nextLink) {
             $response = $this->sendGet($nextLink, true);
             if (!$response || $response->code != 200) {
                 $this->logMessage("Unable to get events");
-                return;
+                return false;
             }
         }
         foreach ($response->body->value as $event) {
@@ -147,12 +168,14 @@ class MSGraphClient
 
         if (property_exists($response->body, '@odata.nextLink')) {
             $this->logMessage("Paginate " . $response->body->{'@odata.nextLink'});
-            $this->addToIncomingEvents($user, $response, $from, $to, $response->body->{'@odata.nextLink'});
+            return $this->addToIncomingEvents($user, $response, $from, $to, $response->body->{'@odata.nextLink'});
         }
+
+        return true;
     }
 
     private function isEventEmpty($login, $id): bool {
-        $query = "/users/$login" . $this->login_suffix . '/events/' . $id;
+        $query = '/users/' . $this->graphKey($login) . '/events/' . $id;
         $response = $this->sendGet($query);
         return !$response || $response->code != 200;
     }
@@ -180,7 +203,7 @@ class MSGraphClient
 
     private function getCalendarView($user, $from, $to) {
         $login = $user->getLogin();
-        $response = $this->sendGet("/users/$login" . $this->login_suffix . '/calendar/calendarView?startDateTime=' . $from . 'T00:00:00.0000000&endDateTime=' . $to . 'T00:00:00.0000000&$top=200');
+        $response = $this->sendGet('/users/' . $this->graphKey($login) . '/calendar/calendarView?startDateTime=' . $from . 'T00:00:00.0000000&endDateTime=' . $to . 'T00:00:00.0000000&$top=200');
         if ($response && $response->code == 200) {
             return $response;
         } 
@@ -189,7 +212,7 @@ class MSGraphClient
 
     private function isGraphUser($user): bool {
         $login = $user->getLogin();
-        $response = $this->sendGet("/users/$login" . $this->login_suffix . '/calendar');
+        $response = $this->sendGet('/users/' . $this->graphKey($login) . '/calendar');
         return $response && $response->code == 200;
     }
 
@@ -229,7 +252,7 @@ class MSGraphClient
                 $localEvent = $this->localEvents[$eventArray['plb_id'] . $incomingEvent->iCalUId];
                 if ($incomingEvent->lastModifiedDateTime != $localEvent['last_modified']) {
                     if ($incomingEvent->type == "occurrence") {
-                        $response = $this->sendGet("/users/" . $eventArray['plb_login'] . $this->login_suffix . '/calendar/events/' . $incomingEvent->seriesMasterId);
+                        $response = $this->sendGet('/users/' . $this->graphKey($eventArray['plb_login']) . '/calendar/events/' . $incomingEvent->seriesMasterId);
                         $rrule = $this->msCalendarUtils->recurrenceToRRule($response->body->recurrence);
                     }
                     $query = "UPDATE " . $this->dbprefix . "absences SET debut=:debut, fin=:fin, motif=:motif, commentaires=:commentaires, last_modified=:last_modified, rrule=:rrule WHERE ical_key=:ical_key AND perso_id=:perso_id LIMIT 1";
@@ -249,7 +272,7 @@ class MSGraphClient
             } else {
                 // Event insertion
                 if ($incomingEvent->type == "occurrence") {
-                    $response = $this->sendGet("/users/" . $eventArray['plb_login'] . $this->login_suffix . '/calendar/events/' . $incomingEvent->seriesMasterId);
+                    $response = $this->sendGet('/users/' . $this->graphKey($eventArray['plb_login']) . '/calendar/events/' . $incomingEvent->seriesMasterId);
                     $rrule = $this->msCalendarUtils->recurrenceToRRule($response->body->recurrence);
                 }
                 $query = "INSERT INTO " . $this->dbprefix . "absences ";
@@ -272,7 +295,48 @@ class MSGraphClient
         }
     }
 
-    private function sendGet($request, $absolute = false, $retry = 0) {
+    /**
+     * Returns the key used in "/users/{key}" Graph requests for a Planno login.
+     *
+     * Graph only accepts the object id or the userPrincipalName in this path,
+     * not the mail address. When login + MSGraph-LoginSuffix looks like an
+     * address, the user is first looked up by mail; the immutable object id is
+     * used when exactly one user matches. Otherwise the address is used as the
+     * userPrincipalName (previous behaviour).
+     *
+     * Requires the User.Read.All application permission for the lookup;
+     * without it, the lookup is disabled for the rest of the run.
+     */
+    protected function graphKey(?string $login): string {
+        $address = (string) $login . $this->login_suffix;
+        if (array_key_exists($address, $this->graphKeys)) {
+            return $this->graphKeys[$address];
+        }
+
+        $key = rawurlencode($address);
+
+        if ($this->mailLookupEnabled && str_contains($address, '@')) {
+            // OData string literal: single quotes are escaped by doubling them
+            $filter = rawurlencode("mail eq '" . str_replace("'", "''", $address) . "'");
+            $response = $this->sendGet("/users?\$filter=$filter&\$select=id,userPrincipalName");
+
+            if (!$response || $response->code != 200) {
+                $code = $response ? $response->code : 'none';
+                $this->logMessage("Unable to look up users by mail (HTTP $code), check the User.Read.All application permission. Using logins as userPrincipalName.");
+                $this->mailLookupEnabled = false;
+            } elseif (count($response->body->value) === 1) {
+                $key = $response->body->value[0]->id;
+                $this->logMessage("$address resolved to " . $response->body->value[0]->userPrincipalName);
+            } elseif (count($response->body->value) > 1) {
+                $this->logMessage("$address matches several users, using it as userPrincipalName");
+            }
+        }
+
+        $this->graphKeys[$address] = $key;
+        return $key;
+    }
+
+    protected function sendGet($request, $absolute = false, $retry = 0) {
         $token = $this->oauth->getToken();
         $headers['Authorization'] = "Bearer $token";
         $response = null;
