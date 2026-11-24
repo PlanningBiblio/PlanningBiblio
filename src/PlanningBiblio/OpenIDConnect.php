@@ -42,6 +42,8 @@ class OpenIDConnect
             );
 
             $oidc->addScope(['openid', 'email', 'profile']);
+            $oidc->setRedirectURL(rtrim($this->config['URL'], '/') . '/login');
+
             if (!empty($this->ca_cert)) {
                 $oidc->setCertPath($this->ca_cert);
             }
