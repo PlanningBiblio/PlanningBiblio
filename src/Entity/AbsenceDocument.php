@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: 'absences_documents')]
 class AbsenceDocument
 {
-    private $upload_dir = '';
+    private static string $upload_dir = '';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -96,12 +96,12 @@ class AbsenceDocument
         }
     }
 
-    public function upload_dir() {
-        if (!$this->upload_dir) {
-            $this->upload_dir = __DIR__ . '/../../var/upload/' . $_ENV['APP_ENV'] . '/absences/';
+    public static function upload_dir() {
+        if (!self::$upload_dir) {
+            self::$upload_dir = __DIR__ . '/../../var/upload/' . $_ENV['APP_ENV'] . '/absences/';
         }
 
-        return $this->upload_dir;
+        return self::$upload_dir;
     }
 
     /**
@@ -110,7 +110,7 @@ class AbsenceDocument
      */
     public function getStorageDirectory(): string
     {
-        return sprintf('%s%s/%s', $this->upload_dir(), $this->absence_id, $this->id);
+        return sprintf('%s%s/%s', self::upload_dir(), $this->absence_id, $this->id);
     }
 
     /**

@@ -34,9 +34,8 @@ class AbsenceRepository extends EntityRepository
             $entityManager->flush();
         }
 
-        $absenceDocument = new AbsenceDocument();
-        if (is_dir($absenceDocument->upload_dir() . $id)) {
-            rmdir($absenceDocument->upload_dir() . $id);
+        if (is_dir(AbsenceDocument::upload_dir() . $id)) {
+            rmdir(AbsenceDocument::upload_dir() . $id);
         }
     }
 
