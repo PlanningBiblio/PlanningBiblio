@@ -1953,7 +1953,8 @@ class PlanningController extends BaseController
         $holidays = $this->getHolidays($date, $site);
 
         foreach ($holidays as $elem) {
-            $elem['motif'] = 'Congé payé';
+            $reason = $elem['debit'] == 'recuperation' ? 'Compensatory time' : 'Holiday';
+            $elem['motif'] = $this->translator->trans($reason);
             $absences[] = $elem;
         }
 

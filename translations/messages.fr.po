@@ -489,3 +489,9 @@ msgstr "Commentaire :"
 
 msgid "Current value :"
 msgstr "Valeur actuelle :"
+
+msgid "Holiday"
+msgstr "Congé"
+
+msgid "Compensatory time"
+msgstr "Récupération"

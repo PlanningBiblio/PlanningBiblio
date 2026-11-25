@@ -490,3 +490,9 @@ msgstr "Comment:"
 
 msgid "Current value :"
 msgstr "Current value :"
+
+msgid "Holiday"
+msgstr "Holiday"
+
+msgid "Compensatory time"
+msgstr "Compensatory time"
