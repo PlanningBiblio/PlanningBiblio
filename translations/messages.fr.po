@@ -833,6 +833,9 @@ msgstr "Afficher les statuts"
 msgid "Holiday"
 msgstr "Congé"
 
+msgid "Compensatory time"
+msgstr "Récupération"
+
 msgid "Undo the last action"
 msgstr "Annuler la dernière action"
 
