@@ -833,6 +833,9 @@ msgstr "Show statuses"
 msgid "Holiday"
 msgstr "Holiday"
 
+msgid "Compensatory time"
+msgstr "Compensatory time"
+
 msgid "Undo the last action"
 msgstr "Undo the last action"
 
