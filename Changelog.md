@@ -1,5 +1,20 @@
 # Changelog Planno
 
+## Version 26.04.15 (2026-11-26)
+
+### Enhancement
+
+* MT56025: Distinguishing between comp-time and holiday in absence lists #1547
+
+### Fixes
+
+* MT54849: Set max_input_vars for Apache with mod_php #1543
+* MT55621: OpenID Connect : defines the redirect URL from the config #1544
+
+### Security
+
+* MT55621: Change type of OIDC-ClientSecret and MSGraph-ClientSecret
+
 ## Version 26.04.14 (2026-11-13)
 
 ### Fixes
