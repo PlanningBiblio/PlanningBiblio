@@ -1,5 +1,12 @@
 # Changelog Planno
 
+## Version 25.10.31 (2026-11-26)
+
+### Fixes
+
+* MT54849: Set max_input_vars for Apache with mod_php #1543
+* MT55621: OpenID Connect : defines the redirect URL from the config #1544
+
 ## Version 25.10.30 (2026-10-30)
 
 ### Security / Dependencies
