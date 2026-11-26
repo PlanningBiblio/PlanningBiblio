@@ -56,30 +56,33 @@
         </div>
       {% endif %}
 
-      <label class="col-xl-auto col-form-label mt-2" for="hide-never-present">{{ 'Hide agents who are never present' | trans }} :</label>
-      <div class="col-xl-auto ps-0 m-2">
-        <input type="checkbox" value="1" id="hide-never-present" name="hide-never-present" class="m-2" {{ hideNeverPresent }}/>
-      </div>
+      <fieldset class="col-xl-auto d-flex flex-wrap align-items-center gap-2">
+        <legend class="visually-hidden">{{ 'Display options' | trans }}</legend>
+        <div class="col-xl-auto form-check m-2 mt-3">
+          <input class="form-check-input" type="checkbox" value="1" id="hide-never-present" name="hide-never-present" {{ hideNeverPresent }}/>
+          <label class="form-check-label" for="hide-never-present">{{ 'Hide agents who are never present' | trans }}</label>
+        </div>
 
-      <label class="col-xl-auto col-form-label mt-2" for="all-absences">{% trans %}Display all absences{% endtrans %} :</label>
-      <div class="col-xl-auto ps-0 m-2">
-        <input type="checkbox" value="1" id="all-absences" name="all-absences" class="m-2" {{ displayAllAbsences }}/>
-      </div>
+        <div class="col-xl-auto form-check m-2 mt-3">
+          <input class="form-check-input" type="checkbox" value="1" id="all-absences" name="all-absences" {{ displayAllAbsences }}/>
+          <label class="form-check-label" for="all-absences">{{ 'Display all absences' | trans }}</label>
+        </div>
 
-      <label class="col-xl-auto col-form-label mt-2" for="show-sites">{% trans %}Show sites{% endtrans %} :</label>
-      <div class="col-xl-auto ps-0 m-2">
-        <input type="checkbox" value="1" id="show-sites" name="show-sites" class="m-2" {{ showSites }}/>
-      </div>
+        <div class="col-xl-auto form-check m-2 mt-3">
+          <input class="form-check-input" type="checkbox" value="1" id="show-sites" name="show-sites" {{ showSites }}/>
+          <label class="form-check-label" for="show-sites">{{ 'Show sites' | trans }}</label>
+        </div>
 
-      <label class="col-xl-auto col-form-label mt-2" for="show-dept">{% trans %}Show departments{% endtrans %} :</label>
-      <div class="col-xl-auto ps-0 m-2">
-        <input type="checkbox" value="1" id="show-dept" name="show-dept" class="m-2" {{ showDept }}/>
-      </div>
+        <div class="col-xl-auto form-check m-2 mt-3">
+          <input class="form-check-input" type="checkbox" value="1" id="show-dept" name="show-dept" {{ showDept }}/>
+          <label class="form-check-label" for="show-dept">{{ 'Show departments' | trans }}</label>
+        </div>
 
-      <label class="col-xl-auto col-form-label mt-2" for="show-status">{% trans %}Show statuses{% endtrans %} :</label>
-      <div class="col-xl-auto ps-0 m-2">
-        <input type="checkbox" value="1" id="show-status" name="show-status" class="m-2" {{ showStatus }}/>
-      </div>
+        <div class="col-xl-auto form-check m-2 mt-3">
+          <input class="form-check-input" type="checkbox" value="1" id="show-status" name="show-status" {{ showStatus }}/>
+          <label class="form-check-label" for="show-status">{{ 'Show statuses' | trans }}</label>
+        </div>
+      </fieldset>
 
       <div class="col-xl-auto ps-0">
         <input type="submit" role="button" value="{% trans %}Search{% endtrans %}" class="btn btn-primary m-2"/>

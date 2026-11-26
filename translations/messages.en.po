@@ -841,3 +841,6 @@ msgstr "Redo the last action"
 
 msgid "Hide agents who are never present"
 msgstr "Hide agents who are never present"
+
+msgid "Display options"
+msgstr "Display options"

@@ -300,8 +300,9 @@ final class CalendarViewController extends BaseController
                 $keep = false;
                 foreach($allDates as $date) {
                     foreach($allAbsences[$agent->getId()][$date->format('Y-m-d')] as $absence) {
-                        $class = trim($absence['class'] ?? '');
-                        if ($absence['initiallyAttendee'] && (!str_ends_with($class, '-validated') || str_ends_with($class, '-not-validated'))) {
+                        $absenceClass = trim($absence['class'] ?? '');
+                        $isAbsent = !(!str_ends_with($absenceClass, '-validated') || str_ends_with($absenceClass, '-not-validated'));
+                        if ($absence['initiallyAttendee'] && !$isAbsent) {
                             $keep = true;
                             break 2;
                         }
