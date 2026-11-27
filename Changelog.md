@@ -1,5 +1,12 @@
 # Changelog Planno
 
+## Version 26.04.16 (2026-11-27)
+
+### Fixes
+
+* MT55621: Remove ConfigHelperTest::testDefaultValues
+   * This test causes other tests to fail.
+
 ## Version 26.04.15 (2026-11-26)
 
 ### Enhancement
