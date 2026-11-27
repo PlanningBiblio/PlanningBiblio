@@ -43,9 +43,10 @@ class AbsenceGcDocumentsCommand extends Command
                 $deletionConfirmed = $io->confirm($question, false);
                 if ($deletionConfirmed) {
                     try {
+                        $id = $absenceDocument->getId();
                         $this->entityManager->remove($absenceDocument);
                         $this->entityManager->flush();
-                        $io->success(sprintf('Absence document #%d deleted', $absenceDocument->getId()));
+                        $io->success(sprintf('Absence document #%d deleted', $id));
                     } catch (\Exception $e) {
                         $io->error(sprintf('Failed to delete absence document: %s', $e->getMessage()));
                         return Command::FAILURE;
