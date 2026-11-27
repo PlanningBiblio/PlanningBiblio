@@ -23,16 +23,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 class AbsenceGcDocumentsCommand extends Command
 {
-    private $entityManager;
-
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(private EntityManagerInterface $entityManager)
     {
-        $this->entityManager = $entityManager;
         parent::__construct();
-    }
-
-    protected function configure(): void
-    {
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
