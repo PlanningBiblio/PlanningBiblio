@@ -10,8 +10,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-require_once __DIR__ . '/../../legacy/Common/function.php';
-
 #[AsCommand(
     name: 'app:absence:gc-documents',
     description: 'Remove database entities referencing non-existing files and files not referenced by a database entity',
