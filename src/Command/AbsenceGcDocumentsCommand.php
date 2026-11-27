@@ -13,6 +13,13 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 #[AsCommand(
     name: 'app:absence:gc-documents',
     description: 'Remove database entities referencing non-existing files and files not referenced by a database entity',
+    help: <<<'HELP'
+        This command finds AbsenceDocument database entities that references
+        non-existing files and files in AbsenceDocument::upload_dir() not referenced by
+        any AbsenceDocument database entity.
+
+        For each finding you will be asked to confirm deletion by answering by 'yes' or 'y'.
+        HELP
 )]
 class AbsenceGcDocumentsCommand extends Command
 {
