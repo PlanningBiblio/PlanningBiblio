@@ -96,7 +96,8 @@ class AbsenceDocument
         }
     }
 
-    public static function upload_dir() {
+    public static function upload_dir(): string
+    {
         if (!self::$upload_dir) {
             self::$upload_dir = __DIR__ . '/../../var/upload/' . $_ENV['APP_ENV'] . '/absences/';
         }
