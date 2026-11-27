@@ -52,6 +52,9 @@ class ConfigController extends BaseController
             if ($cp->getType() == 'password') {
                 $elem['valeur'] = '';
             }
+            if ($cp->getType() === 'secret') {
+                $elem['partiallyRevealedValue'] = $cp->getPartiallyRevealedValue();
+            }
             switch ($elem['type']) {
                 case "checkboxes":
                     $elem['valeurs'] = json_decode($elem['valeurs'], true);

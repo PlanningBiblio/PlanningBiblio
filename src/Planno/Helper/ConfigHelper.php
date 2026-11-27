@@ -27,18 +27,20 @@ class ConfigHelper extends BaseHelper
                 if (in_array($cp->getType(), ['hidden', 'info'])) {
                     continue;
                 }
-                // boolean and checkboxes elements.
-                if (!isset($params[$cp->getName()])) {
-                    $params[$cp->getName()] = $cp->getType() == 'boolean' ? '0' : array();
-                }
-                $value = $params[$cp->getName()];
+
+                $defaultValue = match ($cp->getType()) {
+                    'boolean' => '0',
+                    'checkboxes' => [],
+                    default => ''
+                };
+                $value = $params[$cp->getName()] ?? $defaultValue;
 
                 if (is_string($value)) {
                     $value = trim($value);
                 }
 
-                // Passwords
-                if ($cp->getType() == 'password') {
+                // Passwords and secrets
+                if (in_array($cp->getType(), ['password', 'secret'])) {
                     if ($value == '') {
                         continue;
                     }
@@ -51,6 +53,9 @@ class ConfigHelper extends BaseHelper
 
                 if ($cp->getType() == 'color') {
                     $value = filter_var($value, FILTER_CALLBACK, ['options' => 'sanitize_color']);
+                    if ($value === null) {
+                        continue;
+                    }
                 }
 
                 try {

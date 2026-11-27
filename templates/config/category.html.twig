@@ -56,7 +56,15 @@
           {% elseif v.type == 'number' %}
             <input type="number" name="{{ v.nom }}" id="{{ v.nom }}" value="{{ v.valeur }}" {{ v.options | raw }} style="width:400px;"/>
           {% elseif v.type == 'password' %}
-            <input type="password" name="{{ v.nom }}" id="{{ v.nom }}" value="{{ v.valeur }}" style="width:400px;"/>
+            <input type="password" name="{{ v.nom }}" id="{{ v.nom }}" value="" style="width:400px;"/>
+          {% elseif v.type == 'secret' %}
+            <input type="password" name="{{ v.nom }}" id="{{ v.nom }}" value="" style="width:400px;"/>
+            {% if v.partiallyRevealedValue %}
+              <div class="form-text">
+                <span>{{ 'Current value :' | trans }}</span>
+                <span class="font-monospace">{{ v.partiallyRevealedValue }}</span>
+              </div>
+            {% endif %}
           {% elseif v.type == 'date' %}
             <input type="text" name="{{ v.nom }}" id="{{ v.nom }}" value="{{ v.valeur }}" style="width:400px;" class="datepicker"/>
           {% elseif v.type == 'color' %}

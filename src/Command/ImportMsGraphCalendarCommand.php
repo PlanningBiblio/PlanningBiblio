@@ -50,7 +50,7 @@ class ImportMsGraphCalendarCommand extends Command
 
         $tenantid = $config['MSGraph-TenantID'];
         $clientid = $config['MSGraph-ClientID'];
-        $clientsecret = $config['MSGraph-ClientSecret'];
+        $clientsecret = decrypt($config['MSGraph-ClientSecret']);
 
         if (!$tenantid || !$clientid || !$clientsecret) {
             $io->error('At least one of the following is not defined: MSGraph-TenantID, MSGraph-ClientID, MSGraph-ClientSecret. Please check your configuration.');

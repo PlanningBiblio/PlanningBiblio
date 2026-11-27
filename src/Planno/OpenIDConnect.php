@@ -25,7 +25,7 @@ class OpenIDConnect
         $this->provider = $this->config['OIDC-Provider'];
         $this->ca_cert = $this->config['OIDC-CACert'];
         $this->client_id = $this->config['OIDC-ClientID'];
-        $this->client_secret = $this->config['OIDC-ClientSecret'];
+        $this->client_secret = decrypt($this->config['OIDC-ClientSecret']);
         $this->login_attribute = !empty($this->config['OIDC-LoginAttribute']) ? $this->config['OIDC-LoginAttribute'] : 'email';
     }
 
