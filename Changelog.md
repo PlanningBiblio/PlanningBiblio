@@ -1,5 +1,27 @@
 # Changelog Planno
 
+## Version 26.10.04 (2026-11-27)
+
+### Enhancement
+
+* MT55694: Add command to "garbage collect" absence documents #1548
+
+### Fixes
+
+* MT55845: Fix the planning buttons that open a modal (save, import, delete) #1539
+* MT55872: Fix negative recovery time control. Issue #1540 #1541
+* MT54849: Set max_input_vars for Apache with mod_php #1543
+* MT55621: OpenID Connect : defines the redirect URL from the config #1544
+* MT56025: Distinguishing between comp-time and holiday in absence lists #1547
+
+### Security
+
+* MT55621: Change type of OIDC-ClientSecret and MSGraph-ClientSecret
+
+### Plumbing
+
+* MT55253: DataTables, complete modernization #1538
+
 ## Version 26.10.03 (2026-11-13)
 
 ### Enhancement
