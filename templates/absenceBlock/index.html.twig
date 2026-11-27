@@ -16,8 +16,8 @@
                 <thead>
                     <tr>
                         <th scope="col" class="dataTableNoSort"></th>
-                        <th scope="col" class="dataTableDateFR">Début</th>
-                        <th scope="col" class="dataTableDateFR">Fin</th>
+                        <th scope="col">Début</th>
+                        <th scope="col">Fin</th>
                         <th scope="col">Commentaire</th>
                     </tr>
                 </thead>
@@ -30,8 +30,8 @@
                                 </a>
                                 <a href="javascript:deleteAbsenceBlock({{elem.id}});"><span class="pl-icon pl-icon-dropblack" title="Supprimer" /></a>
                             </td>
-                            <td>{{ elem.start | date('d/m/Y') }}</td>
-                            <td>{{ elem.end | date('d/m/Y')  }}</td>
+                            <td data-order="{{ elem.start | date('Y-m-d') }}">{{ elem.start | date('d/m/Y') }}</td>
+                            <td data-order="{{ elem.end | date('Y-m-d') }}">{{ elem.end | date('d/m/Y') }}</td>
                             <td>{{ elem.comment | nl2br }}</td>
                         </tr>
                     {% endfor %}

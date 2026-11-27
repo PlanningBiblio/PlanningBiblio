@@ -267,4 +267,12 @@ This needs to be run every time new translation messages are added to files. It 
 
 ### More info
 - https://symfony.com/doc/current/translation.html 
-- https://github.com/willdurand/BazingaJsTranslationBundle/blob/master/Resources/doc/index.md 
+- https://github.com/willdurand/BazingaJsTranslationBundle/blob/master/Resources/doc/index.md
+
+## Tables (DataTables)
+
+* Add the class `CJDataTable` to a `<table>` (with `<thead>` and `<tbody>`): it is turned into a DataTable by `public/js/datatables-init.js`. No JavaScript is needed in the template.
+* Attributes of the `<table>`: `data-sort` (initial order, JSON), `data-length` (rows per page, 25 by default), `data-state-save` (save the state, `true` by default), `data-responsive` (`true` by default), `data-fixed-columns` (number of fixed columns on the left), `data-no-export` (no export buttons).
+* Classes of the `<th>`: `dataTableNoSort`, `dataTableHide`, `dataTableDate`, `dataTableDateFR`, `dataTableDateFR-fin`, `dataTableHeureFR`, `clear-string`.
+* Dates: when the template has the raw value, prefer a `data-order` attribute on the cell (e.g. `<td data-order="{{ start | date('Y-m-d') }}">{{ start | date('d/m/Y') }}</td>`) to a `dataTableDateFR` class on the header: the sort does not depend on the displayed format.
+* The full documentation is at the top of `public/js/datatables-init.js`; the sort functions of the `dataTable…FR` classes are in `public/js/dataTables.sort.js`.
